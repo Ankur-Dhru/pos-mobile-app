@@ -1,0 +1,146 @@
+import React, {useEffect, useRef, useState} from "react";
+
+import {TouchableOpacity, View} from "react-native";
+import Container from "../../components/Container";
+import ReactNativePinView from "react-native-pin-view"
+import {useDispatch} from "react-redux";
+import { retrieveData, syncData} from "../../libs/function";
+
+import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
+import {Card, Paragraph, Text} from "react-native-paper";
+import {styles} from "../../theme";
+import moment from "moment/moment";
+
+import {setTableOrdersData} from "../../redux-store/reducer/table-orders-data";
+import {localredux} from "../../libs/static";
+import {appLog, groupBy} from "../../libs/function";
+
+const md5 = require('md5');
+
+
+const Index = (props: any) => {
+
+    let {route: {params}, navigation}: any = props;
+    let {workspace}: any = localredux.initData;
+
+    const dispatch = useDispatch()
+
+    const pinView: any = useRef(null)
+    const [enteredPin, setEnteredPin] = useState("")
+
+    useEffect(() => {
+        setTimeout(async ()=>{
+            if(enteredPin.length === 5){
+                if (md5(enteredPin) === params.loginpin) {
+                    dispatch(showLoader())
+                   await retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
+
+                            const {
+                                licenseData,
+                                authData,
+                                localSettingsData,
+                                clientsData,
+                                addonsData,
+                                itemsData
+                            } = data || {};
+
+                            if (Boolean(data) && Boolean(licenseData)) {
+                                const {license: {expired_on, status}} = licenseData.data;
+                                const today = moment().format('YYYY-MM-dd');
+                                if (expired_on >= today && status === 'Active') {
+
+                                    localredux.licenseData=licenseData;
+                                    localredux.authData=authData;
+                                    localredux.clientsData = clientsData;
+
+                                    localredux.addonsData = addonsData;
+                                    localredux.itemsData = itemsData;
+                                    localredux.groupItemsData = groupBy(Object.values(itemsData), 'itemgroupid');
+
+                                    /*await dispatch(setLicenseData(licenseData));
+                                    await dispatch(setItemsData(items));
+                                    await dispatch(setAddonsData(addons));
+                                    await dispatch(setclientsData(clients));
+                                    await dispatch(setRestaurant(isRestaurant));
+                                    await dispatch(setCurrentLocation(currentLocation));
+                                    await dispatch(setInitData(initData));
+                                    await dispatch(setAuthData(authData));
+                                    */
+
+                                    await retrieveData('fusion-pro-pos-mobile-tableorder').then(async (tableorders: any) => {
+                                        await dispatch(setTableOrdersData(tableorders));
+                                    })
+                                }
+                            }
+                            await dispatch(hideLoader())
+                        })
+                    localredux.loginuserData=params;
+                   await navigation.replace('DrawerStackNavigator');
+
+                } else {
+                    dispatch(setAlert({visible: true, message: 'Wrong Pin'}));
+                    pinView.current.clearAll()
+                }
+            }
+        },200)
+    }, [enteredPin])
+
+
+    return <Container config={{subtitle: `${workspace?.toUpperCase()}`, title: 'PIN',hideback:Boolean(params.onlyone)}}>
+
+        <Card>
+
+            <View style={[styles.center, styles.h_100, styles.middle]}>
+
+                <View style={{width:300}}>
+
+                    <View>
+                        <Paragraph style={[styles.paragraph,{textAlign:'center'}]}>{params.username}</Paragraph>
+                    </View>
+
+                <ReactNativePinView
+                    inputSize={20}
+                    ref={pinView}
+                    pinLength={5}
+                    onValueChange={value => value.length === 5 && setEnteredPin(value)}
+                    com
+                    inputViewEmptyStyle={{
+                        backgroundColor: "transparent",
+                        borderWidth: 1,
+                        borderColor: "#ccc",
+                    }}
+                    inputViewFilledStyle={{
+                        backgroundColor: "#000",
+                    }}
+                    buttonViewStyle={{
+                        borderWidth: 0,
+                        backgroundColor: "#eee",
+                        borderColor: "#ccc",
+                    }}
+                    buttonTextStyle={{
+                        color: "#000",
+                    }}
+                    inputViewStyle={{
+                        marginBottom:50
+                    }}
+
+
+                />
+                </View>
+
+                <View style={{marginTop:80}}>
+                    <TouchableOpacity onPress={() => {syncData().then()}}><Text>Sync</Text></TouchableOpacity>
+                </View>
+
+            </View>
+
+
+        </Card>
+    </Container>
+}
+
+
+
+export default Index;
+
+//

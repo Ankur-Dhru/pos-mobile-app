@@ -43,6 +43,15 @@ import {device} from "./libs/static";
 import Dialog from "./components/Dialog";
 import Splash from "./pages/Splash";
 
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
+
+const options = {
+    enableVibrateFallback: true,
+    ignoreAndroidSystemSettings: false
+};
+
+ReactNativeHapticFeedback.trigger("impactLight", options);
+
 configureFontAwesomePro();
 
 LogBox.ignoreAllLogs();

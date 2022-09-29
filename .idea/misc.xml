@@ -9,6 +9,7 @@
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-gesture-handler/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-get-random-values/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-gradle-plugin" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-haptic-feedback/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-reanimated/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-safe-area-context/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-screens/android" />

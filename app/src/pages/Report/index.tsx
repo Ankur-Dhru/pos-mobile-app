@@ -89,7 +89,7 @@ const Index = ({ordersData}: any) => {
             style={[styles.noshadow]}>
 
             <View
-                style={[styles.grid, styles.p_5, styles.noWrap, styles.top, styles.justifyContentSpaceBetween]}>
+                style={[styles.grid, styles.p_4, styles.noWrap, styles.top, styles.justifyContentSpaceBetween]}>
                 <View style={{width: '60%'}}>
                     <View style={[styles.grid, styles.noWrap, styles.top]}>
 

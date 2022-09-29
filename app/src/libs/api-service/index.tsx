@@ -29,7 +29,7 @@ const apiService = async (config: configData) => {
 
 
   if (Boolean(config.workspace)) {
-    headers["x-workspace"] = config.workspace;
+    // headers["x-workspace"] = config.workspace;
   }
 
   if (Boolean(config.token)) {

@@ -270,14 +270,14 @@ const Index = ({
                     {hasRestaurant && <>
                         <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
-                                    secondbutton={!Boolean(vouchertotaldisplay)}
+
                                     onPress={() => generateKOT()}
                                     more={{backgroundColor: styles.yellow.color, }}
                             > KOT </Button>
                         </View>
                         <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
-                                    secondbutton={!Boolean(vouchertotaldisplay)}
+
                                     more={{backgroundColor: styles.yellow.color,  }}
                             > Print </Button>
                         </View>

@@ -44,7 +44,6 @@ const Index = (props:any) => {
 
                 <View style={[styles.flexGrow]}>
                     <SearchBox handleSearch={handleSearch} autoFocus={false} placeholder="Search Item" />
-
                 </View>
 
             </View>

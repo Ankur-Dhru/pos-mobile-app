@@ -1,5 +1,5 @@
 import React from "react";
-import {View} from "react-native";
+import {TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
 import Items from "../Items/ItemList";
 import {useDispatch} from "react-redux";
@@ -17,12 +17,16 @@ import {setSelectedData} from "../../redux-store/reducer/selected-data";
 import SearchItem from "../Items/SearchItem";
 import GroupHeading from "../Items/GroupHeading";
 import ClientDetail from "../Client/ClientDetail";
+import {useNavigation} from "@react-navigation/native";
+import {saveTempLocalOrder} from "../../libs/function";
 
 
 const Index = (props: any) => {
 
 
     const {itemgroup} = localredux.initData
+    const {tabledetails} = props;
+    const navigation = useNavigation()
 
     const dispatch = useDispatch()
 
@@ -36,11 +40,21 @@ const Index = (props: any) => {
 
         <View style={[styles.h_100, styles.flex, styles.p_4]}>
         <View style={[styles.grid,styles.justifyContent]}>
-            <View>
-                <Paragraph>Table 1</Paragraph>
+            <TouchableOpacity onPress={()=> {
+                saveTempLocalOrder().then(() => {})
+                navigation.goBack()
+            }}>
+                <View  style={[styles.grid,styles.middle,styles.bg_white,{width:145,padding:12,borderRadius:5}]}>
+                    <Paragraph><ProIcon name={'chevron-left'} action_type={'text'} /></Paragraph>
+                    <Paragraph style={[styles.paragraph,styles.bold]}>  {tabledetails?.tablename || 'Retail'}</Paragraph>
+                </View>
+            </TouchableOpacity>
+            <View style={[styles.flexGrow,{paddingLeft:5,paddingRight:5}]}>
+                <SearchItem/>
             </View>
-            <SearchItem/>
-            <ClientDetail/>
+            <View style={{width:385}}>
+                <ClientDetail/>
+            </View>
         </View>
 
         {

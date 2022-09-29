@@ -22,6 +22,7 @@ const Index = ({tabledetails}: any) => {
         dispatch(setSelectedData({group:mainproductgroupid}))
     }, [])
 
+    return <Cart tabledetails={tabledetails}   />
 
     return <Container  config={{
         title: tabledetails?.tablename || 'Retail',

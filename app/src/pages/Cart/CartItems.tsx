@@ -92,7 +92,7 @@ const Index = (props: any) => {
                 </Card> : <Card>
                     <Card.Content>
                         <View style={{marginTop:50}}><Paragraph style={[styles.paragraph,{textAlign:'center'}]}>No any item(s) added</Paragraph></View>
-                        <View><Paragraph  style={[styles.paragraph,{textAlign:'center'}]}><ProIcon name={'utensils'} size={100}/></Paragraph></View>
+                        <View  style={{marginTop:20}}><Paragraph  style={[styles.paragraph,{textAlign:'center'}]}><ProIcon name={'utensils'} size={25}/></Paragraph></View>
                     </Card.Content>
                 </Card> }
             </ScrollView>

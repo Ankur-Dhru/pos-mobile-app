@@ -32,7 +32,7 @@ const Index = ({cartData}: any) => {
         setClient({label: cartData?.clientname, value: cartData?.clientid})
     }, [])
 
-    return <Card style={[styles.mb_3]}>
+    return <Card>
 
         <View style={[styles.px_5]}>
             <InputField

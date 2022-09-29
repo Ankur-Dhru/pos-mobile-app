@@ -19,10 +19,12 @@ const Index = ({product,edit,setproductTags,setproductNotes}: any) => {
     let [temptags,setTempTags]:any = useState([]);
 
     useEffect(()=>{
-        const filtertags:any = Object.values(inittags).filter((inittag:any)=>{
-            return tags?.includes(inittag.taggroupid)
-        })
-        setTempTags(clone(filtertags));
+        if(Boolean(inittags)) {
+            const filtertags: any = Object.values(inittags).filter((inittag: any) => {
+                return tags?.includes(inittag.taggroupid)
+            })
+            setTempTags(clone(filtertags));
+        }
     },[])
 
     useEffect(()=>{

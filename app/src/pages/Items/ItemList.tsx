@@ -55,7 +55,7 @@ const Index = (props: any) => {
                 <FlatList
                     data={items}
                     renderItem={renderitemssquare}
-                    numColumns={2}
+                    numColumns={1}
                     /*onEndReached={getMore}
                     onEndReachedThreshold={0}*/
                     keyExtractor={item => item.itemid}

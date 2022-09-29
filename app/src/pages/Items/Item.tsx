@@ -116,7 +116,7 @@ const Index = (props: any) => {
     if (device.tablet && !search) {
         return (
             <TouchableOpacity  onPress={() =>   selectItem(product)}>
-                <Card   style={[styles.p_4,   styles.relative,styles.border, ]}>
+                <Card   style={[styles.p_4,   styles.relative,styles.border,{height:150} ]}>
 
                     <View style={[styles.grid,styles.noWrap]}>
                         <View>

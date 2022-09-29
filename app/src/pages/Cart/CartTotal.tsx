@@ -16,11 +16,11 @@ const Index = ({cartData,  theme: {colors}}: any) => {
 
     useEffect(() => {
 
-        /*if (cartData?.updatecart) {
+        if (cartData?.updatecart) {
            let data = itemTotalCalculation(cartData, undefined, undefined, undefined, undefined, 2, 2, false, false);
             dispatch(setCartData(data));
             dispatch(setUpdateCart());
-        }*/
+        }
     }, [cartData?.updatecart]);
 
 

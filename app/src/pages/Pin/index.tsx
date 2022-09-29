@@ -14,6 +14,8 @@ import moment from "moment/moment";
 import {setTableOrdersData} from "../../redux-store/reducer/table-orders-data";
 import {localredux} from "../../libs/static";
 import {appLog, groupBy} from "../../libs/function";
+import store from "../../redux-store/store";
+import {setOrder, setOrdersData} from "../../redux-store/reducer/orders-data";
 
 const md5 = require('md5');
 
@@ -41,7 +43,8 @@ const Index = (props: any) => {
                                 localSettingsData,
                                 clientsData,
                                 addonsData,
-                                itemsData
+                                itemsData,
+                                orders
                             } = data || {};
 
                             if (Boolean(data) && Boolean(licenseData)) {
@@ -57,6 +60,7 @@ const Index = (props: any) => {
                                     localredux.itemsData = itemsData;
                                     localredux.groupItemsData = groupBy(Object.values(itemsData), 'itemgroupid');
 
+                                    await dispatch(setOrdersData(orders));
                                     /*await dispatch(setLicenseData(licenseData));
                                     await dispatch(setItemsData(items));
                                     await dispatch(setAddonsData(addons));

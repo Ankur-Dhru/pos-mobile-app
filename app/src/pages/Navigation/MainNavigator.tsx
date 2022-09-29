@@ -18,6 +18,7 @@ import DetailView from "../Cart/DetailView";
 import Payment from "../Cart/Payment";
 import Preview from "../Cart/Preview";
 import SearchItem from "../Items/SearchItem";
+import Report from "../Report";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -108,6 +109,15 @@ const CartStackNavigator = (props:any) => {
 };
 
 
+const SalesReportNavigator = (props:any) => {
+    const {route: {params}}:any = props
+    return (
+        <Stack.Navigator initialRouteName={'Report'} >
+            <Stack.Screen name={'Report'} component={Report}  options={{headerShown: false}}/>
+        </Stack.Navigator>
+    );
+};
+
 const DrawerStackNavigator = () => {
 
     const {firstname, lastname}: any = localredux.authData;
@@ -130,7 +140,10 @@ const DrawerStackNavigator = () => {
                 headerShown: false,
                 title: route?.params?.tablename || 'POS'
             })}/>
-
+            <Drawer.Screen name={'SalesReportNavigator'} component={SalesReportNavigator} options={({route}: any) => ({
+                headerShown: false,
+                title: route?.params?.tablename || 'POS'
+            })}/>
         </Drawer.Navigator>
     );
 };

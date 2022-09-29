@@ -1,11 +1,14 @@
 import React from "react";
-import {syncData} from "../../libs/function";
+import {appLog, isEmpty, retrieveData, storeData, syncData} from "../../libs/function";
 import {Dimensions, ScrollView, View} from "react-native";
 import {Card, List, Text} from "react-native-paper";
 import {styles} from "../../theme";
 import Avatar from "../../components/Avatar";
 import {useNavigation} from "@react-navigation/native";
-import {localredux} from "../../libs/static";
+import {ACTIONS, localredux, METHOD, posUrl, STATUS} from "../../libs/static";
+import apiService from "../../libs/api-service";
+
+
 
 
 const Index = () => {
@@ -43,7 +46,17 @@ const Index = () => {
         <Card style={[styles.card, {height: windowHeight - 300}]}>
             <Card.Content style={[styles.cardContent, {paddingHorizontal: 0}]}>
                 <ScrollView keyboardShouldPersistTaps='handled'>
+                    <List.Item
+                        style={[styles.listitem]}
+                        titleStyle={{marginLeft: 0, paddingLeft: 0}}
+                        title={'Sales Report'}
+                        onPress={() => {
+                            navigation.navigate("SalesReportNavigator");
 
+
+
+                        }}
+                    />
                 </ScrollView>
             </Card.Content>
         </Card>

@@ -22,6 +22,7 @@ import {v4 as uuid} from "uuid";
 import KOTCancelReason from "../pages/Cart/KOTCancelReason";
 import SyncingInfo from "../pages/Pin/SyncingInfo";
 import {setSyncDetail} from "../redux-store/reducer/sync-data";
+import {setOrder} from "../redux-store/reducer/orders-data";
 
 let base64 = require('base-64');
 let utf8 = require('utf8');
@@ -232,7 +233,7 @@ export const getDateWithFormat = (date?: string, dateFormat?: string) => {
 
 export const dateFormat = (date?: string, withTime?: boolean, standardformat?: boolean) => {
   let {initData: {general: {data}}}: any = localredux;
-  let dateFormat = data.dateformat;
+  let dateFormat = data?.dateformat;
   if (standardformat) {
     dateFormat = "YYYY-MM-DD"
   }
@@ -258,7 +259,7 @@ export const getVoucherKey = (findKey: any, findValue: any) => {
 
 export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = true, isTaxInvoice: boolean = false) => {
 
-  let {initData, licenseData, staffData, localSettingsData}: any = localredux;
+  let {initData, licenseData, staffData, localSettingsData, loginuserData}: any = localredux;
 
   let payment: any = []
 
@@ -302,8 +303,9 @@ export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = t
     time: moment(utcDate).unix(),
     currency: currencyData.__key,
     currentDecimalPlace: currencyData?.decimalplace || 2,
-    locationid: licenseData?.location_id,
-    staffid: parseInt(staffData?.adminid),
+    locationid: licenseData?.data?.location_id,
+    terminalid: localredux?.licenseData?.data?.terminal_id,
+    staffid: parseInt(loginuserData?.adminid),
     vouchercurrencyrate: currencyData.rate,
     vouchertaxtype: voucherTypeData?.defaulttaxtype || Object.keys(taxTypes)[0],
     roundoffselected: voucherTypeData?.voucherroundoff,
@@ -459,7 +461,7 @@ export const syncData = async () => {
       action: ACTIONS.SYNC_DATA,
       queryString,
       workspace:initData.workspace,
-      token: authData?.token,
+      token: licenseData?.token,
       hideLoader:true,
       other: {url: posUrl},
     }).then(async (response: any) => {
@@ -703,6 +705,11 @@ export const saveTempLocalOrder = async (order?:any) => {
       }
     }
 
+    order = {
+      ...order,
+      terminalid: localredux?.licenseData?.data?.terminal_id
+    }
+
     let tableorders: any = store.getState().tableOrdersData || {}
     tableorders = {
       ...tableorders,
@@ -739,6 +746,7 @@ export const saveLocalOrder = async (order?:any) => {
     order = {
       ...order,
       orderid:uuid(),
+
     }
   }
   if(!Boolean(order.tableorderid)){
@@ -756,6 +764,7 @@ export const saveLocalOrder = async (order?:any) => {
 
      await deleteTempLocalOrder(order.tableorderid).then(async ()=>{
       await storeData('fusion-pro-pos-mobile',data).then(async ()=>{
+        await store.dispatch(setOrder(order))
         await store.dispatch(resetCart())
       });
     })
@@ -825,6 +834,14 @@ export const getCurrencySign = () => {
   return getSymbolFromCurrency(defaultcurrency) + ' ';
 }
 
+
+export const syncInvoice = ()=>{
+
+  retrieveData('fusion-pro-pos-mobile').then(async (data:any)=>{
+
+    appLog("invoice data", data);
+  })
+}
 
 
 

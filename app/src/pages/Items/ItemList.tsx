@@ -1,6 +1,6 @@
 import React, {memo, useEffect,  useState} from "react";
 
-import {FlatList, View,Text} from "react-native";
+import {FlatList, View,Text, Dimensions} from "react-native";
 
 import {connect} from "react-redux";
 
@@ -8,23 +8,40 @@ import Item from "./Item";
 import {device, localredux} from "../../libs/static";
 import {styles} from "../../theme";
 import {appLog, filterArray} from "../../libs/function";
-import ActivityIndicator from "../../components/ActivityIndicator";
+
+const {height, width} = Dimensions.get('window');
+const dim = Dimensions.get('screen');
+
+
+const useScreenDimensions = () => {
+    const [screenData, setScreenData] = useState(Dimensions.get('screen'));
+    useEffect(() => {
+        const onChange = (result:any) => {
+            setScreenData(result.screen);
+        };
+        Dimensions.addEventListener('change', onChange);
+        return () => Dimensions.removeEventListener('change', onChange);
+    });
+    return {
+        ...screenData,
+        isLandscape: screenData.width > screenData.height,
+    };
+};
+
 
 const Index = (props: any) => {
 
+    //const screenData = useScreenDimensions();
 
     const {selectedgroup} = props;
 
-    const {groupItemsData,itemsData}:any = localredux
+    const {groupItemsData}:any = localredux
 
     const [items,setItems] = useState(groupItemsData[selectedgroup]);
 
 
     useEffect(() => {
         let finditems = groupItemsData[selectedgroup];
-        /*if (Boolean(search)) {
-            finditems = filterArray(Object.values(itemsData), ['itemname', 'uniqueproductcode'], search,false)
-        }*/
         setItems(finditems);
     }, [selectedgroup])
 
@@ -37,9 +54,9 @@ const Index = (props: any) => {
 
     const renderitemssquare = (i: any) => {
         return (
-            <View style={[styles.flexGrow, {width: 100}]}>
-                <Item   item={i.item}  index={i.index}   />
-            </View>
+
+                <Item   item={i.item}  index={i.index}  key={i.item.key || i.item.productid}  />
+
         );
     };
 
@@ -55,7 +72,7 @@ const Index = (props: any) => {
                 <FlatList
                     data={items}
                     renderItem={renderitemssquare}
-                    numColumns={1}
+                    numColumns={3}
                     /*onEndReached={getMore}
                     onEndReachedThreshold={0}*/
                     keyExtractor={item => item.itemid}

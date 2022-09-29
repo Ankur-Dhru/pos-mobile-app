@@ -91,7 +91,7 @@ export const styles: any = StyleSheet.create({
     p_0: {padding: hp('0%')},
     p_1: {padding: hp('0.1%')},
     p_2: {padding: hp('0.2%')},
-    p_3: {padding: hp('0.3%')},
+    p_3: {padding: hp('0.5%')},
     p_4: {padding: hp('1%')},
 
     p_5: {padding: hp('1.5%')},
@@ -206,13 +206,13 @@ export const styles: any = StyleSheet.create({
 
     badge: {backgroundColor: '#126AFB', borderRadius: 4, padding: 5, color: 'white', textTransform: "capitalize"}, //E6EFFE
     busy: {backgroundColor: '#880311'},
-    Paid: {backgroundColor: '#29A745'},
+    Paid: {backgroundColor: '#28a745'},
     Unpaid: {backgroundColor: '#880311'},
     Inactive: {backgroundColor: '#880311'},
     Waiting: {backgroundColor: '#00358f'},
-    Approved: {backgroundColor: '#29A745'},
+    Approved: {backgroundColor: '#28a745'},
     Open: {backgroundColor: '#00358f'},
-    Delivered: {backgroundColor: '#29A745'},
+    Delivered: {backgroundColor: '#28a745'},
     'Partial Paid':{backgroundColor: '#126AFB'},
 
     badgehighest: {backgroundColor: '#FD573A'},
@@ -237,7 +237,7 @@ export const styles: any = StyleSheet.create({
         fontSize: fontSize,
     },
     borderLeftWide: {
-        borderLeftColor: '#29a745',
+        borderLeftColor: '#28a745',
         borderLeftWidth: 3,
     },
     borderRightWide: {
@@ -397,14 +397,14 @@ export const styles: any = StyleSheet.create({
     },
     italic: {fontStyle: 'italic'},
     red: {color: '#980202'},
-    green: {color: '#29A745'},
-    yellow: {color: '#a77d29'},
-    primary: {color: '#222A55'},
-    secondary:{color:'#E6EFFE'},
+    green: {color: '#28a745'},
+    yellow: {color: '#fbb360'},
+    primary: {color: '#238551'},
+    secondary:{color:'#c4dcff'},
 
-    veg: {color: '#980202'},
-    nonveg: {color: '#29A745'},
-    vegan: {color: '#a77d29'},
+    veg: {color: '#28a745'},
+    nonveg: {color: '#980202'},
+    vegan: {color: '#fbb360'},
 
     orange: {color: 'orange'},
     light: {color: '#A7AEB7'},
@@ -436,7 +436,7 @@ export const styles: any = StyleSheet.create({
     radiusTop: {borderTopLeftRadius: 5, borderTopRightRadius: 5},
     borderRadius_0: {borderTopLeftRadius: 0, borderTopRightRadius: 0},
 
-    selected: {backgroundColor: '#a77d29'},
+    selected: {backgroundColor: '#ffc107'},
 
     card: {
         elevation: 0,
@@ -466,11 +466,11 @@ export const styles: any = StyleSheet.create({
 
     bg_light: {backgroundColor: '#F2F2F2'},
     bg_dark: {backgroundColor: '#000000'},
-    bg_green: {backgroundColor: '#29A745'},
-    bg_red: {backgroundColor: '#a72929'},
+    bg_green: {backgroundColor: '#238551'},
+    bg_red: {backgroundColor: '#cd4246'},
     bg_light_red: {backgroundColor: '#FFC5C5'},
-    bg_light_blue: {backgroundColor: '#609AFDFF'},
-    bg_yellow: {backgroundColor: '#a77d29'},
+    bg_light_blue: {backgroundColor: '#c4dcff'},
+    bg_yellow: {backgroundColor: '#fbb360'},
     bg_white: {backgroundColor: '#ffffff'},
 
     buttonContent: {},

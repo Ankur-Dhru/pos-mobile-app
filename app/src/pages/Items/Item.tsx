@@ -115,27 +115,18 @@ const Index = (props: any) => {
 
     if (device.tablet && !search) {
         return (
-            <TouchableOpacity  onPress={() =>   selectItem(product)}>
-                <Card   style={[styles.p_4,   styles.relative,styles.border,{height:150} ]}>
 
-                    <View style={[styles.grid,styles.noWrap]}>
-                        <View>
-                            <Paragraph style={[ styles.paragraph]}>{product.itemname}</Paragraph>
-                        </View>
-                    </View>
+            <TouchableOpacity  onPress={() =>   selectItem(product)}  style={[ styles.flexGrow,{width:110,padding:10,marginRight:10,marginBottom:10,backgroundColor:'white',borderRadius:5} ]}>
+                <Paragraph style={[ styles.paragraph,styles.bold,styles.text_xs,{textAlign:'center'}]}>{product.itemname}</Paragraph>
 
-                    <View style={[styles.grid,styles.justifyContent]}>
-                        {hasRestaurant &&  <View>
-                        <Text>
-                            <ProIcon name={'square-o'} align={'left'}
-                                     color={veg === 'veg' ? styles.veg.color : veg === 'nonveg' ? styles.nonveg.color : styles.vegan.color}
-                                     size={15} action_type={'text'}/>
-                        </Text>
-                    </View>}
-                        <Paragraph style={[styles.paragraph,styles.text_xs, styles.mt_2]}> {toCurrency(baseprice)}</Paragraph>
-                    </View>
+                {hasRestaurant &&  <View style={[styles.absolute,{top:3,right:3}]}>
+                    <Text>
+                        <ProIcon name={'square-o'} align={'left'}
+                                 color={veg === 'veg' ? styles.veg.color : veg === 'nonveg' ? styles.nonveg.color : styles.vegan.color}
+                                 size={15} action_type={'text'}/>
+                    </Text>
+                </View>}
 
-                </Card>
             </TouchableOpacity>
         )
     }

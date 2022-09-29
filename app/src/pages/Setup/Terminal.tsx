@@ -64,7 +64,7 @@ const Terminal = (props: any) => {
                     theme,
                     itemsData: {},
                     addonsData: {},
-                    ordersData: {},
+                    orders: {},
                     clientsData: {}
                 }).then(async () => {
                     await syncData();

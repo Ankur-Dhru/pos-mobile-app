@@ -37,7 +37,6 @@ const Index = (props: any) => {
 
     const haskot = Boolean(product.kotid);
 
-    console.log('cart item render',index)
 
 
     return (
@@ -59,7 +58,7 @@ const Index = (props: any) => {
 
                             <View style={[styles.grid,]}>
 
-                                <View style={[styles.cell, {marginTop: 4}]}>
+                                <View style={[styles.cell, {marginTop: 3}]}>
                                     <Text>{index + 1}</Text>
                                 </View>
 
@@ -67,7 +66,7 @@ const Index = (props: any) => {
 
 
                                     <Paragraph
-                                        style={[styles.paragraph, styles.text_sm, styles.bold, styles.ellipse]}
+                                        style={[styles.paragraph, styles.text_xs, styles.bold, styles.ellipse]}
                                         numberOfLines={1}>{product.itemname || product.productdisplayname}</Paragraph>
 
 
@@ -144,6 +143,77 @@ const Index = (props: any) => {
 
                                     </>}
 
+                                    <View>
+
+                                        <View style={[styles.grid, styles.justifyContentSpaceBetween]}>
+                                            <View>
+                                                <View style={[styles.grid]}>
+                                                    <Paragraph style={[styles.paragraph, styles.text_xs]}>
+                                                        {product.productqnt} {unit[product.productqntunitid] && unit[product.productqntunitid].unitcode} x
+                                                    </Paragraph>
+
+                                                    <Paragraph
+                                                        style={[styles.paragraph, styles.text_xs, {paddingLeft: 5}]}>{toCurrency(product.productratedisplay || '0')} each</Paragraph>
+
+
+                                                    {/*{!isRestaurant && <Paragraph style={[styles.paragraph, styles.text_xs, styles.textRight]}>
+                                                ({tax[product.producttaxgroupid]?.taxgroupname})
+                                            </Paragraph>
+                                            }*/}
+                                                </View>
+                                            </View>
+
+                                            <View style={[styles.ml_auto]}>
+                                                <Paragraph
+                                                    style={[styles.paragraph, styles.text_xs, styles.textRight, Boolean(product.productdiscountvalue !== '0' && product.productdiscountvalue) && {
+                                                        textDecorationLine: 'line-through',
+                                                        color: styles.red.color
+                                                    }]}>
+                                                    {toCurrency(product.item_total_amount_display || '0')}
+                                                </Paragraph>
+                                            </View>
+                                        </View>
+
+
+                                        <View>
+                                            {
+                                                product?.itemaddon?.map((addon: any, index: any) => {
+
+                                                    return (
+                                                        <View key={index}>
+                                                            <View style={[styles.grid, styles.justifyContentSpaceBetween]}>
+                                                                <View style={[styles.grid]}>
+                                                                    <Paragraph style={[styles.paragraph, styles.text_xs]}>
+                                                                        {addon.productqnt} {unit[addon.productqntunitid] && unit[addon.productqntunitid].unitcode} {addon.itemname} x
+                                                                    </Paragraph>
+
+                                                                    <Paragraph
+                                                                        style={[styles.paragraph, styles.text_xs, {paddingLeft: 5}]}>{toCurrency(addon.productratedisplay || '0')} each</Paragraph>
+
+                                                                </View>
+
+                                                                <View style={[styles.ml_auto]}>
+                                                                    <Paragraph
+                                                                        style={[styles.paragraph, styles.text_xs, styles.textRight, Boolean(product.productdiscountvalue !== '0' && product.productdiscountvalue) && {
+                                                                            textDecorationLine: 'line-through',
+                                                                            color: styles.red.color
+                                                                        }]}>
+                                                                        {toCurrency('0')}
+                                                                    </Paragraph>
+                                                                </View>
+
+                                                            </View>
+
+
+                                                        </View>
+
+                                                    )
+                                                })
+                                            }
+                                        </View>
+
+                                    </View>
+
                                 </View>
                                 <View style={[{paddingRight: 0}]}>
 
@@ -152,76 +222,7 @@ const Index = (props: any) => {
                                 </View>
                             </View>
 
-                            <View style={{marginLeft: 18}}>
 
-                                <View style={[styles.grid, styles.justifyContentSpaceBetween]}>
-                                    <View>
-                                        <View style={[styles.grid]}>
-                                            <Paragraph style={[styles.paragraph, styles.text_xs]}>
-                                                {product.productqnt} {unit[product.productqntunitid] && unit[product.productqntunitid].unitcode} x
-                                            </Paragraph>
-
-                                            <Paragraph
-                                                style={[styles.paragraph, styles.text_xs, {paddingLeft: 5}]}>{toCurrency(product.productratedisplay || '0')} each</Paragraph>
-
-
-                                            {/*{!isRestaurant && <Paragraph style={[styles.paragraph, styles.text_xs, styles.textRight]}>
-                                                ({tax[product.producttaxgroupid]?.taxgroupname})
-                                            </Paragraph>
-                                            }*/}
-                                        </View>
-                                    </View>
-
-                                    <View style={[styles.ml_auto]}>
-                                        <Paragraph
-                                            style={[styles.paragraph, styles.text_sm, styles.textRight, Boolean(product.productdiscountvalue !== '0' && product.productdiscountvalue) && {
-                                                textDecorationLine: 'line-through',
-                                                color: styles.red.color
-                                            }]}>
-                                            {toCurrency(product.item_total_amount_display || '0')}
-                                        </Paragraph>
-                                    </View>
-                                </View>
-
-
-                                <View>
-                                    {
-                                        product?.itemaddon?.map((addon: any, index: any) => {
-
-                                            return (
-                                                <View key={index}>
-                                                    <View style={[styles.grid, styles.justifyContentSpaceBetween]}>
-                                                        <View style={[styles.grid]}>
-                                                            <Paragraph style={[styles.paragraph, styles.text_xs]}>
-                                                                {addon.productqnt} {unit[addon.productqntunitid] && unit[addon.productqntunitid].unitcode} {addon.itemname} x
-                                                            </Paragraph>
-
-                                                            <Paragraph
-                                                                style={[styles.paragraph, styles.text_xs, {paddingLeft: 5}]}>{toCurrency(addon.productratedisplay || '0')} each</Paragraph>
-
-                                                        </View>
-
-                                                        <View style={[styles.ml_auto]}>
-                                                            <Paragraph
-                                                                style={[styles.paragraph, styles.text_sm, styles.textRight, Boolean(product.productdiscountvalue !== '0' && product.productdiscountvalue) && {
-                                                                    textDecorationLine: 'line-through',
-                                                                    color: styles.red.color
-                                                                }]}>
-                                                                {toCurrency('0')}
-                                                            </Paragraph>
-                                                        </View>
-
-                                                    </View>
-
-
-                                                </View>
-
-                                            )
-                                        })
-                                    }
-                                </View>
-
-                            </View>
 
 
                         </TouchableOpacity>

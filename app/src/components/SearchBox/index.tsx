@@ -1,7 +1,8 @@
 import * as React from 'react';
-import {useEffect} from 'react';
+import {useEffect, useRef} from 'react';
 import {Card, Searchbar, withTheme} from 'react-native-paper';
 import {Platform} from "react-native";
+import {appLog} from "../../libs/function";
 
 
 const Search = (props: any) => {
@@ -9,7 +10,7 @@ const Search = (props: any) => {
     const onChangeSearch = (query: any) => {
         setSearchQuery(query)
     };
-
+    let searchRf:any = useRef()
 
     useEffect(() => {
 
@@ -23,12 +24,23 @@ const Search = (props: any) => {
         }
     }, [searchQuery]);
 
+    useEffect(()=>{
+        if(props.autoFocus) {
+            setTimeout(() => {
+                searchRf?.focus()
+            }, 200)
+        }
+    },[])
+
 
     const {colors}: any = props.theme;
 
     return (
         <Card style={[{padding:5}]}>
             <Searchbar
+                ref={(ref)=> {
+                    searchRf = ref
+                }}
                 placeholder="Search"
                 onChangeText={onChangeSearch}
                 autoFocus={false}
@@ -37,7 +49,6 @@ const Search = (props: any) => {
                 onSubmitEditing={() => props.handleSearch(searchQuery.trim())}
                 style={[{elevation: 0, height: 40, borderRadius: 5, backgroundColor: 'white'}]}
                 inputStyle={{height: Platform.OS === 'ios' ? 40 : 43}}
-
                 {...props}
             />
         </Card>

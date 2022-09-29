@@ -1,5 +1,5 @@
 import React, {memo, useEffect} from "react";
-import {appLog, clone, toCurrency} from "../../libs/function";
+import { toCurrency} from "../../libs/function";
 import {TouchableOpacity, View} from "react-native";
 import {Card, Paragraph, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
@@ -15,14 +15,12 @@ const Index = ({cartData,  theme: {colors}}: any) => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-
         if (cartData?.updatecart) {
            let data = itemTotalCalculation(cartData, undefined, undefined, undefined, undefined, 2, 2, false, false);
             dispatch(setCartData(data));
             dispatch(setUpdateCart());
         }
     }, [cartData?.updatecart]);
-
 
 
 
@@ -39,7 +37,6 @@ const Index = ({cartData,  theme: {colors}}: any) => {
         return <></>
     }
 
-    appLog('cart total')
 
 
     return(

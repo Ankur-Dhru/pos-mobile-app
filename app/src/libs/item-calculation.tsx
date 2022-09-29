@@ -307,7 +307,6 @@ export const itemTotalCalculation = (
         if (Boolean(item?.change)) {
 
 
-          console.log('item.change',item.productid)
 
           if (vouchertaxtype === "inclusive" &&
             !isDiscountAfterTax) {

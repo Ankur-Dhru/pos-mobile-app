@@ -41,6 +41,8 @@ import {MainStackNavigator} from "./pages/Navigation/MainNavigator";
 import SnackBar from "./components/SnackBar";
 import {device} from "./libs/static";
 import Dialog from "./components/Dialog";
+import { appLog } from './libs/function';
+
 
 configureFontAwesomePro();
 
@@ -82,10 +84,10 @@ const App = () => {
             elevation: 2,
             screenbg: '#f4f4f4',
             surface: '#fff',
-            primary: '#222A55',
-            accent: '#222A55',
-            secondary: '#016EFE',
-            thirdary: '#FFC107',
+            primary: '#238551',
+            accent: '#2d71d2',
+            secondary: '#c4dcff',
+            thirdary: '#fbb360',
             forthary: '#6eabfd',
             divider: '#eee',
             filterbox: '#E6EFFE',
@@ -112,8 +114,8 @@ const App = () => {
             surface: '#121212',
             primary: '#eee',
             accent: '#fff',
-            secondary: '#016EFE',
-            thirdary: '#fdaa29',
+            secondary: '#c4dcff',
+            thirdary: '#fbb360',
             divider: '#464646',
             filterbox: '#000',
             loadersecondary: '#222',

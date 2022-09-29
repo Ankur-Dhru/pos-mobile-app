@@ -253,8 +253,6 @@ const Index = ({
         })
     }
 
-    appLog('render cart actions')
-
     return <View style={[styles.p_4,styles.bg_white]}>
 
         {<View>

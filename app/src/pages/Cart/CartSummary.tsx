@@ -65,10 +65,10 @@ const Index = ({cartData}: any) => {
 
 
 
-    return (<Card   onPress={()=>{setSummary(!summary)}}>
+    return (<Card   onPress={()=>{setSummary(!summary)}} style={[styles.mt_3]}>
         <Card.Content >
 
-            <View><Paragraph style={[styles.absolute,{top:3,left:'50%',marginLeft:-10}]}><ProIcon name={summary?'chevron-down':'chevron-up'} action_type={'text'} size={15}/></Paragraph></View>
+            <View><Paragraph style={[styles.absolute,{top:0,left:'50%',marginLeft:-10}]}><ProIcon name={summary?'chevron-down':'chevron-up'} action_type={'text'} size={15}/></Paragraph></View>
 
             <View style={{display:summary?'flex':'none'}}>
 

@@ -125,14 +125,14 @@ const Index = (props: any) => {
                         color: "#000",
                     }}
                     inputViewStyle={{
-                        marginBottom:50
+                        marginBottom:10
                     }}
 
 
                 />
                 </View>
 
-                <View style={{marginTop:80}}>
+                <View style={{marginTop:20}}>
                     <TouchableOpacity onPress={() => {syncData().then()}}><Text>Sync</Text></TouchableOpacity>
                 </View>
 

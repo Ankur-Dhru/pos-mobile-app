@@ -50,7 +50,7 @@ const Index = (props: any) => {
                                     <GroupList groups={groups}/>
                                 </Card>
                             </View>
-                            <View style={[styles.flexGrow, {marginLeft: 5,}]}>
+                            <View style={[styles.flexGrow, {marginLeft: 10,}]}>
                                 <Items/>
                             </View>
 
@@ -58,7 +58,7 @@ const Index = (props: any) => {
 
                     </View>
 
-                    <View style={[styles.flexGrow, {width: 200, marginLeft: 10}]}>
+                    <View style={[styles.flexGrow, {width: 200}]}>
                         <DetailView style={{padding: 0}}/>
                     </View>
 

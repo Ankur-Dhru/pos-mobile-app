@@ -17,7 +17,7 @@ const Index = (props: any) => {
     }
 
     return <TouchableOpacity onPress={() => selectGroup(item)}
-                             style={[selected ? styles.bg_light_blue : '', {borderRadius: 5}]}>
+                             style={[selected ? styles.bg_accent : '', {borderRadius: 5}]}>
         <List.Item
             title={item.label}
             titleNumberOfLines={3}

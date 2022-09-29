@@ -399,7 +399,8 @@ export const styles: any = StyleSheet.create({
     red: {color: '#980202'},
     green: {color: '#28a745'},
     yellow: {color: '#fbb360'},
-    primary: {color: '#238551'},
+    primary: {color: '#222A55'},
+    accent: {color: '#2d71d2'},
     secondary:{color:'#c4dcff'},
 
     veg: {color: '#28a745'},
@@ -472,6 +473,7 @@ export const styles: any = StyleSheet.create({
     bg_light_blue: {backgroundColor: '#c4dcff'},
     bg_yellow: {backgroundColor: '#fbb360'},
     bg_white: {backgroundColor: '#ffffff'},
+    bg_accent:{backgroundColor: '#2d71d2'},
 
     buttonContent: {},
     button_lg: {height: 100},

@@ -16,6 +16,7 @@ import {ProIcon} from "../../components";
 import {setSelectedData} from "../../redux-store/reducer/selected-data";
 import SearchItem from "../Items/SearchItem";
 import GroupHeading from "../Items/GroupHeading";
+import ClientDetail from "../Client/ClientDetail";
 
 
 const Index = (props: any) => {
@@ -33,10 +34,21 @@ const Index = (props: any) => {
 
     return <>
 
+        <View style={[styles.h_100, styles.flex, styles.p_4]}>
+        <View style={[styles.grid,styles.justifyContent]}>
+            <View>
+                <Paragraph>Table 1</Paragraph>
+            </View>
+            <SearchItem/>
+            <ClientDetail/>
+        </View>
+
         {
             device.tablet ? <>
                 <View
-                    style={[styles.grid, styles.justifyContent, styles.noWrap, styles.h_100, styles.flex, styles.p_4]}>
+                    style={[styles.grid, styles.justifyContent, styles.noWrap, styles.h_100, styles.flex, styles.py_4]}>
+
+
                     <View style={[styles.flex, styles.column, styles.h_100, {minWidth: '40%'}]}>
 
 
@@ -50,9 +62,9 @@ const Index = (props: any) => {
                                     <GroupList groups={groups}/>
                                 </Card>
                             </View>
-                            <View style={[styles.flexGrow, {marginLeft: 10,}]}>
+                            <Card style={[styles.flexGrow, {marginLeft: 5,marginRight:5}]}>
                                 <Items/>
-                            </View>
+                            </Card>
 
                         </View>
 
@@ -121,6 +133,8 @@ const Index = (props: any) => {
                 </View>
             </>
         }
+
+        </View>
 
     </>
 }

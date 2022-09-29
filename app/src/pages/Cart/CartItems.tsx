@@ -7,11 +7,12 @@ import {connect} from "react-redux";
 import Item from "../Cart/Item";
 import Kot from "../Cart/Kot";
 import {styles} from "../../theme";
-import {Card, Text} from "react-native-paper";
+import {Card, Paragraph, Text} from "react-native-paper";
 import CartSummary from "./CartSummary";
 import Button from "../../components/Button";
 import {appLog, isRestaurant} from "../../libs/function";
 import {device} from "../../libs/static";
+import ProIcon from "../../components/ProIcon";
 
 const Index = (props: any) => {
 
@@ -62,15 +63,15 @@ const Index = (props: any) => {
     return (
         <>
             {Boolean(kots.length > 0) &&  <View>
-                <View style={[styles.grid,styles.justifyContent]}>
+                <View style={[styles.grid,styles.justifyContent,styles.mb_2]}>
 
-                    <Button style={[styles.m_2,styles.w_auto]} compact={true} onPress={() => {setDisplayKOT(false)}} secondbutton={displayKOT} >Items</Button>
-                    <Button style={[styles.m_2,styles.w_auto]} compact={true}  onPress={() => {setDisplayKOT(true)}} secondbutton={!displayKOT}>KOTs</Button>
+                    <Button style={[styles.w_auto]} compact={true}  onPress={() => {setDisplayKOT(false)}} secondbutton={displayKOT} ><Text style={{color:'black'}}>Items</Text></Button>
+                    <Button style={[styles.ml_2,styles.w_auto]} compact={true}  onPress={() => {setDisplayKOT(true)}} secondbutton={!displayKOT}><Text style={{color:'black'}}>KOTs</Text></Button>
                 </View>
             </View>}
 
-            <ScrollView ref={scrollRef}>
-                {(Boolean(invoiceitems.length > 0) || Boolean(kots.length > 0)) &&  <Card style={[Boolean(itemid) && styles.card,!device.tablet && styles.noshadow]}>
+            <ScrollView ref={scrollRef} style={[styles.bg_white,{borderRadius:5}]}>
+                {(Boolean(invoiceitems.length > 0) || Boolean(kots.length > 0)) ? <Card style={[Boolean(itemid) && styles.card,!device.tablet && styles.noshadow]}>
                     {<View>
                         {displayKOT ? <>
                             {
@@ -88,7 +89,12 @@ const Index = (props: any) => {
                             }
                         </>}
                     </View>}
-                </Card>}
+                </Card> : <Card>
+                    <Card.Content>
+                        <View style={{marginTop:50}}><Paragraph style={[styles.paragraph,{textAlign:'center'}]}>No any item(s) added</Paragraph></View>
+                        <View><Paragraph  style={[styles.paragraph,{textAlign:'center'}]}><ProIcon name={'utensils'} size={100}/></Paragraph></View>
+                    </Card.Content>
+                </Card> }
             </ScrollView>
 
             {!Boolean(itemid) && <CartSummary/>}

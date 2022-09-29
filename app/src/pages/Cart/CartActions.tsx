@@ -263,7 +263,7 @@ const Index = ({
                         <Button disable={!Boolean(vouchertotaldisplay)}
                                 secondbutton={!Boolean(vouchertotaldisplay)}
                                 onPress={() => cancelOrder()}
-                                more={{backgroundColor: '#ccc', color: 'white'}}
+                                more={{backgroundColor: styles.red.color, color: 'white'}}
                         > Cancel </Button>
                     </View>
 
@@ -272,13 +272,13 @@ const Index = ({
                             <Button disable={!Boolean(vouchertotaldisplay)}
                                     secondbutton={!Boolean(vouchertotaldisplay)}
                                     onPress={() => generateKOT()}
-                                    more={{backgroundColor: colors.thirdary, color: 'white'}}
+                                    more={{backgroundColor: styles.yellow.color, }}
                             > KOT </Button>
                         </View>
                         <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
                                     secondbutton={!Boolean(vouchertotaldisplay)}
-                                    more={{backgroundColor: colors.secondary, color: 'white'}}
+                                    more={{backgroundColor: styles.yellow.color,  }}
                             > Print </Button>
                         </View>
                     </>}
@@ -290,7 +290,7 @@ const Index = ({
                             dispatch(resetCart())
                             navigation.replace('DrawerStackNavigator');
                         })}
-                                more={{backgroundColor: colors.secondary, color: 'white'}}
+                                more={{backgroundColor: styles.yellow.color,  }}
                         > Save </Button>
                     </View>}
                     {(!hasRestaurant) && <>
@@ -304,7 +304,7 @@ const Index = ({
                                             component: () => <HoldOrders/>
                                         }))
                                     }}
-                                    more={{backgroundColor: colors.secondary, color: 'white'}}
+                                    more={{backgroundColor: styles.yellow.color,  }}
                             > Recall </Button>
                         </View>}
                         <View style={[styles.w_auto, styles.ml_1]}>
@@ -316,7 +316,7 @@ const Index = ({
                                             navigation.goBack()
                                         }
                                     })}
-                                    more={{backgroundColor: colors.secondary, color: 'white'}}
+                                    more={{backgroundColor: styles.yellow.color,  }}
                             > On Hold </Button>
                         </View></>}
                     <View style={[styles.w_auto, styles.ml_1]}>
@@ -326,7 +326,7 @@ const Index = ({
                             onPress={() => saveTempLocalOrder(cartData).then(() => {
                                 navigation.navigate('Payment');
                             })}
-                            more={{backgroundColor: colors.primary, color: 'white'}}
+                            more={{backgroundColor: styles.green.color, color: 'white'}}
                         > Bill
                         </Button>
                     </View>

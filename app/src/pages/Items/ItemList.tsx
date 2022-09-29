@@ -8,6 +8,7 @@ import Item from "./Item";
 import {device, localredux} from "../../libs/static";
 import {styles} from "../../theme";
 import {appLog, filterArray} from "../../libs/function";
+import {Paragraph} from "react-native-paper";
 
 const {height, width} = Dimensions.get('window');
 const dim = Dimensions.get('screen');
@@ -75,6 +76,9 @@ const Index = (props: any) => {
                     numColumns={3}
                     /*onEndReached={getMore}
                     onEndReachedThreshold={0}*/
+                    ListEmptyComponent={()=>{
+                        return (<View style={[]}><Paragraph style={[styles.paragraph,styles.p_6,styles.muted,{textAlign:'center'}]}>No any Items</Paragraph></View>)
+                    }}
                     keyExtractor={item => item.itemid}
                 />
                 :
@@ -85,6 +89,9 @@ const Index = (props: any) => {
                     maxToRenderPerBatch={10}*/
                     ListFooterComponent={() => {
                         return <View style={{height: 100}}></View>
+                    }}
+                    ListEmptyComponent={()=>{
+                        return (<View style={[]}><Paragraph style={[styles.paragraph,styles.p_6,styles.muted,{textAlign:'center'}]}>No any Items</Paragraph></View>)
                     }}
                 />
             }

@@ -49,7 +49,7 @@ const Index = (props: any) => {
         }]}>
 
             <View>
-                <View style={[styles.px_5, styles.py_4,(hasLast && !haskot) && {backgroundColor:colors.forthary,borderRadius:5,marginBottom:5}]}>
+                <View style={[styles.px_5, styles.py_4,(hasLast && !haskot) && {backgroundColor:'#c4dcff',borderRadius:5,marginBottom:5}]}>
                     <View>
 
                         <TouchableOpacity onPress={async () => {

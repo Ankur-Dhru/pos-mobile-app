@@ -14,7 +14,7 @@ const Index = (props: any) => {
     appLog('cart detail view')
 
     return <Container config={{title: 'Cart Detail'}} hideappbar={device.tablet} {...props}  >
-        <ClientDetail/>
+
         <CartItems/>
         {!device.tablet && <CartActions/>}
     </Container>

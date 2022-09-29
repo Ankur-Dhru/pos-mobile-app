@@ -84,7 +84,7 @@ const App = () => {
             elevation: 2,
             screenbg: '#f4f4f4',
             surface: '#fff',
-            primary: '#238551',
+            primary: '#222A55',
             accent: '#2d71d2',
             secondary: '#c4dcff',
             thirdary: '#fbb360',

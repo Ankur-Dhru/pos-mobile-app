@@ -116,7 +116,7 @@ const Index = (props: any) => {
     if (device.tablet && !search) {
         return (
 
-            <TouchableOpacity  onPress={() =>   selectItem(product)}  style={[ styles.flexGrow,{width:110,padding:10,marginRight:10,marginBottom:10,backgroundColor:'white',borderRadius:5} ]}>
+            <TouchableOpacity  onPress={() =>   selectItem(product)}  style={[ styles.flexGrow,{width:110,padding:10,margin:5,backgroundColor:'#c4dcff',borderRadius:5} ]}>
                 <Paragraph style={[ styles.paragraph,styles.bold,styles.text_xs,{textAlign:'center'}]}>{product.itemname}</Paragraph>
 
                 {hasRestaurant &&  <View style={[styles.absolute,{top:3,right:3}]}>

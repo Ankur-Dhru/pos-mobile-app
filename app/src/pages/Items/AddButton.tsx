@@ -109,7 +109,7 @@ const Index = (props: any) => {
 
     return (
         <>
-            <View style={[styles.grid, styles.middle,{width:'100%',minWidth:100,borderRadius:5,backgroundColor:styles.secondary.color}]}>
+            <View style={[styles.grid, styles.middle,{width:'100%',minWidth:100,borderRadius:5,backgroundColor:styles.accent.color}]}>
                 {<TouchableOpacity style={[styles.py_3]}  onPress={() => {
                     updateItem(product, 'remove')
                 }}>

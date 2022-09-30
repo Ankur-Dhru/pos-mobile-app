@@ -49,7 +49,7 @@ const Index = (props: any) => {
         }]}>
 
             <View>
-                <View style={[styles.px_5, styles.py_4,(hasLast && !haskot) && {backgroundColor:'#c4dcff',borderRadius:5,marginBottom:5}]}>
+                <View style={[styles.px_5, styles.py_4,(hasLast && !haskot) && {backgroundColor:styles.secondary.color,borderRadius:5,marginBottom:5}]}>
                     <View>
 
                         <TouchableOpacity onPress={async () => {
@@ -145,7 +145,7 @@ const Index = (props: any) => {
 
                                     <View>
 
-                                        <View style={[styles.grid, styles.justifyContentSpaceBetween]}>
+                                        <View style={[styles.grid]}>
                                             <View>
                                                 <View style={[styles.grid]}>
                                                     <Paragraph style={[styles.paragraph, styles.text_xs]}>
@@ -153,7 +153,7 @@ const Index = (props: any) => {
                                                     </Paragraph>
 
                                                     <Paragraph
-                                                        style={[styles.paragraph, styles.text_xs, {paddingLeft: 5}]}>{toCurrency(product.productratedisplay || '0')} each</Paragraph>
+                                                        style={[styles.paragraph, styles.text_xs, {paddingLeft: 5}]}>{toCurrency(product.productratedisplay || '0')} each = </Paragraph>
 
 
                                                     {/*{!isRestaurant && <Paragraph style={[styles.paragraph, styles.text_xs, styles.textRight]}>
@@ -163,7 +163,7 @@ const Index = (props: any) => {
                                                 </View>
                                             </View>
 
-                                            <View style={[styles.ml_auto]}>
+                                            <View>
                                                 <Paragraph
                                                     style={[styles.paragraph, styles.text_xs, styles.textRight, Boolean(product.productdiscountvalue !== '0' && product.productdiscountvalue) && {
                                                         textDecorationLine: 'line-through',

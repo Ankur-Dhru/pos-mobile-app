@@ -101,7 +101,7 @@ const Index = ({itemDetail, index, inittags, parentsetProduct, sheetRef,edit, th
                         <>
                             <View style={[styles.grid, styles.middle, {
                                 borderRadius: 5,
-                                backgroundColor: styles.secondary.color
+                                backgroundColor: styles.accent.color
                             }]}>
                                 {<TouchableOpacity style={[styles.py_3]} onPress={() => {
                                     productQnt > 1 && updateQnt('remove')

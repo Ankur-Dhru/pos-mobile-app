@@ -14,7 +14,7 @@ const {height, width} = Dimensions.get('window');
 const dim = Dimensions.get('screen');
 
 
-const useScreenDimensions = () => {
+/*const useScreenDimensions = () => {
     const [screenData, setScreenData] = useState(Dimensions.get('screen'));
     useEffect(() => {
         const onChange = (result:any) => {
@@ -27,16 +27,17 @@ const useScreenDimensions = () => {
         ...screenData,
         isLandscape: screenData.width > screenData.height,
     };
-};
+};*/
 
 
 const Index = (props: any) => {
 
     //const screenData = useScreenDimensions();
 
-    const {selectedgroup} = props;
+    const {selectedgroup,search} = props;
 
-    const {groupItemsData}:any = localredux
+    const {groupItemsData,itemsData}:any = localredux
+
 
     const [items,setItems] = useState(groupItemsData[selectedgroup]);
 
@@ -47,6 +48,15 @@ const Index = (props: any) => {
     }, [selectedgroup])
 
 
+    useEffect(() => {
+        let finditems;
+        if (Boolean(search)) {
+            finditems = filterArray(Object.values(itemsData), ['itemname', 'uniqueproductcode'], search,false)
+        }
+        Boolean(finditems) && setItems(finditems);
+    }, [search])
+
+
     const renderitems = (i: any) => {
         return (
             <Item item={i.item} index={i.index}  key={i.item.key || i.item.productid} />
@@ -55,9 +65,7 @@ const Index = (props: any) => {
 
     const renderitemssquare = (i: any) => {
         return (
-
-                <Item   item={i.item}  index={i.index}  key={i.item.key || i.item.productid}  />
-
+            <Item   item={i.item}  index={i.index}  key={i.item.key || i.item.productid}  />
         );
     };
 
@@ -102,7 +110,7 @@ const Index = (props: any) => {
 
 const mapStateToProps = (state: any) => ({
     //invoiceitems: state.cartData?.invoiceitems || [],
-    selectedgroup: state.selectedData.group
+    selectedgroup: state.selectedData.group?.value
 })
 
 export default connect(mapStateToProps)(memo(Index));

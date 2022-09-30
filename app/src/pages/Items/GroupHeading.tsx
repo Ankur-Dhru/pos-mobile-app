@@ -19,7 +19,7 @@ const Index = (props: any) => {
 }
 
 const mapStateToProps = (state: any) => ({
-    selectedgroup: state.selectedData.group,
+    selectedgroup: state.selectedData.group?.value,
 })
 
 export default connect(mapStateToProps)(Index);

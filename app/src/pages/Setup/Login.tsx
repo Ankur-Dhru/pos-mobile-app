@@ -1,5 +1,4 @@
 import React from "react";
-import dataContainer from "../../hoc/dataContainer";
 
 
 import {Image, Text, View} from "react-native";

@@ -11,10 +11,9 @@ import {appLog} from "../../libs/function";
 
 const Index = (props: any) => {
 
-    appLog('cart detail view')
 
     return <Container config={{title: 'Cart Detail'}} hideappbar={device.tablet} {...props}  >
-
+        {!device.tablet &&  <ClientDetail/>}
         <CartItems/>
         {!device.tablet && <CartActions/>}
     </Container>

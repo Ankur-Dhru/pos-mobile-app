@@ -9,7 +9,7 @@ class Index extends React.Component<any> {
         const {colors}:any = this.props.theme;
         if(secondbutton){
             more={
-                backgroundColor:'#E6EFFE',
+                backgroundColor:colors.secondary,
                 color:colors.primary,
                 borderWidth:0,
                 ...more,
@@ -19,7 +19,7 @@ class Index extends React.Component<any> {
             <Button
                  mode={'contained'}
                  style={{borderRadius:5,elevation:0,borderWidth:0}}
-                 contentStyle={{height:compact?'auto':45,backgroundColor:!Boolean(mode) ? colors.secondary : 'transparent',...more}}
+                 contentStyle={{height:compact?'auto':45,backgroundColor:!Boolean(mode) ? colors.accent : 'transparent',...more}}
                  labelStyle={[styles.capitalize,styles.bold,{color:secondbutton?more.color:'white'}]}
                  {...this.props}
             >{children}</Button>

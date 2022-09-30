@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useRef, useState} from "react";
 import {TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
 import Items from "../Items/ItemList";
@@ -13,12 +13,14 @@ import DetailView from "./DetailView";
 import GroupList from "../Items/GroupList";
 import CartActions from "./CartActions";
 import {ProIcon} from "../../components";
-import {setSelectedData} from "../../redux-store/reducer/selected-data";
+import {setSelected} from "../../redux-store/reducer/selected-data";
 import SearchItem from "../Items/SearchItem";
 import GroupHeading from "../Items/GroupHeading";
 import ClientDetail from "../Client/ClientDetail";
 import {useNavigation} from "@react-navigation/native";
-import {saveTempLocalOrder} from "../../libs/function";
+import {appLog, saveTempLocalOrder} from "../../libs/function";
+import ReactNativePinView from "react-native-pin-view";
+import NumPad from "../Items/NumPad";
 
 
 const Index = (props: any) => {
@@ -27,6 +29,10 @@ const Index = (props: any) => {
     const {itemgroup} = localredux.initData
     const {tabledetails} = props;
     const navigation = useNavigation()
+    const [search,setSearch] = useState('')
+    const [numpad,setNumpad] = useState(false)
+
+
 
     const dispatch = useDispatch()
 
@@ -34,6 +40,10 @@ const Index = (props: any) => {
     let groups: any = Object.values(itemgroup).map((group: any) => {
         return {label: group.itemgroupname, value: group.itemgroupid}
     })
+
+    const handleSearch = (search:any) => {
+        setSearch(search)
+    }
 
 
     return <>
@@ -44,13 +54,18 @@ const Index = (props: any) => {
                 saveTempLocalOrder().then(() => {})
                 navigation.goBack()
             }}>
-                <View  style={[styles.grid,styles.middle,styles.bg_white,{width:145,padding:12,borderRadius:5}]}>
+                <View  style={[styles.grid,styles.middle,styles.bg_white,{width:150,padding:11,borderRadius:5,backgroundColor: styles.yellow.color}]}>
                     <Paragraph><ProIcon name={'chevron-left'} action_type={'text'} /></Paragraph>
                     <Paragraph style={[styles.paragraph,styles.bold]}>  {tabledetails?.tablename || 'Retail'}</Paragraph>
                 </View>
             </TouchableOpacity>
-            <View style={[styles.flexGrow,{paddingLeft:5,paddingRight:5}]}>
-                <SearchItem/>
+            <View style={[styles.flexGrow,{paddingLeft:6,paddingRight:6}]}>
+                <View style={[styles.grid,styles.justifyContent]}>
+                    <SearchItem  handleSearch={handleSearch}/>
+                    <TouchableOpacity style={[styles.px_6,{backgroundColor:'white',padding:11,borderRadius:5,marginLeft:5}]} onPress={()=>setNumpad(!numpad)}>
+                        <Paragraph><ProIcon name={'keyboard'} color={!numpad?'#ccc':'#000'} action_type={'text'}/></Paragraph>
+                    </TouchableOpacity>
+                </View>
             </View>
             <View style={{width:385}}>
                 <ClientDetail/>
@@ -77,7 +92,10 @@ const Index = (props: any) => {
                                 </Card>
                             </View>
                             <Card style={[styles.flexGrow, {marginLeft: 5,marginRight:5}]}>
-                                <Items/>
+                                {!numpad ?
+                                    <Items search={search}/> :
+                                    <NumPad/>
+                                }
                             </Card>
 
                         </View>
@@ -133,7 +151,7 @@ const Index = (props: any) => {
                                     listtype={'staff'}
                                     selectedValue={''}
                                     onChange={(value: any) => {
-                                        dispatch(setSelectedData({group: value}))
+                                        dispatch(setSelected({value:value,field:'group'}))
                                     }}
                                 />
                             </View>

@@ -47,8 +47,8 @@ const Search = (props: any) => {
                 value={searchQuery}
                 useNativeDriver={true}
                 onSubmitEditing={() => props.handleSearch(searchQuery.trim())}
-                style={[{elevation: 0, height: 40, borderRadius: 5, backgroundColor: 'white'}]}
-                inputStyle={{height: Platform.OS === 'ios' ? 40 : 43}}
+                style={[{elevation: 0, height: 37, borderRadius: 5, backgroundColor: 'white'}]}
+                inputStyle={{height: Platform.OS === 'ios' ? 37 : 40}}
                 {...props}
             />
         </Card>

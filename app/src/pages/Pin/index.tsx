@@ -90,7 +90,7 @@ const Index = (props: any) => {
     }, [enteredPin])
 
 
-    return <Container config={{subtitle: `${workspace?.toUpperCase()}`, title: 'PIN',hideback:Boolean(params.onlyone)}}>
+    return <Container hideappbar={Boolean(params.onlyone)} >
 
         <Card>
 
@@ -107,7 +107,6 @@ const Index = (props: any) => {
                     ref={pinView}
                     pinLength={5}
                     onValueChange={value => value.length === 5 && setEnteredPin(value)}
-                    com
                     inputViewEmptyStyle={{
                         backgroundColor: "transparent",
                         borderWidth: 1,

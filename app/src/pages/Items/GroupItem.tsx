@@ -4,7 +4,7 @@ import {Divider, List} from "react-native-paper";
 import {styles} from "../../theme";
 
 import {useDispatch} from "react-redux";
-import {setSelectedData} from "../../redux-store/reducer/selected-data";
+import {setSelected, setSelectedData} from "../../redux-store/reducer/selected-data";
 
 const Index = (props: any) => {
 
@@ -13,7 +13,7 @@ const Index = (props: any) => {
     const dispatch = useDispatch()
 
     const selectGroup = (group: any) => {
-        dispatch(setSelectedData({group: group.value}))
+        dispatch(setSelected({value:group.value,field:'group'}))
     }
 
     return <TouchableOpacity onPress={() => selectGroup(item)}
@@ -21,7 +21,7 @@ const Index = (props: any) => {
         <List.Item
             title={item.label}
             titleNumberOfLines={3}
-            titleStyle={[styles.text_sm]}
+            titleStyle={[styles.text_sm,{color:selected?'white':'black'}]}
         />
         <Divider/>
     </TouchableOpacity>

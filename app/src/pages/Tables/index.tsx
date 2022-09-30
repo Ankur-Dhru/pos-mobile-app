@@ -1,14 +1,19 @@
 import React from "react";
 import Container from "../../components/Container";
 import Tables from "./Tables";
-import {appLog} from "../../libs/function";
+
+import OrderTypes from "./OrderTypes";
+import {View} from "react-native";
 
 const Index = (props: any) => {
 
-    const {navigation} = props;
 
-    return <Container config={{title: 'Tables', hideback: true, drawer: true}} {...props}>
-        <Tables navigation={navigation}/>
+    return <Container hideappbar={true} config={{title: 'Tables', hideback: true, drawer: true}} {...props}>
+
+        <OrderTypes/>
+
+         <Tables/>
+
     </Container>
 }
 

@@ -63,7 +63,7 @@ const App = () => {
    // StatusBar.setHidden(true);
 
   const backgroundStyle = {
-    /*backgroundColor: isDarkMode ? Colors.darker : Colors.white,*/
+    backgroundColor: 'white',
     height:'100%',
       flex:1
   };
@@ -137,7 +137,7 @@ const App = () => {
   return (
         <Provider store={store}>
             <PaperProvider theme={CombinedDefaultTheme}>
-                <StatusBar   barStyle={isDarkMode ? 'dark-content' : 'dark-content'}  />
+                <StatusBar   barStyle={isDarkMode ? 'light-content' : 'light-content'} backgroundColor={CombinedDefaultTheme.colors.primary} />
                 <SafeAreaView style={backgroundStyle}>
                     <NavigationContainer>
                         <MainStackNavigator/>

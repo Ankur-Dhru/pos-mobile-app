@@ -1,14 +1,11 @@
-import React, {useEffect, useState} from "react";
-import Container from "../../components/Container";
-import {appLog, isRestaurant, retrieveData, saveTempLocalOrder} from "../../libs/function";
+import React, {useEffect} from "react";
+import {isRestaurant} from "../../libs/function";
 import Cart from "./Cart";
 import {localredux, PRODUCTCATEGORY} from "../../libs/static";
 import {useDispatch} from "react-redux";
-import {Appbar, withTheme} from "react-native-paper";
-import {setSelectedData} from "../../redux-store/reducer/selected-data";
-import SearchItem from "../Items/SearchItem";
-import ProIcon from "../../components/ProIcon";
-import {setBottomSheet} from "../../redux-store/reducer/component";
+import {withTheme} from "react-native-paper";
+import {setSelected} from "../../redux-store/reducer/selected-data";
+import {resetCart, setCartData,} from "../../redux-store/reducer/cart-data";
 
 const Index = ({tabledetails}: any) => {
 
@@ -19,12 +16,14 @@ const Index = ({tabledetails}: any) => {
 
 
     useEffect(() => {
-        dispatch(setSelectedData({group:mainproductgroupid}))
+        dispatch(resetCart())
+        dispatch(setCartData(tabledetails))
+        dispatch(setSelected({value: mainproductgroupid, field: 'group'}))
     }, [])
 
-    return <Cart tabledetails={tabledetails}   />
+    return <Cart tabledetails={tabledetails}/>
 
-    return <Container  config={{
+    /*return <Container  config={{
         title: tabledetails?.tablename || 'Retail',
         backAction: () => {
             saveTempLocalOrder().then(() => {})
@@ -46,9 +45,8 @@ const Index = ({tabledetails}: any) => {
         hideback: !hasrestaurant
     }}>
         <Cart tabledetails={tabledetails}   />
-    </Container>
+    </Container>*/
 }
 
 
-
-export default  withTheme(Index);
+export default withTheme(Index);

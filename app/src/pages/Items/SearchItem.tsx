@@ -14,27 +14,15 @@ const Index = (props:any) => {
 
     const {itemsData}:any = localredux
     const [items,setItems] = useState([]);
-    const [search,setSearch] = useState('')
+    const {handleSearch}:any = props
 
 
-    useEffect(() => {
-        let finditems;
-        if (Boolean(search)) {
-            finditems = filterArray(Object.values(itemsData), ['itemname', 'uniqueproductcode'], search,false)
-        }
-        setItems(finditems);
-    }, [search])
 
-    const handleSearch = (search:any) => {
-        setSearch(search)
-    }
-
-
-    const renderitems = (i: any) => {
+    /*const renderitems = (i: any) => {
         return (
             <Item item={i.item} index={i.index} search={true}  key={i.item.key || i.item.productid} />
         );
-    };
+    };*/
 
     return (
 
@@ -48,7 +36,7 @@ const Index = (props:any) => {
 
             </View>
 
-            <Card style={[styles.h_100, styles.flex]}>
+            {/*<Card style={[styles.h_100, styles.flex]}>
                 <Card.Content style={[styles.cardContent]}>
                     <FlatList
                         data={items}
@@ -56,7 +44,7 @@ const Index = (props:any) => {
                         keyExtractor={item => item.productid}
                     />
                 </Card.Content>
-            </Card>
+            </Card>*/}
         </View>
 
 

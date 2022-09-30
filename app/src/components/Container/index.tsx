@@ -21,16 +21,15 @@ const Index = ({children,surface,hideappbar,navigation,config,style,theme:{color
 
     return (
         <>
-            {!hideappbar && <Appbar.Header>
-                {config?.drawer && <Appbar.Action  size={26} icon={()=> <ProIcon name={'bars'} color={'white'} /> } onPress={()=> { navigation.openDrawer() } } />}
+            {!hideappbar && <Appbar.Header style={[styles.bg_white]}>
+                {config?.drawer && <Appbar.Action  size={26} icon={()=> <ProIcon name={'bars'}  /> } onPress={()=> { navigation.openDrawer() } } />}
                 {!config?.hideback && <Appbar.BackAction    onPress={() => {navigation.goBack(); Boolean(config.backAction) && config.backAction() }}/>}
                 <Appbar.Content  title={config?.title} subtitle={config?.subtitle} />
                 {Boolean(config?.actions) &&  <Actions/>}
             </Appbar.Header>}
 
             <View style={[styles.coverScreen]}>
-
-                <View style={[styles.pageContent,style,{backgroundColor: device.tablet?'#f2f2f2':'#fff'}]}>
+                <View style={[styles.pageContent,style,{backgroundColor: '#fff'}]}>
                     {children}
                 </View>
             </View>

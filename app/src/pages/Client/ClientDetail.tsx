@@ -8,13 +8,14 @@ import {connect, useDispatch} from "react-redux";
 import ProIcon from "../../components/ProIcon";
 import {setCartData} from "../../redux-store/reducer/cart-data";
 import {localredux} from "../../libs/static";
+import Avatar from "../../components/Avatar";
 
 
 const Index = ({cartData}: any) => {
 
     const {clientsData}:any = localredux;
 
-    const [client, setClient] = useState({});
+    const [client, setClient]:any = useState({});
 
     const dispatch = useDispatch()
 
@@ -42,11 +43,9 @@ const Index = ({cartData}: any) => {
                 displaytype={'pagelist'}
                 inputtype={'dropdown'}
                 render={() => <View style={[styles.grid, styles.justifyContent, styles.py_5]}>
-                    <View style={[styles.grid, styles.middle]}>
-                        <View>
-                            <ProIcon name={'user'} type={'solid'}/>
-                        </View>
-                        <View><Paragraph style={[styles.paragraph, styles.text_lg]}>{client.label}</Paragraph></View>
+                    <View style={[styles.grid, styles.justifyContent]}>
+                        <Avatar label={client.label} value={client.value} fontsize={12}  size={30}/>
+                        <View style={[styles.ml_2]}><Paragraph style={[styles.paragraph,styles.bold]}> {client.label}</Paragraph></View>
                     </View>
                     <View><Text>{chevronRight}</Text></View>
                 </View>}

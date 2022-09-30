@@ -1,18 +1,19 @@
 import {createSlice} from '@reduxjs/toolkit'
 import {appLog} from "../../libs/function";
+import { ordertypes } from '../../libs/static';
 
 export const selectedData = createSlice({
   name: 'selectedData',
-  initialState: {group:''},
+  initialState: {group:'',ordertype:ordertypes[0]},
   reducers: {
     setSelectedData: (state: any, action) => {
       return {...action.payload}
     },
     setSelected: (state: any, action) => {
-      const {key, data} = action.payload;
+      let data = action.payload;
       return {
         ...state,
-         [key]:data
+        [data.field]:data
       }
     }
   },

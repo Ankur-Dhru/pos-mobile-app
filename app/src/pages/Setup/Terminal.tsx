@@ -6,7 +6,7 @@ import Container from "../../components/Container";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
 import KeyboardScroll from "../../components/KeyboardScroll";
-import {Card} from "react-native-paper";
+import {Card, Paragraph,Title,Text} from "react-native-paper";
 import {ACTIONS, composeValidators, localredux, METHOD, posUrl, required, STATUS} from "../../libs/static";
 import InputBox from "../../components/InputBox";
 import Button from "../../components/Button";
@@ -15,6 +15,7 @@ import apiService from "../../libs/api-service";
 import {appLog, findObject, isEmpty, selectItemObject, storeData, syncData} from "../../libs/function";
 import {setLicenseData} from "../../redux-store/reducer/license-data";
 import InputField from "../../components/InputField";
+
 
 const Terminal = (props: any) => {
 
@@ -120,9 +121,15 @@ const Terminal = (props: any) => {
 
 
 
-    return <Container config={{title: 'Terminal', subtitle: initData.workspace}}>
+    return <Container>
 
-        <Card style={[styles.h_100]}>
+        <Card  style={[styles.center, styles.h_100, styles.middle]}>
+
+
+                <View style={{width:360}}>
+
+                    <Title style={[styles.mt_5]}>Terminal <Text style={[styles.muted,styles.text_sm]}>({initData.workspace})</Text></Title>
+
 
             <Form
                 initialValues={initialValues}
@@ -131,11 +138,8 @@ const Terminal = (props: any) => {
                 render={({handleSubmit, submitting, values, ...more}: any) => (
                     <>
 
-                        <KeyboardScroll>
                             <View>
-
-
-                                <View style={[styles.px_5]}>
+                                <View>
 
 
                                     <View style={[styles.mt_3]}>
@@ -200,21 +204,25 @@ const Terminal = (props: any) => {
 
                                 </View>
                             </View>
-                        </KeyboardScroll>
 
-
-                        <View style={[styles.submitbutton]}>
+                            <View>
                             <Button disable={more.invalid} secondbutton={more.invalid}
                                     onPress={() => {
                                         handleSubmit(values)
                                     }}> Finish
                             </Button>
                         </View>
+
+
+
                     </>
                 )}
             >
 
             </Form>
+
+
+            </View>
         </Card>
 
     </Container>

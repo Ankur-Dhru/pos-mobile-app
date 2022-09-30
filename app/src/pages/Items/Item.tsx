@@ -13,6 +13,7 @@ import ItemDetail from "./ItemDetail";
 import AddonActions from "./AddonActions";
 import {device} from "../../libs/static";
 import Avatar from "../../components/Avatar";
+import VegNonVeg from "./VegNonVeg";
 //import {ReactComponent as NonVEG} from "../../assets/svg/Non_veg_symbol.svg";
 
 const {v4: uuid} = require('uuid')
@@ -116,22 +117,18 @@ const Index = (props: any) => {
     if (device.tablet && !search) {
         return (
 
-            <TouchableOpacity  onPress={() =>   selectItem(product)}  style={[ styles.flexGrow,{width:110,padding:10,margin:5,backgroundColor:'#c4dcff',borderRadius:5} ]}>
+            <TouchableOpacity  onPress={() =>   selectItem(product)}  style={[ styles.flexGrow,{width:110,padding:10,margin:5,backgroundColor:styles.secondary.color,borderRadius:5} ]}>
                 <Paragraph style={[ styles.paragraph,styles.bold,styles.text_xs,{textAlign:'center'}]}>{product.itemname}</Paragraph>
 
                 {hasRestaurant &&  <View style={[styles.absolute,{top:3,right:3}]}>
-                    <Text>
-                        <ProIcon name={'square-o'} align={'left'}
-                                 color={veg === 'veg' ? styles.veg.color : veg === 'nonveg' ? styles.nonveg.color : styles.vegan.color}
-                                 size={15} action_type={'text'}/>
-                    </Text>
+                    <VegNonVeg type={veg} />
                 </View>}
 
             </TouchableOpacity>
         )
     }
 
-    else if (search) {
+/*    else if (search) {
         return (
             <>
             <TouchableOpacity onPress={() =>   selectItem(product)}   style={[styles.noshadow,styles.p_5]}>
@@ -140,7 +137,6 @@ const Index = (props: any) => {
                     <View>
                         <Paragraph style={[styles.bold, styles.paragraph]}>{product.itemname}</Paragraph>
                     </View>
-
                     {hasRestaurant &&  <View>
                         <Text>
                             <ProIcon name={'square-o'} align={'left'}
@@ -155,7 +151,7 @@ const Index = (props: any) => {
                 <Divider/>
             </>
         )
-    }
+    }*/
 
 
     const hasKot = Boolean(product?.kotid);

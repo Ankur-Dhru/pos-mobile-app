@@ -5,7 +5,7 @@
   "scripts": {
     "android": "yarn  react-native run-android",
     "ios": "yarn  react-native run-ios   --simulator=\"iPhone 13 Pro\"   NODE_ENV=production dev=false",
-    "iosIpad": "yarn  react-native run-ios --simulator=\"iPad Pro (11-inch) (3rd generation)\"    NODE_ENV=production dev=false",
+    "iosIpad": "yarn  react-native run-ios --simulator=\"iPad Pro (9.7-inch)\"    NODE_ENV=production dev=false",
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",

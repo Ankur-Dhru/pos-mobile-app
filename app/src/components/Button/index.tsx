@@ -5,7 +5,7 @@ import {styles} from "../../theme";
 class Index extends React.Component<any> {
 
     render(){
-        let {label,children,contentStyle,mode,more,secondbutton,compact}:any = this.props;
+        let {label,children,contentStyle,disable,mode,more,secondbutton,compact}:any = this.props;
         const {colors}:any = this.props.theme;
         if(secondbutton){
             more={
@@ -20,7 +20,7 @@ class Index extends React.Component<any> {
                  mode={'contained'}
                  style={{borderRadius:5,elevation:0,borderWidth:0}}
                  contentStyle={{height:compact?'auto':45,backgroundColor:!Boolean(mode) ? colors.accent : 'transparent',...more}}
-                 labelStyle={[styles.capitalize,styles.bold,{color:secondbutton?more.color:'white'}]}
+                 labelStyle={[styles.capitalize,styles.bold,{color:secondbutton?more.color:'white',opacity:disable ? 0.3 : 1}]}
                  {...this.props}
             >{children}</Button>
         );

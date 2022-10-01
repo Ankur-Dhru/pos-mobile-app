@@ -686,6 +686,7 @@ export const errorAlert = (message: any, title?: any) => {
 
 export const saveTempLocalOrder = async (order?:any) => {
 
+
     if(!Boolean(order)){
       order = store.getState().cartData
     }
@@ -716,10 +717,10 @@ export const saveTempLocalOrder = async (order?:any) => {
       [order.tableorderid]: order
     }
 
+    await storeData('fusion-pro-pos-mobile-tableorder',tableorders).then(async () => {
+      await store.dispatch(setCartData(order));
+      await store.dispatch(setTableOrdersData(tableorders));
 
-    await storeData('fusion-pro-pos-mobile-tableorder', clone(tableorders)).then(async () => {
-      await store.dispatch(setCartData(clone(order)));
-      await store.dispatch(setTableOrdersData(clone(tableorders)));
     });
   }
 }
@@ -738,6 +739,8 @@ export const deleteTempLocalOrder = async (tableorderid:any) => {
 
 
 export const saveLocalOrder = async (order?:any) => {
+
+
   if(!Boolean(order)){
     order = clone(store.getState().cartData)
   }
@@ -764,8 +767,9 @@ export const saveLocalOrder = async (order?:any) => {
 
      await deleteTempLocalOrder(order.tableorderid).then(async ()=>{
       await storeData('fusion-pro-pos-mobile',data).then(async ()=>{
-        await store.dispatch(setOrder(order))
-        await store.dispatch(resetCart())
+        //await store.dispatch(setOrder(order))
+        //await store.dispatch(resetCart())
+
       });
     })
   })

@@ -1,7 +1,7 @@
-import React, {useState} from "react";
-import {clone, errorAlert, getDefaultCurrency, getFloatValue, saveLocalOrder, toCurrency} from "../../libs/function";
-import {View} from "react-native";
-import {Card, Paragraph, withTheme} from "react-native-paper";
+import React, {useEffect, useState} from "react";
+import {appLog, clone, errorAlert, getDefaultCurrency, getFloatValue, saveLocalOrder, toCurrency} from "../../libs/function";
+import {TouchableOpacity, View} from "react-native";
+import {Card, Paragraph, withTheme,Title,Text} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect} from "react-redux";
 import {Button, Container, InputBox} from "../../components";
@@ -10,15 +10,20 @@ import InputField from "../../components/InputField";
 import KeyboardScroll from "../../components/KeyboardScroll";
 import {useNavigation} from "@react-navigation/native";
 import {localredux} from "../../libs/static";
+import PageLoader from "../../components/PageLoader";
 
 
 const Index = ({cartData}: any) => {
 
+    appLog('cartData.vouchertotaldisplay',cartData.vouchertotaldisplay)
 
 
     let {vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}: any = cartData;
     const {paymentgateway}: any = localredux.initData;
-    const {currentLocation: {defaultpaymentgateway}}:any = localredux.localSettingsData
+    const {currentLocation: {defaultpaymentgateway}}:any = localredux.localSettingsData;
+
+
+
 
     if (!Boolean(paidamount)) {
         paidamount = 0
@@ -31,6 +36,7 @@ const Index = ({cartData}: any) => {
         paymentgateway: defaultpaymentgateway
     });
     const [payments, setPayments] = useState([]);
+
 
     const handleSubmit = () => {
 
@@ -144,21 +150,35 @@ const Index = ({cartData}: any) => {
         return {label: b.value, value: key}
     });
 
+/*    const [loaded,setLoaded] = useState(false)
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            setTimeout(()=>{
+                setLoaded(true)
+            })
+        });
+        return unsubscribe;
+    }, []);
+    if(!loaded){
+        return <PageLoader />
+    }*/
 
-    return <Container config={{title: 'Payment'}}>
 
-        <Card style={[styles.h_100]}>
+    return <Container config={{}}>
 
-            <Card.Content style={[styles.h_100]}>
+        <View>
 
-                <KeyboardScroll>
+            <View style={[styles.p_5,{marginTop:10,padding:20}]}>
+
                     <Form
                         onSubmit={handleSubmit}
                         initialValues={{...initdata}}>
                         {propsValues => (
                             <>
 
-                                {<>
+                                <View style={[styles.grid,styles.justifyContent]}>
+                                    <View style={[styles.w_auto]}>
+
 
 
                                     <View style={[styles.grid, styles.middle, styles.center]}>
@@ -281,15 +301,30 @@ const Index = ({cartData}: any) => {
                                     </>}
 
 
-                                    <Button disabled={!Boolean(initdata.paymentamount)} onPress={() => {
-                                        addPayment(propsValues.values)
-                                    }} secondbutton={true}>Add</Button>
+                                    <View style={[styles.grid,styles.justifyContent]}>
+
+                                        <View style={[styles.w_auto]}>
+                                            <Button disabled={!Boolean(initdata.paymentamount)} onPress={() => {
+                                                addPayment(propsValues.values)
+                                            }} secondbutton={true}>Add</Button>
+                                        </View>
 
 
-                                </>}
+                        <View style={[styles.w_auto,styles.ml_2]}>
+                            <Button   onPress={() => { }}   more={{backgroundColor: styles.yellow.color,  }}>Skip Payment</Button>
+                        </View>
 
 
-                                {Boolean(payments.length) && <>
+                                    </View>
+
+
+                                    </View>
+                                    <View style={[styles.w_auto,{marginLeft:20}]}>
+
+
+
+
+                                    {Boolean(payments.length) && <>
 
                                     <View style={[styles.mt_5]}>
 
@@ -313,23 +348,41 @@ const Index = ({cartData}: any) => {
                                         </View>
 
 
-                                        <View style={[styles.grid, styles.justifyContent]}>
-                                            <View>
 
-                                            </View>
-                                            <View>
-                                                <Button compact={true} secondbutton={true} onPress={() => {
+
+                                    </View>
+
+
+                                        <View style={[styles.grid,styles.justifyContent]}>
+
+                                            <View style={[styles.w_auto]}>
+                                                <Button   secondbutton={true} onPress={() => {
                                                     reset();
                                                 }}>
                                                     Reset
                                                 </Button>
                                             </View>
+
+                                            <View style={[styles.w_auto,styles.ml_2]}>
+                                                <View>
+
+                                                    <Button onPress={() => {
+                                                        validatePayment()
+                                                    }}> {voucherid ? 'Save' : `Generate Invoice`} </Button>
+
+                                                </View>
+                                            </View>
+
                                         </View>
+
+
+                                </>}
+
 
 
                                     </View>
 
-                                </>}
+                                </View>
 
 
                             </>
@@ -337,24 +390,18 @@ const Index = ({cartData}: any) => {
 
                     </Form>
 
-                </KeyboardScroll>
 
-                <View style={[styles.mt_auto]}>
 
-                    <Button onPress={() => {
-                        validatePayment()
-                    }}> {voucherid ? 'Save' : `Generate Invoice`} </Button>
 
-                </View>
 
-            </Card.Content>
-        </Card>
+            </View>
+        </View>
 
     </Container>
 }
 
 const mapStateToProps = (state: any) => ({
-    cartData: state.cartData || {},
+    cartData: state.cartData,
 })
 
 export default connect(mapStateToProps)(withTheme(Index));

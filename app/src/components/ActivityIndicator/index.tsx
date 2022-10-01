@@ -1,7 +1,7 @@
 import React,{Component} from "react";
 import {connect} from "react-redux";
-import {Alert, Platform, Text, View} from "react-native";
-import {ActivityIndicator, Button, Colors, Surface, withTheme} from "react-native-paper";
+import {Alert, Platform, Text, View,ActivityIndicator} from "react-native";
+import {Button, Colors, Surface, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 
 

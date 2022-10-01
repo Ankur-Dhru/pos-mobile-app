@@ -1,16 +1,17 @@
-import React, {useRef, useState} from "react";
-import {TouchableOpacity, View} from "react-native";
+import React, {Suspense, useEffect, useRef, useState} from "react";
+import {ActivityIndicator, TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
 import Items from "../Items/ItemList";
+import DetailView from "./DetailView";
+import GroupList from "../Items/GroupList";
 import {useDispatch} from "react-redux";
-import {Card, Paragraph} from "react-native-paper";
+import {Card, Paragraph,Text} from "react-native-paper";
 import InputField from "../../components/InputField";
 import CartTotal from "./CartTotal";
 
 
 import {device, localredux} from "../../libs/static";
-import DetailView from "./DetailView";
-import GroupList from "../Items/GroupList";
+
 import CartActions from "./CartActions";
 import {ProIcon} from "../../components";
 import {setSelected} from "../../redux-store/reducer/selected-data";
@@ -50,15 +51,14 @@ const Index = (props: any) => {
 
         <View style={[styles.h_100, styles.flex, styles.p_4]}>
         <View style={[styles.grid,styles.justifyContent]}>
-            <TouchableOpacity onPress={()=> {
-                saveTempLocalOrder().then(() => {})
-                navigation.goBack()
+            {Boolean(tabledetails?.tablename) &&  <TouchableOpacity onPress={()=> {
+                saveTempLocalOrder().then(() => {navigation.goBack();})
             }}>
                 <View  style={[styles.grid,styles.middle,styles.bg_white,{width:150,padding:11,borderRadius:5,backgroundColor: styles.yellow.color}]}>
                     <Paragraph><ProIcon name={'chevron-left'} action_type={'text'} /></Paragraph>
-                    <Paragraph style={[styles.paragraph,styles.bold]}>  {tabledetails?.tablename || 'Retail'}</Paragraph>
+                    <Paragraph style={[styles.paragraph,styles.bold]}>  {tabledetails?.tablename}</Paragraph>
                 </View>
-            </TouchableOpacity>
+            </TouchableOpacity>}
             <View style={[styles.flexGrow,{paddingLeft:6,paddingRight:6}]}>
                 <View style={[styles.grid,styles.justifyContent]}>
                     <SearchItem  handleSearch={handleSearch}/>
@@ -92,8 +92,9 @@ const Index = (props: any) => {
                                 </Card>
                             </View>
                             <Card style={[styles.flexGrow, {marginLeft: 5,marginRight:5}]}>
+
                                 {!numpad ?
-                                    <Items search={search}/> :
+                                    <Items search={search}/>:
                                     <NumPad/>
                                 }
                             </Card>

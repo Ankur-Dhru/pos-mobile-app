@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "android": "yarn  react-native run-android",
+    "android": "yarn  react-native run-android --active-arch-only   ",
     "ios": "yarn  react-native run-ios   --simulator=\"iPhone 13 Pro\"   NODE_ENV=production dev=false",
     "iosIpad": "yarn  react-native run-ios --simulator=\"iPad Pro (9.7-inch)\"    NODE_ENV=production dev=false",
     "start": "react-native start",
@@ -13,7 +13,8 @@
     "clean all": "rm -rf node_modules && yarn cache clean && yarn && rm -fr $TMPDIR/haste-map-* && rm -rf $TMPDIR/metro-cache && yarn start -- --reset-cache",
     "upgrade": "yarn upgrade --latest",
     "link": "react-native link react-native-vector-icons --platforms android",
-    "force update on git": "git push -f origin master"
+    "force update on git": "git push -f origin master",
+    "gradle clean": "cd android && ./gradlew clean"
   },
   "dependencies": {
     "@fortawesome/free-brands-svg-icons": "^6.1.2",
@@ -28,6 +29,7 @@
     "@react-navigation/native-stack": "^6.7.0",
     "@reduxjs/toolkit": "^1.8.4",
     "@types/uuid": "^8.3.4",
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "base-64": "^1.0.0",
     "currency-symbol-map": "^5.1.0",
     "final-form": "^4.20.7",

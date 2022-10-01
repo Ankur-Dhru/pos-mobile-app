@@ -24,7 +24,6 @@ const Index = (props: any) => {
     const dispatch = useDispatch();
     const [floating, setFloating] = useState(false);
 
-    appLog('ordertype',ordertype)
 
     const getOriginalTablesData = () => {
         let tables;

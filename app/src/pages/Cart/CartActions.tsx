@@ -260,7 +260,7 @@ const Index = ({
                 <View style={[styles.grid, styles.justifyContent, styles.noWrap]}>
 
                     <View style={[styles.w_auto]}>
-                        <Button disable={!Boolean(vouchertotaldisplay)}
+                        <Button
                                 secondbutton={!Boolean(vouchertotaldisplay)}
                                 onPress={() => cancelOrder()}
                                 more={{backgroundColor: styles.red.color, color: 'white'}}
@@ -286,11 +286,14 @@ const Index = ({
                         <Button> Drawer </Button>
                     </View>*/}
                     {hasRestaurant && <View style={[styles.w_auto, styles.ml_1]}>
-                        <Button onPress={() => saveTempLocalOrder().then(() => {
-                            dispatch(resetCart())
-                            navigation.replace('DrawerStackNavigator');
-                        })}
-                                more={{backgroundColor: styles.yellow.color,  }}
+                        <Button  disable={!Boolean(vouchertotaldisplay)}
+                                onPress={() => {
+
+                                   Boolean(vouchertotaldisplay) &&  saveTempLocalOrder().then(() => {
+                                        navigation.replace('DrawerStackNavigator');
+                                    })}
+                            }
+                         more={{backgroundColor: styles.yellow.color,  }}
                         > Save </Button>
                     </View>}
                     {(!hasRestaurant) && <>
@@ -310,7 +313,7 @@ const Index = ({
                         <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
                                     secondbutton={!Boolean(vouchertotaldisplay)}
-                                    onPress={() => saveTempLocalOrder().then(() => {
+                                    onPress={() => Boolean(vouchertotaldisplay) &&  saveTempLocalOrder().then(() => {
                                         dispatch(resetCart())
                                         if (!device.tablet) {
                                             navigation.goBack()
@@ -319,13 +322,17 @@ const Index = ({
                                     more={{backgroundColor: styles.yellow.color,  }}
                             > On Hold </Button>
                         </View></>}
+
+
+
                     <View style={[styles.w_auto, styles.ml_1]}>
                         <Button
                             disable={!Boolean(vouchertotaldisplay)}
                             secondbutton={!Boolean(vouchertotaldisplay)}
-                            onPress={() => saveTempLocalOrder(cartData).then(() => {
+                            onPress={() => Boolean(vouchertotaldisplay) && saveTempLocalOrder().then(() => {
                                 navigation.navigate('Payment');
                             })}
+
                             more={{backgroundColor: styles.green.color, color: 'white'}}
                         > Bill
                         </Button>

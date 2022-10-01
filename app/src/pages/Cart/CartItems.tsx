@@ -43,7 +43,7 @@ const Index = (props: any) => {
 
     useEffect(() => {
         setTimeout(() => {
-            invoiceitems.length > 0 && scrollRef?.current.scrollToEnd();
+            invoiceitems?.length > 0 && scrollRef?.current.scrollToEnd();
         }, 500)
     }, [invoiceitems.length])
 

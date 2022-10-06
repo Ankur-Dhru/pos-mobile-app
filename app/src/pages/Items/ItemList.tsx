@@ -1,4 +1,4 @@
-import React, {memo, useEffect,  useState} from "react";
+import React, {memo, useCallback, useEffect, useState} from "react";
 
 import {FlatList, View,Text, Dimensions} from "react-native";
 
@@ -41,9 +41,6 @@ const Index = (props: any) => {
 
     const [items,setItems] = useState(groupItemsData[selectedgroup]);
 
-
-
-
     useEffect(() => {
         let finditems = groupItemsData[selectedgroup];
         setItems(finditems);
@@ -59,19 +56,7 @@ const Index = (props: any) => {
     }, [search])
 
 
-    const renderitems = (i: any) => {
-        return (
-            <Item item={i.item} index={i.index}  key={i.item.key || i.item.productid} />
-        );
-    };
-
-    const renderitemssquare = (i: any) => {
-        return (
-            <Item   item={i.item}  index={i.index}  key={i.item.key || i.item.productid}  />
-        );
-    };
-
-
+    const renderItem = useCallback(({item, index}: any) => <Item item={item} index={index}  key={item.key || item.productid} />, [selectedgroup]);
 
     if(items?.length === 0) {
         return <></>
@@ -82,7 +67,7 @@ const Index = (props: any) => {
             {device.tablet ?
                 <FlatList
                     data={items}
-                    renderItem={renderitemssquare}
+                    renderItem={renderItem}
                     numColumns={3}
                     /*onEndReached={getMore}
                     onEndReachedThreshold={0}*/
@@ -94,7 +79,7 @@ const Index = (props: any) => {
                 :
                 <FlatList
                     data={items}
-                    renderItem={renderitems}
+                    renderItem={renderItem}
                     /*initialNumToRender={5}
                     maxToRenderPerBatch={10}*/
                     ListFooterComponent={() => {
@@ -111,7 +96,6 @@ const Index = (props: any) => {
 
 
 const mapStateToProps = (state: any) => ({
-    //invoiceitems: state.cartData?.invoiceitems || [],
     selectedgroup: state.selectedData.group?.value
 })
 

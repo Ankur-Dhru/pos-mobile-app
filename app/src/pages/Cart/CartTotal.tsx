@@ -9,15 +9,14 @@ import {itemTotalCalculation} from "../../libs/item-calculation";
 import {setCartData, setUpdateCart} from "../../redux-store/reducer/cart-data";
 import {ProIcon} from "../../components";
 
-const Index = ({cartData,  theme: {colors}}: any) => {
+const Index = ({cartData,localSettings,  theme: {colors}}: any) => {
 
     const navigation = useNavigation();
     const dispatch = useDispatch();
 
     useEffect(() => {
         if (cartData?.updatecart) {
-            appLog('cart total')
-           let data = itemTotalCalculation(cartData, undefined, undefined, undefined, undefined, 2, 2, false, false);
+            let data = itemTotalCalculation(cartData, undefined, undefined, undefined, undefined, 2, 2, false, false);
             dispatch(setCartData(clone(data)));
             dispatch(setUpdateCart());
         }
@@ -38,7 +37,7 @@ const Index = ({cartData,  theme: {colors}}: any) => {
         return <></>
     }
 
-
+    appLog('carttotal')
 
     return(
         <View style={[styles.p_4, styles.bg_white,styles.shadow]}>
@@ -63,7 +62,8 @@ const Index = ({cartData,  theme: {colors}}: any) => {
 }
 
 const mapStateToProps = (state: any) => ({
-    cartData: state.cartData
+    cartData: state.cartData,
+    localSettings:state.localSettings
 })
 
 export default connect(mapStateToProps)(withTheme(memo(Index)));

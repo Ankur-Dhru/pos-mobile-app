@@ -289,7 +289,7 @@ const Index = ({
                         <Button  disable={!Boolean(vouchertotaldisplay)}
                                 onPress={() => {
 
-                                   Boolean(vouchertotaldisplay) &&  saveTempLocalOrder().then(() => {
+                                    saveTempLocalOrder().then(() => {
                                         navigation.replace('DrawerStackNavigator');
                                     })}
                             }
@@ -313,7 +313,7 @@ const Index = ({
                         <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
                                     secondbutton={!Boolean(vouchertotaldisplay)}
-                                    onPress={() => Boolean(vouchertotaldisplay) &&  saveTempLocalOrder().then(() => {
+                                    onPress={() =>   saveTempLocalOrder().then(() => {
                                         dispatch(resetCart())
                                         if (!device.tablet) {
                                             navigation.goBack()
@@ -329,9 +329,12 @@ const Index = ({
                         <Button
                             disable={!Boolean(vouchertotaldisplay)}
                             secondbutton={!Boolean(vouchertotaldisplay)}
-                            onPress={() => Boolean(vouchertotaldisplay) && saveTempLocalOrder().then(() => {
+
+                            onPress={() => navigation.navigate('Payment')}
+
+                            /*onPress={() => !Boolean(vouchertotaldisplay) && saveTempLocalOrder().then(() => {
                                 navigation.navigate('Payment');
-                            })}
+                            })}*/
 
                             more={{backgroundColor: styles.green.color, color: 'white'}}
                         > Bill

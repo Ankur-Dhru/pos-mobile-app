@@ -292,6 +292,7 @@ export let localredux: any = {
     groupItemsData: {},
     addonsData: '',
     clientsData: '',
+    invoiceitems:[],
     localSettingsData: {
         taxInvoice: false,
         currentLocation: {},

@@ -15,7 +15,7 @@ import {changeCartItem} from "../../redux-store/reducer/cart-data";
 
 const {v4: uuid} = require('uuid')
 
-const Index = ({itemDetail, index, inittags, parentsetProduct, sheetRef,edit, theme: {colors}}: any) => {
+const Index = ({itemDetail, index, inittags, sheetRef,edit, theme: {colors}}: any) => {
 
 
     const dispatch = useDispatch()
@@ -37,10 +37,14 @@ const Index = ({itemDetail, index, inittags, parentsetProduct, sheetRef,edit, th
         setProduct(product)
     }, [productTags,productAddons,productQnt,productNotes])
 
-    const {pricing, description, itemname, groupname} = product.itemdetail;
+    if(!Boolean(product?.itemdetail)){
+        return <></>
+    }
+
+
+    const {pricing, description, itemname, groupname} = product;
 
     const selectItem = async () => {
-        parentsetProduct && parentsetProduct(product);
         if(edit){
             dispatch(changeCartItem({
                 itemIndex: index, item: clone(product)

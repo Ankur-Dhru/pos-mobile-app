@@ -1,41 +1,43 @@
 import React, {useEffect, useRef, useState} from "react";
-import {clone, toCurrency, updateComponent} from "../../libs/function";
+import {appLog, clone, saveLocalSettings, toCurrency, updateComponent, voucherData} from "../../libs/function";
 import {TouchableOpacity, View} from "react-native";
 import {Card, Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {itemTotalCalculation} from "../../libs/item-calculation";
 import {setCartData, setUpdateCart} from "../../redux-store/reducer/cart-data";
-import {device} from "../../libs/static";
+import {device, VOUCHER} from "../../libs/static";
 import {ProIcon} from "../../components";
 import Discount from "./Discount";
+import SwitchC from "../../components/Switch";
 
 
-const Index = ({cartData}: any) => {
+const Index = ({cartData,localSettings}: any) => {
+
+    const {vouchersubtotaldisplay, vouchertotaldisplay, globaltax,globaldiscountvalue,adjustmentamount,vouchertaxtype,discounttype,invoiceitems, voucherroundoffdisplay} = cartData
 
     const dispatch = useDispatch()
 
-    const {vouchersubtotaldisplay, vouchertotaldisplay, globaltax, voucherroundoffdisplay}: any = cartData;
     const [summary,setSummary]:any = useState(false);
 
-    const [globaldiscount, setGlobalDiscount] = useState(cartData?.globaldiscountvalue);
-    const [adjustment, setAdjustment] = useState(cartData?.adjustmentamount);
-    const [discountType, setDiscountType] = useState(cartData?.discounttype);
+    const [globaldiscount, setGlobalDiscount] = useState(globaldiscountvalue);
+    const [adjustment, setAdjustment] = useState(adjustmentamount);
+    const [discountType, setDiscountType] = useState(discounttype);
 
     useEffect(() => {
-        if (!Boolean(cartData?.globaldiscountvalue)) {
+        if (!Boolean(globaldiscountvalue)) {
             setGlobalDiscount("")
         }
-    }, [cartData?.globaldiscountvalue])
+    }, [globaldiscountvalue])
 
     useEffect(() => {
-        if (!Boolean(adjustment) && Boolean(cartData?.adjustmentamount)) {
-            setAdjustment(cartData?.adjustmentamount)
+        if (!Boolean(adjustment) && Boolean(adjustmentamount)) {
+            setAdjustment(adjustmentamount)
         }
-        if (!Boolean(cartData?.adjustmentamount)) {
+        if (!Boolean(adjustmentamount)) {
             setAdjustment("")
         }
-    }, [cartData?.adjustmentamount])
+    }, [adjustmentamount])
 
 
     useEffect(() => onBlurHandler(), [discountType])
@@ -47,15 +49,24 @@ const Index = ({cartData}: any) => {
         }));
     }
 
+    const setTotal = () => {
+        if(!summary){
+            let data = itemTotalCalculation(clone(cartData), undefined, undefined, undefined, undefined, 2, 2, false, false);
+            dispatch(setCartData(clone(data)));
+            dispatch(setUpdateCart());
+        }
+        setSummary(!summary)
+    }
+
     const onBlurDiscount = () => {
 
         dispatch(setCartData({
-            globaldiscountvalue: cartData?.vouchertaxtype === "inclusive" ? 0 : globaldiscount,
+            globaldiscountvalue: vouchertaxtype === "inclusive" ? 0 : globaldiscount,
             adjustmentamount: adjustment,
             discounttype: discountType,
             updatecart: true,
-            invoiceitems: cartData.invoiceitems.map((item: any) => {
-                if (cartData?.vouchertaxtype === "inclusive") {
+            invoiceitems: invoiceitems.map((item: any) => {
+                if (vouchertaxtype === "inclusive") {
                     item = {...item, productdiscountvalue: globaldiscount, productdiscounttype: discountType}
                 }
                 return {...item, change: true}
@@ -63,14 +74,19 @@ const Index = ({cartData}: any) => {
         }));
     }
 
+    /*const toggleSwitch = (value:any) => {
+        saveLocalSettings('realtimetotalcalculation',value).then()
+    }*/
 
 
-    return (<Card   onPress={()=>{setSummary(!summary)}} style={[styles.mt_3]}>
+    return (<Card   onPress={()=>{setTotal()}} style={[styles.mt_3]}>
         <Card.Content >
 
             <View><Paragraph style={[styles.absolute,{top:0,left:'50%',marginLeft:-10}]}><ProIcon name={summary?'chevron-down':'chevron-up'} action_type={'text'} size={15}/></Paragraph></View>
 
             <View style={{display:summary?'flex':'none'}}>
+
+
 
                 <View style={[styles.grid, styles.justifyContent]}>
                     <View><Paragraph style={[styles.paragraph]}>Subtotal</Paragraph></View>
@@ -83,7 +99,7 @@ const Index = ({cartData}: any) => {
                 </View>*/}
 
                 {
-                    globaltax.map((tax: any, key: any) => {
+                    globaltax?.map((tax: any, key: any) => {
                         return (
                             <View style={[styles.grid, styles.justifyContent]} key={key}>
                                 <View><Paragraph style={[styles.paragraph]}>{tax.taxname}</Paragraph></View>
@@ -113,7 +129,8 @@ const Index = ({cartData}: any) => {
 }
 
 const mapStateToProps = (state: any) => ({
-    cartData: state.cartData || {}
+    cartData: state.cartData,
+    localSettings:state.localSettings
 })
 
 export default connect(mapStateToProps)(withTheme(Index));

@@ -4,9 +4,10 @@ import {Divider, List} from "react-native-paper";
 import {styles} from "../../theme";
 
 import {useDispatch} from "react-redux";
-import {setSelected, setSelectedData} from "../../redux-store/reducer/selected-data";
+import {setSelected} from "../../redux-store/reducer/selected-data";
+import {appLog} from "../../libs/function";
 
-const Index = (props: any) => {
+const Index = memo((props: any) => {
 
     const {item, selected} = props;
 
@@ -25,7 +26,7 @@ const Index = (props: any) => {
         />
         <Divider/>
     </TouchableOpacity>
-}
+})
 
 
-export default memo(Index);
+export default Index;

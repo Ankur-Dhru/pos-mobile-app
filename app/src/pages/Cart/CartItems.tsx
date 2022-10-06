@@ -1,6 +1,6 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 
-import {ScrollView, TouchableOpacity, View} from "react-native";
+import {FlatList, ScrollView, TouchableOpacity, View} from "react-native";
 
 import {connect} from "react-redux";
 
@@ -10,59 +10,46 @@ import {styles} from "../../theme";
 import {Card, Paragraph, Text} from "react-native-paper";
 import CartSummary from "./CartSummary";
 import Button from "../../components/Button";
-import {appLog, isRestaurant} from "../../libs/function";
+import {appLog, clone, isRestaurant} from "../../libs/function";
 import {device} from "../../libs/static";
 import ProIcon from "../../components/ProIcon";
 
+
+const ITEM_HEIGHT = 100;
 const Index = (props: any) => {
 
 
+    let {selectItem, invoiceitems,kots} = props;
 
-
-    let {selectItem, itemid} = props;
-    let scrollRef: any = useRef();
     const hasrestaurant = isRestaurant();
 
     const [displayKOT,setDisplayKOT]:any = useState(false)
-
-    let {
-        invoiceitems,
-        kots,
-        vouchersubtotaldisplay,
-        vouchertotaldisplay,
-        globaltax,
-        voucherroundoffdisplay
-    }: any = props.cartData;
+    const flatListRef = React.useRef<FlatList>(null);
 
 
-    if (Boolean(itemid)) {
-        invoiceitems = invoiceitems.filter((item: any) => {
-            return item.productid === itemid;
-        })
-    }
 
-    useEffect(() => {
-        setTimeout(() => {
-            invoiceitems?.length > 0 && scrollRef?.current.scrollToEnd();
-        }, 500)
-    }, [invoiceitems.length])
+    React.useLayoutEffect(() => {
+        const timeout = setTimeout(() => {
+            if (flatListRef.current && invoiceitems && invoiceitems.length > 0) {
+                flatListRef.current.scrollToEnd({ animated: true });
+            }
+        }, 500);
+        return () => {
+            clearTimeout(timeout);
+        };
+    }, [invoiceitems?.length]);
 
 
-    const renderitems = (i: any, key: any) => {
-        return (
-            <Item item={i} key={i.key} hasLast={invoiceitems.length === key+1} isRestaurant={hasrestaurant} selectItem={selectItem}  index={key}/>
-        );
-    };
+    const renderItem = useCallback(({item, index}: any) => <Item item={item} key={item.key} hasLast={invoiceitems.length === index+1} isRestaurant={hasrestaurant} selectItem={selectItem}  index={index}/>, []);
+    const renderKot = useCallback(({item, index}: any) => <Kot kot={item} hasLast={kots.length === index+1} key={item.key} />, []);
 
-    const renderkots = (i: any, key: any) => {
-        return (
-            <Kot kot={i} hasLast={kots.length === key+1} key={i.key} />
-        );
-    };
+
+    appLog('cartitems list')
+
 
     return (
         <>
-            {Boolean(kots.length > 0) &&  <View>
+            {Boolean(kots?.length > 0) &&  <View>
                 <View style={[styles.grid,styles.justifyContent,styles.mb_2]}>
 
                     <Button style={[styles.w_auto]} compact={true}  onPress={() => {setDisplayKOT(false)}} secondbutton={displayKOT} ><Text style={{color:'black'}}>Items</Text></Button>
@@ -70,41 +57,42 @@ const Index = (props: any) => {
                 </View>
             </View>}
 
-            <ScrollView ref={scrollRef} style={[styles.bg_white,{borderRadius:5}]}>
-                {(Boolean(invoiceitems.length > 0) || Boolean(kots.length > 0)) ? <Card style={[Boolean(itemid) && styles.card,!device.tablet && styles.noshadow]}>
-                    {<View>
-                        {displayKOT ? <>
-                            {
-                                Boolean(kots.length) && kots.map((item: any, key: any) => {
-                                    return renderkots(item, key)
-                                })
-                            }
-                        </>
-                            :
-                        <>
-                            {
-                                Boolean(invoiceitems.length) && invoiceitems.map((item: any, key: any) => {
-                                    return renderitems(item, key)
-                                })
-                            }
-                        </>}
-                    </View>}
-                </Card> : <Card>
-                    <Card.Content>
-                        <View style={{marginTop:50}}><Paragraph style={[styles.paragraph,{textAlign:'center'}]}>No any item(s) added</Paragraph></View>
-                        <View  style={{marginTop:20}}><Paragraph  style={[styles.paragraph,{textAlign:'center'}]}><ProIcon name={'utensils'} size={25}/></Paragraph></View>
-                    </Card.Content>
-                </Card> }
-            </ScrollView>
 
-            {!Boolean(itemid) && <CartSummary/>}
+            {displayKOT ? <>
+                    <FlatList
+                        data={kots}
+                        renderItem={renderKot}
+                    />
+                </>
+                :
+                <FlatList
+                    data={invoiceitems}
+                    ref={flatListRef}
+                    getItemLayout={(data, index) => {
+                        return { length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index };
+                    }}
+                    renderItem={renderItem}
+                    ListEmptyComponent={()=>{
+                        return (
+                            <Card>
+                                <Card.Content>
+                                    <View style={{marginTop:50}}><Paragraph style={[styles.paragraph,{textAlign:'center'}]}>No any item(s) added</Paragraph></View>
+                                    <View  style={{marginTop:20}}><Paragraph  style={[styles.paragraph,{textAlign:'center'}]}><ProIcon name={'utensils'} size={25}/></Paragraph></View>
+                                </Card.Content>
+                            </Card>
+                        )
+                    }}
+
+                />}
+
         </>
     )
 }
 
 
 const mapStateToProps = (state: any) => ({
-    cartData: state.cartData
+    invoiceitems: state.cartData.invoiceitems,
+    kots: state.cartData.kots
 })
 
 export default connect(mapStateToProps)(Index);

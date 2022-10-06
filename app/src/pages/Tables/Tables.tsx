@@ -1,5 +1,5 @@
 import {current, device, localredux} from "../../libs/static";
-import React, {useEffect, useState} from "react";
+import React, {memo, useCallback, useEffect, useState} from "react";
 import {appLog, isEmpty, toCurrency} from "../../libs/function";
 import {FlatList, Text, TouchableOpacity, View} from "react-native";
 import {Card, FAB, Paragraph, withTheme} from "react-native-paper";
@@ -7,7 +7,7 @@ import {styles} from "../../theme";
 
 import {connect, useDispatch} from "react-redux";
 import ProIcon from "../../components/ProIcon";
-import {resetCart, setCartData} from "../../redux-store/reducer/cart-data";
+import {refreshCartData, resetCart, setCartData} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
 
 
@@ -61,30 +61,27 @@ const Index = (props: any) => {
 
     const placeOrder = (ordertype:any) => {
         dispatch(resetCart())
-        current.table = {'tablename': ordertype.label, ordertype: ordertype.value};
-        dispatch(setCartData(current.table))
+        current.table = {'tablename': ordertype.label, ordertype: ordertype.value,invoiceitems:[]};
+        dispatch(refreshCartData(current.table))
         navigation.navigate('CartStackNavigator', current.table)
     }
 
+    const Item = memo(
+        ({item}: any) => {
 
-
-
-
-    const renderitemssquare = ({item}: any) => {
-
-        return (
-            <View style={[{minWidth: 150}, styles.flexGrow,]} key={item.tableid}>
-                <TouchableOpacity style={[styles.m_2,styles.noshadow,  {height: 125,backgroundColor:styles.secondary.color,borderRadius:5}]}
-                      onPress={() => {
-                          current.table = item;
-                          navigation.navigate('CartStackNavigator', {...item})
-                      }}>
-                    <View style={[styles.p_5]}>
-                        <View style={[styles.grid, styles.mb_3]}>
-                            <View
-                            style={[styles.badge, styles.px_5, {backgroundColor: Boolean(item.vouchertotaldisplay) ? styles.green.color : styles.red.color}]}>
-                                <Text style={[styles.paragraph, styles.text_xs, {color: 'white'}]}>{item.tablename || 'Retail'}</Text></View></View>
-                            {Boolean(item.vouchertotaldisplay) && <>
+            return (
+                <View style={[{minWidth: 150}, styles.flexGrow,]} key={item.tableid}>
+                    <TouchableOpacity style={[styles.m_2,styles.noshadow,  {height: 125,backgroundColor:styles.secondary.color,borderRadius:5}]}
+                                      onPress={() => {
+                                          current.table = {invoiceitems:[],...item};
+                                          navigation.navigate('CartStackNavigator', current.table)
+                                      }}>
+                        <View style={[styles.p_5]}>
+                            <View style={[styles.grid, styles.mb_3]}>
+                                <View
+                                    style={[styles.badge, styles.px_5, {backgroundColor: Boolean(item.invoiceitems?.length) ? styles.green.color : styles.red.color}]}>
+                                    <Text style={[styles.paragraph, styles.text_xs, {color: 'white'}]}>{item.tablename || 'Retail'}</Text></View></View>
+                            {Boolean(item.invoiceitems?.length) && <>
                                 <Paragraph><ProIcon align={'left'} name={'user'} action_type={'text'}
                                                     size={13}/> {item.paxes} x {item.clientname}</Paragraph>
                                 <View style={[styles.mt_3]}>
@@ -92,11 +89,19 @@ const Index = (props: any) => {
                                         style={[styles.paragraph, styles.text_lg,styles.bold, {color: styles.green.color}]}>{toCurrency(item.vouchertotaldisplay)}</Text>
                                 </View>
                             </>}
-                    </View>
-                </TouchableOpacity>
-            </View>
-        )
-    }
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            );
+        },
+        (r1, r2) => {
+            return r1.item.tableid === r2.item.tableid;
+        }
+    );
+
+    const renderItem = useCallback(({item, index}: any) => <Item item={item} key={index}/>, []);
+
+
 
     return (
         <>
@@ -111,7 +116,7 @@ const Index = (props: any) => {
                     return table.ordertype === ordertype?.value
                 }
             })}
-            renderItem={renderitemssquare}
+            renderItem={renderItem}
             numColumns={device.tablet?4:2}
 
             ListEmptyComponent={()=>{

@@ -1,6 +1,6 @@
 import React, {memo, useEffect, useState} from "react";
-import {clone, getType, toCurrency} from "../../libs/function";
-import {TouchableOpacity, View} from "react-native";
+import {appLog, clone, getType, toCurrency} from "../../libs/function";
+import {Animated, TouchableOpacity, View} from "react-native";
 import {Divider, Paragraph, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import AddButton from "../Items/AddButton";
@@ -10,33 +10,31 @@ import ItemDetail from "../Items/ItemDetail";
 import {connect, useDispatch} from "react-redux";
 import { localredux } from "../../libs/static";
 
+const Index = memo((props: any) => {
 
-const Index = (props: any) => {
-
-    const {item, index,  theme: {colors}, isRestaurant,hasLast} = props;
+    const {item, index,  theme: {colors}, isRestaurant,hasLast,length} = props;
     const{unit}:any = localredux.initData
 
-    const [product, setProduct]: any = useState(item)
-
-    useEffect(() => {
-        setProduct(item)
-    }, [item])
-
     const editCartitem = async () => {
-        if (!Boolean(product.kotid)) {
-            await dispatch(setItemDetail(clone(product)));
+        if (!Boolean(item.kotid)) {
+
+            await dispatch(setItemDetail(clone(item)));
             await dispatch(setBottomSheet({
                 visible: true,
                 height: '80%',
-                component: () => <ItemDetail edit={true} parentsetProduct={setProduct} index={index}/>
+                component: () => <ItemDetail edit={true}  index={index}/>
             }))
         }
     }
 
     const dispatch = useDispatch()
 
-    const haskot = Boolean(product.kotid);
+    const haskot = Boolean(item?.kotid);
 
+
+    if(!Boolean(item)){
+        return <></>
+    }
 
 
     return (
@@ -48,8 +46,9 @@ const Index = (props: any) => {
             borderRadius: 5
         }]}>
 
+
             <View>
-                <View style={[styles.px_5, styles.py_4,(hasLast && !haskot) && {backgroundColor:styles.secondary.color,borderRadius:5,marginBottom:5}]}>
+                <View style={[styles.px_5, styles.py_4,{borderRadius:5,marginBottom:5}]}>
                     <View>
 
                         <TouchableOpacity onPress={async () => {
@@ -67,29 +66,19 @@ const Index = (props: any) => {
 
                                     <Paragraph
                                         style={[styles.paragraph, styles.text_xs, styles.bold, styles.ellipse]}
-                                        numberOfLines={1}>{product.itemname || product.productdisplayname}</Paragraph>
+                                        numberOfLines={1}>{item.itemname}</Paragraph>
 
 
-                                    {!isRestaurant && <View style={[styles.grid]}>
-                                        <Text style={[styles.badge, styles.text_xxs, {
-                                            padding: 3,
-                                            textAlignVertical: 'top',
-                                            textTransform: 'uppercase',
-                                            backgroundColor: product.itemtype === 'service' ? 'orange' : 'green'
-                                        }]}>
-                                            {product.itemtype}
-                                        </Text>
-                                    </View>}
 
 
                                     <View style={[styles.wrap, styles.py_2]}>
-                                        {Boolean(product.notes) && <Text
+                                        {Boolean(item.notes) && <Text
                                             style={[styles.muted, styles.text_xs, {fontStyle: 'italic'}]}
-                                            numberOfLines={1}>{product.notes} </Text>}
+                                            numberOfLines={1}>{item.notes} </Text>}
 
-                                        {Boolean(product?.itemtags) && <>
+                                        {Boolean(item?.itemtags) && <>
                                             {
-                                                product?.itemtags.map((tags: any) => {
+                                                item?.itemtags.map((tags: any) => {
                                                     {
                                                         return tags?.taglist.map((list: any, key: any) => {
                                                             if (list.selected) {
@@ -109,28 +98,28 @@ const Index = (props: any) => {
 
                                     {!isRestaurant && <>
 
-                                        {Boolean(product.hsn) && <Paragraph
-                                            style={[styles.paragraph, styles.muted, styles.text_xs]}>{product.itemtype === 'service' ? 'SAC Code' : 'HSN Code'} : {product.hsn}</Paragraph>}
-                                        {Boolean(product.sku) &&
+                                        {Boolean(item.hsn) && <Paragraph
+                                            style={[styles.paragraph, styles.muted, styles.text_xs]}>{item.itemtype === 'service' ? 'SAC Code' : 'HSN Code'} : {item.hsn}</Paragraph>}
+                                        {Boolean(item.sku) &&
                                             <Paragraph style={[styles.paragraph, styles.muted, styles.text_xs]}>SKU
-                                                : {product.sku}</Paragraph>}
+                                                : {item.sku}</Paragraph>}
 
 
                                         <View style={[styles.grid, styles.middle]}>
 
-                                            {Boolean(product.serial) && <View style={[styles.w_auto]}>
+                                            {Boolean(item.serial) && <View style={[styles.w_auto]}>
                                                 <View>
                                                     {
-                                                        Object.keys(product.serial).map((key: any) => {
+                                                        Object.keys(item.serial).map((key: any) => {
                                                             return (
                                                                 <Paragraph>
                                                                     <Paragraph
                                                                         style={[styles.paragraph, styles.muted, styles.text_xs, styles.mr_2]}>Serial
                                                                         No
-                                                                        : {getType(product.serial[key]) === 'object' ? product.serial[key].serialno : product.serial[key]}</Paragraph>
-                                                                    {Boolean(product.serial[key].mfdno) && <Paragraph
+                                                                        : {getType(item.serial[key]) === 'object' ? item.serial[key].serialno : item.serial[key]}</Paragraph>
+                                                                    {Boolean(item.serial[key].mfdno) && <Paragraph
                                                                         style={[styles.paragraph, styles.muted, styles.text_xs]}> MFD
-                                                                        No : {product.serial[key].mfdno}</Paragraph>}
+                                                                        No : {item.serial[key].mfdno}</Paragraph>}
                                                                 </Paragraph>
                                                             )
                                                         })
@@ -149,27 +138,22 @@ const Index = (props: any) => {
                                             <View>
                                                 <View style={[styles.grid]}>
                                                     <Paragraph style={[styles.paragraph, styles.text_xs]}>
-                                                        {product.productqnt} {unit[product.productqntunitid] && unit[product.productqntunitid].unitcode} x
+                                                        {item.productqnt} {unit[item.itemunit] && unit[item.itemunit].unitcode} x
                                                     </Paragraph>
 
                                                     <Paragraph
-                                                        style={[styles.paragraph, styles.text_xs, {paddingLeft: 5}]}>{toCurrency(product.productratedisplay || '0')} each = </Paragraph>
+                                                        style={[styles.paragraph, styles.text_xs, {paddingLeft: 5}]}>{toCurrency(item.productratedisplay || '0')} each = </Paragraph>
 
-
-                                                    {/*{!isRestaurant && <Paragraph style={[styles.paragraph, styles.text_xs, styles.textRight]}>
-                                                ({tax[product.producttaxgroupid]?.taxgroupname})
-                                            </Paragraph>
-                                            }*/}
                                                 </View>
                                             </View>
 
                                             <View>
                                                 <Paragraph
-                                                    style={[styles.paragraph, styles.text_xs, styles.textRight, Boolean(product.productdiscountvalue !== '0' && product.productdiscountvalue) && {
+                                                    style={[styles.paragraph, styles.text_xs, styles.textRight, Boolean(item.itemdiscountvalue !== '0' && item.itemdiscountvalue) && {
                                                         textDecorationLine: 'line-through',
                                                         color: styles.red.color
                                                     }]}>
-                                                    {toCurrency(product.item_total_amount_display || '0')}
+                                                    {toCurrency((item.productratedisplay * item.productqnt) || '0')}
                                                 </Paragraph>
                                             </View>
                                         </View>
@@ -177,24 +161,24 @@ const Index = (props: any) => {
 
                                         <View>
                                             {
-                                                product?.itemaddon?.map((addon: any, index: any) => {
+                                                item?.itemaddon?.map((addon: any, index: any) => {
 
                                                     return (
                                                         <View key={index}>
                                                             <View style={[styles.grid, styles.justifyContentSpaceBetween]}>
                                                                 <View style={[styles.grid]}>
                                                                     <Paragraph style={[styles.paragraph, styles.text_xs]}>
-                                                                        {addon.productqnt} {unit[addon.productqntunitid] && unit[addon.productqntunitid].unitcode} {addon.itemname} x
+                                                                        {addon.itemqnt} {unit[addon.itemqntunitid] && unit[addon.itemqntunitid].unitcode} {addon.itemname} x
                                                                     </Paragraph>
 
                                                                     <Paragraph
-                                                                        style={[styles.paragraph, styles.text_xs, {paddingLeft: 5}]}>{toCurrency(addon.productratedisplay || '0')} each</Paragraph>
+                                                                        style={[styles.paragraph, styles.text_xs, {paddingLeft: 5}]}>{toCurrency(addon.itemratedisplay || '0')} each</Paragraph>
 
                                                                 </View>
 
                                                                 <View style={[styles.ml_auto]}>
                                                                     <Paragraph
-                                                                        style={[styles.paragraph, styles.text_xs, styles.textRight, Boolean(product.productdiscountvalue !== '0' && product.productdiscountvalue) && {
+                                                                        style={[styles.paragraph, styles.text_xs, styles.textRight, Boolean(item.itemdiscountvalue !== '0' && item.itemdiscountvalue) && {
                                                                             textDecorationLine: 'line-through',
                                                                             color: styles.red.color
                                                                         }]}>
@@ -217,7 +201,7 @@ const Index = (props: any) => {
                                 </View>
                                 <View style={[{paddingRight: 0}]}>
 
-                                    {!haskot && <AddButton product={product} fromcart={true} selectItem={setProduct}/>}
+                                   {!haskot && <AddButton item={item}/>}
 
                                 </View>
                             </View>
@@ -231,7 +215,7 @@ const Index = (props: any) => {
 
                 </View>
 
-                {!hasLast &&  <Divider style={[styles.divider, {borderBottomColor: colors.divider}]}/>}
+                {<Divider style={[styles.divider, {borderBottomColor: colors.divider}]}/>}
 
             </View>
 
@@ -239,10 +223,10 @@ const Index = (props: any) => {
         </View>
 
     );
+},(r1, r2) => {
+      return r1.item === r2.item;
+})
 
 
-}
-
-
-export default withTheme(memo(Index));
+export default withTheme(Index);
 

@@ -46,6 +46,7 @@ const Index = (props: any) => {
         setSearch(search)
     }
 
+    appLog('cart')
 
     return <>
 
@@ -111,9 +112,6 @@ const Index = (props: any) => {
 
                 <CartActions/>
 
-                <View style={{display: 'none'}}>
-                    <CartTotal/>
-                </View>
 
             </> : <>
 

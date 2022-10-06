@@ -100,9 +100,7 @@ const CartStackNavigator = (props:any) => {
     return (
         <Stack.Navigator initialRouteName={'Cart'} >
             <Stack.Screen name={'Cart'} component={()=><Cart tabledetails={params}/>}  options={{headerShown: false}}/>
-            <Stack.Screen name={'SearchItem'} component={()=><SearchItem />}  options={{headerShown: false}}/>
             <Stack.Screen name={'DetailView'} component={DetailView}   options={{headerShown: false, headerTitle: 'Detail View'}}/>
-            <Stack.Screen name={'Payment'} component={Payment} options={{headerShown: false, headerTitle: 'Payment'}}/>
             <Stack.Screen name={'Preview'} component={Preview} options={{headerShown: false, headerTitle: 'Preview'}}/>
         </Stack.Navigator>
     );
@@ -120,26 +118,18 @@ const SalesReportNavigator = (props:any) => {
 
 const DrawerStackNavigator = () => {
 
-    const {firstname, lastname}: any = localredux.authData;
-
-    const screenOption: any = {
-        ...screenOptionStyle,
-        /*headerLeft:()=><View style={[styles.px_5]}><TouchableOpacity onPress={()=>{}}>
-            <Avatar label={firstname + ' ' +lastname} value={1} size={28}  />
-        </TouchableOpacity>
-        </View>,*/
-    };
     return (
         <Drawer.Navigator
             drawerContent={(props) => <DrawerNavigatorContent {...props}/>}
             initialRouteName={isRestaurant() ? 'TablesStackNavigator' : 'CartStackNavigator'}
-            screenOptions={{...screenOption, headerShown: false}}>
+            screenOptions={{...screenOptions, headerShown: false}}>
             <Drawer.Screen name={'TablesStackNavigator'} component={TablesStackNavigator}
                            options={{headerShown: false, headerTitle: 'Tables'}}/>
             <Drawer.Screen name={'CartStackNavigator'} component={CartStackNavigator} options={({route}: any) => ({
                 headerShown: false,
                 title: route?.params?.tablename || 'POS'
             })}/>
+            <Drawer.Screen name={'Payment'} component={Payment} options={{headerShown: false, headerTitle: 'Payment'}}/>
             <Drawer.Screen name={'SalesReportNavigator'} component={SalesReportNavigator} options={({route}: any) => ({
                 headerShown: false,
                 title: route?.params?.tablename || 'POS'

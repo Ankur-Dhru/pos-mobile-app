@@ -1,6 +1,6 @@
 import store from "../redux-store/store";
 import moment from "moment";
-import {resetCart, setCartData, updateCartItems} from "../redux-store/reducer/cart-data";
+import {changeCartItem, resetCart, setCartData, updateCartItems} from "../redux-store/reducer/cart-data";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProIcon from "../components/ProIcon";
 
@@ -11,7 +11,12 @@ import {ACTIONS, current, localredux, METHOD, posUrl, STATUS, taxTypes, VOUCHER}
 import {setInitData} from "../redux-store/reducer/init-data";
 import {setItemsData} from "../redux-store/reducer/items-data";
 import {setclientsData} from "../redux-store/reducer/clients-data";
-import {setCurrentLocation, setLastSyncTime, setRestaurant} from "../redux-store/reducer/local-settings-data";
+import {
+  setCurrentLocation,
+  setLastSyncTime,
+  setRestaurant,
+  setSettings
+} from "../redux-store/reducer/local-settings-data";
 let NumberFormat = require('react-number-format');
 const getSymbolFromCurrency = require('currency-symbol-map')
 import React from "react";
@@ -23,6 +28,7 @@ import KOTCancelReason from "../pages/Cart/KOTCancelReason";
 import SyncingInfo from "../pages/Pin/SyncingInfo";
 import {setSyncDetail} from "../redux-store/reducer/sync-data";
 import {setOrder} from "../redux-store/reducer/orders-data";
+import {getProductData, itemTotalCalculation} from "./item-calculation";
 
 let base64 = require('base-64');
 let utf8 = require('utf8');
@@ -681,7 +687,120 @@ export const errorAlert = (message: any, title?: any) => {
   );
 }
 
+export const voucherTotal = (items:any) => {
+  let vouchertotaldisplay = 0;
+  items.forEach(({productratedisplay,productqnt}:any)=>{
+    vouchertotaldisplay+=productratedisplay * productqnt
+  })
+  return vouchertotaldisplay
+}
 
+
+
+export const setItemRowData = (data:any) => {
+
+  try {
+
+    let isInward: boolean = false;
+    let companyCurrency = getDefaultCurrency();
+
+
+    let {cartData,localSettings}: any = store.getState();
+    let {localSettingsData}: any = localredux;
+
+    let client = cartData?.client;
+
+    let pricingTemplate = localSettingsData?.taxInvoice ? client?.clientconfig?.pricingtemplate : undefined
+
+    let isDepartmentSelected = false;
+
+    if (!isEmpty(localSettingsData?.currentLocation?.departments)) {
+      isDepartmentSelected = localSettingsData?.currentLocation?.departments.some(({departmentid}: any) => departmentid === data?.itemdepartmentid)
+    }
+
+
+    let {
+      itemid,
+      itemname,
+      itemtaxgroupid,
+      pricing,
+      productqnt,
+      itemmaxqnt,
+      salesunit,
+      stockonhand,
+      inventorytype,
+      identificationtype,
+      itemhsncode,
+      itemtype,
+      committedstock,
+      itemminqnt,
+      itemaddon,
+      itemtags,
+      notes,
+      hasAddon,
+      key
+    } = data;
+
+
+
+    let recurring = undefined, producttaxgroupid, productqntunitid;
+
+    if (pricing?.type !== "free" &&
+        pricing.price &&
+        pricing.price.default &&
+        pricing.price.default[0] &&
+        pricing.price.default.length > 0) {
+      recurring = Object.keys(pricing.price.default[0])[0];
+    }
+    if (Boolean(salesunit)) {
+      productqntunitid = salesunit;
+    }
+
+    if (Boolean(itemtaxgroupid)) {
+      producttaxgroupid = itemtaxgroupid;
+    }
+
+
+    let additem: any = {
+      identificationtype,
+      productid: itemid,
+      productdisplayname: itemname,
+      productqnt: productqnt || (Boolean(itemminqnt) ? itemminqnt : 1),
+      producttaxgroupid,
+      pricingtype: pricing.type,
+      recurring,
+      minqnt: Boolean(itemminqnt) ? parseFloat(itemminqnt) : undefined,
+      maxqnt: Boolean(itemmaxqnt) ? parseFloat(itemmaxqnt) : undefined,
+      productqntunitid,
+      "accountid": 2,
+      clientid: cartData?.clientid,
+      productdiscounttype: "%",
+      stockonhand,
+      hsn: itemhsncode,
+      itemtype: itemtype === "service" ? "service" : "goods",
+      committedstock,
+      inventorytype,
+      itemaddon,
+      itemtags,
+      notes,
+      hasAddon,
+      isDepartmentSelected,
+      ...getProductData(data, 'INR', 'INR', undefined, undefined, isInward, pricingTemplate)
+    }
+
+    additem.key = key;
+    additem.change = true;
+    additem.itemdetail = clone(data);
+    additem.newitem = true;
+
+    return additem;
+
+
+  } catch (e) {
+    appLog(e);
+  }
+
+}
 
 
 export const saveTempLocalOrder = async (order?:any) => {
@@ -692,6 +811,9 @@ export const saveTempLocalOrder = async (order?:any) => {
     }
 
   if(Boolean(order.invoiceitems.length > 0)) {
+
+    order = itemTotalCalculation(clone(order), undefined, undefined, undefined, undefined, 2, 2, false, false);
+
 
     if(!Boolean(order.tableorderid)){
       order = {
@@ -737,6 +859,18 @@ export const deleteTempLocalOrder = async (tableorderid:any) => {
 
 }
 
+
+export const saveLocalSettings = async (key:any,setting?:any) => {
+  await retrieveData('fusion-pro-pos-mobile-settings').then(async (data:any)=>{
+    data = {
+      ...data,
+      [key]:setting
+    }
+    await storeData('fusion-pro-pos-mobile-settings',data).then(async ()=>{
+      await store.dispatch(setSettings(clone(data)));
+    });
+  })
+}
 
 export const saveLocalOrder = async (order?:any) => {
 

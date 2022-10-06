@@ -9,12 +9,14 @@ import {styles} from "../../theme";
 import Button from "../../components/Button";
 import {setDialog} from "../../redux-store/reducer/component";
 import {objToArray} from "../../libs/function";
+import {localredux} from "../../libs/static";
 
 
 
 const Index = (props: any) => {
 
-    const {reason,type,cancelKOT,confirmCancelOrder} = props;
+    const {type,cancelKOT,confirmCancelOrder} = props;
+    const {reason}:any = localredux.initData
 
     const reasonlist = reason[type];
 
@@ -89,7 +91,6 @@ const Index = (props: any) => {
 
 const mapStateToProps = (state: any) => {
     return {
-        reason: state.initData.reason,
         cartData: state.cartData || {},
     }
 }

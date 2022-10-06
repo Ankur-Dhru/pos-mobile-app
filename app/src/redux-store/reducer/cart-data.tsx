@@ -1,5 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit'
-import {clone} from "../../libs/function";
+import {appLog, clone, isEmpty, voucherTotal} from "../../libs/function";
 import {current, defaultclient} from "../../libs/static";
 import {v4 as uuid} from "uuid";
 
@@ -48,10 +48,12 @@ let intialState: any = {
     selectedindex: [],
     kots: [],
     ordersource: 1,
+    vouchersubtotaldisplay:0,
+    vouchertotaldisplay:0,
+    globaldiscountvalue:0,
+    adjustmentamount:0,
+    voucherroundoffdisplay:0
 }
-
-
-
 
 
 export const cartData = createSlice({
@@ -61,18 +63,26 @@ export const cartData = createSlice({
         setCartData: (state: any, action) => {
             return {...state, ...action.payload}
         },
+        refreshCartData: (state: any, action) => {
+            return action.payload
+        },
         setCartItems: (state: any, action) => {
+
+            let invoiceitems =  [
+                ...state?.invoiceitems,
+                action.payload
+            ];
             return {
                 ...state,
-                invoiceitems: [
-                    ...state.invoiceitems,
-                    {...action.payload}
-                ],
+                invoiceitems,
+                vouchertotaldisplay:voucherTotal(invoiceitems),
             }
         },
+
         changeCartItem: (state: any, action: any) => {
             const {itemIndex, item} = action.payload;
-            state.invoiceitems[itemIndex] = {...state.invoiceitems[itemIndex], ...item};
+            state.invoiceitems[itemIndex] = clone({...state.invoiceitems[itemIndex], ...item});
+            state.vouchertotaldisplay = voucherTotal(state.invoiceitems),
             state.updatecart = true;
             return state
         },
@@ -80,6 +90,7 @@ export const cartData = createSlice({
             return {
                 ...state,
                 invoiceitems: action.payload,
+                vouchertotaldisplay : voucherTotal(action.payload),
                 updatecart: true
             }
         },
@@ -128,6 +139,7 @@ export const cartData = createSlice({
 // Action creators are generated for each case reducer function
 export const {
     setCartData,
+    refreshCartData,
     setCartItems,
     setUpdateCart,
     updateCartItems,

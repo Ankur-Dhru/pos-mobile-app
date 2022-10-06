@@ -15,7 +15,6 @@ import PageLoader from "../../components/PageLoader";
 
 const Index = ({cartData}: any) => {
 
-    appLog('cartData.vouchertotaldisplay',cartData.vouchertotaldisplay)
 
 
     let {vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}: any = cartData;
@@ -162,6 +161,8 @@ const Index = ({cartData}: any) => {
     if(!loaded){
         return <PageLoader />
     }*/
+
+    appLog('payment')
 
 
     return <Container config={{}}>
@@ -401,7 +402,7 @@ const Index = ({cartData}: any) => {
 }
 
 const mapStateToProps = (state: any) => ({
-    cartData: state.cartData,
+     cartData: state.cartData,
 })
 
 export default connect(mapStateToProps)(withTheme(Index));

@@ -1,13 +1,12 @@
 import React, {useEffect, useState} from "react";
-import {isRestaurant} from "../../libs/function";
+import {isRestaurant, voucherData} from "../../libs/function";
 import Cart from "./Cart";
-import {localredux, PRODUCTCATEGORY} from "../../libs/static";
+import {localredux, PRODUCTCATEGORY, VOUCHER} from "../../libs/static";
 import {useDispatch} from "react-redux";
 import {withTheme} from "react-native-paper";
 import {setSelected} from "../../redux-store/reducer/selected-data";
-import {resetCart, setCartData,} from "../../redux-store/reducer/cart-data";
-import {ActivityIndicator, View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import {refreshCartData} from "../../redux-store/reducer/cart-data";
+import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
 
 const Index = ({tabledetails}: any) => {
@@ -17,18 +16,18 @@ const Index = ({tabledetails}: any) => {
     const hasrestaurant = isRestaurant();
     const dispatch = useDispatch();
     const navigation = useNavigation()
-    const [loaded,setLoaded] = useState(false)
+    const [loaded, setLoaded] = useState(false)
 
     useEffect(() => {
-        dispatch(resetCart())
-        dispatch(setCartData(tabledetails))
+        const voucherDataJson: any = voucherData(VOUCHER.INVOICE, false);
+        dispatch(refreshCartData({...tabledetails,...voucherDataJson}))
         dispatch(setSelected({value: mainproductgroupid, field: 'group'}))
     }, [])
 
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
-            setTimeout(()=>{
+            setTimeout(() => {
                 setLoaded(true)
             })
         });
@@ -36,35 +35,11 @@ const Index = ({tabledetails}: any) => {
     }, []);
 
 
-    if(!loaded){
-        return <PageLoader />
+    if (!loaded) {
+        return <PageLoader/>
     }
 
     return <Cart tabledetails={tabledetails}/>
-
-    /*return <Container  config={{
-        title: tabledetails?.tablename || 'Retail',
-        backAction: () => {
-            saveTempLocalOrder().then(() => {})
-        },
-        actions:()=><Appbar.Action
-                        icon={()=><ProIcon name={'print'}
-                               color={'white'}
-                               action_type={'text'} />}
-                                onPress={() => {
-                                    dispatch(setBottomSheet({
-                                        visible: true,
-                                        fullView: true,
-                                        height:'100%',
-                                        component: ()=> <SearchItem/>
-                                    }))
-                                }}
-                        />,
-        drawer: !hasrestaurant,
-        hideback: !hasrestaurant
-    }}>
-        <Cart tabledetails={tabledetails}   />
-    </Container>*/
 }
 
 

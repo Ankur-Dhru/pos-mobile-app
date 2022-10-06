@@ -1,29 +1,21 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback} from "react";
 import {FlatList,   View} from "react-native";
 
 
 import {connect} from "react-redux";
 import GroupItem from "./GroupItem";
-import {localredux} from "../../libs/static";
-import {appLog, groupBy, retrieveData} from "../../libs/function";
 
 const Index = (props: any) => {
 
     const {selectedgroup,groups} = props;
-    const {itemgroup}: any = localredux.initData
 
-
-    const renderitems = ({item}: any) => {
-        return (
-            <GroupItem selected={selectedgroup === item.value} item={item}/>
-        );
-    };
+    const renderItem = useCallback(({item, index}: any) => <GroupItem selected={selectedgroup === item.value} item={item}/>, [selectedgroup]);
 
 
     return <View>
         <FlatList
             data={groups}
-            renderItem={renderitems}
+            renderItem={renderItem}
             keyboardShouldPersistTaps={'handled'}
             initialNumToRender={5}
             maxToRenderPerBatch={10}

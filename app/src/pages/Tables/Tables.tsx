@@ -61,7 +61,7 @@ const Index = (props: any) => {
 
     const placeOrder = (ordertype:any) => {
         dispatch(resetCart())
-        current.table = {'tablename': ordertype.label, ordertype: ordertype.value,invoiceitems:[]};
+        current.table = {'tablename': ordertype.label, ordertype: ordertype.value,invoiceitems:[],kots:[]};
         dispatch(refreshCartData(current.table))
         navigation.navigate('CartStackNavigator', current.table)
     }
@@ -73,7 +73,7 @@ const Index = (props: any) => {
                 <View style={[{minWidth: 150}, styles.flexGrow,]} key={item.tableid}>
                     <TouchableOpacity style={[styles.m_2,styles.noshadow,  {height: 125,backgroundColor:styles.secondary.color,borderRadius:5}]}
                                       onPress={() => {
-                                          current.table = {invoiceitems:[],...item};
+                                          current.table = {invoiceitems:[],kots:[],...item};
                                           navigation.navigate('CartStackNavigator', current.table)
                                       }}>
                         <View style={[styles.p_5]}>
@@ -95,7 +95,7 @@ const Index = (props: any) => {
             );
         },
         (r1, r2) => {
-            return r1.item.tableid === r2.item.tableid;
+            return r1.item === r2.item;
         }
     );
 

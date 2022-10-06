@@ -225,20 +225,25 @@ const Index = ({
     }
 
     const cancelOrder = async () => {
-        const {kots, tableorderid, invoiceitems}: any = cartData
-        if (kots.length === 0 || (kots.length > 0 && invoiceitems.length === 0)) {
-            dispatch(resetCart())
-            navigation.replace('DrawerStackNavigator');
-            if (tableorderid) {
-                deleteTempLocalOrder(tableorderid).then(() => {
-                })
+        try{
+            const {kots, tableorderid, invoiceitems}: any = cartData
+            if (kots?.length === 0 || (kots?.length > 0 && invoiceitems?.length === 0)) {
+                dispatch(resetCart())
+                navigation.replace('DrawerStackNavigator');
+                if (tableorderid) {
+                    deleteTempLocalOrder(tableorderid).then(() => {
+                    })
+                }
+            } else {
+                dispatch(setDialog({
+                    visible: true,
+                    hidecancel: true,
+                    component: () => <CancelReason type={'ordercancelreason'} confirmCancelOrder={confirmCancelOrder}/>
+                }))
             }
-        } else {
-            dispatch(setDialog({
-                visible: true,
-                hidecancel: true,
-                component: () => <CancelReason type={'ordercancelreason'} confirmCancelOrder={confirmCancelOrder}/>
-            }))
+        }
+        catch (e) {
+          appLog('e',e)
         }
     }
 

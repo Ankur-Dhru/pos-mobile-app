@@ -805,45 +805,51 @@ export const setItemRowData = (data:any) => {
 
 export const saveTempLocalOrder = async (order?:any) => {
 
+  try {
 
-    if(!Boolean(order)){
+    if (!Boolean(order)) {
       order = store.getState().cartData
     }
 
-  if(Boolean(order.invoiceitems.length > 0)) {
-
-    order = itemTotalCalculation(clone(order), undefined, undefined, undefined, undefined, 2, 2, false, false);
+    if (Boolean(order.invoiceitems.length > 0)) {
 
 
-    if(!Boolean(order.tableorderid)){
+      order = await itemTotalCalculation(clone(order), undefined, undefined, undefined, undefined, 2, 2, false, false);
+
+
+      if (!Boolean(order.tableorderid)) {
+        order = {
+          ...order,
+          tableorderid: uuid(),
+        }
+      }
+      if (!Boolean(order.tableid)) {
+        order = {
+          ...order,
+          tableid: uuid(),
+        }
+      }
+
       order = {
         ...order,
-        tableorderid:uuid(),
+        terminalid: localredux?.licenseData?.data?.terminal_id
       }
-    }
-    if(!Boolean(order.tableid)){
-      order = {
-        ...order,
-        tableid:uuid(),
+
+      let tableorders: any = store.getState().tableOrdersData || {}
+      tableorders = {
+        ...tableorders,
+        [order.tableorderid]: order
       }
+
+      await storeData('fusion-pro-pos-mobile-tableorder', tableorders).then(async () => {
+        await store.dispatch(setCartData(order));
+        await store.dispatch(setTableOrdersData(tableorders));
+
+      });
     }
-
-    order = {
-      ...order,
-      terminalid: localredux?.licenseData?.data?.terminal_id
-    }
-
-    let tableorders: any = store.getState().tableOrdersData || {}
-    tableorders = {
-      ...tableorders,
-      [order.tableorderid]: order
-    }
-
-    await storeData('fusion-pro-pos-mobile-tableorder',tableorders).then(async () => {
-      await store.dispatch(setCartData(order));
-      await store.dispatch(setTableOrdersData(tableorders));
-
-    });
+  }
+  catch (e){
+    appLog('e',e)
   }
 }
 

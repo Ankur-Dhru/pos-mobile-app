@@ -64,7 +64,7 @@ export const cartData = createSlice({
             return {...state, ...action.payload}
         },
         refreshCartData: (state: any, action) => {
-            return action.payload
+            return {...intialState,...action.payload}
         },
         setCartItems: (state: any, action) => {
 

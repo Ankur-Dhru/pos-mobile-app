@@ -18,7 +18,7 @@ import AddButton from "./AddButton";
 import {setAlert, setBottomSheet} from "../../redux-store/reducer/component";
 import ItemDetail from "./ItemDetail";
 import AddonActions from "./AddonActions";
-import {device, localredux} from "../../libs/static";
+import {device, isDevelopment, localredux} from "../../libs/static";
 import Avatar from "../../components/Avatar";
 import VegNonVeg from "./VegNonVeg";
 import {setCartItems} from "../../redux-store/reducer/cart-data";
@@ -66,16 +66,8 @@ const Index = memo((props: any) => {
 
         let start = moment();
 
-        const itemRowData:any = setItemRowData(item);
-        item = {
-            ...item,
-            ...itemRowData,
-        }
 
-        await  dispatch(setCartItems(item))
-
-
-        /*if (Boolean(addongroupid.length) || Boolean(addonid.length)) {
+        if (Boolean(addongroupid.length) || Boolean(addonid.length)) {
 
             item = {
                 ...item,
@@ -89,39 +81,33 @@ const Index = memo((props: any) => {
                 await dispatch(setBottomSheet({
                     visible: true,
                     height: '80%',
-                    component: () => <ItemDetail parentsetProduct={setProduct}/>
+                    component: () => <ItemDetail/>
                 }))
             } else {
                 await dispatch(setBottomSheet({
                     visible: true,
                     height: '20%',
-                    component: () => <AddonActions itemDetail={item} parentsetProduct={setProduct}
-                                                   selectItem={selectItem}/>
+                    component: () => <AddonActions/>
                 }))
             }
 
         } else {
+
+            const itemRowData:any = setItemRowData(item);
             item = {
                 ...item,
-                rowTotal:item.purchasecost * item.productqnt || 1,
-                productqnt: item.productqnt || 1,
+                ...itemRowData,
             }
+            await  dispatch(setCartItems(item))
 
-            //addItem(item);
-            await dispatch(setBottomSheet({
-                visible: false,
-            }))
-        }*/
-
-
-
+        }
 
         let end = moment();
         var duration = moment.duration(end.diff(start));
 
-        dispatch(setAlert({visible:true,message:duration.asMilliseconds()}))
-
-
+        if(isDevelopment) {
+            dispatch(setAlert({visible: true, message: duration.asMilliseconds()}))
+        }
 
     }
 
@@ -132,7 +118,7 @@ const Index = memo((props: any) => {
     if (device.tablet && !search) {
         return (
 
-            <TouchableOpacity onPress={() => selectItem(product)} style={[styles.flexGrow, {
+            <TouchableOpacity onPress={() => selectItem(product)} style={[styles.flexGrow,styles.center,styles.middle, {
                 width: 110,
                 padding: 10,
                 margin: 5,

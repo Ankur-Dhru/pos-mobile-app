@@ -17,6 +17,9 @@ const Index = (props: any) => {
             data={groups}
             renderItem={renderItem}
             keyboardShouldPersistTaps={'handled'}
+            getItemLayout={(data, index) => {
+                return { length: 50, offset: 50 * index, index };
+            }}
             initialNumToRender={5}
             maxToRenderPerBatch={10}
             keyExtractor={item => item.itemgroupid}

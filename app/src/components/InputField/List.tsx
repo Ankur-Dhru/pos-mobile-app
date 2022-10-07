@@ -45,7 +45,6 @@ class ListView extends Component<any> {
         const {multiselect}: any = this.props;
 
         if (!multiselect) {
-            console.log('item',item)
             this._select(item);
         } else {
             item.selected = !Boolean(item.selected);

@@ -26,6 +26,8 @@ import moment from "moment";
 import {device, localredux, TICKET_STATUS} from "../../libs/static";
 import CancelReason from "./CancelReason";
 
+import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
+
 
 const Index = ({
                    cartData,
@@ -44,6 +46,7 @@ const Index = ({
     const generateKOT = async () => {
 
         let kotid: any = '';
+        dispatch(showLoader())
         retrieveData('fusion-pro-pos-mobile-kotno').then(async (kotno: any) => {
             kotid = kotno;
             if (isEmpty(departments)) {
@@ -120,9 +123,9 @@ const Index = ({
 
                                     let {
                                         product_qnt,
-                                        item_total_amount,
-                                        item_total_amount_display,
+                                        productratedisplay,
                                         instruction,
+                                        productqnt,
                                         ref_id
                                     } = itemL1;
 
@@ -147,9 +150,9 @@ const Index = ({
                                     }
                                     const kot = {
                                         "productid": itemid,
-                                        "productrate": item_total_amount,
-                                        "productratedisplay": item_total_amount_display,
-                                        "productqnt": product_qnt,
+                                        "productrate": productratedisplay,
+                                        "productratedisplay": productratedisplay,
+                                        "productqnt": productqnt,
                                         "productqntunitid": itemunit,
                                         "related": 0,
                                         "item_ref_id": "",
@@ -214,7 +217,9 @@ const Index = ({
                         await dispatch(updateCartKots(kots))
                         await dispatch(updateCartItems(updateditems))
 
-                        saveTempLocalOrder().then()
+                        saveTempLocalOrder().then(()=>{
+                            dispatch(hideLoader())
+                        })
 
                     }
                 }
@@ -238,7 +243,8 @@ const Index = ({
                 dispatch(setDialog({
                     visible: true,
                     hidecancel: true,
-                    component: () => <CancelReason type={'ordercancelreason'} confirmCancelOrder={confirmCancelOrder}/>
+                    width:500,
+                    component: () => <CancelReason type={'ordercancelreason'} navigation={navigation} />
                 }))
             }
         }
@@ -248,15 +254,7 @@ const Index = ({
     }
 
 
-    const confirmCancelOrder = async ({cancelreason, cancelreasonid}: any) => {
-        await dispatch(updateCartField({
-            cancelreason: cancelreason,
-            cancelreasonid: cancelreasonid,
-        }))
-        await saveLocalOrder().then(async () => {
-            navigation.replace('DrawerStackNavigator');
-        })
-    }
+
 
     return <View style={[styles.p_4,styles.bg_white]}>
 
@@ -293,10 +291,8 @@ const Index = ({
                     {hasRestaurant && <View style={[styles.w_auto, styles.ml_1]}>
                         <Button  disable={!Boolean(vouchertotaldisplay)}
                                 onPress={() => {
-
-                                    saveTempLocalOrder().then(() => {
-                                        navigation.replace('DrawerStackNavigator');
-                                    })}
+                                    navigation.replace('DrawerStackNavigator');
+                                    saveTempLocalOrder().then(() => {})}
                             }
                          more={{backgroundColor: styles.yellow.color,  }}
                         > Save </Button>
@@ -335,11 +331,14 @@ const Index = ({
                             disable={!Boolean(vouchertotaldisplay)}
                             secondbutton={!Boolean(vouchertotaldisplay)}
 
-                            onPress={() => navigation.navigate('Payment')}
-
-                            /*onPress={() => !Boolean(vouchertotaldisplay) && saveTempLocalOrder().then(() => {
-                                navigation.navigate('Payment');
-                            })}*/
+                            onPress={() =>  {
+                                if(Boolean(vouchertotaldisplay)){
+                                    dispatch(showLoader())
+                                    saveTempLocalOrder().then(() => {
+                                        navigation.navigate('Payment');
+                                    })
+                                }
+                            }}
 
                             more={{backgroundColor: styles.green.color, color: 'white'}}
                         > Bill

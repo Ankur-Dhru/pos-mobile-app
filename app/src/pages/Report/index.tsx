@@ -29,7 +29,7 @@ const Index = ({ordersData}: any) => {
     const [liveData, setLiveData] = useState<any>([]);
 
     useEffect(() => {
-        setData(Object.values(ordersData))
+       Boolean(ordersData) && setData(Object.values(ordersData))
     }, [ordersData])
 
     useEffect(() => {

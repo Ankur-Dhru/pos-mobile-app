@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {memo, useState} from "react";
 import {View} from "react-native";
 import {Divider, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
@@ -7,11 +7,12 @@ import {setDialog} from "../../redux-store/reducer/component";
 import {connect, useDispatch} from "react-redux";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
 import CancelReason from "./CancelReason";
+import { appLog } from "../../libs/function";
 
 
-const Index = (props: any) => {
+const Index = memo((props: any) => {
 
-    let {kot: kt, kots, invoiceitems, invoiceitemsdeleted, theme: {colors},hasLast}: any = props;
+    let {kot: kt, kots,   theme: {colors},hasLast}: any = props;
     const {departmentname, table, commonkotnote, staffname, kotid, tickettime, ticketitems}: any = kt;
     const dispatch = useDispatch();
 
@@ -20,43 +21,17 @@ const Index = (props: any) => {
 
     }
 
-    const cancelKOT = ({cancelreason, cancelreasonid}: any) => {
-        kot = {
-            ...kot,
-            cancelreason: cancelreason,
-            cancelreasonid: cancelreasonid,
-        }
-        const index = kots.findIndex(function (item: any) {
-            return item.kotid === kot.kotid
-        });
-        kots = {
-            ...kots,
-            [index]: kot
-        }
-        setKot(kot);
-
-        const remaininginvoiceitems = invoiceitems.filter(function (item: any) {
-            return item.kotid !== kot.kotid
-        });
-
-        const addtoinvoiceitemsdeleted = invoiceitems.filter(function (item: any) {
-            return item.kotid === kot.kotid
-        });
-        const newdeletedinvoiceitems = invoiceitemsdeleted.concat(addtoinvoiceitemsdeleted);
-        dispatch(updateCartField({
-            kots: Object.values(kots),
-            invoiceitems: remaininginvoiceitems,
-            invoiceitemsdeleted: newdeletedinvoiceitems
-        }))
-    }
 
     const cancelKOTDialog = async (kot: any) => {
         dispatch(setDialog({
             visible: true,
             hidecancel: true,
-            component: () => <CancelReason type={'ticketcancelreason'} cancelKOT={cancelKOT}/>
+            width:360,
+            component: () => <CancelReason type={'ticketcancelreason'} kot={kot} setKot={setKot} />
         }))
     }
+
+    appLog('kot item')
 
     return (
         <View style={[{minWidth: '100%', marginBottom: 4}]}>
@@ -103,11 +78,11 @@ const Index = (props: any) => {
             </View>
         </View>
     );
-}
+},(r1, r2) => {
+    return r1.item === r2.item;
+})
 
 const mapStateToProps = (state: any) => ({
     kots: state.cartData.kots,
-    invoiceitems: state.cartData.invoiceitems || [],
-    invoiceitemsdeleted: state.cartData.invoiceitemsdeleted || [],
 })
 export default connect(mapStateToProps)(withTheme(Index));

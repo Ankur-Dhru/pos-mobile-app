@@ -124,12 +124,12 @@ const DrawerStackNavigator = () => {
             initialRouteName={isRestaurant() ? 'TablesStackNavigator' : 'CartStackNavigator'}
             screenOptions={{...screenOptions, headerShown: false}}>
             <Drawer.Screen name={'TablesStackNavigator'} component={TablesStackNavigator}
-                           options={{headerShown: false, headerTitle: 'Tables'}}/>
+                           options={{headerShown: false,  headerTitle: 'Tables'}}/>
             <Drawer.Screen name={'CartStackNavigator'} component={CartStackNavigator} options={({route}: any) => ({
                 headerShown: false,
                 title: route?.params?.tablename || 'POS'
             })}/>
-            <Drawer.Screen name={'Payment'} component={Payment} options={{headerShown: false, headerTitle: 'Payment'}}/>
+            <Drawer.Screen name={'Payment'} component={Payment} options={{headerShown: false,unmountOnBlur: true, headerTitle: 'Payment'}}/>
             <Drawer.Screen name={'SalesReportNavigator'} component={SalesReportNavigator} options={({route}: any) => ({
                 headerShown: false,
                 title: route?.params?.tablename || 'POS'

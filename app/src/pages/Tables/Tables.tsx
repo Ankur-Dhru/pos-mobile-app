@@ -118,7 +118,9 @@ const Index = (props: any) => {
             })}
             renderItem={renderItem}
             numColumns={device.tablet?4:2}
-
+            getItemLayout={(data, index) => {
+                return { length: 100, offset: 100 * index, index };
+            }}
             ListEmptyComponent={()=>{
                 return (
                     <>

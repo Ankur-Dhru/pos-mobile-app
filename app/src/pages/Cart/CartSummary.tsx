@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {memo, useEffect, useRef, useState} from "react";
 import {appLog, clone, saveLocalSettings, toCurrency, updateComponent, voucherData} from "../../libs/function";
 import {TouchableOpacity, View} from "react-native";
 import {Card, Paragraph, withTheme} from "react-native-paper";
@@ -10,114 +10,27 @@ import {device, VOUCHER} from "../../libs/static";
 import {ProIcon} from "../../components";
 import Discount from "./Discount";
 import SwitchC from "../../components/Switch";
+import CartSummaryMore from "./CartSummaryMore";
 
 
-const Index = ({cartData,localSettings}: any) => {
+const Index = ({vouchertotaldisplay}: any) => {
 
-    const {vouchersubtotaldisplay, vouchertotaldisplay, globaltax,globaldiscountvalue,adjustmentamount,vouchertaxtype,discounttype,invoiceitems, voucherroundoffdisplay} = cartData
-
-    const dispatch = useDispatch()
 
     const [summary,setSummary]:any = useState(false);
 
-    const [globaldiscount, setGlobalDiscount] = useState(globaldiscountvalue);
-    const [adjustment, setAdjustment] = useState(adjustmentamount);
-    const [discountType, setDiscountType] = useState(discounttype);
 
-    useEffect(() => {
-        if (!Boolean(globaldiscountvalue)) {
-            setGlobalDiscount("")
-        }
-    }, [globaldiscountvalue])
+    useEffect(()=>{
+        setSummary(false)
+    },[vouchertotaldisplay])
 
-    useEffect(() => {
-        if (!Boolean(adjustment) && Boolean(adjustmentamount)) {
-            setAdjustment(adjustmentamount)
-        }
-        if (!Boolean(adjustmentamount)) {
-            setAdjustment("")
-        }
-    }, [adjustmentamount])
+    appLog('cart summary')
 
-
-    useEffect(() => onBlurHandler(), [discountType])
-
-    const onBlurHandler = () => {
-        dispatch(setCartData({
-            adjustmentamount: adjustment,
-            updatecart: true
-        }));
-    }
-
-    const setTotal = () => {
-        if(!summary){
-            let data = itemTotalCalculation(clone(cartData), undefined, undefined, undefined, undefined, 2, 2, false, false);
-            dispatch(setCartData(clone(data)));
-            dispatch(setUpdateCart());
-        }
-        setSummary(!summary)
-    }
-
-    const onBlurDiscount = () => {
-
-        dispatch(setCartData({
-            globaldiscountvalue: vouchertaxtype === "inclusive" ? 0 : globaldiscount,
-            adjustmentamount: adjustment,
-            discounttype: discountType,
-            updatecart: true,
-            invoiceitems: invoiceitems.map((item: any) => {
-                if (vouchertaxtype === "inclusive") {
-                    item = {...item, productdiscountvalue: globaldiscount, productdiscounttype: discountType}
-                }
-                return {...item, change: true}
-            })
-        }));
-    }
-
-    /*const toggleSwitch = (value:any) => {
-        saveLocalSettings('realtimetotalcalculation',value).then()
-    }*/
-
-
-    return (<Card   onPress={()=>{setTotal()}} style={[styles.mt_3]}>
+    return (<Card   onPress={()=>{setSummary(!summary)}} style={[styles.mt_3]}>
         <Card.Content >
 
             <View><Paragraph style={[styles.absolute,{top:0,left:'50%',marginLeft:-10}]}><ProIcon name={summary?'chevron-down':'chevron-up'} action_type={'text'} size={15}/></Paragraph></View>
 
-            <View style={{display:summary?'flex':'none'}}>
-
-
-
-                <View style={[styles.grid, styles.justifyContent]}>
-                    <View><Paragraph style={[styles.paragraph]}>Subtotal</Paragraph></View>
-                    <View><Paragraph
-                        style={[styles.paragraph, styles.bold]}>{toCurrency(vouchersubtotaldisplay)}</Paragraph></View>
-                </View>
-
-                {/*<View>
-                    <Discount/>
-                </View>*/}
-
-                {
-                    globaltax?.map((tax: any, key: any) => {
-                        return (
-                            <View style={[styles.grid, styles.justifyContent]} key={key}>
-                                <View><Paragraph style={[styles.paragraph]}>{tax.taxname}</Paragraph></View>
-                                <View><Paragraph
-                                    style={[styles.paragraph]}>{toCurrency(tax.taxpricedisplay)}</Paragraph></View>
-                            </View>
-                        )
-                    })
-                }
-
-                {Boolean(voucherroundoffdisplay) && <View style={[styles.grid, styles.justifyContent]}>
-                    <View><Paragraph style={[styles.paragraph]}>Roundoff</Paragraph></View>
-                    <View><Paragraph
-                        style={[styles.paragraph, styles.bold]}>{toCurrency(voucherroundoffdisplay)}</Paragraph></View>
-                </View>}
-
-            </View>
-
+            {summary &&  <CartSummaryMore/>}
 
             <View style={[styles.grid, styles.justifyContent]}>
                 <View style={{width:'40%'}}><Paragraph style={[styles.paragraph,styles.bold]}>Total </Paragraph></View>
@@ -129,8 +42,7 @@ const Index = ({cartData,localSettings}: any) => {
 }
 
 const mapStateToProps = (state: any) => ({
-    cartData: state.cartData,
-    localSettings:state.localSettings
+    vouchertotaldisplay: state.cartData.vouchertotaldisplay,
 })
 
-export default connect(mapStateToProps)(withTheme(Index));
+export default connect(mapStateToProps)(withTheme(memo(Index)));

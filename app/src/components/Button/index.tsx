@@ -18,8 +18,8 @@ class Index extends React.Component<any> {
         return (
             <Button
                  mode={'contained'}
-                 style={{borderRadius:5,elevation:0,borderWidth:0}}
-                 contentStyle={{height:compact?'auto':45,backgroundColor:!Boolean(mode) ? colors.accent : 'transparent',...more}}
+                 style={[styles.noshadow,{borderRadius:5,elevation:0,borderWidth:0}]}
+                 contentStyle={[styles.noshadow,{elevation:0,height:compact?'auto':45,backgroundColor:!Boolean(mode) ? colors.accent : 'transparent',...more}]}
                  labelStyle={[styles.capitalize,styles.bold,{color:secondbutton?more.color:'white',opacity:disable ? 0.3 : 1}]}
                  {...this.props}
             >{children}</Button>

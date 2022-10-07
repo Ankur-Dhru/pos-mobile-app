@@ -53,7 +53,7 @@ const Index = (props: any) => {
         <View style={[styles.h_100, styles.flex, styles.p_4]}>
         <View style={[styles.grid,styles.justifyContent]}>
             {Boolean(tabledetails?.tablename) &&  <TouchableOpacity onPress={()=> {
-                saveTempLocalOrder().then(() => {navigation.goBack();})
+                navigation.goBack(); saveTempLocalOrder().then(() => {})
             }}>
                 <View  style={[styles.grid,styles.middle,styles.bg_white,{width:150,padding:11,borderRadius:5,backgroundColor: styles.yellow.color}]}>
                     <Paragraph><ProIcon name={'chevron-left'} action_type={'text'} /></Paragraph>

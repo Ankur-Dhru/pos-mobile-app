@@ -1,9 +1,18 @@
-import React, {useEffect, useState} from "react";
-import {appLog, clone, errorAlert, getDefaultCurrency, getFloatValue, saveLocalOrder, toCurrency} from "../../libs/function";
-import {TouchableOpacity, View} from "react-native";
+import React, {memo, useEffect, useState} from "react";
+import {
+    appLog,
+    clone,
+    errorAlert,
+    getDefaultCurrency,
+    getFloatValue,
+    saveLocalOrder,
+    syncData,
+    toCurrency
+} from "../../libs/function";
+import {ScrollView, TouchableOpacity, View} from "react-native";
 import {Card, Paragraph, withTheme,Title,Text} from "react-native-paper";
 import {styles} from "../../theme";
-import {connect} from "react-redux";
+import {connect, useDispatch} from "react-redux";
 import {Button, Container, InputBox} from "../../components";
 import {Field, Form} from "react-final-form";
 import InputField from "../../components/InputField";
@@ -11,17 +20,20 @@ import KeyboardScroll from "../../components/KeyboardScroll";
 import {useNavigation} from "@react-navigation/native";
 import {localredux} from "../../libs/static";
 import PageLoader from "../../components/PageLoader";
+import store from "../../redux-store/store";
+import { hideLoader } from "../../redux-store/reducer/component";
 
 
-const Index = ({cartData}: any) => {
+const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}: any) => {
 
 
-
-    let {vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}: any = cartData;
     const {paymentgateway}: any = localredux.initData;
     const {currentLocation: {defaultpaymentgateway}}:any = localredux.localSettingsData;
+    const dispatch = useDispatch()
 
-
+    useEffect(()=>{
+        dispatch(hideLoader())
+    },[])
 
 
     if (!Boolean(paidamount)) {
@@ -47,6 +59,9 @@ const Index = ({cartData}: any) => {
         if (!Boolean(payments.length)) {
             errorAlert(`Please add payment`);
         } else {
+
+
+            let cartData:any = store.getState().cartData;
 
             cartData = {
                 ...cartData,
@@ -97,8 +112,10 @@ const Index = ({cartData}: any) => {
             // await dispatch(setCartData(cartData));
 
             ////////// SAVE FINAL DATA //////////
+
+            navigation.replace('DrawerStackNavigator');
             saveLocalOrder(cartData).then(() => {
-                navigation.replace('DrawerStackNavigator');
+
             })
             ////////// SAVE FINAL DATA //////////
 
@@ -149,36 +166,38 @@ const Index = ({cartData}: any) => {
         return {label: b.value, value: key}
     });
 
-/*    const [loaded,setLoaded] = useState(false)
+
+/*   const [loaded, setLoaded] = useState(false)
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
-            setTimeout(()=>{
+            setTimeout(() => {
                 setLoaded(true)
             })
         });
         return unsubscribe;
     }, []);
-    if(!loaded){
-        return <PageLoader />
+    if (!loaded) {
+        return <PageLoader/>
     }*/
+
 
     appLog('payment')
 
 
     return <Container config={{}}>
 
-        <View>
+        <ScrollView>
 
-            <View style={[styles.p_5,{marginTop:10,padding:20}]}>
-
-                    <Form
+         <Form
                         onSubmit={handleSubmit}
                         initialValues={{...initdata}}>
                         {propsValues => (
                             <>
 
-                                <View style={[styles.grid,styles.justifyContent]}>
-                                    <View style={[styles.w_auto]}>
+                                <View style={[styles.grid, styles.middle, styles.center,styles.px_6]}>
+
+
+                                    <View style={[styles.w_auto,styles.h_100]}>
 
 
 
@@ -302,45 +321,49 @@ const Index = ({cartData}: any) => {
                                     </>}
 
 
-                                    <View style={[styles.grid,styles.justifyContent]}>
-
-                                        <View style={[styles.w_auto]}>
+                                        <View>
                                             <Button disabled={!Boolean(initdata.paymentamount)} onPress={() => {
                                                 addPayment(propsValues.values)
                                             }} secondbutton={true}>Add</Button>
                                         </View>
 
 
-                        <View style={[styles.w_auto,styles.ml_2]}>
-                            <Button   onPress={() => { }}   more={{backgroundColor: styles.yellow.color,  }}>Skip Payment</Button>
-                        </View>
+                                        <View style={[styles.py_6]}>
+                                            <TouchableOpacity onPress={() => { }} style={[styles.center,styles.middle]}><Text>Skip Payment</Text></TouchableOpacity>
+                                        </View>
+
 
 
                                     </View>
 
 
-                                    </View>
-                                    <View style={[styles.w_auto,{marginLeft:20}]}>
+                                    <View  style={[styles.w_auto,styles.ml_2,styles.h_100]}>
 
 
 
-
+                                    <View style={[styles.p_5,styles.border,styles.h_100]}>
                                     {Boolean(payments.length) && <>
 
-                                    <View style={[styles.mt_5]}>
+                                        <View style={[styles.mb_5,styles.grid,styles.right]}>
+                                            <Button  compact={true} secondbutton={true} onPress={() => {
+                                                reset();
+                                            }}>
+                                                Reset
+                                            </Button>
+                                        </View>
 
                                         <View>
                                             {payments.map((payment: any, key: any) => {
                                                 return (
                                                     <View style={[styles.grid, styles.justifyContent]} key={key}>
                                                         <View>
-                                                            <Paragraph> {payment.name} </Paragraph>
+                                                            <Paragraph style={[styles.paragraph,styles.bold]}> {payment.name} </Paragraph>
                                                             <Paragraph
                                                                 style={[styles.paragraph, styles.muted, styles.text_xs]}>{payment.referencetxnno ? payment.referencetxnno : ''} </Paragraph>
                                                         </View>
                                                         <View>
                                                             <Paragraph
-                                                                style={[styles.paragraph,]}>{toCurrency(payment.paymentamount)}</Paragraph>
+                                                                style={[styles.paragraph,styles.bold]}>{toCurrency(payment.paymentamount)}</Paragraph>
                                                             {<Paragraph
                                                                 style={[styles.paragraph, styles.muted, styles.text_xs, {textAlign: 'right'}]}> {Boolean(payment.bankcharges) && toCurrency(payment.bankcharges)}</Paragraph>}
                                                         </View>
@@ -348,38 +371,26 @@ const Index = ({cartData}: any) => {
                                             })}
                                         </View>
 
+                                        <View style={[{marginTop:'auto'}]}>
 
 
+                                            <View>
 
-                                    </View>
+                                                <Button onPress={() => {
+                                                    validatePayment()
+                                                }}> {voucherid ? 'Save' : `Generate Invoice`} </Button>
 
-
-                                        <View style={[styles.grid,styles.justifyContent]}>
-
-                                            <View style={[styles.w_auto]}>
-                                                <Button   secondbutton={true} onPress={() => {
-                                                    reset();
-                                                }}>
-                                                    Reset
-                                                </Button>
                                             </View>
 
-                                            <View style={[styles.w_auto,styles.ml_2]}>
-                                                <View>
+                                            <View style={{height:33}}>
 
-                                                    <Button onPress={() => {
-                                                        validatePayment()
-                                                    }}> {voucherid ? 'Save' : `Generate Invoice`} </Button>
-
-                                                </View>
                                             </View>
 
                                         </View>
 
-
                                 </>}
 
-
+                                    </View>
 
                                     </View>
 
@@ -391,18 +402,18 @@ const Index = ({cartData}: any) => {
 
                     </Form>
 
-
-
-
-
-            </View>
-        </View>
+        </ScrollView>
 
     </Container>
 }
 
 const mapStateToProps = (state: any) => ({
-     cartData: state.cartData,
+    vouchertotaldisplay:state.cartData.vouchertotaldisplay,
+    paidamount:state.cartData.paidamount,
+    voucherid:state.cartData.voucherid,
+    vouchercurrencyrate:state.cartData.vouchercurrencyrate
 })
 
-export default connect(mapStateToProps)(withTheme(Index));
+export default connect(mapStateToProps)(withTheme(memo(Index)));
+
+

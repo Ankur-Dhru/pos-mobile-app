@@ -36,7 +36,6 @@ const Index = memo((props: any) => {
         return <></>
     }
 
-
     return (
 
         <View style={[{

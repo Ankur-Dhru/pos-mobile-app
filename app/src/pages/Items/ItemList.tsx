@@ -69,6 +69,9 @@ const Index = (props: any) => {
                     data={items}
                     renderItem={renderItem}
                     numColumns={3}
+                    getItemLayout={(data, index) => {
+                        return { length: 100, offset: 100 * index, index };
+                    }}
                     /*onEndReached={getMore}
                     onEndReachedThreshold={0}*/
                     ListEmptyComponent={()=>{
@@ -82,6 +85,9 @@ const Index = (props: any) => {
                     renderItem={renderItem}
                     /*initialNumToRender={5}
                     maxToRenderPerBatch={10}*/
+                    getItemLayout={(data, index) => {
+                        return { length: 100, offset: 100 * index, index };
+                    }}
                     ListFooterComponent={() => {
                         return <View style={{height: 100}}></View>
                     }}

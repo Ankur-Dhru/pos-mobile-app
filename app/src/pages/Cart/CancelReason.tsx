@@ -8,21 +8,80 @@ import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
 import Button from "../../components/Button";
 import {setDialog} from "../../redux-store/reducer/component";
-import {objToArray} from "../../libs/function";
+import {appLog, objToArray, saveLocalOrder, voucherTotal} from "../../libs/function";
 import {localredux} from "../../libs/static";
+import {updateCartField} from "../../redux-store/reducer/cart-data";
+import store from "../../redux-store/store";
+import { useNavigation } from "@react-navigation/native";
 
 
 
 const Index = (props: any) => {
 
-    const {type,cancelKOT,confirmCancelOrder} = props;
-    const {reason}:any = localredux.initData
+    const {type,kot,navigation,setKot} = props;
+    const {reason}:any = localredux.initData;
 
     const reasonlist = reason[type];
 
     const [cancelreason,setCancelReason]:any = useState('')
 
     const dispatch = useDispatch()
+
+    const confirmCancelOrder = async ({cancelreason, cancelreasonid}: any) => {
+        try{
+            navigation.replace('DrawerStackNavigator');
+            await store.dispatch(updateCartField({
+                cancelreason: cancelreason,
+                cancelreasonid: cancelreasonid,
+            }))
+            await saveLocalOrder().then(async () => {
+
+            })
+        }
+        catch(e){
+            appLog('e',e)
+        }
+    }
+
+
+    const cancelKOT = ({cancelreason, cancelreasonid,kot}: any) => {
+
+        let {invoiceitems,invoiceitemsdeleted,kots}:any = store.getState().cartData;
+        if(!Boolean(invoiceitemsdeleted)){
+            invoiceitemsdeleted = []
+        }
+
+        kot = {
+            ...kot,
+            cancelreason: cancelreason,
+            cancelreasonid: cancelreasonid,
+        }
+        const index = kots.findIndex(function (item: any) {
+            return item.kotid === kot.kotid
+        });
+        kots = {
+            ...kots,
+            [index]: kot
+        }
+        setKot(kot);
+
+        const remaininginvoiceitems = invoiceitems.filter(function (item: any) {
+            return item.kotid !== kot.kotid
+        });
+
+        const addtoinvoiceitemsdeleted = invoiceitems.filter(function (item: any) {
+            return item.kotid === kot.kotid
+        });
+        const newdeletedinvoiceitems = invoiceitemsdeleted.concat(addtoinvoiceitemsdeleted);
+
+        store.dispatch(updateCartField({
+            kots: Object.values(kots),
+            invoiceitems: remaininginvoiceitems,
+            vouchertotaldisplay:voucherTotal(remaininginvoiceitems),
+            invoiceitemsdeleted: newdeletedinvoiceitems
+        }))
+    }
+
 
     const renderitem = ({item}: any) => {
         return <><List.Item
@@ -36,10 +95,15 @@ const Index = (props: any) => {
         </>
     }
 
-    const handleSubmit = (values:any) => {
 
-        Boolean(cancelKOT) && cancelKOT(values);
-        Boolean(confirmCancelOrder) && confirmCancelOrder(values);
+
+    const handleSubmit = (values:any) => {
+        if(type === 'ticketcancelreason'){
+            cancelKOT({...values, kot});
+        }
+        else if(type === 'ordercancelreason'){
+            confirmCancelOrder(values);
+        }
         dispatch(setDialog({visible:false}))
     }
 
@@ -58,7 +122,7 @@ const Index = (props: any) => {
                                     {...props}
                                     value={props.input.value}
                                     label={'Cancel Reason'}
-                                    autoFocus={true}
+                                    autoFocus={false}
                                     onChange={props.input.onChange}
                                 />
                             )}
@@ -89,11 +153,12 @@ const Index = (props: any) => {
 }
 
 
-const mapStateToProps = (state: any) => {
-    return {
-        cartData: state.cartData || {},
-    }
-}
 
-export default connect(mapStateToProps)(withTheme(Index));
+export default  withTheme(Index);
+
+
+
+
+
+
 

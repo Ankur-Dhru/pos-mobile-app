@@ -15,7 +15,7 @@ const Index = ({dialog, setDialog}: any) => {
         setDialo(dialog)
     }, [dialog])
 
-    const {visible, title, component,hidecancel} = dialo;
+    const {visible, title, component,hidecancel,width} = dialo;
     const Component = component;
 
 
@@ -25,11 +25,13 @@ const Index = ({dialog, setDialog}: any) => {
 
     return (
 
-        <Dialog visible={visible} theme={{
-            colors: {
-                backdrop: '#00000050'
-            }
-        }}>
+        <Dialog visible={visible}
+                style={{ width: width?width:'90%', alignSelf: "center" }}
+                theme={{
+                colors: {
+                    backdrop: '#00000050'
+                }
+            }}>
             {Boolean(title) &&  <Dialog.Title>{title}</Dialog.Title>}
             <Dialog.Content>
                 <Component/>

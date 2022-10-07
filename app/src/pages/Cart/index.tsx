@@ -16,7 +16,7 @@ const Index = ({tabledetails}: any) => {
     const hasrestaurant = isRestaurant();
     const dispatch = useDispatch();
     const navigation = useNavigation()
-    const [loaded, setLoaded] = useState(false)
+
 
     useEffect(() => {
         const voucherDataJson: any = voucherData(VOUCHER.INVOICE, false);
@@ -25,6 +25,7 @@ const Index = ({tabledetails}: any) => {
     }, [])
 
 
+    const [loaded, setLoaded] = useState(false)
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             setTimeout(() => {
@@ -33,8 +34,6 @@ const Index = ({tabledetails}: any) => {
         });
         return unsubscribe;
     }, []);
-
-
     if (!loaded) {
         return <PageLoader/>
     }

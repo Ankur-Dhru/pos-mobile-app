@@ -12,9 +12,6 @@ import {setInitData} from "../redux-store/reducer/init-data";
 import {setItemsData} from "../redux-store/reducer/items-data";
 import {setclientsData} from "../redux-store/reducer/clients-data";
 import {
-  setCurrentLocation,
-  setLastSyncTime,
-  setRestaurant,
   setSettings
 } from "../redux-store/reducer/local-settings-data";
 let NumberFormat = require('react-number-format');
@@ -22,9 +19,8 @@ const getSymbolFromCurrency = require('currency-symbol-map')
 import React from "react";
 import {Alert, Text} from "react-native";
 import {setAddonsData} from "../redux-store/reducer/addons-data";
-import {deleteTableOrder, setTableOrders, setTableOrdersData} from "../redux-store/reducer/table-orders-data";
+import {setTableOrders, setTableOrdersData} from "../redux-store/reducer/table-orders-data";
 import {v4 as uuid} from "uuid";
-import KOTCancelReason from "../pages/Cart/KOTCancelReason";
 import SyncingInfo from "../pages/Pin/SyncingInfo";
 import {setSyncDetail} from "../redux-store/reducer/sync-data";
 import {setOrder} from "../redux-store/reducer/orders-data";
@@ -450,7 +446,7 @@ export const syncData = async () => {
 
   let {initData,licenseData,localSettingsData: {lastSynctime},addonsData,clientsData,authData}:any = localredux;
 
-  store.dispatch(setDialog({visible:true,hidecancel:true,component: ()=><SyncingInfo />}))
+  store.dispatch(setDialog({visible:true,hidecancel:true,width:300,component: ()=><SyncingInfo />}))
 
   const getData = async (queryString?: any) => {
 

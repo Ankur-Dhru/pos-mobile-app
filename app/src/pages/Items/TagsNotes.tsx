@@ -4,7 +4,7 @@ import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {TouchableOpacity, View} from "react-native";
 import InputBox from "../../components/InputBox";
-import {clone, findObject} from "../../libs/function";
+import {appLog, clone, findObject} from "../../libs/function";
 import {localredux} from "../../libs/static";
 
 
@@ -12,14 +12,17 @@ import {localredux} from "../../libs/static";
 
 const Index = ({product,edit,setproductTags,setproductNotes}: any) => {
 
-    const {itemdetail:{tags},notes,itemtags} = product;
-    const {inittags}:any = localredux.initData
+    const {tags,notes,itemtags}:any = product;
+
+    const {tags:inittags}:any = localredux.initData
 
     const [selectedTag,setSelectedTag] = useState(0);
-    let [temptags,setTempTags]:any = useState([]);
+    let [temptags,setTempTags]:any = useState(itemtags);
+
 
     useEffect(()=>{
-        if(Boolean(inittags)) {
+
+        if(Boolean(inittags) && !Boolean(itemtags)) {
             const filtertags: any = Object.values(inittags).filter((inittag: any) => {
                 return tags?.includes(inittag.taggroupid)
             })
@@ -32,11 +35,13 @@ const Index = ({product,edit,setproductTags,setproductNotes}: any) => {
     },[temptags])
 
 
-    useEffect(()=>{
-        if (Boolean(itemtags) && Boolean(edit)) {
-            setTempTags(clone(itemtags))
-        }
-    },[])
+    /* useEffect(()=>{
+         if (Boolean(itemtags) && Boolean(edit)) {
+             setTempTags(clone(itemtags))
+         }
+     },[])*/
+
+
 
 
     return (

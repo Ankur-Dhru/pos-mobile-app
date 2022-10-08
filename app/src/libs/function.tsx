@@ -685,8 +685,17 @@ export const errorAlert = (message: any, title?: any) => {
 
 export const voucherTotal = (items:any) => {
   let vouchertotaldisplay = 0;
-  items.forEach(({productratedisplay,productqnt}:any)=>{
+
+  items.forEach((item:any)=>{
+    const {productratedisplay,productqnt} = item;
     vouchertotaldisplay+=productratedisplay * productqnt
+    if(Boolean(item?.itemaddon?.length)){
+      item?.itemaddon?.forEach(({pricing,productqnt}:any)=>{
+        const pricingtype = pricing?.type;
+        const baseprice = pricing?.price?.default[0][pricingtype]?.baseprice || 0;
+        vouchertotaldisplay+=baseprice * productqnt
+      })
+    }
   })
   return vouchertotaldisplay
 }
@@ -786,7 +795,7 @@ export const setItemRowData = (data:any) => {
 
     additem.key = key;
     additem.change = true;
-    additem.itemdetail = clone(data);
+    //additem.itemdetail = clone(data);
     additem.newitem = true;
 
     return additem;
@@ -843,6 +852,7 @@ export const saveTempLocalOrder = async (order?:any) => {
 
       });
     }
+
   }
   catch (e){
     appLog('e',e)

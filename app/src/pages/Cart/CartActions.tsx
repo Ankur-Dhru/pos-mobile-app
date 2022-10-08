@@ -47,7 +47,13 @@ const Index = ({
 
         let kotid: any = '';
         dispatch(showLoader())
-        retrieveData('fusion-pro-pos-mobile-kotno').then(async (kotno: any) => {
+
+        try{
+            retrieveData('fusion-pro-pos-mobile-kotno').then(async (kotno: any) => {
+
+            if(!Boolean(kotno)){
+                kotno = 1;
+            }
             kotid = kotno;
             if (isEmpty(departments)) {
                 errorAlert(`No Kitchen Department`);
@@ -76,10 +82,10 @@ const Index = ({
 
                 if (invoiceitems) {
 
-
                     itemForKot = invoiceitems.filter((itemL1: any) => {
-                        return Boolean(itemL1.isDepartmentSelected) && !Boolean(itemL1?.kotid)
+                        return Boolean(itemL1.itemdepartmentid) && !Boolean(itemL1?.kotid)
                     });
+
 
                     if (itemForKot.length > 0) {
 
@@ -88,7 +94,7 @@ const Index = ({
 
                         itemForKot.forEach((item: any) => {
 
-                            const kitchenid = item?.itemdetail.itemdepartmentid;
+                            const kitchenid = item?.itemdepartmentid;
 
                             let find = kitchens.find((k: any) => k === kitchenid);
                             if (!Boolean(find)) {
@@ -104,13 +110,12 @@ const Index = ({
 
                         kitchens.forEach((k: any) => {
                             kotid++;
-                            storeData('fusion-pro-pos-mobile-kotno', kotid).then(() => {
-                            });
+                            storeData('fusion-pro-pos-mobile-kotno', kotid).then(() => {});
                             let kotitems: any = [];
 
                             itemForKot.forEach((itemL1: any, index: any) => {
 
-                                if (itemL1?.itemdetail?.itemdepartmentid === k) {
+                                if (itemL1?.itemdepartmentid === k) {
 
                                     if (!Boolean(itemL1?.kotid)) {
                                         itemL1 = {
@@ -126,17 +131,15 @@ const Index = ({
                                         productratedisplay,
                                         instruction,
                                         productqnt,
-                                        ref_id
-                                    } = itemL1;
-
-                                    let {
+                                        ref_id,
                                         groupname,
                                         itemunit,
                                         itemid,
                                         itemname,
                                         predefinenotes,
                                         extranote
-                                    } = itemL1.itemdetail;
+                                    } = itemL1;
+
 
                                     if (predefinenotes) {
                                         predefinenotes = predefinenotes.join(", ");
@@ -196,14 +199,16 @@ const Index = ({
                                 ordertype: ordertype,
                             };
 
+
+
                             kots = [...kots, newkot];
 
                             printkot.push(newkot);
 
                         });
 
-
                         const updateditems = invoiceitems.map((item: any) => {
+
                             const find = findObject(itemForKot, 'key', item.key, true);
                             if (Boolean(find)) {
                                 item = {
@@ -217,21 +222,26 @@ const Index = ({
                         await dispatch(updateCartKots(kots))
                         await dispatch(updateCartItems(updateditems))
 
-                        saveTempLocalOrder().then(()=>{
-                            dispatch(hideLoader())
-                        })
+                        dispatch(hideLoader())
 
                     }
                 }
             }
         });
-
+        }
+        catch (e) {
+          appLog('e',e)
+        }
 
     }
 
     const cancelOrder = async () => {
         try{
-            const {kots, tableorderid, invoiceitems}: any = cartData
+
+            const {kots, tableorderid, invoiceitems}: any = cartData;
+
+
+
             if (kots?.length === 0 || (kots?.length > 0 && invoiceitems?.length === 0)) {
                 dispatch(resetCart())
                 navigation.replace('DrawerStackNavigator');
@@ -291,8 +301,9 @@ const Index = ({
                     {hasRestaurant && <View style={[styles.w_auto, styles.ml_1]}>
                         <Button  disable={!Boolean(vouchertotaldisplay)}
                                 onPress={() => {
+                                    dispatch(showLoader());
                                     navigation.replace('DrawerStackNavigator');
-                                    saveTempLocalOrder().then(() => {})}
+                                    saveTempLocalOrder().then(() => {dispatch(hideLoader()); })}
                             }
                          more={{backgroundColor: styles.yellow.color,  }}
                         > Save </Button>
@@ -314,12 +325,16 @@ const Index = ({
                         <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
                                     secondbutton={!Boolean(vouchertotaldisplay)}
-                                    onPress={() =>   saveTempLocalOrder().then(() => {
-                                        dispatch(resetCart())
-                                        if (!device.tablet) {
-                                            navigation.goBack()
-                                        }
-                                    })}
+                                    onPress={() => {
+                                        dispatch(showLoader());
+                                        saveTempLocalOrder().then(() => {
+                                            dispatch(resetCart())
+                                            dispatch(hideLoader());
+                                            if (!device.tablet) {
+                                                navigation.goBack()
+                                            }
+                                        })}
+                                    }
                                     more={{backgroundColor: styles.yellow.color,  }}
                             > On Hold </Button>
                         </View></>}
@@ -335,6 +350,7 @@ const Index = ({
                                 if(Boolean(vouchertotaldisplay)){
                                     dispatch(showLoader())
                                     saveTempLocalOrder().then(() => {
+                                        dispatch(hideLoader())
                                         navigation.navigate('Payment');
                                     })
                                 }

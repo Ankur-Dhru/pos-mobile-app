@@ -11,26 +11,46 @@ import {ProIcon} from "../../components";
 import Discount from "./Discount";
 import SwitchC from "../../components/Switch";
 import CartSummaryMore from "./CartSummaryMore";
+import {hideLoader, showLoader } from "../../redux-store/reducer/component";
+import store from "../../redux-store/store";
 
 
 const Index = ({vouchertotaldisplay}: any) => {
 
 
-    const [summary,setSummary]:any = useState(false);
+    const dispatch = useDispatch()
+    const moreSummaryRef:any = React.useRef();
+    let summary:any = false
 
 
     useEffect(()=>{
-        setSummary(false)
+        updateComponent(moreSummaryRef,'display','none')
     },[vouchertotaldisplay])
 
-    appLog('cart summary')
 
-    return (<Card   onPress={()=>{setSummary(!summary)}} style={[styles.mt_3]}>
+    const viewSummary = async () => {
+
+        summary = !summary;
+        updateComponent(moreSummaryRef,'display',summary?'flex':'none');
+
+        if(summary) {
+            dispatch(showLoader())
+            setTimeout( async ()=>{
+                let data = await itemTotalCalculation(clone(store.getState().cartData), undefined, undefined, undefined, undefined, 2, 2, false, false);
+                await dispatch(setCartData(clone(data)));
+                await dispatch(setUpdateCart());
+                dispatch(hideLoader())
+            })
+        }
+    }
+
+
+    return (<Card   onPress={()=>{ viewSummary() }} style={[styles.mt_3]}>
         <Card.Content >
 
             <View><Paragraph style={[styles.absolute,{top:0,left:'50%',marginLeft:-10}]}><ProIcon name={summary?'chevron-down':'chevron-up'} action_type={'text'} size={15}/></Paragraph></View>
 
-            {summary &&  <CartSummaryMore/>}
+            <View ref={moreSummaryRef}><CartSummaryMore summary={summary}/></View>
 
             <View style={[styles.grid, styles.justifyContent]}>
                 <View style={{width:'40%'}}><Paragraph style={[styles.paragraph,styles.bold]}>Total </Paragraph></View>

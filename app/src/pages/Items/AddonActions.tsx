@@ -8,10 +8,12 @@ import {addItem} from "../../libs/item-calculation";
 import {setBottomSheet} from "../../redux-store/reducer/component";
 import {setItemDetail} from "../../redux-store/reducer/item-detail";
 import ItemDetail from "./ItemDetail";
+import {appLog, setItemRowData} from "../../libs/function";
+import {setCartItems} from "../../redux-store/reducer/cart-data";
 
 const {v4: uuid} = require('uuid')
 
-const Index = ({product,selectItem,fromcart }: any) => {
+const Index = ({product }: any) => {
 
     const dispatch = useDispatch()
 
@@ -31,14 +33,17 @@ const Index = ({product,selectItem,fromcart }: any) => {
                         <View>
                             <Button
                                 onPress={async () => {
-                                    let itemdetail = fromcart ? product.itemdetail : product;
-                                    itemdetail = {
-                                        ...itemdetail,
+                                    const itemRowData:any = setItemRowData(product);
+                                    product = {
+                                        ...product,
+                                        ...itemRowData,
                                         key: uuid(),
+
                                     }
-                                    addItem(itemdetail)
+
+                                    await  dispatch(setCartItems(product))
                                     await dispatch(setBottomSheet({visible: false}))
-                                }}> Repeat Last
+                                }}> Repeat
                             </Button>
                         </View>
                     </View>
@@ -48,12 +53,12 @@ const Index = ({product,selectItem,fromcart }: any) => {
                             <Button
                                 secondbutton={true}
                                 onPress={async () => {
-                                    let itemdetail = product.itemdetail;
-                                    itemdetail={
-                                        ...itemdetail,
+
+                                    product={
+                                        ...product,
                                         productqnt:0
                                     }
-                                    await dispatch(setItemDetail(itemdetail));
+                                    await dispatch(setItemDetail(product));
                                     await dispatch(setBottomSheet({
                                         visible: true,
                                         height: '80%',

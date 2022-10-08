@@ -31,8 +31,6 @@ const Index = ({cartData,localSettings,  theme: {colors}}: any) => {
         totalqnt += item.productqnt
     })
 
-
-
     if (!Boolean(vouchertotaldisplay)) {
         return <></>
     }

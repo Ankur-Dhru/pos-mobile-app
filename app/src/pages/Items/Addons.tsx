@@ -1,18 +1,18 @@
-import React, {useEffect, useState} from "react";
+import React, {memo, useEffect, useState} from "react";
 import {Caption, Paragraph, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect} from "react-redux";
 import {TouchableOpacity, View} from "react-native";
-import {clone, findObject, toCurrency} from "../../libs/function";
+import {appLog, clone, findObject, toCurrency} from "../../libs/function";
 import {ProIcon} from "../../components";
 import {localredux} from "../../libs/static";
 
 
-const Index = ({product,  setproductAddons, edit}: any) => {
+const Index = memo(({product,  setproductAddons, edit}: any) => {
 
     const {addonsData} = localredux;
 
-    const {itemdetail: {addtags}, itemaddon} = product;
+    const {addtags, itemaddon} = product;
 
     let {addongroupid, addonid} = addtags || {addongroupid: [], addonid: []}
 
@@ -24,24 +24,23 @@ const Index = ({product,  setproductAddons, edit}: any) => {
         }).map((item: any) => {
             return item.itemid
         })
+
         if (Boolean(findaddons.length)) {
             addonid = addonid.concat(findaddons)
         }
     })
 
     useEffect(() => {
-        if (edit) {
-            addonid.map((addon: any, key: any) => {
-                const find = findObject(itemaddon, 'itemid', addon, true);
-                if (Boolean(find)) {
-                    moreaddon[addon] = {
-                        ...moreaddon[addon],
-                        ...find
-                    }
+        addonid.map((addon: any, key: any) => {
+            const find = findObject(itemaddon, 'itemid', addon, true);
+            if (Boolean(find)) {
+                moreaddon[addon] = {
+                    ...moreaddon[addon],
+                    ...find
                 }
-            })
-            setMoreAddon(clone(moreaddon));
-        }
+            }
+        })
+        setMoreAddon(clone(moreaddon));
     }, [product])
 
 
@@ -75,6 +74,8 @@ const Index = ({product,  setproductAddons, edit}: any) => {
 
                         let {itemname, pricing, productqnt} = moreaddon[addon];
                         const pricingtype = pricing?.type;
+
+
                         const baseprice = pricing?.price?.default[0][pricingtype]?.baseprice || 0;
 
                         return (
@@ -119,10 +120,12 @@ const Index = ({product,  setproductAddons, edit}: any) => {
             </>}
         </View>
     )
-}
+},(r1, r2) => {
+    return r1.item === r2.item;
+})
 
 
 
-export default withTheme(Index);
+export default withTheme(memo(Index));
 
 //({toCurrency(baseprice * productQnt)})

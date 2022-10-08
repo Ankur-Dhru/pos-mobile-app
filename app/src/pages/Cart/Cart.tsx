@@ -22,6 +22,7 @@ import {useNavigation} from "@react-navigation/native";
 import {appLog, saveTempLocalOrder} from "../../libs/function";
 import ReactNativePinView from "react-native-pin-view";
 import NumPad from "../Items/NumPad";
+import {hideLoader,showLoader} from "../../redux-store/reducer/component";
 
 
 const Index = (props: any) => {
@@ -53,7 +54,7 @@ const Index = (props: any) => {
         <View style={[styles.h_100, styles.flex, styles.p_4]}>
         <View style={[styles.grid,styles.justifyContent]}>
             {Boolean(tabledetails?.tablename) &&  <TouchableOpacity onPress={()=> {
-                navigation.goBack(); saveTempLocalOrder().then(() => {})
+                dispatch(showLoader());  navigation.goBack();  saveTempLocalOrder().then(() => {dispatch(hideLoader()); })
             }}>
                 <View  style={[styles.grid,styles.middle,styles.bg_white,{width:150,padding:11,borderRadius:5,backgroundColor: styles.yellow.color}]}>
                     <Paragraph><ProIcon name={'chevron-left'} action_type={'text'} /></Paragraph>

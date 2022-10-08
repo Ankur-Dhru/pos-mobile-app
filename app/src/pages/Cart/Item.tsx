@@ -31,10 +31,10 @@ const Index = memo((props: any) => {
 
     const haskot = Boolean(item?.kotid);
 
-
     if(!Boolean(item)){
         return <></>
     }
+
 
     return (
 
@@ -65,7 +65,7 @@ const Index = memo((props: any) => {
 
                                     <Paragraph
                                         style={[styles.paragraph, styles.text_xs, styles.bold, styles.ellipse]}
-                                        numberOfLines={1}>{item.itemname}</Paragraph>
+                                        numberOfLines={1}>{item.itemname || item.productdisplayname}</Paragraph>
 
 
 
@@ -162,26 +162,26 @@ const Index = memo((props: any) => {
                                             {
                                                 item?.itemaddon?.map((addon: any, index: any) => {
 
+                                                    const pricingtype = addon.pricing?.type;
+                                                    const baseprice = addon.pricing?.price?.default[0][pricingtype]?.baseprice || 0;
+
                                                     return (
                                                         <View key={index}>
-                                                            <View style={[styles.grid, styles.justifyContentSpaceBetween]}>
+                                                            <View style={[styles.grid]}>
                                                                 <View style={[styles.grid]}>
                                                                     <Paragraph style={[styles.paragraph, styles.text_xs]}>
-                                                                        {addon.itemqnt} {unit[addon.itemqntunitid] && unit[addon.itemqntunitid].unitcode} {addon.itemname} x
+                                                                        {addon.productqnt} {unit[addon.itemunit] && unit[addon.itemunit].unitcode} {addon.itemname} x
                                                                     </Paragraph>
 
                                                                     <Paragraph
-                                                                        style={[styles.paragraph, styles.text_xs, {paddingLeft: 5}]}>{toCurrency(addon.itemratedisplay || '0')} each</Paragraph>
+                                                                        style={[styles.paragraph, styles.text_xs, {paddingLeft: 5}]}>{toCurrency(baseprice || '0')} each = </Paragraph>
 
                                                                 </View>
 
-                                                                <View style={[styles.ml_auto]}>
+                                                                <View>
                                                                     <Paragraph
-                                                                        style={[styles.paragraph, styles.text_xs, styles.textRight, Boolean(item.itemdiscountvalue !== '0' && item.itemdiscountvalue) && {
-                                                                            textDecorationLine: 'line-through',
-                                                                            color: styles.red.color
-                                                                        }]}>
-                                                                        {toCurrency('0')}
+                                                                        style={[styles.paragraph, styles.text_xs, styles.textRight]}>
+                                                                        {toCurrency(baseprice * addon.productqnt)}
                                                                     </Paragraph>
                                                                 </View>
 
@@ -223,7 +223,11 @@ const Index = memo((props: any) => {
 
     );
 },(r1, r2) => {
-      return r1.item === r2.item;
+        //appLog('r2.item',r2.item)
+        const c1 = {productqnt:r1.item.productqnt,itemaddon:r1.item.itemaddon,itemtags:r1.item.itemtags,notes:r1.item.notes,kotid:r1.item.kotid}
+        const c2 = {productqnt:r2.item.productqnt,itemaddon:r2.item.itemaddon,itemtags:r2.item.itemtags,notes:r2.item.notes,kotid:r2.item.kotid}
+
+      return (JSON.stringify(c1)===JSON.stringify(c2));
 })
 
 

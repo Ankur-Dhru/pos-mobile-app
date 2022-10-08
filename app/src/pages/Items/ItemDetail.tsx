@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from "react";
+import React, {memo, useEffect, useState} from "react";
 import {Caption, Paragraph, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
-import {clone, toCurrency} from "../../libs/function";
+import {appLog, clone, setItemRowData, toCurrency} from "../../libs/function";
 import {TouchableOpacity, View} from "react-native";
 import {ProIcon} from "../../components";
 import Button from "../../components/Button";
@@ -11,15 +11,14 @@ import KeyboardScroll from "../../components/KeyboardScroll";
 import {setBottomSheet} from "../../redux-store/reducer/component";
 import TagsNotes from "./TagsNotes";
 import Addons from "./Addons";
-import {changeCartItem} from "../../redux-store/reducer/cart-data";
+import {changeCartItem, setCartItems} from "../../redux-store/reducer/cart-data";
 
 const {v4: uuid} = require('uuid')
 
-const Index = ({itemDetail, index, inittags, sheetRef,edit, theme: {colors}}: any) => {
-
+const Index = memo(({itemDetail, index, inittags, sheetRef,edit, theme: {colors}}: any) => {
 
     const dispatch = useDispatch()
-    let [product, setProduct] = useState({...itemDetail,itemdetail:edit?itemDetail.itemdetail:itemDetail})
+    let [product, setProduct] = useState(itemDetail)
     const [productQnt, setProductQnt] = useState(itemDetail.productqnt || 1);
     const [productTags, setproductTags]: any = useState(itemDetail?.itemtags || {});
     const [productNotes, setproductNotes]: any = useState(itemDetail?.notes || '');
@@ -37,11 +36,6 @@ const Index = ({itemDetail, index, inittags, sheetRef,edit, theme: {colors}}: an
         setProduct(product)
     }, [productTags,productAddons,productQnt,productNotes])
 
-    if(!Boolean(product?.itemdetail)){
-        return <></>
-    }
-
-
     const {pricing, description, itemname, groupname} = product;
 
     const selectItem = async () => {
@@ -49,10 +43,15 @@ const Index = ({itemDetail, index, inittags, sheetRef,edit, theme: {colors}}: an
             dispatch(changeCartItem({
                 itemIndex: index, item: clone(product)
             }));
-            setProduct(product);
+            //setProduct(product);
         }
         else {
-            addItem(product)
+            const itemRowData:any = setItemRowData(product);
+            product = {
+                ...product,
+                ...itemRowData,
+            }
+            await  dispatch(setCartItems(product))
         }
         await dispatch(setBottomSheet({visible: false}))
     }
@@ -89,10 +88,10 @@ const Index = ({itemDetail, index, inittags, sheetRef,edit, theme: {colors}}: an
                 </View>
 
 
-                <Addons product={product} edit={edit} setproductAddons={setproductAddons}/>
+                <Addons product={product}  setproductAddons={setproductAddons}/>
 
 
-                <TagsNotes  setproductTags={setproductTags} setproductNotes={setproductNotes} edit={edit}   product={product}   />
+                <TagsNotes  setproductTags={setproductTags} setproductNotes={setproductNotes}    product={product}   />
 
 
             </KeyboardScroll>
@@ -139,13 +138,15 @@ const Index = ({itemDetail, index, inittags, sheetRef,edit, theme: {colors}}: an
         </View>
 
     )
-}
+},(r1, r2) => {
+    return r1.item === r2.item;
+})
 
 
 const mapStateToProps = (state: any) => ({
     itemDetail: state.itemDetail,
 })
 
-export default connect(mapStateToProps)(withTheme(Index));
+export default connect(mapStateToProps)(withTheme(memo(Index)));
 
 //({toCurrency(baseprice * productQnt)})

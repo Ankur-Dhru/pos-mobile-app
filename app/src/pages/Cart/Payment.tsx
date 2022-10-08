@@ -21,7 +21,7 @@ import {useNavigation} from "@react-navigation/native";
 import {localredux} from "../../libs/static";
 import PageLoader from "../../components/PageLoader";
 import store from "../../redux-store/store";
-import { hideLoader } from "../../redux-store/reducer/component";
+import { hideLoader, showLoader } from "../../redux-store/reducer/component";
 
 
 const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}: any) => {
@@ -113,9 +113,10 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
 
             ////////// SAVE FINAL DATA //////////
 
+            dispatch(showLoader())
             navigation.replace('DrawerStackNavigator');
             saveLocalOrder(cartData).then(() => {
-
+                dispatch(hideLoader())
             })
             ////////// SAVE FINAL DATA //////////
 

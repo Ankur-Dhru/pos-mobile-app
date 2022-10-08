@@ -87,19 +87,17 @@ const Index = memo((props: any) => {
                 await dispatch(setBottomSheet({
                     visible: true,
                     height: '20%',
-                    component: () => <AddonActions/>
+                    component: () => <AddonActions product={item}/>
                 }))
             }
 
         } else {
-
             const itemRowData:any = setItemRowData(item);
             item = {
                 ...item,
                 ...itemRowData,
             }
             await  dispatch(setCartItems(item))
-
         }
 
         let end = moment();

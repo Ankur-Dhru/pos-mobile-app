@@ -10,28 +10,19 @@ import {device, VOUCHER} from "../../libs/static";
 import {ProIcon} from "../../components";
 import Discount from "./Discount";
 import SwitchC from "../../components/Switch";
+import { hideLoader } from "../../redux-store/reducer/component";
 
 
-const Index =  ({cartData}: any) => {
+const Index =   ({vouchersubtotaldisplay, globaltax,voucherroundoffdisplay}: any) => {
 
-    const {vouchersubtotaldisplay, globaltax,globaldiscountvalue,adjustmentamount,vouchertaxtype,discounttype,invoiceitems, voucherroundoffdisplay} = cartData
 
     const dispatch = useDispatch()
-
+/*
     const [globaldiscount, setGlobalDiscount] = useState(globaldiscountvalue);
     const [adjustment, setAdjustment] = useState(adjustmentamount);
     const [discountType, setDiscountType] = useState(discounttype);
 
 
-    useEffect(()=>{
-        calculation()
-    },[])
-
-    const calculation = async() => {
-        let data = await itemTotalCalculation(clone(cartData), undefined, undefined, undefined, undefined, 2, 2, false, false);
-        await dispatch(setCartData(clone(data)));
-        await dispatch(setUpdateCart());
-    }
 
     useEffect(() => {
         if (!Boolean(globaldiscountvalue)) {
@@ -49,7 +40,7 @@ const Index =  ({cartData}: any) => {
     }, [adjustmentamount])
 
 
-    useEffect(() => onBlurHandler(), [discountType])
+    useEffect(() => onBlurHandler(), [discountType])*/
 
 
 
@@ -62,7 +53,7 @@ const Index =  ({cartData}: any) => {
 
 
 
-    const onBlurDiscount = () => {
+/*    const onBlurDiscount = () => {
 
         dispatch(setCartData({
             globaldiscountvalue: vouchertaxtype === "inclusive" ? 0 : globaldiscount,
@@ -76,7 +67,7 @@ const Index =  ({cartData}: any) => {
                 return {...item, change: true}
             })
         }));
-    }
+    }*/
 
     /*const toggleSwitch = (value:any) => {
         saveLocalSettings('realtimetotalcalculation',value).then()
@@ -85,8 +76,6 @@ const Index =  ({cartData}: any) => {
   /*  if(loader){
         return <View style={{height:200}}><ActivityIndicator  color={'#016EFE'} size='large' animating={true}   /></View>
     }*/
-
-    appLog('summary more')
 
     return (<View>
 
@@ -124,7 +113,9 @@ const Index =  ({cartData}: any) => {
 }
 
 const mapStateToProps = (state: any) => ({
-    cartData: state.cartData,
+    vouchersubtotaldisplay:state.cartData.vouchersubtotaldisplay,
+    globaltax:state.cartData.globaltax,
+    voucherroundoffdisplay:state.cartData.voucherroundoffdisplay,
 })
 
 export default connect(mapStateToProps)(withTheme(memo(Index)));

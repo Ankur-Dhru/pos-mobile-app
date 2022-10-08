@@ -31,12 +31,11 @@ const Index = (props: any) => {
 
     const updateItem = async (values: any, action: any) => {
 
-
         if (values.productqnt > 0 && action === 'add' && !bottomsheet.visible  && values?.hasAddon) {
             await dispatch(setBottomSheet({
                 visible: true,
                 height:'20%',
-                component: ()=> <AddonActions item={item}   />
+                component: ()=> <AddonActions product={values}   />
             }))
         } else if (action === 'remove' && !bottomsheet.visible && !device.tablet && !fromcart  && values?.hasAddon) {
             await dispatch(setBottomSheet({

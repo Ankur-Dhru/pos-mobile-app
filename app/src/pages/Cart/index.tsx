@@ -35,7 +35,7 @@ const Index = ({tabledetails}: any) => {
         return unsubscribe;
     }, []);
     if (!loaded) {
-        return <PageLoader/>
+        return <PageLoader page={'cart'}/>
     }
 
     return <Cart tabledetails={tabledetails}/>

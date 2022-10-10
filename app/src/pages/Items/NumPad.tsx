@@ -65,10 +65,8 @@ const Index = ({}:any) => {
     }
 
 
-    const numbers1 = [1,2,3]
-    const numbers2 = [4,5,6]
-    const numbers3 = [7,8,9]
-    const numbers4 = ['',0,'']
+    const numbers1 = [1,2,3,4,5,6,7,8,9,0]
+
 
     console.log('inputnumber',inputNumber)
 
@@ -82,42 +80,6 @@ const Index = ({}:any) => {
             <View style={[styles.grid]}>
                 {
                     numbers1.map((number:any)=>{
-                        return <TouchableOpacity style={[{backgroundColor:styles.secondary.color,borderRadius:50,margin:5}]} onPress={()=>_handleKeyPress(number)}>
-                            <Paragraph style={[styles.paragraph,styles.bold,styles.text_md,{height:50,width:50,textAlign:'center',lineHeight:50}]}>
-                                {number}
-                            </Paragraph>
-                        </TouchableOpacity>
-                    })
-                }
-            </View>
-
-            <View style={[styles.grid]}>
-                {
-                    numbers2.map((number:any)=>{
-                        return <TouchableOpacity style={[{backgroundColor:styles.secondary.color,borderRadius:50,margin:5}]} onPress={()=>_handleKeyPress(number)}>
-                            <Paragraph style={[styles.paragraph,styles.bold,styles.text_md,{height:50,width:50,textAlign:'center',lineHeight:50}]}>
-                                {number}
-                            </Paragraph>
-                        </TouchableOpacity>
-                    })
-                }
-            </View>
-
-            <View style={[styles.grid]}>
-                {
-                    numbers3.map((number:any)=>{
-                        return <TouchableOpacity style={[{backgroundColor:styles.secondary.color,borderRadius:50,margin:5}]} onPress={()=>_handleKeyPress(number)}>
-                            <Paragraph style={[styles.paragraph,styles.bold,styles.text_md,{height:50,width:50,textAlign:'center',lineHeight:50}]}>
-                                {number}
-                            </Paragraph>
-                        </TouchableOpacity>
-                    })
-                }
-            </View>
-
-            <View style={[styles.grid]}>
-                {
-                    numbers4.map((number:any)=>{
                         return <TouchableOpacity style={[{backgroundColor:styles.secondary.color,borderRadius:50,margin:5}]} onPress={()=>_handleKeyPress(number)}>
                             <Paragraph style={[styles.paragraph,styles.bold,styles.text_md,{height:50,width:50,textAlign:'center',lineHeight:50}]}>
                                 {number}

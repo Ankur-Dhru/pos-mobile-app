@@ -114,8 +114,9 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
             ////////// SAVE FINAL DATA //////////
 
             dispatch(showLoader())
-            navigation.replace('DrawerStackNavigator');
+
             saveLocalOrder(cartData).then(() => {
+                navigation.replace('DrawerStackNavigator');
                 dispatch(hideLoader())
             })
             ////////// SAVE FINAL DATA //////////

@@ -38,6 +38,8 @@ const Index = ({tabledetails}: any) => {
         return <PageLoader page={'cart'}/>
     }
 
+    //return <PageLoader page={'cart'}/>
+
     return <Cart tabledetails={tabledetails}/>
 }
 

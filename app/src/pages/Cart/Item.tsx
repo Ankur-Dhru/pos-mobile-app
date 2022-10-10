@@ -42,7 +42,8 @@ const Index = memo((props: any) => {
             margin: 4,
             marginBottom:0,
             backgroundColor: haskot ? colors.thirdary : '',
-            borderRadius: 5
+            borderRadius: 5,
+
         }]}>
 
 

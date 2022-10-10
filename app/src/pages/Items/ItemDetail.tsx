@@ -12,38 +12,27 @@ import {setBottomSheet} from "../../redux-store/reducer/component";
 import TagsNotes from "./TagsNotes";
 import Addons from "./Addons";
 import {changeCartItem, setCartItems} from "../../redux-store/reducer/cart-data";
+import { setItemDetail } from "../../redux-store/reducer/item-detail";
+import Qnt from "./Qnt";
 
 const {v4: uuid} = require('uuid')
 
-const Index = memo(({itemDetail, index, inittags, sheetRef,edit, theme: {colors}}: any) => {
+const Index = ({itemDetail, index, inittags, sheetRef,edit, theme: {colors}}: any) => {
 
     const dispatch = useDispatch()
-    let [product, setProduct] = useState(itemDetail)
-    const [productQnt, setProductQnt] = useState(itemDetail.productqnt || 1);
-    const [productTags, setproductTags]: any = useState(itemDetail?.itemtags || {});
-    const [productNotes, setproductNotes]: any = useState(itemDetail?.notes || '');
-    const [productAddons, setproductAddons]: any = useState(itemDetail.itemaddon || []);
+    let product = itemDetail;
 
 
-    useEffect(() => {
-        product = {
-            ...product,
-            itemtags: productTags,
-            itemaddon:productAddons,
-            productqnt:productQnt,
-            notes:productNotes
-        }
-        setProduct(product)
-    }, [productTags,productAddons,productQnt,productNotes])
 
-    const {pricing, description, itemname, groupname} = product;
+    const {pricing, description, itemname, groupname,addtags,itemaddon,tags,notes,itemtags} = itemDetail;
+    let {productqnt} = itemDetail;
 
     const selectItem = async () => {
+
         if(edit){
             dispatch(changeCartItem({
                 itemIndex: index, item: clone(product)
             }));
-            //setProduct(product);
         }
         else {
             const itemRowData:any = setItemRowData(product);
@@ -51,25 +40,32 @@ const Index = memo(({itemDetail, index, inittags, sheetRef,edit, theme: {colors}
                 ...product,
                 ...itemRowData,
             }
+            if(product?.itemaddon){
+                product.itemaddon =  product?.itemaddon.map((addon:any)=>{
+                    return {
+                        ...addon,
+                        ...setItemRowData(addon)
+                    }
+                })
+            }
             await  dispatch(setCartItems(product))
         }
         await dispatch(setBottomSheet({visible: false}))
     }
 
-
-
-    const updateQnt = (action: any) => {
-        if (action === 'add') {
-            setProductQnt(productQnt + 1)
-        } else if (action === 'remove') {
-            setProductQnt(productQnt - 1)
+   const updateProduct = (field:any) => {
+        product = {
+            ...product,
+            ...field
         }
     }
 
 
+
+
+
     const pricingtype = pricing?.type;
     const baseprice = pricing?.price?.default[0][pricingtype]?.baseprice || 0;
-
 
     return (
 
@@ -88,38 +84,17 @@ const Index = memo(({itemDetail, index, inittags, sheetRef,edit, theme: {colors}
                 </View>
 
 
-                <Addons product={product}  setproductAddons={setproductAddons}/>
-
-
-                <TagsNotes  setproductTags={setproductTags} setproductNotes={setproductNotes}    product={product}   />
+                <Addons  updateProduct={updateProduct}  />
+                <TagsNotes   updateProduct={updateProduct}   />
 
 
             </KeyboardScroll>
 
-            <View style={{marginBottom: 15}}>
+            <View style={{marginTop:15}}>
 
                 <View style={[styles.grid, styles.middle, styles.justifyContent]}>
 
-                    <View style={{width: 120}}>
-                        <>
-                            <View style={[styles.grid, styles.middle, {
-                                borderRadius: 5,
-                                backgroundColor: styles.accent.color
-                            }]}>
-                                {<TouchableOpacity style={[styles.py_3]} onPress={() => {
-                                    productQnt > 1 && updateQnt('remove')
-                                }}>
-                                    <ProIcon name={'minus'} color={colors.secondary} size={15}/>
-                                </TouchableOpacity>}
-                                <Paragraph
-                                    style={[styles.paragraph, styles.caption, styles.flexGrow, styles.textCenter, {color: colors.secondary}]}>{parseInt(productQnt)}</Paragraph>
-                                {<TouchableOpacity style={[styles.py_3]} onPress={() => {
-                                    updateQnt('add')
-                                }}>
-                                    <ProIcon name={'plus'} color={colors.secondary} size={15}/>
-                                </TouchableOpacity>}
-                            </View></>
-                    </View>
+                     <Qnt updateProduct={updateProduct} />
 
                     <View>
                           <View>
@@ -138,15 +113,13 @@ const Index = memo(({itemDetail, index, inittags, sheetRef,edit, theme: {colors}
         </View>
 
     )
-},(r1, r2) => {
-    return r1.item === r2.item;
-})
+}
 
 
 const mapStateToProps = (state: any) => ({
     itemDetail: state.itemDetail,
 })
 
-export default connect(mapStateToProps)(withTheme(memo(Index)));
+export default connect(mapStateToProps)(withTheme(Index));
 
 //({toCurrency(baseprice * productQnt)})

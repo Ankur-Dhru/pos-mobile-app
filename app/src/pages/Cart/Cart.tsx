@@ -20,7 +20,6 @@ import GroupHeading from "../Items/GroupHeading";
 import ClientDetail from "../Client/ClientDetail";
 import {useNavigation} from "@react-navigation/native";
 import {appLog, saveTempLocalOrder} from "../../libs/function";
-import ReactNativePinView from "react-native-pin-view";
 import NumPad from "../Items/NumPad";
 import {hideLoader,showLoader} from "../../redux-store/reducer/component";
 
@@ -54,7 +53,7 @@ const Index = (props: any) => {
         <View style={[styles.h_100, styles.flex, styles.p_4]}>
         <View style={[styles.grid,styles.justifyContent]}>
             {Boolean(tabledetails?.tablename) &&  <TouchableOpacity onPress={()=> {
-                dispatch(showLoader());  navigation.goBack();  saveTempLocalOrder().then(() => {dispatch(hideLoader()); })
+                dispatch(showLoader());  saveTempLocalOrder().then(() => { navigation.goBack(); dispatch(hideLoader()); })
             }}>
                 <View  style={[styles.grid,styles.middle,styles.bg_white,{width:150,padding:11,borderRadius:5,backgroundColor: styles.yellow.color}]}>
                     <Paragraph><ProIcon name={'chevron-left'} action_type={'text'} /></Paragraph>
@@ -93,7 +92,7 @@ const Index = (props: any) => {
                                     <GroupList groups={groups}/>
                                 </Card>
                             </View>
-                            <Card style={[styles.flexGrow, {marginLeft: 5,marginRight:5}]}>
+                            <Card style={[styles.flexGrow, {maxWidth:500,marginLeft: 5,marginRight:5}]}>
 
                                 {!numpad ?
                                     <Items search={search}/>:

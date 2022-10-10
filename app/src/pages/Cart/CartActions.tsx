@@ -9,24 +9,23 @@ import {
     isEmpty,
     isRestaurant,
     retrieveData,
-    saveLocalOrder,
     saveTempLocalOrder,
     storeData
 } from "../../libs/function";
 import {View} from "react-native";
-import {withTheme} from "react-native-paper";
+import {Card, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {useNavigation} from "@react-navigation/native";
 import Button from "../../components/Button";
-import {resetCart, updateCartField, updateCartItems, updateCartKots} from "../../redux-store/reducer/cart-data";
+import {resetCart,  updateCartItems, updateCartKots} from "../../redux-store/reducer/cart-data";
 import {setBottomSheet, setDialog} from "../../redux-store/reducer/component";
 import HoldOrders from "./HoldOrders";
 import moment from "moment";
 import {device, localredux, TICKET_STATUS} from "../../libs/static";
 import CancelReason from "./CancelReason";
 
-import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
+import {hideLoader,  showLoader} from "../../redux-store/reducer/component";
 
 
 const Index = ({
@@ -244,9 +243,10 @@ const Index = ({
 
             if (kots?.length === 0 || (kots?.length > 0 && invoiceitems?.length === 0)) {
                 dispatch(resetCart())
-                navigation.replace('DrawerStackNavigator');
                 if (tableorderid) {
+                    navigation.replace('DrawerStackNavigator');
                     deleteTempLocalOrder(tableorderid).then(() => {
+
                     })
                 }
             } else {
@@ -266,7 +266,7 @@ const Index = ({
 
 
 
-    return <View style={[styles.p_4,styles.bg_white]}>
+    return <Card style={[styles.p_4]}>
 
         {<View>
             <View>
@@ -300,11 +300,19 @@ const Index = ({
                     </View>*/}
                     {hasRestaurant && <View style={[styles.w_auto, styles.ml_1]}>
                         <Button  disable={!Boolean(vouchertotaldisplay)}
-                                onPress={() => {
-                                    dispatch(showLoader());
-                                    navigation.replace('DrawerStackNavigator');
-                                    saveTempLocalOrder().then(() => {dispatch(hideLoader()); })}
-                            }
+
+                            onPress={() =>  {
+                                    if(Boolean(vouchertotaldisplay)){
+                                        dispatch(showLoader())
+                                        saveTempLocalOrder().then(() => {
+
+                                            navigation.replace('DrawerStackNavigator');
+                                            dispatch(hideLoader())
+                                        })
+                                    }
+                                }}
+
+
                          more={{backgroundColor: styles.yellow.color,  }}
                         > Save </Button>
                     </View>}
@@ -365,7 +373,7 @@ const Index = ({
 
         </View>}
 
-    </View>
+    </Card>
 }
 
 const mapStateToProps = (state: any) => {

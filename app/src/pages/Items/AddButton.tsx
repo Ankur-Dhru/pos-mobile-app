@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {appLog, clone, deleteTempLocalOrder, removeItem, setRowTotal} from "../../libs/function";
+import {appLog, clone, deleteTempLocalOrder, removeItem} from "../../libs/function";
 import {TouchableOpacity, View} from "react-native";
 import {Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";

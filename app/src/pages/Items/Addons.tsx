@@ -3,16 +3,14 @@ import {Caption, Paragraph, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect} from "react-redux";
 import {TouchableOpacity, View} from "react-native";
-import {appLog, clone, findObject, toCurrency} from "../../libs/function";
+import {appLog, clone, findObject, setItemRowData, toCurrency} from "../../libs/function";
 import {ProIcon} from "../../components";
 import {localredux} from "../../libs/static";
 
 
-const Index = memo(({product,  setproductAddons, edit}: any) => {
+const Index = ({addtags, itemaddon,updateProduct}: any) => {
 
     const {addonsData} = localredux;
-
-    const {addtags, itemaddon} = product;
 
     let {addongroupid, addonid} = addtags || {addongroupid: [], addonid: []}
 
@@ -36,12 +34,13 @@ const Index = memo(({product,  setproductAddons, edit}: any) => {
             if (Boolean(find)) {
                 moreaddon[addon] = {
                     ...moreaddon[addon],
-                    ...find
+                    ...find,
                 }
             }
         })
+
         setMoreAddon(clone(moreaddon));
-    }, [product])
+    }, [])
 
 
     const updateQnt = (key: any, action: any) => {
@@ -62,19 +61,23 @@ const Index = memo(({product,  setproductAddons, edit}: any) => {
             return addon.productqnt > 0
         })
 
+        itemaddon = selectedAddons
+
         setMoreAddon(clone(moreaddon));
-        setproductAddons(selectedAddons);
+        updateProduct({itemaddon:selectedAddons})
     }
 
     return (<View style={[styles.mt_5]}>
-            <Caption style={[styles.ml_2]}>Addons</Caption>
+
             {Boolean(addonid?.length) && <>
+
+                <Caption style={[styles.ml_2]}>Addons</Caption>
+
                 {
                     addonid.map((addon: any, key: any) => {
 
                         let {itemname, pricing, productqnt} = moreaddon[addon];
                         const pricingtype = pricing?.type;
-
 
                         const baseprice = pricing?.price?.default[0][pricingtype]?.baseprice || 0;
 
@@ -89,21 +92,21 @@ const Index = memo(({product,  setproductAddons, edit}: any) => {
                                         <View style={[styles.grid, styles.middle, {
                                             borderRadius: 5,
                                             backgroundColor: styles.bg_light.backgroundColor,
-                                            width: 90
+                                            width: 120
                                         }]}>
-                                            {<TouchableOpacity style={[styles.py_2]} onPress={() => {
+                                            {<TouchableOpacity style={[styles.p_4]} onPress={() => {
                                                 productqnt > 0 && updateQnt(addon, 'remove')
                                             }}>
-                                                <ProIcon name={'minus'} size={15}/>
+                                                <ProIcon name={'minus'} size={20}/>
                                             </TouchableOpacity>}
                                             <Paragraph
                                                 style={[styles.paragraph, styles.caption, styles.flexGrow, styles.textCenter]}>{
                                                 parseInt(productqnt || 0)
                                             }</Paragraph>
-                                            {<TouchableOpacity style={[styles.py_2]} onPress={() => {
+                                            {<TouchableOpacity style={[styles.p_4]} onPress={() => {
                                                 updateQnt(addon, 'add')
                                             }}>
-                                                <ProIcon name={'plus'} size={15}/>
+                                                <ProIcon name={'plus'} size={20}/>
                                             </TouchableOpacity>}
                                         </View>
                                     </View>
@@ -120,12 +123,15 @@ const Index = memo(({product,  setproductAddons, edit}: any) => {
             </>}
         </View>
     )
-},(r1, r2) => {
-    return r1.item === r2.item;
+}
+
+
+
+const mapStateToProps = (state: any) => ({
+    addtags: state.itemDetail.addtags,
+    itemaddon: state.itemDetail.itemaddon,
 })
 
-
-
-export default withTheme(memo(Index));
+export default connect(mapStateToProps)(withTheme(Index));
 
 //({toCurrency(baseprice * productQnt)})

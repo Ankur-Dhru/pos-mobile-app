@@ -13,7 +13,7 @@ import SwitchC from "../../components/Switch";
 import { hideLoader } from "../../redux-store/reducer/component";
 
 
-const Index =   ({vouchersubtotaldisplay, globaltax,voucherroundoffdisplay}: any) => {
+const Index =   ({vouchersubtotaldisplay, globaltax,voucherroundoffdisplay,loading}: any) => {
 
 
     const dispatch = useDispatch()
@@ -44,12 +44,12 @@ const Index =   ({vouchersubtotaldisplay, globaltax,voucherroundoffdisplay}: any
 
 
 
-    const onBlurHandler = () => {
+/*    const onBlurHandler = () => {
         dispatch(setCartData({
             adjustmentamount: adjustment,
             updatecart: true
         }));
-    }
+    }*/
 
 
 
@@ -77,14 +77,21 @@ const Index =   ({vouchersubtotaldisplay, globaltax,voucherroundoffdisplay}: any
         return <View style={{height:200}}><ActivityIndicator  color={'#016EFE'} size='large' animating={true}   /></View>
     }*/
 
+
+    /*if(loading){
+        return <View style={{marginTop:30}}><ActivityIndicator style={styles.m_1} color={'#016EFE'} size='large' animating={true}   /></View>
+    }*/
+
+
     return (<View>
 
 
 
                 <View style={[styles.grid, styles.justifyContent]}>
                     <View><Paragraph style={[styles.paragraph]}>Subtotal</Paragraph></View>
-                    <View><Paragraph
-                        style={[styles.paragraph, styles.bold]}>{toCurrency(vouchersubtotaldisplay)}</Paragraph></View>
+                    <View>
+                        <Paragraph style={[styles.paragraph, styles.bold]}>{toCurrency(!loading ? vouchersubtotaldisplay : '0')}</Paragraph>
+                    </View>
                 </View>
 
                 {/*<View>*/}
@@ -97,7 +104,7 @@ const Index =   ({vouchersubtotaldisplay, globaltax,voucherroundoffdisplay}: any
                             <View style={[styles.grid, styles.justifyContent]} key={key}>
                                 <View><Paragraph style={[styles.paragraph]}>{tax.taxname}</Paragraph></View>
                                 <View><Paragraph
-                                    style={[styles.paragraph]}>{toCurrency(tax.taxpricedisplay)}</Paragraph></View>
+                                    style={[styles.paragraph]}>{toCurrency(!loading ? tax.taxpricedisplay : '0')}</Paragraph></View>
                             </View>
                         )
                     })
@@ -106,7 +113,7 @@ const Index =   ({vouchersubtotaldisplay, globaltax,voucherroundoffdisplay}: any
                 {Boolean(voucherroundoffdisplay) && <View style={[styles.grid, styles.justifyContent]}>
                     <View><Paragraph style={[styles.paragraph]}>Roundoff</Paragraph></View>
                     <View><Paragraph
-                        style={[styles.paragraph, styles.bold]}>{toCurrency(voucherroundoffdisplay)}</Paragraph></View>
+                        style={[styles.paragraph, styles.bold]}>{toCurrency(!loading ? voucherroundoffdisplay : '0')}</Paragraph></View>
                 </View>}
 
             </View>)
@@ -116,6 +123,7 @@ const mapStateToProps = (state: any) => ({
     vouchersubtotaldisplay:state.cartData.vouchersubtotaldisplay,
     globaltax:state.cartData.globaltax,
     voucherroundoffdisplay:state.cartData.voucherroundoffdisplay,
+    loading: state.component.loading
 })
 
 export default connect(mapStateToProps)(withTheme(memo(Index)));

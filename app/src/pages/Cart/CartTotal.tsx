@@ -35,7 +35,6 @@ const Index = ({cartData,localSettings,  theme: {colors}}: any) => {
         return <></>
     }
 
-    appLog('carttotal')
 
     return(
         <View style={[styles.p_4, styles.bg_white,styles.shadow]}>

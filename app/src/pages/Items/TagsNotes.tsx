@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Caption, Chip, Paragraph, Text} from "react-native-paper";
+import {Caption, Chip, Paragraph, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {TouchableOpacity, View} from "react-native";
@@ -10,14 +10,13 @@ import {localredux} from "../../libs/static";
 
 
 
-const Index = ({product,edit,setproductTags,setproductNotes}: any) => {
+const Index = ({tags,notes,itemtags,updateProduct}: any) => {
 
-    const {tags,notes,itemtags}:any = product;
 
     const {tags:inittags}:any = localredux.initData
 
     const [selectedTag,setSelectedTag] = useState(0);
-    let [temptags,setTempTags]:any = useState(itemtags);
+    let [temptags,setTempTags]:any = useState(clone(itemtags));
 
 
     useEffect(()=>{
@@ -30,17 +29,10 @@ const Index = ({product,edit,setproductTags,setproductNotes}: any) => {
         }
     },[])
 
+
     useEffect(()=>{
-       setproductTags(clone(temptags));
+        updateProduct({itemtags:temptags})
     },[temptags])
-
-
-    /* useEffect(()=>{
-         if (Boolean(itemtags) && Boolean(edit)) {
-             setTempTags(clone(itemtags))
-         }
-     },[])*/
-
 
 
 
@@ -72,10 +64,10 @@ const Index = ({product,edit,setproductTags,setproductNotes}: any) => {
                                     {<View style={[styles.grid,{display:(selectedTag === tagid)?'flex':'none'}]}>
                                         {
                                            tags?.taglist.map((tag: any, key: any) => {
-                                                return (<Chip key={key} style={[tag.selected?styles.bg_light_blue:styles.bg_light,styles.m_1]} selectedColor={tag.selected?'white':'black'}  icon={tag.selected?'check':'stop'} onPress={() => {
+                                                return (<Chip key={key} style={[tag.selected?styles.bg_light_blue:styles.bg_light,styles.m_2,styles.p_3]}     icon={tag.selected?'check':'stop'} onPress={() => {
                                                     tag.selected = !Boolean(tag?.selected)
                                                     setTempTags(clone(temptags))
-                                                }}>{tag.name+''}</Chip>)
+                                                }}><Paragraph style={[styles.p_5]}>{tag.name+''}</Paragraph></Chip>)
                                             })
                                         }
                                     </View>}
@@ -94,7 +86,7 @@ const Index = ({product,edit,setproductTags,setproductNotes}: any) => {
                     label={'Notes'}
                     autoFocus={false}
                     onChange={(value:any) => {
-                        setproductNotes(value)
+                        updateProduct({notes:value})
                     }}
                 />
             </View>
@@ -107,6 +99,11 @@ const Index = ({product,edit,setproductTags,setproductNotes}: any) => {
 
 
 
-export default  Index;
 
-//({toCurrency(baseprice * productQnt)})
+const mapStateToProps = (state: any) => ({
+    tags : state.itemDetail.tags,
+    notes: state.itemDetail.notes,
+    itemtags: state.itemDetail.itemtags,
+})
+
+export default connect(mapStateToProps)(withTheme(Index));

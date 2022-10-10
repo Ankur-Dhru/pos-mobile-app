@@ -10,7 +10,7 @@ import {Card} from "react-native-paper";
 import {setTableOrdersData} from "../../redux-store/reducer/table-orders-data";
 import {hideLoader} from "../../redux-store/reducer/component";
 import {localredux} from "../../libs/static";
-import {setLastSyncTime, setSettings} from "../../redux-store/reducer/local-settings-data";
+import {setSettings} from "../../redux-store/reducer/local-settings-data";
 import store from "../../redux-store/store";
 import {setInitData} from "../../redux-store/reducer/init-data";
 import {appLog, groupBy} from "../../libs/function";

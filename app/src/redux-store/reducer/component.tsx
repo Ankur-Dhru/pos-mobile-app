@@ -59,10 +59,14 @@ export const component = createSlice({
       state.alert = action.payload
       return state
     },
+    contentLoader: (state: any,action) => {
+      state.loading = action.payload
+      return state
+    },
   },
 })
 
 // Action creators are generated for each case reducer function
-export const {openDialog, closeDialog, closedDialog,showLoader,hideLoader,setAlert,setDialog,setBottomSheet,setModal,setPageSheet} = component.actions
+export const {openDialog, closeDialog, closedDialog,showLoader,hideLoader,setAlert,setDialog,setBottomSheet,setModal,setPageSheet,contentLoader} = component.actions
 
 export default component.reducer

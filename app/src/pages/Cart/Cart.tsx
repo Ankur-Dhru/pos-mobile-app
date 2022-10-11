@@ -51,30 +51,34 @@ const Index = (props: any) => {
     return <>
 
         <View style={[styles.h_100, styles.flex, styles.p_4]}>
-        <View style={[styles.grid,styles.justifyContent]}>
-            {Boolean(tabledetails?.tablename) &&  <TouchableOpacity onPress={()=> {
-                dispatch(showLoader());  saveTempLocalOrder().then(() => { navigation.goBack(); dispatch(hideLoader()); })
-            }}>
-                <View  style={[styles.grid,styles.middle,styles.bg_white,{width:150,padding:11,borderRadius:5,backgroundColor: styles.yellow.color}]}>
-                    <Paragraph><ProIcon name={'chevron-left'} action_type={'text'} /></Paragraph>
-                    <Paragraph style={[styles.paragraph,styles.bold]}>  {tabledetails?.tablename}</Paragraph>
+
+            <View style={[styles.grid,styles.justifyContent]}>
+                {Boolean(tabledetails?.tablename) &&  <TouchableOpacity onPress={()=> {
+                    dispatch(showLoader());  saveTempLocalOrder().then(() => { navigation.goBack(); dispatch(hideLoader()); })
+                }}>
+                    <View  style={[styles.grid,styles.middle,styles.bg_white,{width:150,padding:11,borderRadius:5, marginRight:6}]}>
+                        <Paragraph><ProIcon name={'chevron-left'} action_type={'text'} /></Paragraph>
+                        <Paragraph style={[styles.paragraph,styles.bold]}>  {tabledetails?.tablename}</Paragraph>
+                    </View>
+                </TouchableOpacity>}
+                <View style={[styles.flexGrow]}>
+                    <View style={[styles.grid,styles.justifyContent]}>
+                        <SearchItem  handleSearch={handleSearch}/>
+                        <TouchableOpacity style={[styles.px_6,{backgroundColor:'white',padding:11,borderRadius:5,marginLeft:5}]} onPress={()=>setNumpad(!numpad)}>
+                            <Paragraph><ProIcon name={'keyboard'} color={!numpad?'#ccc':'#000'} action_type={'text'}/></Paragraph>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </TouchableOpacity>}
-            <View style={[styles.flexGrow,{paddingLeft:6,}]}>
-                <View style={[styles.grid,styles.justifyContent]}>
-                    <SearchItem  handleSearch={handleSearch}/>
-                    <TouchableOpacity style={[styles.px_6,{backgroundColor:'white',padding:11,borderRadius:5,marginLeft:5}]} onPress={()=>setNumpad(!numpad)}>
-                        <Paragraph><ProIcon name={'keyboard'} color={!numpad?'#ccc':'#000'} action_type={'text'}/></Paragraph>
-                    </TouchableOpacity>
-                </View>
+               {device.tablet && <View style={{marginLeft:6,width:385}}>
+                    <ClientDetail/>
+                </View>}
             </View>
-            {device.tablet && <View style={{marginLeft:6,width:385}}>
-                <ClientDetail/>
-            </View>}
-        </View>
 
         {
             device.tablet ? <>
+
+
+
                 <View
                     style={[styles.grid, styles.justifyContent, styles.noWrap, styles.h_100, styles.flex, styles.py_4]}>
 
@@ -115,7 +119,8 @@ const Index = (props: any) => {
 
             </> : <>
 
-                <View style={[styles.h_100, styles.flex, {flexDirection: 'column'}]}>
+                <View style={[styles.h_100, styles.flex, {flexDirection: 'column',paddingTop:5}]}>
+
 
                     {Boolean(search) ? <View style={[styles.p_2]}>
                         <Paragraph>Search Result ...</Paragraph>

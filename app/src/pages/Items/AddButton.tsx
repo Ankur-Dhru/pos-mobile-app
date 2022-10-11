@@ -37,7 +37,7 @@ const Index = (props: any) => {
                 component: () => <CartItems itemid={values.productid || values.itemid}/>
             }))
         } else {
-            Boolean(setProduct) && setProduct(values);
+
             await updateCartItem(values, action)
         }
 
@@ -120,7 +120,10 @@ export const updateCartItem = async (values: any, action: any) => {
             store.dispatch(changeCartItem({
                 itemIndex: index, item: finditem
             }));
+
         }
+
+
 
     } catch (e) {
         appLog('e', e)

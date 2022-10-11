@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {isRestaurant, voucherData} from "../../libs/function";
+import {isRestaurant, saveTempLocalOrder, voucherData} from "../../libs/function";
 import Cart from "./Cart";
 import {localredux, PRODUCTCATEGORY, VOUCHER} from "../../libs/static";
 import {useDispatch} from "react-redux";
@@ -8,6 +8,8 @@ import {setSelected} from "../../redux-store/reducer/selected-data";
 import {refreshCartData} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
+import { Container } from "../../components";
+import {hideLoader, showLoader} from "../../redux-store/reducer/component";
 
 const Index = ({tabledetails}: any) => {
 
@@ -25,7 +27,7 @@ const Index = ({tabledetails}: any) => {
     }, [])
 
 
-    const [loaded, setLoaded] = useState(false)
+    /*const [loaded, setLoaded] = useState(false)
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             setTimeout(() => {
@@ -36,9 +38,7 @@ const Index = ({tabledetails}: any) => {
     }, []);
     if (!loaded) {
         return <PageLoader page={'cart'}/>
-    }
-
-    //return <PageLoader page={'cart'}/>
+    }*/
 
     return <Cart tabledetails={tabledetails}/>
 }

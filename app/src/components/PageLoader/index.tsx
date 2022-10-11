@@ -1,5 +1,6 @@
 import React from "react";
 import {ActivityIndicator, View} from "react-native";
+import { device } from "../../libs/static";
 import {styles} from "../../theme";
 import CartLoader from "../ContentLoader/CartLoader";
 import TableLoader from "../ContentLoader/TableLoader";
@@ -9,11 +10,13 @@ const Index = (props: any) => {
 
     const {page}: any = props
 
-    if (page === 'table') {
-        return <TableLoader/>
-    }
-    else if (page === 'cart') {
-        return <CartLoader/>
+    if(device.tablet){
+        if (page === 'table') {
+            return <TableLoader/>
+        }
+        else if (page === 'cart') {
+            return <CartLoader/>
+        }
     }
 
     return <View style={[styles.screenCenter, styles.h_100, styles.transparent]}>

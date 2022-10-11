@@ -7,7 +7,7 @@ import {connect} from "react-redux";
 import Item from "./Item";
 import {device, localredux} from "../../libs/static";
 import {styles} from "../../theme";
-import {appLog, filterArray} from "../../libs/function";
+import {appLog, clone, filterArray} from "../../libs/function";
 import {Paragraph} from "react-native-paper";
 
 const {height, width} = Dimensions.get('window');
@@ -34,12 +34,12 @@ const Index = (props: any) => {
 
     //const screenData = useScreenDimensions();
 
-    const {selectedgroup,search} = props;
+    const {selectedgroup,search,invoiceitems} = props;
 
     const {groupItemsData,itemsData}:any = localredux
 
 
-    const [items,setItems] = useState(groupItemsData[selectedgroup]);
+    let [items,setItems] = useState(clone(groupItemsData[selectedgroup]));
 
     useEffect(() => {
         let finditems = groupItemsData[selectedgroup];
@@ -50,10 +50,29 @@ const Index = (props: any) => {
     useEffect(() => {
         let finditems;
         if (Boolean(search)) {
-            finditems = filterArray(Object.values(itemsData), ['itemname', 'uniqueproductcode'], search,false)
+            finditems = filterArray(Object.values(clone(itemsData)), ['itemname', 'uniqueproductcode'], search,false)
         }
         Boolean(finditems) && setItems(finditems);
     }, [search])
+
+
+    useEffect(()=>{
+        if(!device.tablet) {
+            if(Boolean(items)){
+
+               items = items.map((i: any) => {
+                    const find = invoiceitems.filter((ii: any) => {
+                        return i.itemid === ii.itemid;
+                    })
+                    if(Boolean(find[0])) {
+                        return  find[0]
+                    }
+                    return i;
+                })
+                setItems(items)
+            }
+        }
+    },[invoiceitems])
 
 
     const renderItem = useCallback(({item, index}: any) => <Item item={item} index={index}  key={item.key || item.productid} />, [selectedgroup]);
@@ -72,8 +91,6 @@ const Index = (props: any) => {
                     getItemLayout={(data, index) => {
                         return { length: 100, offset: 100 * index, index };
                     }}
-                    /*onEndReached={getMore}
-                    onEndReachedThreshold={0}*/
                     ListEmptyComponent={()=>{
                         return (<View style={[]}><Paragraph style={[styles.paragraph,styles.p_6,styles.muted,{textAlign:'center'}]}>No any Items</Paragraph></View>)
                     }}
@@ -83,8 +100,6 @@ const Index = (props: any) => {
                 <FlatList
                     data={items}
                     renderItem={renderItem}
-                    /*initialNumToRender={5}
-                    maxToRenderPerBatch={10}*/
                     getItemLayout={(data, index) => {
                         return { length: 100, offset: 100 * index, index };
                     }}
@@ -102,7 +117,8 @@ const Index = (props: any) => {
 
 
 const mapStateToProps = (state: any) => ({
+    invoiceitems: state.cartData.invoiceitems,
     selectedgroup: state.selectedData.group?.value
 })
 
-export default connect(mapStateToProps)(memo(Index));
+export default connect(mapStateToProps)(Index);

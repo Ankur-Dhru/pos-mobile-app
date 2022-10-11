@@ -25,6 +25,7 @@ import {setCartItems} from "../../redux-store/reducer/cart-data";
 import {addItem, getProductData} from "../../libs/item-calculation";
 import moment from "moment";
 import store from "../../redux-store/store";
+import Item from "../Cart/Item";
 
 const {v4: uuid} = require('uuid')
 
@@ -111,6 +112,8 @@ const Index = memo((props: any) => {
 
 
 
+
+
     const {veg} = product;
 
     if (device.tablet) {
@@ -136,30 +139,29 @@ const Index = memo((props: any) => {
 
     const hasKot = Boolean(product?.kotid);
 
-
     return (
-        <TouchableOpacity onPress={() =>   selectItem(product)}
+        <TouchableOpacity onPress={() => {selectItem(product)}}
                           style={[styles.noshadow]}>
 
             <View
                 style={[styles.grid, styles.p_5, styles.noWrap, styles.top, styles.justifyContentSpaceBetween, {backgroundColor: hasKot ? '#fdaa2960' : ''}]}>
                 <View style={{width: '60%'}}>
                     <View style={[styles.grid, styles.noWrap, styles.top]}>
-                        {<View style={[styles.py_3]}>
+                        {<View>
                             <Avatar label={product.itemname} value={1} fontsize={15} lineheight={30} size={35}/>
                         </View>}
                         <View style={[styles.ml_2]}>
-                            <Paragraph style={[styles.bold, styles.paragraph]}>{product.itemname}</Paragraph>
+                            <Paragraph style={[styles.bold, styles.text_xs, styles.paragraph]}>{product.itemname}</Paragraph>
                         </View>
                     </View>
                 </View>
                 {<View>
                     {
                         Boolean(product?.productqnt) && !hasKot &&
-                        <AddButton product={product} />
+                        <AddButton item={product}  />
                     }
                     <Paragraph
-                        style={[styles.paragraph, styles.text_xs, {textAlign: 'right'}]}>{toCurrency(baseprice)}</Paragraph>
+                        style={[styles.paragraph, styles.text_xs, {textAlign: 'right'}]}>{toCurrency(baseprice * (product?.productqnt || 1))}</Paragraph>
                 </View>}
             </View>
 
@@ -168,7 +170,7 @@ const Index = memo((props: any) => {
         </TouchableOpacity>
     )
 }, (r1, r2) => {
-    return r1.item.itemid === r2.item.itemid;
+    return r1.item.productqnt === r2.item.productqnt;
 })
 
 

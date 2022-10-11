@@ -10,6 +10,8 @@ import {setItemDetail} from "../../redux-store/reducer/item-detail";
 import ItemDetail from "./ItemDetail";
 import {appLog, setItemRowData} from "../../libs/function";
 import {setCartItems} from "../../redux-store/reducer/cart-data";
+import {updateCartItem} from "./AddButton";
+
 
 const {v4: uuid} = require('uuid')
 
@@ -33,15 +35,10 @@ const Index = ({product }: any) => {
                         <View>
                             <Button
                                 onPress={async () => {
-                                    const itemRowData:any = setItemRowData(product);
-                                    product = {
-                                        ...product,
-                                        ...itemRowData,
-                                        key: uuid(),
 
-                                    }
+                                    updateCartItem(product,'add')
 
-                                    await  dispatch(setCartItems(product))
+
                                     await dispatch(setBottomSheet({visible: false}))
                                 }}> Repeat
                             </Button>
@@ -56,6 +53,7 @@ const Index = ({product }: any) => {
 
                                     product={
                                         ...product,
+                                        key: uuid(),
                                         productqnt:0
                                     }
                                     await dispatch(setItemDetail(product));

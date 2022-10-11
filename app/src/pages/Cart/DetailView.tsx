@@ -12,9 +12,8 @@ import CartSummary from "./CartSummary";
 
 const Index = (props: any) => {
 
-
     return <Container config={{title: 'Cart Detail'}} hideappbar={device.tablet} {...props}  >
-        {/*<ClientDetail/>*/}
+        {!device.tablet && <ClientDetail/>}
         <CartItems/>
         <CartSummary/>
         {!device.tablet && <CartActions/>}

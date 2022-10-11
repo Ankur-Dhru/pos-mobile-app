@@ -86,6 +86,9 @@ const Index =   ({vouchersubtotaldisplay, globaltax,voucherroundoffdisplay,loadi
     return (<View>
 
 
+                {loading &&  <View style={[styles.absolute, {left: '50%',marginLeft:-22,top:-7}]}><ActivityIndicator style={styles.m_1} color={'#016EFE'} size='large' animating={true}   /></View>}
+
+                <View  style={{opacity:loading?0.3:1}}>
 
                 <View style={[styles.grid, styles.justifyContent]}>
                     <View><Paragraph style={[styles.paragraph]}>Subtotal</Paragraph></View>
@@ -115,6 +118,8 @@ const Index =   ({vouchersubtotaldisplay, globaltax,voucherroundoffdisplay,loadi
                     <View><Paragraph
                         style={[styles.paragraph, styles.bold]}>{toCurrency(!loading ? voucherroundoffdisplay : '0')}</Paragraph></View>
                 </View>}
+
+                </View>
 
             </View>)
 }

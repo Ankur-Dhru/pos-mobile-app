@@ -60,7 +60,7 @@ const Index = (props: any) => {
                     <Paragraph style={[styles.paragraph,styles.bold]}>  {tabledetails?.tablename}</Paragraph>
                 </View>
             </TouchableOpacity>}
-            <View style={[styles.flexGrow,{paddingLeft:6,paddingRight:6}]}>
+            <View style={[styles.flexGrow,{paddingLeft:6,}]}>
                 <View style={[styles.grid,styles.justifyContent]}>
                     <SearchItem  handleSearch={handleSearch}/>
                     <TouchableOpacity style={[styles.px_6,{backgroundColor:'white',padding:11,borderRadius:5,marginLeft:5}]} onPress={()=>setNumpad(!numpad)}>
@@ -68,9 +68,9 @@ const Index = (props: any) => {
                     </TouchableOpacity>
                 </View>
             </View>
-            <View style={{width:385}}>
+            {device.tablet && <View style={{marginLeft:6,width:385}}>
                 <ClientDetail/>
-            </View>
+            </View>}
         </View>
 
         {
@@ -117,10 +117,12 @@ const Index = (props: any) => {
 
                 <View style={[styles.h_100, styles.flex, {flexDirection: 'column'}]}>
 
-                    <GroupHeading />
+                    {Boolean(search) ? <View style={[styles.p_2]}>
+                        <Paragraph>Search Result ...</Paragraph>
+                    </View> : <GroupHeading />}
 
                     <Card style={[styles.h_100, styles.flex]}>
-                        <Items/>
+                        <Items  search={search}/>
 
                         <View>
 

@@ -961,8 +961,8 @@ export const removeItem = async (unique: any) => {
     if (Boolean(filtered?.length > 0)) {
       await store.dispatch(updateCartItems(clone(filtered)));
     } else {
-      await store.dispatch(setBottomSheet({visible: false}))
-      await deleteTempLocalOrder(current.table.tableorderid);
+      //await store.dispatch(setBottomSheet({visible: false}))
+      Boolean(current.table?.tableorderid) && await deleteTempLocalOrder(current.table?.tableorderid);
       await store.dispatch(resetCart())
     }
   }

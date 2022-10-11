@@ -89,8 +89,8 @@ const TablesStackNavigator = (props:any) => {
     return (
         <Stack.Navigator initialRouteName={'Tables'}>
             <Stack.Screen name={'Tables'} {...params} component={Tables} options={{headerShown: false}}/>
-            <Stack.Screen name={'CartStackNavigator'} {...params} component={CartStackNavigator}
-                          options={({route}: any) => ({headerShown: false, title: route?.params?.tablename})}/>
+            {/*<Stack.Screen name={'CartStackNavigator'} {...params} component={CartStackNavigator}
+                          options={({route}: any) => ({headerShown: false, title: route?.params?.tablename})}/>*/}
         </Stack.Navigator>
     );
 };
@@ -100,8 +100,8 @@ const CartStackNavigator = (props:any) => {
     return (
         <Stack.Navigator initialRouteName={'Cart'} >
             <Stack.Screen name={'Cart'} component={()=><Cart tabledetails={params}/>}  options={{headerShown: false}}/>
-            <Stack.Screen name={'DetailView'} component={DetailView}   options={{headerShown: false, headerTitle: 'Detail View'}}/>
-            <Stack.Screen name={'Preview'} component={Preview} options={{headerShown: false, headerTitle: 'Preview'}}/>
+            {/*<Stack.Screen name={'DetailView'} component={DetailView}   options={{headerShown: false, headerTitle: 'Detail View'}}/>
+            <Stack.Screen name={'Preview'} component={Preview} options={{headerShown: false, headerTitle: 'Preview'}}/>*/}
         </Stack.Navigator>
     );
 };
@@ -129,6 +129,7 @@ const DrawerStackNavigator = () => {
                 headerShown: false,
                 title: route?.params?.tablename || 'POS'
             })}/>
+            <Drawer.Screen name={'DetailView'} component={DetailView}   options={{headerShown: false, headerTitle: 'Detail View'}}/>
             <Drawer.Screen name={'Payment'} component={Payment} options={{headerShown: false,unmountOnBlur: true, headerTitle: 'Payment'}}/>
             <Drawer.Screen name={'SalesReportNavigator'} component={SalesReportNavigator} options={({route}: any) => ({
                 headerShown: false,

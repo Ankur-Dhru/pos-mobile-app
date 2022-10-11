@@ -32,7 +32,7 @@ const Index = (props: any) => {
 
 
     useLayoutEffect(() => {
-        if(firstRenderRef.current) {
+        if(firstRenderRef?.current) {
             const timeout = setTimeout(() => {
                 if (cartListRef.current && invoiceitems && invoiceitems.length > 0) {
                     cartListRef.current.scrollToEnd({animated: false});
@@ -44,9 +44,6 @@ const Index = (props: any) => {
         }
         firstRenderRef.current=true
     }, [invoiceitems?.length]);
-
-
-
 
     const renderItem = useCallback(({item, index}: any) => <Item item={item} key={item.key} hasLast={invoiceitems.length === index+1} isRestaurant={hasrestaurant}   index={index}/>, []);
     const renderKot = useCallback(({item, index}: any) => <Kot kot={item} hasLast={kots.length === index+1} key={item.key} />, []);
@@ -88,7 +85,7 @@ const Index = (props: any) => {
                         data={invoiceitems}
                         ref={cartListRef}
                         getItemLayout={(data, index) => {
-                            return { length: 76, offset: 76 * index, index };
+                            return { length: 80, offset: 80 * index, index };
                         }}
                         renderItem={renderItem}
                         ListEmptyComponent={()=>{

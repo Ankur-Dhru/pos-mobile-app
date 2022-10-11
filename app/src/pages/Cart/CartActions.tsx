@@ -239,12 +239,10 @@ const Index = ({
 
             const {kots, tableorderid, invoiceitems}: any = cartData;
 
-
-
             if (kots?.length === 0 || (kots?.length > 0 && invoiceitems?.length === 0)) {
                 dispatch(resetCart())
+                navigation.replace('DrawerStackNavigator');
                 if (tableorderid) {
-                    navigation.replace('DrawerStackNavigator');
                     deleteTempLocalOrder(tableorderid).then(() => {
 
                     })

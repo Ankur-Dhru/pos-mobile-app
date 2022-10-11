@@ -31,7 +31,7 @@ const {v4: uuid} = require('uuid')
 const Index = memo((props: any) => {
 
 
-    let {item, productqnt, search} = props;
+    let {item} = props;
 
     if (!Boolean(item)) {
         item = {}
@@ -113,7 +113,7 @@ const Index = memo((props: any) => {
 
     const {veg} = product;
 
-    if (device.tablet && !search) {
+    if (device.tablet) {
         return (
 
             <TouchableOpacity onPress={() => selectItem(product)} style={[styles.flexGrow,styles.center,styles.middle, {
@@ -138,7 +138,7 @@ const Index = memo((props: any) => {
 
 
     return (
-        <TouchableOpacity onPress={() => !Boolean(product?.productqnt) && selectItem(product)}
+        <TouchableOpacity onPress={() =>   selectItem(product)}
                           style={[styles.noshadow]}>
 
             <View
@@ -156,7 +156,7 @@ const Index = memo((props: any) => {
                 {<View>
                     {
                         Boolean(product?.productqnt) && !hasKot &&
-                        <AddButton product={product} parentsetProduct={setProduct} selectItem={selectItem}/>  /*<Button   onPress={() => { selectItem(product) }}> Add </Button>*/
+                        <AddButton product={product} />
                     }
                     <Paragraph
                         style={[styles.paragraph, styles.text_xs, {textAlign: 'right'}]}>{toCurrency(baseprice)}</Paragraph>

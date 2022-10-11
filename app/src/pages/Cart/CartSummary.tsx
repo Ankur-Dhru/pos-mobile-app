@@ -45,10 +45,10 @@ const Index = ({vouchertotaldisplay}: any) => {
     }
 
 
-    return (<Card   onPress={()=>{ viewSummary() }} style={[styles.mt_3]}>
+    return (<Card   onPress={()=>{ viewSummary() }} style={[styles.mt_3,styles.noshadow]}>
         <Card.Content >
 
-            <View><Paragraph style={[styles.absolute,{top:0,left:'50%',marginLeft:-10}]}><ProIcon name={summary?'chevron-down':'chevron-up'} action_type={'text'} size={15}/></Paragraph></View>
+            <View><Paragraph style={[styles.absolute,{top:0,left:'50%',marginLeft:-10}]}><ProIcon name={'chevron-up'} action_type={'text'} size={15}/></Paragraph></View>
 
             <View ref={moreSummaryRef}><CartSummaryMore  /></View>
 

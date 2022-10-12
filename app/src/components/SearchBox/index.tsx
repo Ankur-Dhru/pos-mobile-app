@@ -36,7 +36,7 @@ const Search = (props: any) => {
     const {colors}: any = props.theme;
 
     return (
-        <Card style={[{padding:5}]}>
+        <Card>
             <Searchbar
                 ref={(ref)=> {
                     searchRf = ref
@@ -47,8 +47,8 @@ const Search = (props: any) => {
                 value={searchQuery}
                 useNativeDriver={true}
                 onSubmitEditing={() => props.handleSearch(searchQuery.trim())}
-                style={[{elevation: 0, height: 37, borderRadius: 5, backgroundColor: 'white'}]}
-                inputStyle={{height: Platform.OS === 'ios' ? 37 : 40}}
+                style={[{elevation: 0,  borderRadius: 5, backgroundColor: 'white'}]}
+
                 {...props}
             />
         </Card>

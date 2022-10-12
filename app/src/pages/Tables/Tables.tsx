@@ -121,6 +121,9 @@ const Index = (props: any) => {
             getItemLayout={(data, index) => {
                 return { length: 100, offset: 100 * index, index };
             }}
+            ListFooterComponent={() => {
+                return <View style={{height: 80}}></View>
+            }}
             ListEmptyComponent={()=>{
                 return (
                     <>

@@ -27,7 +27,7 @@ const Index = ({tabledetails}: any) => {
     }, [])
 
 
-    /*const [loaded, setLoaded] = useState(false)
+    const [loaded, setLoaded] = useState(false)
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             setTimeout(() => {
@@ -38,7 +38,7 @@ const Index = ({tabledetails}: any) => {
     }, []);
     if (!loaded) {
         return <PageLoader page={'cart'}/>
-    }*/
+    }
 
     return <Cart tabledetails={tabledetails}/>
 }

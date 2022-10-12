@@ -23,8 +23,6 @@ const Index = (props: any) => {
         return <PageLoader page={'table'} />
     }
 
-    //return <PageLoader page={'table'} />
-
     return <Container hideappbar={true} config={{title: 'Tables', hideback: true, drawer: true}} {...props}>
 
         <OrderTypes/>

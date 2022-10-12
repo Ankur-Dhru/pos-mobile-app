@@ -190,17 +190,17 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
 
         <ScrollView>
 
-         <Form
+
+        <Form
                         onSubmit={handleSubmit}
                         initialValues={{...initdata}}>
                         {propsValues => (
                             <>
 
-                                <View style={[styles.grid, styles.middle, styles.center,styles.px_6]}>
+                                <View style={[styles.grid,styles.flex, styles.bottom, styles.center,styles.wrap]}>
 
 
-                                    <View style={[styles.w_auto,styles.h_100]}>
-
+                                    <View style={[styles.w_auto,{minWidth:400,maxWidth:400,padding:5}]}>
 
 
                                     <View style={[styles.grid, styles.middle, styles.center]}>
@@ -323,6 +323,12 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
                                     </>}
 
 
+
+                                        <View style={[styles.py_6]}>
+                                            <TouchableOpacity onPress={() => { }} style={[styles.center,styles.middle]}><Text>Skip Payment</Text></TouchableOpacity>
+                                        </View>
+
+
                                         <View>
                                             <Button disabled={!Boolean(initdata.paymentamount)} onPress={() => {
                                                 addPayment(propsValues.values)
@@ -330,20 +336,14 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
                                         </View>
 
 
-                                        <View style={[styles.py_6]}>
-                                            <TouchableOpacity onPress={() => { }} style={[styles.center,styles.middle]}><Text>Skip Payment</Text></TouchableOpacity>
-                                        </View>
-
-
 
                                     </View>
 
 
-                                    <View  style={[styles.w_auto,styles.ml_2,styles.h_100]}>
+                                    <View  style={[styles.w_auto,{padding:10}]}>
 
 
-
-                                    <View style={[styles.p_5,styles.border,styles.h_100]}>
+                                    <View>
                                     {Boolean(payments.length) && <>
 
                                         <View style={[styles.mb_5,styles.grid,styles.right]}>
@@ -373,26 +373,28 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
                                             })}
                                         </View>
 
-                                        <View style={[{marginTop:'auto'}]}>
+                                    </>}
+
+                                    </View>
 
 
-                                            <View>
+                                        <View>
+
+
+                                            {Boolean(payments.length) &&  <View>
 
                                                 <Button onPress={() => {
                                                     validatePayment()
                                                 }}> {voucherid ? 'Save' : `Generate Invoice`} </Button>
 
-                                            </View>
+                                            </View>}
 
-                                            <View style={{height:33}}>
-
-                                            </View>
 
                                         </View>
 
-                                </>}
 
-                                    </View>
+
+
 
                                     </View>
 
@@ -403,8 +405,8 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
                         )}
 
                     </Form>
-
         </ScrollView>
+
 
     </Container>
 }

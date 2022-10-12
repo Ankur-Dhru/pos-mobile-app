@@ -17,7 +17,7 @@ import store from "../../redux-store/store";
 const Index = (props: any) => {
 
 
-    let {bottomsheet, theme: {colors}, fromcart, item,setProduct} = props;
+    let {bottomsheet, theme: {colors}, fromcart, item,setProduct,page} = props;
 
 
     const dispatch = useDispatch();
@@ -30,13 +30,13 @@ const Index = (props: any) => {
                 height: '20%',
                 component: () => <AddonActions product={values}/>
             }))
-        } else if (action === 'remove' && !bottomsheet.visible && !device.tablet && !fromcart && values?.hasAddon) {
+        }/* else if (action === 'remove' && !bottomsheet.visible && !device.tablet && !fromcart && values?.hasAddon) {
             await dispatch(setBottomSheet({
                 visible: true,
                 height: '50%',
                 component: () => <CartItems itemid={values.productid || values.itemid}/>
             }))
-        } else {
+        }*/ else {
 
             await updateCartItem(values, action)
         }

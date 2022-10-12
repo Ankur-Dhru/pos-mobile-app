@@ -26,6 +26,7 @@ import {device, localredux, TICKET_STATUS} from "../../libs/static";
 import CancelReason from "./CancelReason";
 
 import {hideLoader,  showLoader} from "../../redux-store/reducer/component";
+import Print from "./Print";
 
 
 const Index = ({
@@ -251,7 +252,7 @@ const Index = ({
                 dispatch(setDialog({
                     visible: true,
                     hidecancel: true,
-                    width:500,
+                    width:380,
                     component: () => <CancelReason type={'ordercancelreason'} navigation={navigation} />
                 }))
             }
@@ -287,10 +288,11 @@ const Index = ({
                             > KOT </Button>
                         </View>
                         <View style={[styles.w_auto, styles.ml_1]}>
-                            <Button disable={!Boolean(vouchertotaldisplay)}
+                            <Print/>
+                            {/*<Button disable={!Boolean(vouchertotaldisplay)}
 
                                     more={{backgroundColor: styles.yellow.color,  }}
-                            > Print </Button>
+                            > Print </Button>*/}
                         </View>
                     </>}
                     {/*<View style={[styles.w_auto, styles.ml_1, styles.mr_1]}>

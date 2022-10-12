@@ -43,15 +43,13 @@ const Index = (props: any) => {
                     </TouchableOpacity>
                 </View>
 
-                <View style={[styles.ml_auto]}>
-                    <ScrollView horizontal={true}>
-                        {
-                            ordertypes.map((type: any) => {
-                                return <OrderType selected={ordertype?.value !== type.value} type={type} key={type.value}/>
-                            })
-                        }
-                    </ScrollView>
-                </View>
+                <ScrollView horizontal={true}>
+                    {
+                        ordertypes.map((type: any) => {
+                            return <OrderType selected={ordertype?.value !== type.value} type={type} key={type.value}/>
+                        })
+                    }
+                </ScrollView>
             </View>
 
 

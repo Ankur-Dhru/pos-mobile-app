@@ -1,6 +1,6 @@
 import store from "../redux-store/store";
 import moment from "moment";
-import {changeCartItem, resetCart, setCartData, updateCartItems} from "../redux-store/reducer/cart-data";
+import {changeCartItem, resetCart, setCartData, updateCartField, updateCartItems} from "../redux-store/reducer/cart-data";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProIcon from "../components/ProIcon";
 
@@ -963,7 +963,7 @@ export const removeItem = async (unique: any) => {
     } else {
       //await store.dispatch(setBottomSheet({visible: false}))
       Boolean(current.table?.tableorderid) && await deleteTempLocalOrder(current.table?.tableorderid);
-      await store.dispatch(resetCart())
+      await store.dispatch(updateCartField({invoiceitems:[]}))
     }
   }
   catch (e) {

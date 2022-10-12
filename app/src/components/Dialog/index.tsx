@@ -24,7 +24,6 @@ const Index = ({dialog, setDialog}: any) => {
     }
 
     return (
-
         <Dialog visible={visible}
                 style={{ width: width?width:'90%', alignSelf: "center" }}
                 theme={{
@@ -40,7 +39,6 @@ const Index = ({dialog, setDialog}: any) => {
                 <View style={[styles.ml_1]}><Button   secondbutton={true} onPress={() => dispatch(setDialog({visible: false}))}>Cancel</Button></View>
             </Dialog.Actions>}
         </Dialog>
-
     );
 };
 

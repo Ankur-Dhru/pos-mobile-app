@@ -40,6 +40,7 @@
     "react-content-loader": "^6.2.0",
     "react-final-form": "^6.5.9",
     "react-native": "0.70.1",
+    "react-native-esc-pos-printer": "^2.1.0",
     "react-native-extra-dimensions-android": "^1.2.5",
     "react-native-fontawesome-pro": "^2.1.0",
     "react-native-gesture-handler": "^2.5.0",

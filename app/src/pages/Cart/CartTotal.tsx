@@ -19,7 +19,7 @@ const Index = ({vouchertotaldisplay, invoiceitems, theme: {colors}}: any) => {
 
 
 
-    if (!Boolean(vouchertotaldisplay)) {
+    if (!Boolean(totalqnt)) {
         return <></>
     }
 

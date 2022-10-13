@@ -33,7 +33,7 @@ const Index = ({cartData}: any) => {
         setClient({label: cartData?.clientname, value: cartData?.clientid})
     }, [])
 
-    return <Card>
+    return <Card style={[styles.noshadow]}>
 
         <View style={[styles.px_5]}>
             <InputField
@@ -43,7 +43,7 @@ const Index = ({cartData}: any) => {
                 displaytype={'pagelist'}
                 inputtype={'dropdown'}
                 render={() => <View style={[styles.grid, styles.justifyContent, styles.py_5]}>
-                    <View style={[styles.grid, styles.justifyContent]}>
+                    <View style={[styles.grid, styles.justifyContent,styles.noWrap]}>
                         <Avatar label={client.label} value={client.value} fontsize={12}  size={30}/>
                         <View style={[styles.ml_2]}><Paragraph style={[styles.paragraph,styles.bold]}> {client.label}</Paragraph></View>
                     </View>

@@ -265,7 +265,6 @@ export const minLength = (min: any, label?: any) => (value: any) => {
 export const composeValidators = (...validators: any) => (value: any) =>
     validators.reduce((error: any, validator: any) => error || validator(value), undefined)
 
-export const voucher: any = {settings: {}, other: {}, data: {files: []}, type: {}};
 
 export const device: any = {tablet: true}
 

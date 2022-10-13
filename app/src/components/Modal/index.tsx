@@ -27,9 +27,9 @@ class Index extends React.Component<any> {
         const {modal, setModal}:any = this.props;
         const Content = modal.component;
 
-        /*if (!modal.visible) {
+        if (!modal.visible) {
             return (<View></View>)
-        }*/
+        }
 
 
         return (

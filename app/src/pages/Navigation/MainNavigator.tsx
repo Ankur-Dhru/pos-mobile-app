@@ -19,6 +19,7 @@ import Payment from "../Cart/Payment";
 import Preview from "../Cart/Preview";
 import SearchItem from "../Items/SearchItem";
 import Report from "../Report";
+import PrinterSettings from "../PrinterSettings";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -112,6 +113,16 @@ const SalesReportNavigator = (props:any) => {
     );
 };
 
+
+const PrinterNavigator = (props:any) => {
+    const {route: {params}}:any = props
+    return (
+        <Stack.Navigator initialRouteName={'PrinterSettings'} >
+            <Stack.Screen name={'PrinterSettings'} component={PrinterSettings}  options={{headerShown: false}}/>
+        </Stack.Navigator>
+    );
+};
+
 const DrawerStackNavigator = () => {
 
     return (
@@ -121,6 +132,7 @@ const DrawerStackNavigator = () => {
             <Drawer.Screen name={'DetailView'} component={DetailView}   options={{headerShown: false, headerTitle: 'Detail View'}}/>
             <Drawer.Screen name={'Payment'} component={Payment} options={{headerShown: false,unmountOnBlur: true, headerTitle: 'Payment'}}/>
             <Drawer.Screen name={'SalesReportNavigator'} component={SalesReportNavigator} options={({route}: any) => ({headerShown: false,title: route?.params?.tablename || 'POS'})}/>
+            <Drawer.Screen name={'PrinterNavigator'} component={PrinterNavigator} options={({route}: any) => ({headerShown: false,title: 'Printer Settings'})}/>
         </Drawer.Navigator>
     );
 };

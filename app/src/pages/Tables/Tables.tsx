@@ -71,7 +71,7 @@ const Index = (props: any) => {
 
             return (
                 <View style={[{minWidth: 150}, styles.flexGrow,]} key={item.tableid}>
-                    <TouchableOpacity style={[styles.m_2,styles.noshadow,  {height: 125,backgroundColor:styles.secondary.color,borderRadius:5}]}
+                    <TouchableOpacity style={[styles.m_2,styles.noshadow,  {height: 125,backgroundColor: Boolean(item.kots?.length) ? styles.yellow.color : Boolean(item.invoiceitems?.length) ? styles.secondary.color : styles.light.color,borderRadius:5}]}
                                       onPress={() => {
                                           current.table = {invoiceitems:[],kots:[],...item};
                                           navigation.navigate('CartStackNavigator', current.table)
@@ -79,14 +79,14 @@ const Index = (props: any) => {
                         <View style={[styles.p_5]}>
                             <View style={[styles.grid, styles.mb_3]}>
                                 <View
-                                    style={[styles.badge, styles.px_5, {backgroundColor: Boolean(item.invoiceitems?.length) ? styles.green.color : styles.red.color}]}>
+                                    style={[styles.badge, styles.px_5, {backgroundColor:  styles.primary.color}]}>
                                     <Text style={[styles.paragraph, styles.text_xs, {color: 'white'}]}>{item.tablename || 'Retail'}</Text></View></View>
                             {Boolean(item.invoiceitems?.length) && <>
                                 <Paragraph><ProIcon align={'left'} name={'user'} action_type={'text'}
                                                     size={13}/> {item.paxes} x {item.clientname}</Paragraph>
                                 <View style={[styles.mt_3]}>
                                     <Text
-                                        style={[styles.paragraph, styles.text_lg,styles.bold, {color: styles.green.color}]}>{toCurrency(item.vouchertotaldisplay)}</Text>
+                                        style={[styles.paragraph, styles.text_lg,styles.bold,{color:'black'}]}>{toCurrency(item.vouchertotaldisplay)}</Text>
                                 </View>
                             </>}
                         </View>

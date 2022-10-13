@@ -5,9 +5,10 @@ import {
     deleteTempLocalOrder,
     errorAlert,
     findObject,
+    generateKOT,
     getTicketStatus,
     isEmpty,
-    isRestaurant,
+    isRestaurant, printInvoice,
     retrieveData,
     saveTempLocalOrder,
     storeData
@@ -26,8 +27,6 @@ import {device, localredux, TICKET_STATUS} from "../../libs/static";
 import CancelReason from "./CancelReason";
 
 import {hideLoader,  showLoader} from "../../redux-store/reducer/component";
-import Print from "./Print";
-
 
 const Index = ({
                    cartData,
@@ -40,227 +39,9 @@ const Index = ({
     const hasRestaurant = isRestaurant()
     const dispatch = useDispatch()
 
-    const {currentLocation: {departments, currentTicketType}} = localredux.localSettingsData;
-    const {adminid, username}: any = localredux.loginuserData;
-
-    const generateKOT = async () => {
-
-        let kotid: any = '';
-        dispatch(showLoader())
-
-        try{
-            retrieveData('fusion-pro-pos-mobile-kotno').then(async (kotno: any) => {
-
-            if(!Boolean(kotno)){
-                kotno = 1;
-            }
-            kotid = kotno;
-            if (isEmpty(departments)) {
-                errorAlert(`No Kitchen Department`);
-            } else {
-
-                let {
-                    invoiceitems,
-                    tableorderid,
-                    tableid,
-                    tablename,
-                    ordertype,
-                    kots,
-                    commonkotnote,
-                } = cartData;
-
-
-                let itemForKot: any = [], newkot = {};
-                let printkot: any = [];
-                if (ordertype !== "tableorder") {
-                    tablename = ordertype
-                    if (tableorderid) {
-                        tablename += ` #${tableorderid}`
-                    }
-                }
-
-
-                if (invoiceitems) {
-
-                    itemForKot = invoiceitems.filter((itemL1: any) => {
-                        return Boolean(itemL1.itemdepartmentid) && !Boolean(itemL1?.kotid)
-                    });
-
-
-                    if (itemForKot.length > 0) {
-
-                        let kitchens: any = [];
-
-
-                        itemForKot.forEach((item: any) => {
-
-                            const kitchenid = item?.itemdepartmentid;
-
-                            let find = kitchens.find((k: any) => k === kitchenid);
-                            if (!Boolean(find)) {
-                                kitchens = [
-                                    ...kitchens,
-                                    kitchenid
-                                ]
-                            }
-                        });
-
-
-                        const openTicketStatus = getTicketStatus(TICKET_STATUS.OPEN);
-
-                        kitchens.forEach((k: any) => {
-                            kotid++;
-                            storeData('fusion-pro-pos-mobile-kotno', kotid).then(() => {});
-                            let kotitems: any = [];
-
-                            itemForKot.forEach((itemL1: any, index: any) => {
-
-                                if (itemL1?.itemdepartmentid === k) {
-
-                                    if (!Boolean(itemL1?.kotid)) {
-                                        itemL1 = {
-                                            ...itemL1,
-                                            kotid: kotid,
-                                            can_not_change: true
-                                        }
-                                    }
-
-
-                                    let {
-                                        product_qnt,
-                                        productratedisplay,
-                                        instruction,
-                                        productqnt,
-                                        ref_id,
-                                        groupname,
-                                        itemunit,
-                                        itemid,
-                                        itemname,
-                                        predefinenotes,
-                                        extranote
-                                    } = itemL1;
-
-
-                                    if (predefinenotes) {
-                                        predefinenotes = predefinenotes.join(", ");
-                                    }
-                                    if (extranote) {
-                                        if (Boolean(predefinenotes)) {
-                                            predefinenotes += ", " + extranote;
-                                        } else {
-                                            predefinenotes = extranote;
-                                        }
-                                    }
-                                    const kot = {
-                                        "productid": itemid,
-                                        "productrate": productratedisplay,
-                                        "productratedisplay": productratedisplay,
-                                        "productqnt": productqnt,
-                                        "productqntunitid": itemunit,
-                                        "related": 0,
-                                        "item_ref_id": "",
-                                        "staffid": adminid,
-                                        "productdisplayname": itemname,
-                                        "itemgroupname": groupname,
-                                        "instruction": instruction,
-                                        ref_id,
-                                        key: itemL1.key,
-                                    };
-
-                                    kotitems = [...kotitems, clone(kot)];
-
-                                    itemForKot[index] = itemL1;
-                                }
-
-                            });
-
-                            const department = findObject(departments, 'departmentid', k, true)
-
-                            newkot = {
-
-                                tickettypeid: currentTicketType?.tickettypeid,
-                                ticketnumberprefix: currentTicketType?.ticketnumberprefix,
-                                ticketstatus: openTicketStatus?.statusid,
-                                ticketstatusname: openTicketStatus?.ticketstatusname,
-                                ticketitems: kotitems,
-                                ticketdate: moment().format("YYYY-MM-DD"),
-                                tickettime: moment().format("hh:mm A"),
-                                datetime: moment().unix(),
-                                kotid,
-                                tableid,
-                                counter: 1,
-                                commonkotnote: commonkotnote,
-                                status: "pending",
-                                table: tablename,
-                                departmentid: k,
-                                departmentname: department?.name,
-                                staffid: adminid,
-                                staffname: username,
-                                ordertype: ordertype,
-                            };
 
 
 
-                            kots = [...kots, newkot];
-
-                            printkot.push(newkot);
-
-                        });
-
-                        const updateditems = invoiceitems.map((item: any) => {
-
-                            const find = findObject(itemForKot, 'key', item.key, true);
-                            if (Boolean(find)) {
-                                item = {
-                                    ...item,
-                                    kotid: find.kotid,
-                                }
-                            }
-                            return item
-                        })
-
-                        await dispatch(updateCartKots(kots))
-                        await dispatch(updateCartItems(updateditems))
-
-                        dispatch(hideLoader())
-
-                    }
-                }
-            }
-        });
-        }
-        catch (e) {
-          appLog('e',e)
-        }
-
-    }
-
-    const cancelOrder = async () => {
-        try{
-
-            const {kots, tableorderid, invoiceitems}: any = cartData;
-
-            if (kots?.length === 0 || (kots?.length > 0 && invoiceitems?.length === 0)) {
-                dispatch(resetCart())
-                navigation.replace('DrawerStackNavigator');
-                if (tableorderid) {
-                    deleteTempLocalOrder(tableorderid).then(() => {
-
-                    })
-                }
-            } else {
-                dispatch(setDialog({
-                    visible: true,
-                    hidecancel: true,
-                    width:380,
-                    component: () => <CancelReason type={'ordercancelreason'} navigation={navigation} />
-                }))
-            }
-        }
-        catch (e) {
-          appLog('e',e)
-        }
-    }
 
 
 
@@ -271,51 +52,59 @@ const Index = ({
             <View>
                 <View style={[styles.grid, styles.justifyContent, styles.noWrap]}>
 
-                    <View style={[styles.w_auto]}>
+
+
+                    {/*<View style={[styles.w_auto]}>
                         <Button
                                 secondbutton={!Boolean(vouchertotaldisplay)}
                                 onPress={() => cancelOrder()}
                                 more={{backgroundColor: styles.red.color, color: 'white'}}
                         > Cancel </Button>
-                    </View>
+                    </View>*/}
 
                     {hasRestaurant && <>
+
+                        <View style={[styles.w_auto]}>
+                            <Button  disable={!Boolean(vouchertotaldisplay)}
+                                     onPress={() =>  {
+                                         if(Boolean(vouchertotaldisplay)){
+                                             dispatch(showLoader())
+                                             saveTempLocalOrder().then(() => {
+
+                                                 navigation.replace('DrawerStackNavigator');
+                                                 dispatch(hideLoader())
+                                             })
+                                         }
+                                     }}
+                                     more={{backgroundColor: styles.green.color,  }}
+                            >Save </Button>
+                        </View>
+
                         <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
 
                                     onPress={() => generateKOT()}
                                     more={{backgroundColor: styles.yellow.color, }}
-                            > KOT </Button>
+                            >KOT </Button>
                         </View>
                         <View style={[styles.w_auto, styles.ml_1]}>
-                            <Print/>
-                            {/*<Button disable={!Boolean(vouchertotaldisplay)}
+                            <Button disable={!Boolean(vouchertotaldisplay)}
+                                    onPress={() => {
+                                        dispatch(showLoader())
+                                        saveTempLocalOrder().then(() => {
+                                            printInvoice().then();
+                                            dispatch(hideLoader())
+                                        })
 
-                                    more={{backgroundColor: styles.yellow.color,  }}
-                            > Print </Button>*/}
+                                    }}
+                                    more={{backgroundColor: styles.accent.color,  }}
+                            >Print </Button>
                         </View>
                     </>}
                     {/*<View style={[styles.w_auto, styles.ml_1, styles.mr_1]}>
                         <Button> Drawer </Button>
                     </View>*/}
-                    {hasRestaurant && <View style={[styles.w_auto, styles.ml_1]}>
-                        <Button  disable={!Boolean(vouchertotaldisplay)}
 
-                            onPress={() =>  {
-                                    if(Boolean(vouchertotaldisplay)){
-                                        dispatch(showLoader())
-                                        saveTempLocalOrder().then(() => {
-
-                                            navigation.replace('DrawerStackNavigator');
-                                            dispatch(hideLoader())
-                                        })
-                                    }
-                                }}
-
-
-                         more={{backgroundColor: styles.yellow.color,  }}
-                        > Save </Button>
-                    </View>}
                     {(!hasRestaurant) && <>
                         {Object.keys(tableorders).length > 0 && <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={Boolean(vouchertotaldisplay)}
@@ -365,7 +154,7 @@ const Index = ({
                             }}
 
                             more={{backgroundColor: styles.green.color, color: 'white'}}
-                        > Bill
+                        >Bill
                         </Button>
                     </View>
                 </View>

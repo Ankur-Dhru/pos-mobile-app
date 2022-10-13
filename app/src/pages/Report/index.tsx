@@ -139,7 +139,6 @@ const Index = ({ordersData}: any) => {
                     retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
                         if (!isEmpty(data.orders)) {
                             let invoice = Object.values(data.orders)[0]
-                            appLog("STEP", invoice);
                             let response = await syncInvoice(invoice)
                             appLog("invoice data call", response);
                         }

@@ -5,6 +5,7 @@
     <file type="web" url="file://$PROJECT_DIR$/app/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@react-native-async-storage/async-storage/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@react-native-community/datetimepicker/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-esc-pos-printer/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-extra-dimensions-android/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-gesture-handler/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-get-random-values/android" />

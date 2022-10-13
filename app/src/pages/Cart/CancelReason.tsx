@@ -137,9 +137,9 @@ const Index = (props: any) => {
                     />
 
 
-                    <View style={[styles.grid,styles.right,styles.mt_5]}>
-                        <Button style={[styles.mr_2]} onPress={() => {handleSubmit(values)} }>OK</Button>
+                    <View style={[styles.grid,styles.justifyContent,styles.mt_5]}>
                         <Button   secondbutton={true} onPress={() => dispatch(setDialog({visible: false}))}>Cancel</Button>
+                        <Button   onPress={() => {handleSubmit(values)} }>Cancel {type === 'ticketcancelreason'?'KOT':'Order'}</Button>
                     </View>
 
                 </>

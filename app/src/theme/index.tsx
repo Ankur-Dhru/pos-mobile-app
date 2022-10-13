@@ -398,7 +398,7 @@ export const styles: any = StyleSheet.create({
     italic: {fontStyle: 'italic'},
     red: {color: '#980202'},
     green: {color: '#28a745'},
-    yellow: {color: '#fbb360'},
+    yellow: {color: '#F6DF8AFF'},
     primary: {color: '#222A55'},
     accent: {color: '#2d71d2'},
     secondary:{color:'#c4dcff'},
@@ -408,7 +408,7 @@ export const styles: any = StyleSheet.create({
     vegan: {color: '#fbb360'},
 
     orange: {color: 'orange'},
-    light: {color: '#A7AEB7'},
+    light: {color: '#eee'},
     tablerow: {minHeight: 30, borderColor: 'transparent', borderBottomWidth: 0},
     tablecell: {
         padding: hp('1.5%'),

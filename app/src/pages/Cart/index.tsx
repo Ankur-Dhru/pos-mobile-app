@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {isRestaurant, saveTempLocalOrder, voucherData} from "../../libs/function";
+import {appLog, isRestaurant, retrieveData, saveTempLocalOrder, voucherData} from "../../libs/function";
 import Cart from "./Cart";
 import {localredux, PRODUCTCATEGORY, VOUCHER} from "../../libs/static";
 import {useDispatch} from "react-redux";
@@ -25,7 +25,6 @@ const Index = ({tabledetails}: any) => {
         dispatch(refreshCartData({...tabledetails,...voucherDataJson}))
         dispatch(setSelected({value: mainproductgroupid, field: 'group'}))
     }, [])
-
 
     const [loaded, setLoaded] = useState(false)
     useEffect(() => {

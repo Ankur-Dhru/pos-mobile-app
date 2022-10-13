@@ -4,7 +4,7 @@ import {
     clone,
     errorAlert,
     getDefaultCurrency,
-    getFloatValue,
+    getFloatValue, printInvoice,
     saveLocalOrder,
     syncData,
     toCurrency
@@ -53,7 +53,7 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
 
     }
 
-    const validatePayment = async () => {
+    const validatePayment = async (config?:any) => {
 
 
         if (!Boolean(payments.length)) {
@@ -116,6 +116,9 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
             dispatch(showLoader())
 
             saveLocalOrder(cartData).then(() => {
+                if(config?.print){
+                    printInvoice().then();
+                }
                 navigation.replace('DrawerStackNavigator');
                 dispatch(hideLoader())
             })
@@ -200,7 +203,7 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
                                 <View style={[styles.grid,styles.flex, styles.bottom, styles.center,styles.wrap]}>
 
 
-                                    <View style={[styles.w_auto,{minWidth:400,maxWidth:400,padding:5}]}>
+                                    <View style={[styles.w_auto,{minWidth:'100%',maxWidth:400,padding:10}]}>
 
 
                                     <View style={[styles.grid, styles.middle, styles.center]}>
@@ -382,10 +385,19 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
 
 
                                             {Boolean(payments.length) &&  <View>
-
+                                                <View style={[styles.mb_2]}>
                                                 <Button onPress={() => {
                                                     validatePayment()
-                                                }}> {voucherid ? 'Save' : `Generate Invoice`} </Button>
+                                                }}> {`Generate Invoice`} </Button>
+                                                </View>
+
+                                                <View>
+
+                                                <Button onPress={() => {
+                                                    validatePayment({print:true})
+                                                }}> {`Generate Invoice & Print`} </Button>
+
+                                                </View>
 
                                             </View>}
 

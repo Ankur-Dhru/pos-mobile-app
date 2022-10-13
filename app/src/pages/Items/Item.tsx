@@ -138,11 +138,11 @@ const Index = memo((props: any) => {
     const hasKot = Boolean(product?.kotid);
 
     return (
-        <TouchableOpacity onPress={() => {selectItem(product)}}
+        <TouchableOpacity onPress={() => {!Boolean(product?.productqnt) && selectItem(product)}}
                           style={[styles.noshadow]}>
 
             <View
-                style={[{backgroundColor: hasKot ? '#fdaa2960' : ''}]}>
+                style={[{backgroundColor: hasKot ? styles.yellow.color : ''}]}>
                 <View>
                     <View style={[styles.autoGrid, styles.noWrap, styles.top,styles.p_4]}>
                         {<View>

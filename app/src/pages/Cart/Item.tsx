@@ -41,7 +41,7 @@ const Index = memo((props: any) => {
         <View style={[{
             margin: 4,
             marginBottom:0,
-            backgroundColor: haskot ? colors.thirdary : '',
+            backgroundColor: haskot ? styles.yellow.color : '',
             borderRadius: 5,
 
         }]}>
@@ -138,7 +138,7 @@ const Index = memo((props: any) => {
                                             <View>
                                                 <View style={[styles.grid]}>
                                                     <Paragraph style={[styles.paragraph, styles.text_xs]}>
-                                                        {item.productqnt} {unit[item.itemunit] && unit[item.itemunit].unitcode} x {toCurrency(item.productratedisplay || '0')} each =
+                                                        {item.productqnt} {!isRestaurant && unit[item.itemunit] && unit[item.itemunit].unitcode} x {toCurrency(item.productratedisplay || '0')} each =
                                                     </Paragraph>
 
                                                 </View>
@@ -168,7 +168,7 @@ const Index = memo((props: any) => {
                                                             <View style={[styles.grid]}>
                                                                 <View style={[styles.grid]}>
                                                                     <Paragraph style={[styles.paragraph, styles.text_xs]}>
-                                                                        {addon.productqnt} {unit[addon.itemunit] && unit[addon.itemunit].unitcode} {addon.itemname} x
+                                                                        {addon.productqnt} {!isRestaurant && unit[addon.itemunit] && unit[addon.itemunit].unitcode} {addon.itemname} x
                                                                     </Paragraph>
 
                                                                     <Paragraph

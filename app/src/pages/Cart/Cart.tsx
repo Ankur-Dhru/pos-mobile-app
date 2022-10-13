@@ -13,7 +13,7 @@ import CartTotal from "./CartTotal";
 import {device, localredux} from "../../libs/static";
 
 import CartActions from "./CartActions";
-import {ProIcon} from "../../components";
+import {Container, ProIcon} from "../../components";
 import {setSelected} from "../../redux-store/reducer/selected-data";
 import SearchItem from "../Items/SearchItem";
 import GroupHeading from "../Items/GroupHeading";
@@ -21,7 +21,8 @@ import ClientDetail from "../Client/ClientDetail";
 import {useNavigation} from "@react-navigation/native";
 import {appLog, saveTempLocalOrder} from "../../libs/function";
 import NumPad from "../Items/NumPad";
-import {hideLoader,showLoader} from "../../redux-store/reducer/component";
+import {hideLoader, setModal, showLoader} from "../../redux-store/reducer/component";
+import ItemList from "../Items/ItemList";
 
 
 const Index = (props: any) => {
@@ -50,34 +51,34 @@ const Index = (props: any) => {
 
     return <>
 
-        <View style={[styles.h_100, styles.flex, styles.p_4]}>
+        <View style={[styles.h_100, styles.flex, device.tablet?styles.p_4:styles.bg_white]}>
 
-            <View style={[styles.grid,styles.justifyContent]}>
-                {Boolean(tabledetails?.tablename) &&  <TouchableOpacity onPress={()=> {
-                    dispatch(showLoader());  saveTempLocalOrder().then(() => { navigation.goBack(); dispatch(hideLoader()); })
-                }}>
-                    <View  style={[styles.grid,styles.middle,styles.bg_white,{width:'auto',padding:11,borderRadius:5, marginRight:6}]}>
-                        <Paragraph><ProIcon name={'chevron-left'} action_type={'text'} /></Paragraph>
-                        <Paragraph style={[styles.paragraph,styles.bold]}>  {tabledetails?.tablename}</Paragraph>
-                    </View>
-                </TouchableOpacity>}
-                <View style={[styles.flexGrow]}>
-                    <View style={[styles.grid,styles.justifyContent]}>
-                        <SearchItem  handleSearch={handleSearch}/>
-                        {/*<TouchableOpacity style={[styles.px_6,{backgroundColor:'white',padding:11,borderRadius:5,marginLeft:5}]} onPress={()=>setNumpad(!numpad)}>
-                            <Paragraph><ProIcon name={'keyboard'} color={!numpad?'#ccc':'#000'} action_type={'text'}/></Paragraph>
-                        </TouchableOpacity>*/}
-                    </View>
-                </View>
-               {device.tablet && <View style={{marginLeft:6,width:385}}>
-                    <ClientDetail/>
-                </View>}
-            </View>
+
 
         {
             device.tablet ? <>
 
-
+                <View style={[styles.grid,styles.justifyContent]}>
+                    {Boolean(tabledetails?.tablename) &&  <TouchableOpacity onPress={()=> {
+                        dispatch(showLoader());  saveTempLocalOrder().then(() => { navigation.goBack(); dispatch(hideLoader()); })
+                    }}>
+                        <View  style={[styles.grid,styles.middle,styles.bg_white,{width:'auto',padding:11,borderRadius:5, marginRight:6}]}>
+                            <Paragraph><ProIcon name={'chevron-left'} action_type={'text'} /></Paragraph>
+                            <Paragraph style={[styles.paragraph,styles.bold]}>  {tabledetails?.tablename}</Paragraph>
+                        </View>
+                    </TouchableOpacity>}
+                    <View style={[styles.flexGrow]}>
+                        <View style={[styles.grid,styles.justifyContent]}>
+                            <SearchItem  handleSearch={handleSearch}/>
+                            {/*<TouchableOpacity style={[styles.px_6,{backgroundColor:'white',padding:11,borderRadius:5,marginLeft:5}]} onPress={()=>setNumpad(!numpad)}>
+                            <Paragraph><ProIcon name={'keyboard'} color={!numpad?'#ccc':'#000'} action_type={'text'}/></Paragraph>
+                        </TouchableOpacity>*/}
+                        </View>
+                    </View>
+                    {device.tablet && <View style={{marginLeft:6,width:385}}>
+                        <ClientDetail/>
+                    </View>}
+                </View>
 
                 <View
                     style={[styles.grid, styles.justifyContent, styles.noWrap, styles.h_100, styles.flex, styles.py_4]}>
@@ -117,13 +118,20 @@ const Index = (props: any) => {
                 <CartActions/>
 
 
-            </> : <>
+            </> : <Container
+                config={{title:tabledetails?.tablename,
+                    backAction:()=> {
+                        dispatch(showLoader());  saveTempLocalOrder().then(() => { navigation.goBack(); dispatch(hideLoader()); })
+                    },
+                    actions:()=>
+                        <TouchableOpacity style={{opacity:0}} onPress={() => dispatch(setModal({title: 'Restaurants',visible:true,component: ()=><SearchItem/>}))}><ProIcon name={'filter'} type={'light'}/>
+                        </TouchableOpacity>}}>
 
                 <View style={[styles.h_100, styles.flex, {flexDirection: 'column',paddingTop:5}]}>
 
 
-                    {Boolean(search) ? <View style={[styles.p_2]}>
-                        <Paragraph>Search Result ...</Paragraph>
+                    {Boolean(search) ? <View style={[styles.p_2,styles.ml_1]}>
+                        <Paragraph> Search Result ...</Paragraph>
                     </View> : <GroupHeading />}
 
                     <Card style={[styles.h_100, styles.flex]}>
@@ -169,7 +177,7 @@ const Index = (props: any) => {
 
                     </Card>
                 </View>
-            </>
+            </Container>
         }
 
         </View>

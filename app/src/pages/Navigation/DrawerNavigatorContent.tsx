@@ -43,7 +43,7 @@ const Index = () => {
         </Card>
 
 
-        <Card style={[styles.card, {height: windowHeight - 300}]}>
+        <Card style={[styles.card, {height: windowHeight - 400}]}>
             <Card.Content style={[styles.cardContent, {paddingHorizontal: 0}]}>
                 <ScrollView keyboardShouldPersistTaps='handled'>
                     <List.Item
@@ -64,6 +64,16 @@ const Index = () => {
         <Card style={[styles.card]}>
             <Card.Content style={[styles.cardContent, {paddingHorizontal: 0}]}>
                 <View>
+                    <List.Item
+                        style={[styles.listitem]}
+                        titleStyle={{marginLeft: 0, paddingLeft: 0}}
+                        title={'Printer Settings'}
+
+                        onPress={() => {
+                            navigation.navigate("PrinterNavigator");
+                        }}
+                    />
+
                     <List.Item
                         style={[styles.listitem]}
                         titleStyle={{marginLeft: 0, paddingLeft: 0}}

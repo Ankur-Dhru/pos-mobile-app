@@ -16,6 +16,7 @@ import {localredux} from "../../libs/static";
 import {appLog, groupBy} from "../../libs/function";
 import store from "../../redux-store/store";
 import {setOrder, setOrdersData} from "../../redux-store/reducer/orders-data";
+import { setSettings } from "../../redux-store/reducer/local-settings-data";
 
 const md5 = require('md5');
 
@@ -74,6 +75,11 @@ const Index = (props: any) => {
                                     await retrieveData('fusion-pro-pos-mobile-tableorder').then(async (tableorders: any) => {
                                         await dispatch(setTableOrdersData(tableorders));
                                     })
+
+                                    await retrieveData('fusion-pro-pos-mobile-settings').then(async (data: any) => {
+                                        await dispatch(setSettings(data));
+                                    })
+
                                 }
                             }
                             await dispatch(hideLoader())

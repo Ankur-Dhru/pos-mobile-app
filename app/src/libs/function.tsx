@@ -1,13 +1,20 @@
 import store from "../redux-store/store";
 import moment from "moment";
-import {changeCartItem, resetCart, setCartData, updateCartField, updateCartItems} from "../redux-store/reducer/cart-data";
+import {
+  changeCartItem,
+  resetCart,
+  setCartData,
+  updateCartField,
+  updateCartItems,
+  updateCartKots
+} from "../redux-store/reducer/cart-data";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProIcon from "../components/ProIcon";
 
 import {decode} from 'html-entities';
 import {hideLoader, setAlert, setBottomSheet, setDialog, showLoader} from "../redux-store/reducer/component";
 import apiService from "./api-service";
-import {ACTIONS, current, localredux, METHOD, posUrl, STATUS, taxTypes, VOUCHER} from "./static";
+import {ACTIONS, current, localredux, METHOD, posUrl, STATUS, taxTypes, TICKET_STATUS, VOUCHER} from "./static";
 import {setInitData} from "../redux-store/reducer/init-data";
 import {setItemsData} from "../redux-store/reducer/items-data";
 import {setclientsData} from "../redux-store/reducer/clients-data";
@@ -25,6 +32,8 @@ import SyncingInfo from "../pages/Pin/SyncingInfo";
 import {setSyncDetail} from "../redux-store/reducer/sync-data";
 import {setOrder} from "../redux-store/reducer/orders-data";
 import {getProductData, itemTotalCalculation} from "./item-calculation";
+import EscPosPrinter, {getPrinterSeriesByName} from "react-native-esc-pos-printer";
+import CancelReason from "../pages/Cart/CancelReason";
 
 let base64 = require('base-64');
 let utf8 = require('utf8');
@@ -234,14 +243,15 @@ export const getDateWithFormat = (date?: string, dateFormat?: string) => {
 }
 
 export const dateFormat = (date?: string, withTime?: boolean, standardformat?: boolean) => {
-  let {initData: {general: {data}}}: any = localredux;
-  let dateFormat = data?.dateformat;
+  let {initData: {general}}: any = localredux;
+  let dateFormat = general?.dateformat;
   if (standardformat) {
     dateFormat = "YYYY-MM-DD"
   }
   if (withTime) {
     dateFormat += ' hh:mm A'
   }
+
   return moment(date).format(`${dateFormat}`)
 }
 
@@ -818,7 +828,6 @@ export const saveTempLocalOrder = async (order?:any) => {
 
     if (Boolean(order.invoiceitems.length > 0)) {
 
-
       order = await itemTotalCalculation(clone(order), undefined, undefined, undefined, undefined, 2, 2, false, false);
 
 
@@ -846,10 +855,11 @@ export const saveTempLocalOrder = async (order?:any) => {
         [order.tableorderid]: order
       }
 
+
+
       await storeData('fusion-pro-pos-mobile-tableorder', tableorders).then(async () => {
         await store.dispatch(setCartData(order));
         await store.dispatch(setTableOrdersData(tableorders));
-
       });
     }
 
@@ -905,6 +915,19 @@ export const saveLocalOrder = async (order?:any) => {
     }
   }
 
+  ///////// CREATE LOCALORDER ID //////////
+  if(!Boolean(order.invoice_display_number)){
+    await retrieveData('fusion-pro-pos-mobile-vouchernos').then(async (vouchers:any)=> {
+      order = {
+        ...order,
+        invoice_display_number:(Boolean(vouchers) && vouchers[order.vouchertypeid]) || 1
+      }
+      vouchers = {...vouchers,[order.vouchertypeid] : ++order.invoice_display_number}
+      await storeData('fusion-pro-pos-mobile-vouchernos', vouchers).then(async () => {});
+    })
+  }
+  ///////// CREATE LOCALORDER ID //////////
+
   await retrieveData('fusion-pro-pos-mobile').then(async (data:any)=>{
     data.orders = {
       ...data.orders,
@@ -913,8 +936,6 @@ export const saveLocalOrder = async (order?:any) => {
 
      await deleteTempLocalOrder(order.tableorderid).then(async ()=>{
       await storeData('fusion-pro-pos-mobile',data).then(async ()=>{
-        //await store.dispatch(setOrder(order))
-        //await store.dispatch(resetCart())
 
       });
     })
@@ -1001,4 +1022,421 @@ export const  groupBy = (arr:any, property:any) => {
     memo[x[property]].push(x);
     return memo;
   }, {});
+}
+
+
+
+export const printInvoice = async () => {
+
+  generateKOT()
+
+  const getTrimChar = (count: number, char?: string, defaultLength: number = PAGE_WIDTH) => {
+    let space = "";
+    if (!Boolean(char)) {
+      char = " ";
+    }
+    for (let i = 0; i < (defaultLength - count); i++) {
+      space += char;
+    }
+    return space;
+  }
+
+  const getColString = (value: string, colLength: number) => {
+    if (!Boolean(value)) {
+      value = " ";
+    }
+
+    if (value.length > colLength) {
+      value = value.slice(0, colLength)
+    }
+    return value.toString()
+  }
+
+  const getItem = (col1: string = "", col2: string = "", col3: string = "", col4: string = "") => {
+
+    let fixCol1 = 20, fixCol2 = 7, fixCol3 = 9, fixCol4 = 9;
+
+    if (PAGE_WIDTH === 42) {
+      fixCol1 = 14;
+    }
+
+    col1 = getColString(col1, fixCol1);
+    col2 = getColString(col2, fixCol2);
+    col3 = getColString(col3, fixCol3);
+    col4 = getColString(col4, fixCol4);
+
+    let col1Length = fixCol1 - col1.length;
+    let col2Length = fixCol2 - col2.length;
+    let col3Length = fixCol3 - col3.length;
+    let col4Length = fixCol4 - col4.length;
+
+    let col1String = col1 + getTrimChar(PAGE_WIDTH - col1Length, " ");
+    let col2String = getTrimChar(PAGE_WIDTH - col2Length, " ") + col2;
+    let col3String = getTrimChar(PAGE_WIDTH - col3Length, " ") + col3;
+    let col4String = getTrimChar(PAGE_WIDTH - col4Length, " ") + col4;
+    return col1String + " " + col2String + " " + col3String + " " + col4String;
+  }
+
+
+  const getLeftRight = (left: string, right: string, large: boolean = false) => {
+
+    left = getColString(left, PAGE_WIDTH / 2);
+    right = getColString(right, PAGE_WIDTH / 2);
+
+    let charLength = left.length + right.length;
+
+    return left + getTrimChar(parseInt(charLength.toString()), " ", large ? PAGE_WIDTH / 2 : PAGE_WIDTH) + right
+  }
+
+
+  let PAGE_WIDTH = 48;
+  let cartData = store.getState().cartData;
+
+
+  ///////// CREATE LOCALORDER ID //////////
+  if(!Boolean(cartData.invoice_display_number)) {
+    await retrieveData('fusion-pro-pos-mobile-vouchernos').then(async (vouchers: any) => {
+      cartData = {
+        ...cartData,
+        invoice_display_number: (Boolean(vouchers) && vouchers[cartData.vouchertypeid]) || 1
+      }
+      vouchers = {...vouchers, [cartData.vouchertypeid]: ++cartData.invoice_display_number}
+      await storeData('fusion-pro-pos-mobile-vouchernos', vouchers).then(async () => {
+        await store.dispatch(setCartData(cartData));
+      });
+    })
+  }
+  ///////// CREATE LOCALORDER ID //////////
+
+
+
+
+  const {invoiceitems,vouchertotaldisplay,vouchertaxdisplay,clientname,tablename,voucherroundoffdisplay,vouchertotaldiscountamountdisplay,adjustmentamount,typeWiseTaxSummary,invoice_display_number,date} = cartData;
+  const {currentLocation:{locationname,street1,street2,city}}:any = localredux.localSettingsData;
+  const {voucher,general:{legalname}}:any = localredux.initData;
+
+
+  try {
+    //const printers = await EscPosPrinter.discover();
+    // const printer = printers[0]
+
+    await EscPosPrinter.init({
+      target: "TCP:10.1.1.200",
+      seriesName: getPrinterSeriesByName("TM-T82"),
+      language: 'EPOS2_LANG_EN',
+    })
+
+    const printing = new EscPosPrinter.printing();
+    // .barcode({
+    //     value:'Test123',
+    //     type:'EPOS2_BARCODE_CODE93',
+    //     hri:'EPOS2_HRI_BELOW',
+    //     width:2,
+    //     height:50,
+    // })
+    // .qrcode({
+    //     value: 'Test123',
+    //     level: 'EPOS2_LEVEL_M',
+    //     width: 5,
+    // })
+
+
+    let status = printing
+        .initialize()
+        .align('center')
+        .size(2, 2)
+        .line(legalname)
+        .smooth()
+        .size(2, 1)
+        .line(locationname)
+        .smooth()
+        .size(1, 1)
+        .line(street1+' '+street2+' '+city)
+        .newline(2)
+        .align('right')
+        .line(`${voucher[cartData.vouchertypeid].vouchertypename} : ${invoice_display_number}`)
+        .size(1, 1)
+        .line(dateFormat(date))
+        .align('left')
+
+        .line(getTrimChar(0, '-'))
+        .line(clientname + ` (${tablename})`)
+        .line(getTrimChar(0, '-'))
+        .line(getItem("DESCRIPTION", "QNT", "RATE", "AMOUNT") + "\n" + getItem("HSN Code", "GST %", "", ""))
+        .line(getTrimChar(0, '-'))
+
+
+
+
+    let totalqnt:any = 0;
+    invoiceitems.map((item: any) => {
+      totalqnt += item.productqnt
+      status.line(getItem(item.productdisplayname, item.productqnt, item.productratedisplay, item.product_total_price_display) + "\n" +
+          getItem(item?.hsn, item?.totalTaxPercentageDisplay + "%", "", ""))
+    })
+
+
+    status
+        .line(getTrimChar(0, '-'))
+        .line(getItem(`Total Items ${invoiceitems.length}`, totalqnt, "", vouchertotaldisplay))
+        .line(getLeftRight("Total Tax", vouchertaxdisplay))
+        .align('center')
+
+
+    const {printers}:any = store.getState()?.localSettings || {};
+
+    if((Boolean(printers) && Boolean(printers['0000']))) {
+
+      const {upiid, upiname} =  printers['0000'] || {};
+
+      if (Boolean(upiid) && Boolean(upiname)) {
+        status
+            .qrcode({
+              value: `upi://pay?cu=INR&pa=${upiid}&pn=${upiname}&am=${vouchertotaldisplay}&tr=${invoice_display_number}`,
+              level: 'EPOS2_LEVEL_M',
+              width: 5,
+            })
+      }
+    }
+
+
+    await status
+        .line("Powered By Dhru ERP")
+        .size(2, 2)
+        .cut()
+        .addPulse()
+        .send()
+
+  } catch (e) {
+    appLog("Error", e);
+  }
+
+}
+
+
+
+
+export const generateKOT = async () => {
+
+  let kotid: any = '';
+  store.dispatch(showLoader())
+  let cartData = store.getState().cartData;
+  const {currentLocation: {departments, currentTicketType}} = localredux.localSettingsData;
+  const {adminid, username}: any = localredux.loginuserData;
+
+  try{
+    retrieveData('fusion-pro-pos-mobile-kotno').then(async (kotno: any) => {
+
+      if(!Boolean(kotno)){
+        kotno = 1;
+      }
+      kotid = kotno;
+      if (isEmpty(departments)) {
+        errorAlert(`No Kitchen Department`);
+      } else {
+
+        let {
+          invoiceitems,
+          tableorderid,
+          tableid,
+          tablename,
+          ordertype,
+          kots,
+          commonkotnote,
+        } = cartData;
+
+
+        let itemForKot: any = [], newkot = {};
+        let printkot: any = [];
+        if (ordertype !== "tableorder") {
+          tablename = ordertype
+          if (tableorderid) {
+            tablename += ` #${tableorderid}`
+          }
+        }
+
+
+        if (invoiceitems) {
+
+          itemForKot = invoiceitems.filter((itemL1: any) => {
+            return Boolean(itemL1.itemdepartmentid) && !Boolean(itemL1?.kotid)
+          });
+
+
+          if (itemForKot.length > 0) {
+
+            let kitchens: any = [];
+
+
+            itemForKot.forEach((item: any) => {
+
+              const kitchenid = item?.itemdepartmentid;
+
+              let find = kitchens.find((k: any) => k === kitchenid);
+              if (!Boolean(find)) {
+                kitchens = [
+                  ...kitchens,
+                  kitchenid
+                ]
+              }
+            });
+
+
+            const openTicketStatus = getTicketStatus(TICKET_STATUS.OPEN);
+
+            kitchens.forEach((k: any) => {
+              kotid++;
+              storeData('fusion-pro-pos-mobile-kotno', kotid).then(() => {});
+              let kotitems: any = [];
+
+              itemForKot.forEach((itemL1: any, index: any) => {
+
+                if (itemL1?.itemdepartmentid === k) {
+
+                  if (!Boolean(itemL1?.kotid)) {
+                    itemL1 = {
+                      ...itemL1,
+                      kotid: kotid,
+                      can_not_change: true
+                    }
+                  }
+
+
+                  let {
+                    product_qnt,
+                    productratedisplay,
+                    instruction,
+                    productqnt,
+                    ref_id,
+                    groupname,
+                    itemunit,
+                    itemid,
+                    itemname,
+                    predefinenotes,
+                    extranote
+                  } = itemL1;
+
+
+                  if (predefinenotes) {
+                    predefinenotes = predefinenotes.join(", ");
+                  }
+                  if (extranote) {
+                    if (Boolean(predefinenotes)) {
+                      predefinenotes += ", " + extranote;
+                    } else {
+                      predefinenotes = extranote;
+                    }
+                  }
+                  const kot = {
+                    "productid": itemid,
+                    "productrate": productratedisplay,
+                    "productratedisplay": productratedisplay,
+                    "productqnt": productqnt,
+                    "productqntunitid": itemunit,
+                    "related": 0,
+                    "item_ref_id": "",
+                    "staffid": adminid,
+                    "productdisplayname": itemname,
+                    "itemgroupname": groupname,
+                    "instruction": instruction,
+                    ref_id,
+                    key: itemL1.key,
+                  };
+
+                  kotitems = [...kotitems, clone(kot)];
+
+                  itemForKot[index] = itemL1;
+                }
+
+              });
+
+              const department = findObject(departments, 'departmentid', k, true)
+
+              newkot = {
+
+                tickettypeid: currentTicketType?.tickettypeid,
+                ticketnumberprefix: currentTicketType?.ticketnumberprefix,
+                ticketstatus: openTicketStatus?.statusid,
+                ticketstatusname: openTicketStatus?.ticketstatusname,
+                ticketitems: kotitems,
+                ticketdate: moment().format("YYYY-MM-DD"),
+                tickettime: moment().format("hh:mm A"),
+                datetime: moment().unix(),
+                kotid,
+                tableid,
+                counter: 1,
+                commonkotnote: commonkotnote,
+                status: "pending",
+                table: tablename,
+                departmentid: k,
+                departmentname: department?.name,
+                staffid: adminid,
+                staffname: username,
+                ordertype: ordertype,
+              };
+
+
+
+              kots = [...kots, newkot];
+
+              printkot.push(newkot);
+
+            });
+
+            const updateditems = invoiceitems.map((item: any) => {
+
+              const find = findObject(itemForKot, 'key', item.key, true);
+              if (Boolean(find)) {
+                item = {
+                  ...item,
+                  kotid: find.kotid,
+                }
+              }
+              return item
+            })
+
+            await store.dispatch(updateCartKots(kots))
+            await store.dispatch(updateCartItems(updateditems))
+
+            store.dispatch(hideLoader())
+
+          }
+        }
+      }
+    });
+  }
+  catch (e) {
+    appLog('e',e)
+  }
+
+}
+
+export const cancelOrder = async (navigation:any) => {
+
+  let cartData = store.getState().cartData;
+
+  try{
+
+    const {kots, tableorderid, invoiceitems}: any = cartData;
+
+    if (kots?.length === 0 || (kots?.length > 0 && invoiceitems?.length === 0)) {
+      store.dispatch(resetCart())
+      navigation.replace('DrawerStackNavigator');
+      if (tableorderid) {
+        deleteTempLocalOrder(tableorderid).then(() => {
+
+        })
+      }
+    } else {
+      store.dispatch(setDialog({
+        visible: true,
+        hidecancel: true,
+        width:380,
+        component: () => <CancelReason type={'ordercancelreason'} navigation={navigation} />
+      }))
+    }
+  }
+  catch (e) {
+    appLog('e',e)
+  }
 }

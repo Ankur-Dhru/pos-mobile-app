@@ -1450,3 +1450,7 @@ export const cancelOrder = async (navigation:any) => {
     appLog('e',e)
   }
 }
+
+export const arraySome = (arrayList:any[], key:string) => {
+  return arrayList?.some((k: string) => k === key)
+}

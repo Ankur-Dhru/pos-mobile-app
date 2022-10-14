@@ -2,12 +2,12 @@ import React from "react";
 
 
 import {Image, Text, View} from "react-native";
-import {Card, Title} from "react-native-paper";
+import {Card, Paragraph, Title} from "react-native-paper";
 import {styles} from "../../theme";
 import Container from "../../components/Container";
 import {Field, Form} from "react-final-form";
 import {
-    ACTIONS,
+    ACTIONS, APP_NAME,
     composeValidators,
     isDevelopment,
     isEmail, localredux,

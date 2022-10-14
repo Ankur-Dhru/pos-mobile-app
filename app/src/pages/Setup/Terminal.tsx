@@ -6,13 +6,30 @@ import Container from "../../components/Container";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
 import KeyboardScroll from "../../components/KeyboardScroll";
-import {Card, Paragraph,Title,Text} from "react-native-paper";
-import {ACTIONS, composeValidators, localredux, METHOD, posUrl, required, STATUS} from "../../libs/static";
+import {Card, Paragraph, Title, Text} from "react-native-paper";
+import {
+    ACTIONS,
+    composeValidators,
+    defaultInputValues,
+    localredux,
+    METHOD,
+    posUrl,
+    required,
+    STATUS
+} from "../../libs/static";
 import InputBox from "../../components/InputBox";
 import Button from "../../components/Button";
 import {useDispatch} from "react-redux";
 import apiService from "../../libs/api-service";
-import {appLog, findObject, isEmpty, selectItemObject, storeData, syncData} from "../../libs/function";
+import {
+    appLog,
+    findObject,
+    isEmpty,
+    saveLocalSettings,
+    selectItemObject,
+    storeData,
+    syncData
+} from "../../libs/function";
 import {setLicenseData} from "../../redux-store/reducer/license-data";
 import InputField from "../../components/InputField";
 
@@ -22,7 +39,7 @@ const Terminal = (props: any) => {
 
     const dispatch = useDispatch();
 
-    const {navigation,theme}: any = props;
+    const {navigation, theme}: any = props;
     const {initData, authData}: any = localredux;
 
 
@@ -51,11 +68,14 @@ const Terminal = (props: any) => {
 
                 const locations = initData?.location;
                 const localSettingsData = {
-                    currentLocation:locations[values?.locationid],
-                     isRestaurant:isRestaurant
+                    currentLocation: locations[values?.locationid],
+                    isRestaurant: isRestaurant,
+
                 }
 
                 localredux.licenseData = licensedata;
+
+                saveLocalSettings("defaultInputValues", defaultInputValues).then()
 
                 storeData('fusion-pro-pos-mobile', {
                     initData,
@@ -66,11 +86,13 @@ const Terminal = (props: any) => {
                     itemsData: {},
                     addonsData: {},
                     orders: {},
-                    clientsData: {}
+                    clientsData: {},
+
                 }).then(async () => {
                     await syncData();
                     navigation.replace('PinStackNavigator');
                 });
+
 
             }
         })
@@ -109,34 +131,34 @@ const Terminal = (props: any) => {
         Object.keys(initData?.location)
             .map((key: any, index: number) => selectItemObject(initData?.location[key].locationname, key, index + 1, initData?.location[key]));
 
-    if(locationList.length === 1){
+    if (locationList.length === 1) {
         locationid = locationList[0].value
     }
 
     const initialValues = {
         timezone: defaultTimeZone?.value,
         terminalname: initData?.deviceName,
-        locationid:locationid
+        locationid: locationid
     }
-
 
 
     return <Container>
 
-        <Card  style={[styles.center, styles.h_100, styles.middle]}>
+        <Card style={[styles.center, styles.h_100, styles.middle]}>
 
 
-                <View style={{width:360}}>
+            <View style={{width: 360}}>
 
-                    <Title style={[styles.mt_5]}>Terminal <Text style={[styles.muted,styles.text_sm]}>({initData.workspace})</Text></Title>
+                <Title style={[styles.mt_5]}>Terminal <Text
+                    style={[styles.muted, styles.text_sm]}>({initData.workspace})</Text></Title>
 
 
-            <Form
-                initialValues={initialValues}
-                onSubmit={handleSubmit}
-                validate={onValidate}
-                render={({handleSubmit, submitting, values, ...more}: any) => (
-                    <>
+                <Form
+                    initialValues={initialValues}
+                    onSubmit={handleSubmit}
+                    validate={onValidate}
+                    render={({handleSubmit, submitting, values, ...more}: any) => (
+                        <>
 
                             <View>
                                 <View>
@@ -190,7 +212,7 @@ const Terminal = (props: any) => {
                                                         inputtype={'dropdown'}
                                                         listtype={'other'}
                                                         onChange={(value: any) => {
-                                                            console.log('value',value)
+                                                            console.log('value', value)
                                                             props.input.onChange(value);
                                                         }}>
                                                     </InputField>
@@ -206,20 +228,19 @@ const Terminal = (props: any) => {
                             </View>
 
                             <View>
-                            <Button disable={more.invalid} secondbutton={more.invalid}
-                                    onPress={() => {
-                                        handleSubmit(values)
-                                    }}> Finish
-                            </Button>
-                        </View>
+                                <Button disable={more.invalid} secondbutton={more.invalid}
+                                        onPress={() => {
+                                            handleSubmit(values)
+                                        }}> Finish
+                                </Button>
+                            </View>
 
 
+                        </>
+                    )}
+                >
 
-                    </>
-                )}
-            >
-
-            </Form>
+                </Form>
 
 
             </View>
@@ -228,4 +249,4 @@ const Terminal = (props: any) => {
     </Container>
 }
 
-export default  Terminal;
+export default Terminal;

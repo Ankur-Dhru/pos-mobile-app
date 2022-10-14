@@ -13,6 +13,7 @@ import store from "../../redux-store/store";
 import {setDialog} from "../../redux-store/reducer/component";
 import CancelReason from "../Cart/CancelReason";
 import Setting from "./Setting";
+import EscPosPrinter from 'react-native-esc-pos-printer';
 
 const Index = ({printers}:any) => {
 
@@ -21,7 +22,11 @@ const Index = ({printers}:any) => {
     const {currentLocation: {departments}} = localredux.localSettingsData;
 
     useEffect(() => {
-
+        EscPosPrinter.discover()
+            .then((printers) => {
+                appLog(printers);
+            })
+            .catch((e) => console.log('Print error:', e.message));
     }, [])
 
     const setPrinter = (value?:any) => {

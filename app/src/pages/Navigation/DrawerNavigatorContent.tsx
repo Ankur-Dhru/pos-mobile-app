@@ -1,11 +1,11 @@
 import React from "react";
-import {appLog, isEmpty, retrieveData, storeData, syncData} from "../../libs/function";
+import {appLog, isEmpty, isRestaurant, retrieveData, storeData, syncData} from "../../libs/function";
 import {Dimensions, ScrollView, View} from "react-native";
 import {Card, List, Text} from "react-native-paper";
 import {styles} from "../../theme";
 import Avatar from "../../components/Avatar";
 import {useNavigation} from "@react-navigation/native";
-import {ACTIONS, localredux, METHOD, posUrl, STATUS} from "../../libs/static";
+import {ACTIONS, APP_NAME, localredux, METHOD, posUrl, STATUS} from "../../libs/static";
 import apiService from "../../libs/api-service";
 
 
@@ -18,12 +18,28 @@ const Index = () => {
     const windowHeight = Dimensions.get('window').height;
     const navigation = useNavigation()
 
+    const isRes = isRestaurant();
+
     const logoutUser = () => {
         navigation.navigate("PinStackNavigator");
     }
 
     return <View style={[styles.h_100, styles.px_5]}>
-
+        {/*<Card style={[styles.card]}>*/}
+        {/*    <Card.Content>*/}
+        {/*        <View style={[styles.grid, styles.middle, styles.noWrap]}>*/}
+        {/*            <Avatar label={APP_NAME} value={1} fontsize={15} lineheight={18}*/}
+        {/*                    size={40}/>*/}
+        {/*            <View style={[styles.ml_2]}>*/}
+        {/*                <Text style={[styles.paragraph, styles.text_md, {*/}
+        {/*                    lineHeight: 20,*/}
+        {/*                    fontSize: 18,*/}
+        {/*                    fontWeight:"bold"*/}
+        {/*                }]}>{APP_NAME}</Text>*/}
+        {/*            </View>*/}
+        {/*        </View>*/}
+        {/*    </Card.Content>*/}
+        {/*</Card>*/}
 
         <Card style={[styles.card]}>
             <Card.Content>
@@ -64,11 +80,31 @@ const Index = () => {
         <Card style={[styles.card]}>
             <Card.Content style={[styles.cardContent, {paddingHorizontal: 0}]}>
                 <View>
+                    {
+                        !isRes && <>
+                            <List.Item
+                                style={[styles.listitem]}
+                                titleStyle={{marginLeft: 0, paddingLeft: 0}}
+                                title={'Default Amount Input Open'}
+                                onPress={() => {
+                                    navigation.navigate("InputOpenNavigator");
+                                }}
+                            />
+                            <List.Item
+                                style={[styles.listitem]}
+                                titleStyle={{marginLeft: 0, paddingLeft: 0}}
+                                title={'Default Input Values'}
+                                onPress={() => {
+                                    navigation.navigate("InputValueNavigator");
+                                }}
+                            />
+                        </>
+                    }
+
                     <List.Item
                         style={[styles.listitem]}
                         titleStyle={{marginLeft: 0, paddingLeft: 0}}
                         title={'Printer Settings'}
-
                         onPress={() => {
                             navigation.navigate("PrinterNavigator");
                         }}

@@ -46,7 +46,7 @@ export enum ACTIONS {
     SETTING = "setting/",
     DRAWER = "drawer",
     SAVE_TABLE_ORDER = "tableorder",
-    REPORT_SALES="reportsales"
+    REPORT_SALES = "reportsales"
 }
 
 
@@ -291,7 +291,7 @@ export let localredux: any = {
     groupItemsData: {},
     addonsData: '',
     clientsData: '',
-    invoiceitems:[],
+    invoiceitems: [],
     localSettingsData: {
         taxInvoice: false,
         currentLocation: {},
@@ -300,3 +300,15 @@ export let localredux: any = {
         currentTable: {}
     },
 }
+
+export const defaultInputValues = [
+    "0.100",
+    "0.200",
+    "0.250",
+    "0.300",
+    "0.400",
+    "0.500",
+    "0.750",
+]
+
+export const APP_NAME = "Dhru POS";

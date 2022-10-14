@@ -53,7 +53,7 @@ const Index = ({defaultInputValues}: any) => {
     }
 
     return <Container config={{
-        title: "Default Input Values",
+        title: "Quick Amount",
     }}>
         <View style={[styles.grid, styles.justifyContent, styles.p_4]}>
             <View style={[styles.flexGrow, {width: "70%", marginRight: 12}]}>

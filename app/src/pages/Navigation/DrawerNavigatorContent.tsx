@@ -24,6 +24,7 @@ const Index = () => {
         navigation.navigate("PinStackNavigator");
     }
 
+
     return <View style={[styles.h_100, styles.px_5]}>
         {/*<Card style={[styles.card]}>*/}
         {/*    <Card.Content>*/}

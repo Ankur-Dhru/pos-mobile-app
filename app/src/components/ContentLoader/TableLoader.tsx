@@ -11,12 +11,12 @@ class Index extends React.Component<any> {
 
         return (
             <View style={[styles.px_4,styles.h_100, styles.flex,styles.w_100]}>
-                <View style={[styles.grid, styles.noWrap,styles.justifyContent]}>
+                <View style={[styles.grid, styles.noWrap]}>
 
-                    <View>
+                    <View style={{width:50}}>
 
                     </View>
-                    <View style={[styles.ml_auto]}>
+                    <View>
                         <ScrollView horizontal={true}>
                             <Paragraph style={[styles.primary,styles.bold,styles.text_sm,styles.p_6]}>All</Paragraph>
                             <Paragraph style={[styles.muted,styles.bold,styles.text_sm,styles.p_6]}>Tables</Paragraph>

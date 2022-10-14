@@ -83,6 +83,10 @@ export enum PAYMENTGATEWAY {
     CASH = "c02fc4ca-8d89-4c91-bd66-2dd29bc34e43",
 }
 
+export enum PRINTER {
+    INVOICE = "0000",
+}
+
 
 export const taxTypes: any = {
     exclusive: "Exclusive of Tax",
@@ -103,76 +107,6 @@ export const defalut_payment_term = [
     assignOption("Due on Receipt", "date", true),
 ]
 
-
-/*export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = true, isTaxInvoice: boolean = false) => {
-
-  let {initData, licenseData, staffData, localSettingsData}: any = localredux;
-
-  let payment: any = []
-
-  let paymentmethod = Object.keys(initData?.paymentgateway?.data).find((key: any) => {
-    let data1 = Object.keys(initData?.paymentgateway?.data[key]).filter((k1) => k1 !== "settings");
-    return isEmpty(data1) ? false : data1[0] === 'cash'
-  })
-
-  if (paymentmethod) {
-    let paymentby = initData?.paymentgateway?.data[paymentmethod]["cash"].find(({input}: any) => input === "displayname")
-    payment = [{paymentmethod, paymentby: paymentby?.value, type: "cash"}]
-  }
-
-  if (Boolean(localSettingsData?.taxInvoice)) {
-    let taxVoucherKey = getVoucherKey("vouchertypename", "Tax Invoices");
-    if (taxVoucherKey) {
-      voucherKey = taxVoucherKey;
-      payment = [{paymentby: "Pay Later"}]
-    }
-  }
-
-
-  let voucherTypeData = initData?.voucher?.data[voucherKey]
-
-
-  const utcDate = moment.utc(moment()).format("YYYY-MM-DD HH:mm:ss")
-
-  let date = getDateWithFormat(utcDate, "YYYY-MM-DD"),
-      vouchercreatetime = getDateWithFormat(utcDate, 'HH:mm:ss')
-
-  let currencyData = getCurrencyData();
-
-  let local = moment(moment.utc(utcDate).toDate()).local().format('YYYY-MM-DD HH:mm:ss');
-
-  let data: any = {
-    localdatetime: local,
-    date,
-    voucherdate: date,
-    duedate: local,
-    vouchercreatetime,
-    time: moment(utcDate).unix(),
-    currency: currencyData.__key,
-    currentDecimalPlace: currencyData?.decimalplace || 2,
-    locationid: licenseData?.data.location_id,
-    staffid: parseInt(staffData?.adminid),
-    vouchercurrencyrate: currencyData.rate,
-    vouchertaxtype: voucherTypeData?.defaulttaxtype || Object.keys(taxTypes)[0],
-    roundoffselected: voucherTypeData?.voucherroundoff,
-    voucherdiscountplace: voucherTypeData?.discountplace,
-    vouchertransitionaldiscount: Boolean(voucherTypeData?.vouchertransitionaldiscount) || voucherTypeData?.vouchertransitionaldiscount === "1",
-    canchangediscoutnaccount: Boolean(voucherTypeData?.vouchertransitionaldiscount) || voucherTypeData?.vouchertransitionaldiscount === "1",
-    discountaccunt: voucherTypeData?.defaultdiscountaccount,
-    vouchertypeid: voucherTypeData?.vouchertypeid,
-    vouchertype: voucherTypeData?.vouchertype,
-    vouchernotes: voucherTypeData?.defaultcustomernotes,
-    toc: voucherTypeData?.defaultterms,
-    selectedtemplate: voucherTypeData?.printtemplate,
-    edit: true
-  }
-
-  if (isPayment) {
-    data.payment = payment;
-  }
-
-  return data;
-}*/
 
 export const isDevelopment = process.env.NODE_ENV === "development";
 

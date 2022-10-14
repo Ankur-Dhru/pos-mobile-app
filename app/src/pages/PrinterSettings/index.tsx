@@ -14,6 +14,9 @@ import {setDialog} from "../../redux-store/reducer/component";
 import CancelReason from "../Cart/CancelReason";
 import Setting from "./Setting";
 import EscPosPrinter from 'react-native-esc-pos-printer';
+import {
+    PRINTER,
+} from "../../libs/static";
 
 const Index = ({printers}:any) => {
 
@@ -48,12 +51,12 @@ const Index = ({printers}:any) => {
             <List.Subheader>Invoice Printer</List.Subheader>
             <List.Item
                 title="Invoice"
-                description={Boolean(printers['0000']?.ip) && printers['0000']?.ip}
+                description={Boolean(printers[PRINTER.INVOICE]?.ip) && printers[PRINTER.INVOICE]?.ip}
                 onPress={()=>{
-                    setPrinter({ name: 'Invoice',departmentid: '0000' })
+                    setPrinter({ name: 'Invoice',departmentid: PRINTER.INVOICE })
                 }}
                 left={() => <List.Icon icon="printer" />}
-                right={() => Boolean(printers['0000']) && <List.Icon icon="check" />}
+                right={() => Boolean(printers[PRINTER.INVOICE]) && <List.Icon icon="check" />}
             />
             <List.Subheader>KOT Printer</List.Subheader>
 

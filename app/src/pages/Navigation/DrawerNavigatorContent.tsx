@@ -82,7 +82,7 @@ const Index = () => {
             <Card.Content style={[styles.cardContent, {paddingHorizontal: 0}]}>
                 <View>
                     {
-                        !isRes && <>
+                        isRes && <>
                             <List.Item
                                 style={[styles.listitem]}
                                 titleStyle={{marginLeft: 0, paddingLeft: 0}}

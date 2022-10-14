@@ -46,7 +46,7 @@ const Index = ({
 
 
 
-    return <View>
+    return <View style={[!device.tablet && styles.p_3]}>
 
         {<View>
             <View>

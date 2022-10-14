@@ -22,7 +22,8 @@ import {useNavigation} from "@react-navigation/native";
 import {appLog, cancelOrder, saveTempLocalOrder} from "../../libs/function";
 import NumPad from "../Items/NumPad";
 import {hideLoader, setModal, showLoader} from "../../redux-store/reducer/component";
-import ItemList from "../Items/ItemList";
+import ItemListMobile from "../Items/ItemListMobile";
+import ItemListTablet from "../Items/ItemListTablet";
 import Button from "../../components/Button";
 
 
@@ -107,7 +108,7 @@ const Index = (props: any) => {
                             <Card style={[styles.flexGrow, {maxWidth:500,marginLeft: 5,marginRight:5}]}>
 
                                 {!numpad ?
-                                    <Items search={search}/>:
+                                    <ItemListTablet search={search}/>:
                                     <NumPad/>
                                 }
                             </Card>
@@ -142,7 +143,7 @@ const Index = (props: any) => {
                     </View> : <GroupHeading />}
 
                     <Card style={[styles.h_100, styles.flex]}>
-                        <Items  search={search}/>
+                        <ItemListMobile  search={search}/>
 
                         <View>
 

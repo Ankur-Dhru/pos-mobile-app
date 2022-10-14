@@ -221,7 +221,7 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
                                 <View style={[styles.grid,styles.flex, styles.bottom, styles.center,styles.wrap]}>
 
 
-                                    <View style={[styles.w_auto,{minWidth:'100%',maxWidth:400,padding:10}]}>
+                                    <View style={[styles.w_auto,{minWidth:400,maxWidth:400,padding:5}]}>
 
 
                                     <View style={[styles.grid, styles.middle, styles.center]}>

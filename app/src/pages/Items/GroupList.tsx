@@ -1,4 +1,4 @@
-import React, {useCallback} from "react";
+import React, {memo, useCallback} from "react";
 import {FlatList,   View} from "react-native";
 
 
@@ -31,4 +31,4 @@ const mapStateToProps = (state: any) => ({
     selectedgroup: state.selectedData.group?.value,
 })
 
-export default connect(mapStateToProps)(Index);
+export default connect(mapStateToProps)(memo(Index));

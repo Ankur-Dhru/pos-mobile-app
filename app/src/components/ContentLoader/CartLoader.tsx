@@ -65,26 +65,23 @@ class Index extends React.Component<any> {
                 </View>
 
 
-                <Card style={[styles.p_4]}>
+                <Card>
 
                     {<View>
                         <View>
                             <View style={[styles.grid, styles.justifyContent, styles.noWrap]}>
 
                                 <View style={[styles.w_auto]}>
-                                    <Button  more={{backgroundColor: styles.red.color, color: 'white'}}>   </Button>
+                                    <Button  more={{backgroundColor: styles.green.color, color: 'white'}}>   </Button>
                                 </View>
 
                                 <View style={[styles.w_auto, styles.ml_1]}>
                                     <Button  more={{backgroundColor: styles.yellow.color,  }}>   </Button>
                                 </View>
 
-                                <View style={[styles.w_auto, styles.ml_1]}>
-                                    <Button  more={{backgroundColor: styles.yellow.color,  }}>   </Button>
-                                </View>
 
                                 <View style={[styles.w_auto, styles.ml_1]}>
-                                    <Button  more={{backgroundColor: styles.yellow.color,  }}>   </Button>
+                                    <Button  more={{backgroundColor: styles.accent.color,  }}>   </Button>
                                 </View>
 
                                 <View style={[styles.w_auto, styles.ml_1]}>

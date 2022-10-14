@@ -36,8 +36,8 @@ const Index = (props: any) => {
             }));
 
             const {kots}:any = store.getState().cartData;
-            kots.map(async (kot:any)=>{
-                await printKOT({...kot,cancelreason:cancelreason});
+            kots.map((kot:any)=>{
+                printKOT({...kot,cancelreason:cancelreason});
             })
             await saveLocalOrder().then(async () => {
 

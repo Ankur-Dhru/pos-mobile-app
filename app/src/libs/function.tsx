@@ -45,6 +45,7 @@ import {setOrder} from "../redux-store/reducer/orders-data";
 import {getProductData, itemTotalCalculation} from "./item-calculation";
 import EscPosPrinter, {getPrinterSeriesByName} from "react-native-esc-pos-printer";
 import CancelReason from "../pages/Cart/CancelReason";
+import {isArray} from "util";
 
 let base64 = require('base-64');
 let utf8 = require('utf8');
@@ -1119,7 +1120,7 @@ export const printInvoice = async (order?:any) => {
 
   let PAGE_WIDTH = 48;
   let cartData = order || store.getState().cartData;
-  const printers:any = store.getState().localSettings?.printers || {};
+  const {printers}:any = store.getState().localSettings || {};
 
 
   ///////// CREATE LOCALORDER ID //////////
@@ -1223,6 +1224,9 @@ export const printInvoice = async (order?:any) => {
            status.line(getLeftRight(gateway.gatewayname, gateway.pay))
         })
       }
+      else{
+        status.line(getLeftRight('Total', vouchertotaldisplay))
+      }
 
       let taxes:any = '';
       globaltax?.map((tax: any) => {
@@ -1237,7 +1241,6 @@ export const printInvoice = async (order?:any) => {
         .size(1, 1)
         .align('center')
 
-    const {printers}:any = store.getState()?.localSettings || {};
 
 
     if((Boolean(printers) && Boolean(printers[PRINTER.INVOICE]))) {
@@ -1261,6 +1264,7 @@ export const printInvoice = async (order?:any) => {
         .send()
 
       }
+
 
   } catch (e) {
     appLog("Error", e);
@@ -1361,9 +1365,7 @@ export const printKOT = async (kot?:any) => {
           .addPulse()
           .send()
     }
-    else{
-      errorAlert('No any printer setup')
-    }
+
 
   } catch (e) {
     appLog("Error", e);
@@ -1440,7 +1442,7 @@ export const generateKOT = async () => {
 
             const openTicketStatus = getTicketStatus(TICKET_STATUS.OPEN);
 
-            kitchens.forEach(async (k: any) => {
+            kitchens.forEach((k: any) => {
               kotid++;
               storeData('fusion-pro-pos-mobile-kotno', kotid).then(() => {});
               let kotitems: any = [];
@@ -1600,5 +1602,8 @@ export const cancelOrder = async (navigation:any) => {
 }
 
 export const arraySome = (arrayList:any[], key:string) => {
+  if(!isArray(arrayList)){
+    return false
+  }
   return arrayList?.some((k: string) => k === key)
 }

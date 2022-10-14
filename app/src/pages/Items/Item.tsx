@@ -137,6 +137,8 @@ const Index = memo((props: any) => {
 
     const hasKot = Boolean(product?.kotid);
 
+    appLog('item')
+
     return (
         <TouchableOpacity onPress={() => {!Boolean(product?.productqnt) && selectItem(product)}}
                           style={[styles.noshadow]}>
@@ -191,6 +193,9 @@ const Index = memo((props: any) => {
         </TouchableOpacity>
     )
 }, (r1, r2) => {
+    if(device.tablet){
+        return (r1.item.itemid === r2.item.itemid);
+    }
     return ((r1.item.productqnt === r2.item.productqnt) && (r1.item.itemid === r2.item.itemid));
 })
 

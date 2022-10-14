@@ -9,8 +9,6 @@ import {ACTIONS, APP_NAME, localredux, METHOD, posUrl, STATUS} from "../../libs/
 import apiService from "../../libs/api-service";
 
 
-
-
 const Index = () => {
 
     const {avatar_url, companyname, email, firstname, lastname} = localredux.authData;
@@ -71,7 +69,6 @@ const Index = () => {
                             navigation.navigate("SalesReportNavigator");
 
 
-
                         }}
                     />
                 </ScrollView>
@@ -94,7 +91,7 @@ const Index = () => {
                             <List.Item
                                 style={[styles.listitem]}
                                 titleStyle={{marginLeft: 0, paddingLeft: 0}}
-                                title={'Default Input Values'}
+                                title={'Quick Amount'}
                                 onPress={() => {
                                     navigation.navigate("InputValueNavigator");
                                 }}

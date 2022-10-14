@@ -168,7 +168,7 @@ const DrawerStackNavigator = () => {
             <Drawer.Screen
                 name={'InputValueNavigator'}
                 component={InputValueNavigator}
-                options={({route}: any) => ({headerShown: false, title: 'Default Input Values'})}
+                options={({route}: any) => ({headerShown: false, title: 'Quick Amount'})}
             />
             <Drawer.Screen name={'PrinterNavigator'} component={PrinterNavigator}
                            options={({route}: any) => ({headerShown: false, title: 'Printer Settings'})}/>

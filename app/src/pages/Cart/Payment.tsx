@@ -101,12 +101,14 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
                     paymentgateways
                 }
             ];
+
+            appLog('cartData.payments',cartData.payments)
+
             cartData.paidamount = paidamount;
 
             cartData = {
                 ...cartData,
                 paidamount: paidamount,
-
             }
 
             // await dispatch(setCartData(cartData));
@@ -126,6 +128,27 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
 
         }
 
+    }
+
+    const skipPayment = () => {
+        let cartData:any = store.getState().cartData;
+        cartData.payments = [
+            {
+                "remainingamount": vouchertotaldisplay,
+                "totalamount": vouchertotaldisplay,
+                paymentgateways : [{
+                    remainingamount: vouchertotaldisplay,
+                    totalamount: vouchertotaldisplay,
+                    paymentgateways:[{gatewayname: 'Pay later',gatewaytype: 'paylater' }]
+                }]
+            }
+        ];
+        dispatch(showLoader())
+        saveLocalOrder().then((cartData) => {
+            printInvoice().then();
+            navigation.replace('DrawerStackNavigator');
+            dispatch(hideLoader())
+        })
     }
 
     const addPayment = (initdata: any) => {
@@ -328,7 +351,7 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
 
 
                                         <View style={[styles.py_6]}>
-                                            <TouchableOpacity onPress={() => { }} style={[styles.center,styles.middle]}><Text>Skip Payment</Text></TouchableOpacity>
+                                            <TouchableOpacity onPress={() => { skipPayment() }} style={[styles.center,styles.middle]}><Text>Skip Payment</Text></TouchableOpacity>
                                         </View>
 
 

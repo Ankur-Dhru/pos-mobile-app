@@ -293,18 +293,16 @@ export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = t
     }
   }
 
-
   let voucherTypeData = initData?.voucher[voucherKey]
 
-
-  const utcDate = moment.utc(moment()).format("YYYY-MM-DD HH:mm:ss")
+  const utcDate = moment().format("YYYY-MM-DD HH:mm:ss")
 
   let date = getDateWithFormat(utcDate, "YYYY-MM-DD"),
       vouchercreatetime = getDateWithFormat(utcDate, 'HH:mm:ss')
 
   let currencyData = getCurrencyData();
 
-  let local = moment(moment.utc(utcDate).toDate()).local().format('YYYY-MM-DD HH:mm:ss');
+  let local = utcDate;
 
   let data: any = {
     localdatetime: local,
@@ -1110,11 +1108,12 @@ export const printInvoice = async () => {
 
 
 
+  appLog('cartData',cartData)
 
-  const {invoiceitems,vouchertotaldisplay,vouchertaxdisplay,clientname,tablename,voucherroundoffdisplay,vouchertotaldiscountamountdisplay,adjustmentamount,typeWiseTaxSummary,invoice_display_number,date} = cartData;
+  const {invoiceitems,vouchertotaldisplay,vouchertaxdisplay,clientname,vouchercreatetime,tablename,globaltax,terminalid,voucherroundoffdisplay,vouchertotaldiscountamountdisplay,adjustmentamount,typeWiseTaxSummary,invoice_display_number,date} = cartData;
   const {currentLocation:{locationname,street1,street2,city}}:any = localredux.localSettingsData;
   const {voucher,general:{legalname}}:any = localredux.initData;
-
+  const {terminal_name}:any = localredux.licenseData.data
 
   try {
     //const printers = await EscPosPrinter.discover();
@@ -1140,6 +1139,7 @@ export const printInvoice = async () => {
     //     width: 5,
     // })
 
+    //${voucher[cartData.vouchertypeid].vouchertypename}
 
     let status = printing
         .initialize()
@@ -1148,19 +1148,25 @@ export const printInvoice = async () => {
         .line(legalname)
         .smooth()
         .size(2, 1)
+        .newline(1)
         .line(locationname)
         .smooth()
         .size(1, 1)
-        .line(street1+' '+street2+' '+city)
-        .newline(2)
+        .line(street1)
+        .line(street2)
+        .line(city)
+        .newline(1)
         .align('right')
-        .line(`${voucher[cartData.vouchertypeid].vouchertypename} : ${invoice_display_number}`)
+        .line(`Tax Invoice`)
+        .size(2, 1)
+        .line(`No : ${terminal_name} - ${invoice_display_number}`)
         .size(1, 1)
-        .line(dateFormat(date))
+        .line(`Date: ${dateFormat(date)} ${vouchercreatetime}`)
         .align('left')
-
         .line(getTrimChar(0, '-'))
-        .line(clientname + ` (${tablename})`)
+        .line(`Table : ${tablename}`)
+        .line(getTrimChar(0, '-'))
+        .line(`Client : ${clientname}`)
         .line(getTrimChar(0, '-'))
         .line(getItem("DESCRIPTION", "QNT", "RATE", "AMOUNT") + "\n" + getItem("HSN Code", "GST %", "", ""))
         .line(getTrimChar(0, '-'))
@@ -1180,15 +1186,19 @@ export const printInvoice = async () => {
         .line(getTrimChar(0, '-'))
         .line(getItem(`Total Items ${invoiceitems.length}`, totalqnt, "", vouchertotaldisplay))
         .line(getLeftRight("Total Tax", vouchertaxdisplay))
+        .line(getLeftRight("Pay Later", vouchertotaldisplay))
+        .line(getTrimChar(0, '-'))
+        .line(`SGST : 60.70, CGST : 60.70 `)
+        .line(getTrimChar(0, '-'))
+        .line(`Gujarat`)
+        .line(`${terminal_name}`)
+        .size(1, 1)
         .align('center')
-
 
     const {printers}:any = store.getState()?.localSettings || {};
 
     if((Boolean(printers) && Boolean(printers['0000']))) {
-
       const {upiid, upiname} =  printers['0000'] || {};
-
       if (Boolean(upiid) && Boolean(upiname)) {
         status
             .qrcode({
@@ -1202,7 +1212,7 @@ export const printInvoice = async () => {
 
     await status
         .line("Powered By Dhru ERP")
-        .size(2, 2)
+        .newline(2)
         .cut()
         .addPulse()
         .send()

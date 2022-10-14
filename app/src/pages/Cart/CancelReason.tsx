@@ -8,7 +8,7 @@ import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
 import Button from "../../components/Button";
 import {setDialog} from "../../redux-store/reducer/component";
-import {appLog, objToArray, saveLocalOrder, voucherTotal} from "../../libs/function";
+import {appLog, objToArray, printKOT, saveLocalOrder, voucherTotal} from "../../libs/function";
 import {localredux} from "../../libs/static";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
 import store from "../../redux-store/store";
@@ -33,7 +33,12 @@ const Index = (props: any) => {
             await store.dispatch(updateCartField({
                 cancelreason: cancelreason,
                 cancelreasonid: cancelreasonid,
-            }))
+            }));
+
+            const {kots}:any = store.getState().cartData;
+            kots.map(async (kot:any)=>{
+                await printKOT({...kot,cancelreason:cancelreason});
+            })
             await saveLocalOrder().then(async () => {
 
             })
@@ -63,6 +68,9 @@ const Index = (props: any) => {
             ...kots,
             [index]: kot
         }
+
+        printKOT(kot);
+
         setKot(kot);
 
         const remaininginvoiceitems = invoiceitems.filter(function (item: any) {

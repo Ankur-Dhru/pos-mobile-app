@@ -102,7 +102,6 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
                 }
             ];
 
-            appLog('cartData.payments',cartData.payments)
 
             cartData.paidamount = paidamount;
 
@@ -117,9 +116,9 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
 
             dispatch(showLoader())
 
-            saveLocalOrder(cartData).then(() => {
+            saveLocalOrder(clone(cartData)).then(() => {
                 if(config?.print){
-                    printInvoice().then();
+                    printInvoice(cartData).then();
                 }
                 navigation.replace('DrawerStackNavigator');
                 dispatch(hideLoader())
@@ -134,18 +133,14 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
         let cartData:any = store.getState().cartData;
         cartData.payments = [
             {
-                "remainingamount": vouchertotaldisplay,
-                "totalamount": vouchertotaldisplay,
-                paymentgateways : [{
-                    remainingamount: vouchertotaldisplay,
-                    totalamount: vouchertotaldisplay,
-                    paymentgateways:[{gatewayname: 'Pay later',gatewaytype: 'paylater' }]
-                }]
+                remainingamount: vouchertotaldisplay,
+                totalamount: vouchertotaldisplay,
+                paymentgateways :[{gatewayname: 'Pay later',gatewaytype: 'paylater', pay: vouchertotaldisplay}]
             }
-        ];
+        ]
         dispatch(showLoader())
-        saveLocalOrder().then((cartData) => {
-            printInvoice().then();
+        saveLocalOrder(cartData).then(() => {
+            printInvoice(cartData).then();
             navigation.replace('DrawerStackNavigator');
             dispatch(hideLoader())
         })

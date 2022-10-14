@@ -45,7 +45,7 @@ const Index = ({vouchertotaldisplay}: any) => {
     }
 
 
-    return (<Card   onPress={()=>{ viewSummary() }} style={[styles.mt_3,styles.noshadow]}>
+    return (<Card   onPress={()=>{ viewSummary() }} style={[styles.mt_3,styles.m_2,styles.noshadow,styles.bg_light]}>
         <Card.Content >
 
             <View><Paragraph style={[styles.absolute,{top:0,left:'50%',marginLeft:-10}]}><ProIcon name={'chevron-up'} action_type={'text'} size={15}/></Paragraph></View>

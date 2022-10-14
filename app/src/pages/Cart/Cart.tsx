@@ -19,10 +19,11 @@ import SearchItem from "../Items/SearchItem";
 import GroupHeading from "../Items/GroupHeading";
 import ClientDetail from "../Client/ClientDetail";
 import {useNavigation} from "@react-navigation/native";
-import {appLog, saveTempLocalOrder} from "../../libs/function";
+import {appLog, cancelOrder, saveTempLocalOrder} from "../../libs/function";
 import NumPad from "../Items/NumPad";
 import {hideLoader, setModal, showLoader} from "../../redux-store/reducer/component";
 import ItemList from "../Items/ItemList";
+import Button from "../../components/Button";
 
 
 const Index = (props: any) => {
@@ -64,7 +65,7 @@ const Index = (props: any) => {
                     }}>
                         <View  style={[styles.grid,styles.middle,styles.bg_white,{width:'auto',padding:11,borderRadius:5, marginRight:6}]}>
                             <Paragraph><ProIcon name={'chevron-left'} action_type={'text'} /></Paragraph>
-                            <Paragraph style={[styles.paragraph,styles.bold]}>  {tabledetails?.tablename}</Paragraph>
+                            <Paragraph style={[styles.paragraph,styles.bold]}> {tabledetails?.tablename} </Paragraph>
                         </View>
                     </TouchableOpacity>}
                     <View style={[styles.flexGrow]}>
@@ -75,9 +76,15 @@ const Index = (props: any) => {
                         </TouchableOpacity>*/}
                         </View>
                     </View>
-                    {device.tablet && <View style={{marginLeft:6,width:385}}>
+                    {<View style={{marginLeft:6,marginRight:6,width:385}}>
                         <ClientDetail/>
                     </View>}
+                    <View>
+                        <Button
+                            onPress={() => cancelOrder(navigation).then()}
+                            more={{backgroundColor: styles.red.color, color: 'white'}}
+                        > Cancel </Button>
+                    </View>
                 </View>
 
                 <View

@@ -13,17 +13,22 @@ import Button from "../../components/Button";
 import {connect, useDispatch} from "react-redux";
 import apiService from "../../libs/api-service";
 import {
-    appLog,
+    appLog, dateFormat,
     findObject,
     isEmpty,
     saveLocalSettings,
     selectItemObject,
     storeData,
-    syncData
+    syncData,
+    testPrint
 } from "../../libs/function";
 import {setLicenseData} from "../../redux-store/reducer/license-data";
 import InputField from "../../components/InputField";
 import {setDialog} from "../../redux-store/reducer/component";
+import EscPosPrinter, {getPrinterSeriesByName} from "react-native-esc-pos-printer";
+import {
+    PRINTER,
+} from "../../libs/static";
 
 
 const Index = ({type,printers}:any) => {
@@ -48,7 +53,9 @@ const Index = ({type,printers}:any) => {
         if (!Boolean(values?.ip)) {
             error.ip = "Please Select IP!";
         }
-
+        if (!Boolean(values?.printername)) {
+            error.ip = "Please Select Printer Name!";
+        }
         if (!Boolean(values?.port)) {
             error.port = "Please Select Port!";
         }
@@ -57,16 +64,16 @@ const Index = ({type,printers}:any) => {
     }
 
 
+
     const initialValues = {
         printertype: 'network',
-        ip: '',
-        port:'',
-        printsize:'76',
+        ip: '10.1.1.200',
+        printername:'TM-T82',
+        port:'9100',
+        printsize:'72',
         noofprint:'1',
         ...printers[type.departmentid]
     }
-
-
 
 
 
@@ -136,6 +143,30 @@ const Index = ({type,printers}:any) => {
                                     </View>
 
 
+                                    <View style={[styles.mb_5]}>
+                                        <View>
+                                            <Field name="printername">
+                                                {props => (
+                                                    <InputField
+                                                        label={'Printer Name'}
+                                                        mode={'flat'}
+                                                        list={[{label:'TM-T82',value:'TM-T82'}]}
+                                                        value={props.input.value}
+                                                        selectedValue={props.input.value}
+                                                        displaytype={'pagelist'}
+                                                        inputtype={'dropdown'}
+                                                        listtype={'other'}
+                                                        onChange={(value: any) => {
+                                                            props.input.onChange(value);
+                                                        }}>
+                                                    </InputField>
+                                                )}
+                                            </Field>
+                                        </View>
+
+                                    </View>
+
+
                                     <View style={[styles.mb_5,styles.grid,styles.justifyContent]}>
                                         <View style={[styles.flexGrow]}>
 
@@ -144,7 +175,7 @@ const Index = ({type,printers}:any) => {
                                                     <InputField
                                                         label={'Printer Size'}
                                                         mode={'flat'}
-                                                        list={[{label:'76 mm',value:'76'},{label:'90 mm',value:'90'}]}
+                                                        list={[{label:'56 mm',value:'56'},{label:'72 mm',value:'72'},{label:'80 mm',value:'80'}]}
                                                         value={props.input.value}
                                                         selectedValue={props.input.value}
                                                         displaytype={'pagelist'}
@@ -183,7 +214,7 @@ const Index = ({type,printers}:any) => {
 
 
 
-                                    {type.departmentid === '0000' &&  <View style={[styles.mb_5,styles.grid,styles.justifyContent]}>
+                                    {type.departmentid === PRINTER.INVOICE &&  <View style={[styles.mb_5,styles.grid,styles.justifyContent]}>
                                         <View style={[styles.flexGrow]}>
                                             <Field name="upiid">
                                                 {props => (
@@ -219,7 +250,8 @@ const Index = ({type,printers}:any) => {
 
                         <View style={[styles.grid,styles.justifyContent]}>
                             <Button   secondbutton={true} onPress={() => dispatch(setDialog({visible: false}))}>Cancel</Button>
-                            <Button  disable={more.invalid} secondbutton={more.invalid} onPress={() => {handleSubmit(values)} }>Save</Button>
+                            <Button disable={more.invalid} secondbutton={more.invalid}   secondbutton={true} onPress={() => {testPrint(values)} }>Test Print</Button>
+                            <Button  disable={more.invalid}   onPress={() => {handleSubmit(values)} }>Save</Button>
                         </View>
 
 

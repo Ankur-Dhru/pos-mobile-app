@@ -14,7 +14,18 @@ import ProIcon from "../components/ProIcon";
 import {decode} from 'html-entities';
 import {hideLoader, setAlert, setBottomSheet, setDialog, showLoader} from "../redux-store/reducer/component";
 import apiService from "./api-service";
-import {ACTIONS, current, localredux, METHOD, posUrl, STATUS, taxTypes, TICKET_STATUS, VOUCHER} from "./static";
+import {
+  ACTIONS,
+  current,
+  localredux,
+  METHOD,
+  posUrl,
+  PRINTER,
+  STATUS,
+  taxTypes,
+  TICKET_STATUS,
+  VOUCHER
+} from "./static";
 import {setInitData} from "../redux-store/reducer/init-data";
 import {setItemsData} from "../redux-store/reducer/items-data";
 import {setclientsData} from "../redux-store/reducer/clients-data";
@@ -1022,9 +1033,28 @@ export const  groupBy = (arr:any, property:any) => {
   }, {});
 }
 
+export const testPrint = async (printer:any) => {
 
+  const {ip,printername}:any = printer
+  await EscPosPrinter.init({
+    target: `TCP:${ip}`,
+    seriesName: getPrinterSeriesByName(printername),
+    language: 'EPOS2_LANG_EN',
+  })
 
-export const printInvoice = async () => {
+  const printing = new EscPosPrinter.printing();
+  let status = printing
+      .initialize()
+      .align('center')
+      .size(2, 2)
+      .line('Test Print')
+      .newline(1)
+      .cut()
+      .addPulse()
+      .send()
+}
+
+export const printInvoice = async (order?:any) => {
 
   generateKOT()
 
@@ -1088,7 +1118,8 @@ export const printInvoice = async () => {
 
 
   let PAGE_WIDTH = 48;
-  let cartData = store.getState().cartData;
+  let cartData = order || store.getState().cartData;
+  const printers:any = store.getState().localSettings?.printers || {};
 
 
   ///////// CREATE LOCALORDER ID //////////
@@ -1108,20 +1139,22 @@ export const printInvoice = async () => {
 
 
 
-  appLog('cartData',cartData)
-
-  const {invoiceitems,vouchertotaldisplay,vouchertaxdisplay,clientname,vouchercreatetime,tablename,globaltax,terminalid,voucherroundoffdisplay,vouchertotaldiscountamountdisplay,adjustmentamount,typeWiseTaxSummary,invoice_display_number,date} = cartData;
+  const {invoiceitems,vouchertotaldisplay,vouchertaxdisplay,clientname,vouchercreatetime,payments,tablename,globaltax,terminalid,voucherroundoffdisplay,vouchertotaldiscountamountdisplay,adjustmentamount,typeWiseTaxSummary,invoice_display_number,date} = cartData;
   const {currentLocation:{locationname,street1,street2,city}}:any = localredux.localSettingsData;
   const {voucher,general:{legalname}}:any = localredux.initData;
-  const {terminal_name}:any = localredux.licenseData.data
+  const {terminal_name}:any = localredux.licenseData.data;
+  const {firstname, lastname}:any = localredux.authData;
 
   try {
     //const printers = await EscPosPrinter.discover();
     // const printer = printers[0]
 
+    const {ip,printername} = printers[PRINTER.INVOICE]
+
+    if(Boolean(ip) && Boolean(printername)){
     await EscPosPrinter.init({
-      target: "TCP:10.1.1.200",
-      seriesName: getPrinterSeriesByName("TM-T82"),
+      target: `TCP:${ip}`,
+      seriesName: getPrinterSeriesByName(printername),
       language: 'EPOS2_LANG_EN',
     })
 
@@ -1139,7 +1172,7 @@ export const printInvoice = async () => {
     //     width: 5,
     // })
 
-    //${voucher[cartData.vouchertypeid].vouchertypename}
+
 
     let status = printing
         .initialize()
@@ -1157,20 +1190,18 @@ export const printInvoice = async () => {
         .line(city)
         .newline(1)
         .align('right')
-        .line(`Tax Invoice`)
+        .line(voucher[cartData.vouchertypeid]?.vouchertypename || 'Voucher')
         .size(2, 1)
         .line(`No : ${terminal_name} - ${invoice_display_number}`)
         .size(1, 1)
         .line(`Date: ${dateFormat(date)} ${vouchercreatetime}`)
         .align('left')
+        .line(`Staff : ${firstname +' '+lastname}`)
         .line(getTrimChar(0, '-'))
-        .line(`Table : ${tablename}`)
-        .line(getTrimChar(0, '-'))
-        .line(`Client : ${clientname}`)
+        .line(getLeftRight(`Client : ${clientname}`,`Table : ${tablename}`))
         .line(getTrimChar(0, '-'))
         .line(getItem("DESCRIPTION", "QNT", "RATE", "AMOUNT") + "\n" + getItem("HSN Code", "GST %", "", ""))
         .line(getTrimChar(0, '-'))
-
 
 
 
@@ -1181,26 +1212,39 @@ export const printInvoice = async () => {
           getItem(item?.hsn, item?.totalTaxPercentageDisplay + "%", "", ""))
     })
 
-
     status
         .line(getTrimChar(0, '-'))
         .line(getItem(`Total Items ${invoiceitems.length}`, totalqnt, "", vouchertotaldisplay))
         .line(getLeftRight("Total Tax", vouchertaxdisplay))
-        .line(getLeftRight("Pay Later", vouchertotaldisplay))
+        .size(1, 2)
+
+      if(Boolean(payments) && Boolean(payments[0])){
+        payments[0]?.paymentgateways?.map((gateway: any) => {
+           status.line(getLeftRight(gateway.gatewayname, gateway.pay))
+        })
+      }
+
+      let taxes:any = '';
+      globaltax?.map((tax: any) => {
+        taxes += `${tax.taxname} : ${tax.taxpricedisplay} `
+      })
+    status
+        .size(1, 1)
         .line(getTrimChar(0, '-'))
-        .line(`SGST : 60.70, CGST : 60.70 `)
+        .line(taxes)
         .line(getTrimChar(0, '-'))
-        .line(`Gujarat`)
         .line(`${terminal_name}`)
         .size(1, 1)
         .align('center')
 
     const {printers}:any = store.getState()?.localSettings || {};
 
-    if((Boolean(printers) && Boolean(printers['0000']))) {
-      const {upiid, upiname} =  printers['0000'] || {};
+
+    if((Boolean(printers) && Boolean(printers[PRINTER.INVOICE]))) {
+      const {upiid, upiname} =  printers[PRINTER.INVOICE] || {};
       if (Boolean(upiid) && Boolean(upiname)) {
         status
+            .line(`Scan to Pay`)
             .qrcode({
               value: `upi://pay?cu=INR&pa=${upiid}&pn=${upiname}&am=${vouchertotaldisplay}&tr=${invoice_display_number}`,
               level: 'EPOS2_LEVEL_M',
@@ -1209,13 +1253,14 @@ export const printInvoice = async () => {
       }
     }
 
-
     await status
         .line("Powered By Dhru ERP")
         .newline(2)
         .cut()
         .addPulse()
         .send()
+
+      }
 
   } catch (e) {
     appLog("Error", e);
@@ -1224,7 +1269,107 @@ export const printInvoice = async () => {
 }
 
 
+export const printKOT = async (kot?:any) => {
 
+  const getTrimChar = (count: number, char?: string, defaultLength: number = PAGE_WIDTH) => {
+    let space = "";
+    if (!Boolean(char)) {
+      char = " ";
+    }
+    for (let i = 0; i < (defaultLength - count); i++) {
+      space += char;
+    }
+    return space;
+  }
+
+
+  let PAGE_WIDTH = 48;
+
+  const printers:any = store.getState().localSettings?.printers;
+
+
+  const {ticketitems,ticketdate,tickettime,table,kotid,cancelreason} = kot;
+
+  const {firstname, lastname}:any = localredux.authData;
+
+  try {
+
+    const {ip,printername} = printers[kot?.departmentid] || {}
+
+    if(Boolean(ip) && Boolean(printername)){
+      await EscPosPrinter.init({
+        target: `TCP:${ip}`,
+        seriesName: getPrinterSeriesByName(printername),
+        language: 'EPOS2_LANG_EN',
+      })
+
+      const printing = new EscPosPrinter.printing();
+
+
+      let status = printing
+          .initialize()
+          .align('center')
+          .size(3, 3)
+          .line(`#KOT-${kotid}`)
+          .smooth()
+          .size(1, 1)
+          .line(`Date: ${dateFormat(ticketdate)} ${tickettime}`)
+          .newline(1)
+          .align('left')
+          .line(getTrimChar(0, '-'))
+          .line(`Staff : ${firstname +' '+lastname}`)
+          .line(getTrimChar(0, '-'))
+          .line(`Table : ${table}`)
+          .line(getTrimChar(0, '-'))
+
+
+
+      if(Boolean(cancelreason)){
+         status.size(1, 1)
+         status.line(`**** Cancel : ${cancelreason}`)
+      }
+
+      if(Boolean(ticketitems)){
+          ticketitems?.map((item: any) => {
+            status.size(1, 2)
+            status.line(`${item.productqnt} X ${item.productdisplayname}`)
+            status.size(1, 1)
+
+            if(Boolean(item.itemaddon)){
+              item.itemaddon?.map((adon: any) => {
+                status.line(`${adon}`)
+              })
+            }
+            if(Boolean(item.itemtags)){
+              status.line(`${item.itemtags}`)
+            }
+            if(Boolean(item.instruction)){
+                status.line(`${item.instruction}`)
+            }
+            status.newline(1)
+          })
+      }
+
+
+      await status
+          .align('center')
+          .size(1, 1)
+          .line(getTrimChar(0, '-'))
+          .line("Powered By Dhru ERP")
+          .newline(2)
+          .cut()
+          .addPulse()
+          .send()
+    }
+    else{
+      errorAlert('No any printer setup')
+    }
+
+  } catch (e) {
+    appLog("Error", e);
+  }
+
+}
 
 export const generateKOT = async () => {
 
@@ -1233,11 +1378,12 @@ export const generateKOT = async () => {
   let cartData = store.getState().cartData;
   const {currentLocation: {departments, currentTicketType}} = localredux.localSettingsData;
   const {adminid, username}: any = localredux.loginuserData;
+  const today:any = store.getState().localSettings?.today;
 
   try{
     retrieveData('fusion-pro-pos-mobile-kotno').then(async (kotno: any) => {
 
-      if(!Boolean(kotno)){
+      if(!Boolean(kotno) && (today !== moment().format('YYYY-MM-DD'))){
         kotno = 1;
       }
       kotid = kotno;
@@ -1294,7 +1440,7 @@ export const generateKOT = async () => {
 
             const openTicketStatus = getTicketStatus(TICKET_STATUS.OPEN);
 
-            kitchens.forEach((k: any) => {
+            kitchens.forEach(async (k: any) => {
               kotid++;
               storeData('fusion-pro-pos-mobile-kotno', kotid).then(() => {});
               let kotitems: any = [];
@@ -1311,32 +1457,20 @@ export const generateKOT = async () => {
                     }
                   }
 
-
                   let {
                     product_qnt,
                     productratedisplay,
-                    instruction,
+                    notes,
                     productqnt,
                     ref_id,
                     groupname,
                     itemunit,
                     itemid,
                     itemname,
-                    predefinenotes,
-                    extranote
+                    itemaddon,
+                    itemtags
                   } = itemL1;
 
-
-                  if (predefinenotes) {
-                    predefinenotes = predefinenotes.join(", ");
-                  }
-                  if (extranote) {
-                    if (Boolean(predefinenotes)) {
-                      predefinenotes += ", " + extranote;
-                    } else {
-                      predefinenotes = extranote;
-                    }
-                  }
                   const kot = {
                     "productid": itemid,
                     "productrate": productratedisplay,
@@ -1348,7 +1482,17 @@ export const generateKOT = async () => {
                     "staffid": adminid,
                     "productdisplayname": itemname,
                     "itemgroupname": groupname,
-                    "instruction": instruction,
+                    "instruction": notes || '',
+                    itemaddon:itemaddon?.map((item:any)=>{
+                      return `${item.productqnt} X ${item.itemname}`
+                    }),
+                    itemtags:itemtags?.map((itemtag:any)=>{
+                      return itemtag?.taglist?.map((tag:any)=>{
+                        if(tag.selected){
+                          return `${itemtag.taggroupname} : ${tag.name}`
+                        }
+                      })
+                    }).join(' '),
                     ref_id,
                     key: itemL1.key,
                   };
@@ -1386,10 +1530,12 @@ export const generateKOT = async () => {
               };
 
 
-
               kots = [...kots, newkot];
 
               printkot.push(newkot);
+
+              printKOT(newkot)
+
 
             });
 
@@ -1409,6 +1555,8 @@ export const generateKOT = async () => {
             await store.dispatch(updateCartItems(updateditems))
 
             store.dispatch(hideLoader())
+
+
 
           }
         }

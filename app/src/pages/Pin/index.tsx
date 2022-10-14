@@ -50,7 +50,7 @@ const Index = (props: any) => {
 
                             if (Boolean(data) && Boolean(licenseData)) {
                                 const {license: {expired_on, status}} = licenseData.data;
-                                const today = moment().format('YYYY-MM-dd');
+                                const today = moment().format('YYYY-MM-DD');
                                 if (expired_on >= today && status === 'Active') {
 
                                     localredux.licenseData=licenseData;
@@ -77,6 +77,9 @@ const Index = (props: any) => {
                                     })
 
                                     await retrieveData('fusion-pro-pos-mobile-settings').then(async (data: any) => {
+                                        if(!Boolean(data?.today) || (data?.today !== today) ){
+                                            data.today =  today
+                                        }
                                         await dispatch(setSettings(data));
                                     })
 

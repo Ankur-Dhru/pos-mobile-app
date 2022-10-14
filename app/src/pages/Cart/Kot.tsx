@@ -7,7 +7,7 @@ import {setDialog} from "../../redux-store/reducer/component";
 import {connect, useDispatch} from "react-redux";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
 import CancelReason from "./CancelReason";
-import { appLog } from "../../libs/function";
+import {appLog, printKOT} from "../../libs/function";
 
 
 const Index = memo((props: any) => {
@@ -18,7 +18,7 @@ const Index = memo((props: any) => {
 
     let [kot, setKot]: any = useState(kt);
     const reprint = (kot: any) => {
-
+        printKOT(kot)
     }
 
 

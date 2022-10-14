@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 import {
     appLog,
+    cancelOrder,
     clone,
     deleteTempLocalOrder,
     errorAlert,
@@ -29,7 +30,6 @@ import CancelReason from "./CancelReason";
 import {hideLoader,  showLoader} from "../../redux-store/reducer/component";
 
 const Index = ({
-                   cartData,
                    tableorders,
                    vouchertotaldisplay,
                    theme: {colors}
@@ -46,7 +46,7 @@ const Index = ({
 
 
 
-    return <Card style={[styles.p_4]}>
+    return <View>
 
         {<View>
             <View>
@@ -57,7 +57,7 @@ const Index = ({
                     {/*<View style={[styles.w_auto]}>
                         <Button
                                 secondbutton={!Boolean(vouchertotaldisplay)}
-                                onPress={() => cancelOrder()}
+                                onPress={() => cancelOrder().then()}
                                 more={{backgroundColor: styles.red.color, color: 'white'}}
                         > Cancel </Button>
                     </View>*/}
@@ -83,8 +83,8 @@ const Index = ({
                         <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
 
-                                    onPress={() => generateKOT()}
-                                    more={{backgroundColor: styles.yellow.color, }}
+                                    onPress={() =>  generateKOT()}
+                                    more={{backgroundColor: styles.yellow.color,color:'black' }}
                             >KOT </Button>
                         </View>
                         <View style={[styles.w_auto, styles.ml_1]}>
@@ -106,7 +106,7 @@ const Index = ({
                     </View>*/}
 
                     {(!hasRestaurant) && <>
-                        {Object.keys(tableorders).length > 0 && <View style={[styles.w_auto, styles.ml_1]}>
+                        {<View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={Boolean(vouchertotaldisplay)}
                                     secondbutton={Boolean(vouchertotaldisplay)}
                                     onPress={async () => {
@@ -162,14 +162,12 @@ const Index = ({
 
         </View>}
 
-    </Card>
+    </View>
 }
 
 const mapStateToProps = (state: any) => {
     return {
         vouchertotaldisplay: state.cartData.vouchertotaldisplay,
-        cartData: state.cartData,
-        tableorders: state.tableOrdersData || {},
     }
 }
 

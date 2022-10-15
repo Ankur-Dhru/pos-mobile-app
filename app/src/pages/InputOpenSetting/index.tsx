@@ -82,7 +82,7 @@ const Index = ({defaultAmountOpen}: any) => {
 
 
     return <Container config={{
-        title: "Default Amount Input Open",
+        title: "Default Quantity",
     }}>
         <FlatList
             data={objToArray(units)?.filter((u: any) => Boolean(u?.data?.isdecimal))}

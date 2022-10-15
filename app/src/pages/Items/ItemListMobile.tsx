@@ -45,7 +45,7 @@ const Item = memo(({item}:any) => {
                         <Paragraph style={[styles.paragraph,styles.bold, styles.text_xs]}>{item.itemname}</Paragraph>
 
                         <Paragraph style={[styles.paragraph, styles.text_xs]}>
-                            {toCurrency(baseprice * (item?.productqnt || 1))}
+                            {toCurrency(baseprice )}
                         </Paragraph>
                     </View>
 

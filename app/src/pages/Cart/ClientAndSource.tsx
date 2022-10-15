@@ -150,7 +150,8 @@ const ClientAndSource = (props: any) => {
 
 
         <Button onPress={() => {
-             if (Boolean(selectedClient?.displayname) && (isSource ? !Boolean(ordersource): true)){
+
+             if (Boolean(selectedClient?.displayname) && (isSource ? Boolean(ordersource): true)){
                  let pass = {
                      ordersource: "POS",
                      tablename: ordersource,

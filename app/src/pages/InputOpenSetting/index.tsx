@@ -25,6 +25,7 @@ import CancelReason from "../Cart/CancelReason";
 import EscPosPrinter from 'react-native-esc-pos-printer';
 
 import {ProIcon} from "../../components";
+import KeyPad from "../../components/KeyPad";
 
 const Index = ({defaultAmountOpen}: any) => {
 
@@ -79,6 +80,7 @@ const Index = ({defaultAmountOpen}: any) => {
         </>
     }
 
+
     return <Container config={{
         title: "Default Amount Input Open",
     }}>
@@ -87,7 +89,6 @@ const Index = ({defaultAmountOpen}: any) => {
             renderItem={renderitem}
             initialNumToRender={5}
         />
-
     </Container>
 
 }

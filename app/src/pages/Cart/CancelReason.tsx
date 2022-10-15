@@ -51,7 +51,7 @@ const Index = (props: any) => {
 
     const cancelKOT = ({cancelreason, cancelreasonid,kot}: any) => {
 
-        let {invoiceitems,invoiceitemsdeleted,kots}:any = store.getState().cartData;
+        let {invoiceitems,invoiceitemsdeleted,kots,vouchertaxtype}:any = store.getState().cartData;
         if(!Boolean(invoiceitemsdeleted)){
             invoiceitemsdeleted = []
         }
@@ -85,7 +85,7 @@ const Index = (props: any) => {
         store.dispatch(updateCartField({
             kots: Object.values(kots),
             invoiceitems: remaininginvoiceitems,
-            vouchertotaldisplay:voucherTotal(remaininginvoiceitems),
+            vouchertotaldisplay:voucherTotal(remaininginvoiceitems,vouchertaxtype),
             invoiceitemsdeleted: newdeletedinvoiceitems
         }))
     }

@@ -28,8 +28,8 @@ const Index = ({tabledetails}: any) => {
         dispatch(refreshCartData({...tabledetails, ...voucherDataJson}))
         dispatch(setSelected({value: mainproductgroupid, field: 'group'}))
 
-        appLog("tabledetails", tabledetails?.tableorderid)
-        if (tabledetails?.ordertype !== "tableorder" && !Boolean(tabledetails?.tableorderid)) {
+
+        if ((Boolean(tabledetails?.ordertype) && tabledetails?.ordertype !== "tableorder") && !Boolean(tabledetails?.tableorderid)) {
             dispatch(setDialog({
                 visible: true,
                 title: "Source & Client",

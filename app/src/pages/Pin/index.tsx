@@ -107,13 +107,11 @@ const Index = (props: any) => {
 
                 <View style={{width:300}}>
 
-                    <View>
-                        <Paragraph style={[{textAlign:'center',height:70}]}>
-                            <Image
-                                style={[{width: 50, height: 50,margin:'auto'}]}
-                                source={require('../../assets/dhru-logo-22.png')}
-                            />
-                        </Paragraph>
+                    <View style={[styles.grid,styles.center,{marginBottom:5}]}>
+                        <Image
+                            style={[{width: 50, height: 50,margin:'auto'}]}
+                            source={require('../../assets/dhru-logo-22.png')}
+                        />
                     </View>
 
                     <View>

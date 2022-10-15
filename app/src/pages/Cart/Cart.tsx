@@ -85,12 +85,14 @@ const Index = (props: any) => {
                     {<View style={{marginLeft:5,marginRight:5,width:'auto',minWidth:'30%'}}>
                         <ClientDetail/>
                     </View>}
-                    <View>
-                        <Button
-                            onPress={() => cancelOrder(navigation).then()}
-                            more={{backgroundColor: styles.red.color, color: 'white'}}
-                        > Cancel </Button>
-                    </View>
+                    <Card>
+                        <View style={{padding:5}}>
+                            <Button
+                                onPress={() => cancelOrder(navigation).then()}
+                                more={{backgroundColor: styles.red.color, color: 'white'}}
+                            > Cancel </Button>
+                        </View>
+                    </Card>
                 </View>
 
                 <View  style={[styles.grid, styles.justifyContent, styles.noWrap, styles.h_100, styles.flex, styles.py_4]}>

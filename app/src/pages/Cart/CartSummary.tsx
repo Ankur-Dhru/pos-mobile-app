@@ -62,7 +62,7 @@ const Index = ({vouchertotaldisplay}: any) => {
 }
 
 const mapStateToProps = (state: any) => ({
-    vouchertotaldisplay: state.cartData.vouchertotaldisplay,
+    vouchertotaldisplay: parseInt(state.cartData.vouchertotaldisplay),
 })
 
 export default connect(mapStateToProps)(withTheme(memo(Index)));

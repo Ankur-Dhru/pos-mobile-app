@@ -77,7 +77,7 @@ export const cartData = createSlice({
             return {
                 ...state,
                 invoiceitems,
-                vouchertotaldisplay: voucherTotal(invoiceitems),
+                vouchertotaldisplay: voucherTotal(invoiceitems,state.vouchertaxtype),
             }
         },
 
@@ -85,7 +85,7 @@ export const cartData = createSlice({
             appLog('changeCartItem')
             const {itemIndex, item} = action.payload;
             state.invoiceitems[itemIndex] = clone({...state.invoiceitems[itemIndex], ...item});
-            state.vouchertotaldisplay = voucherTotal(state.invoiceitems),
+            state.vouchertotaldisplay = voucherTotal(state.invoiceitems,state.vouchertaxtype),
                 state.updatecart = true;
             return state
         },
@@ -94,7 +94,7 @@ export const cartData = createSlice({
             return {
                 ...state,
                 invoiceitems: action.payload,
-                vouchertotaldisplay: voucherTotal(action.payload),
+                vouchertotaldisplay: voucherTotal(action.payload,state.vouchertaxtype),
                 updatecart: true
             }
         },

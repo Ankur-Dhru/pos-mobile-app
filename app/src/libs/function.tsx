@@ -694,10 +694,11 @@ export const errorAlert = (message: any, title?: any) => {
     );
 }
 
-export const voucherTotal = (items: any) => {
+export const voucherTotal = (items: any,vouchertaxtype:any) => {
     let vouchertotaldisplay = 0;
 
     let taxesList: any = localredux.initData.tax;
+
 
     const taxCalculation = (tax: any, taxableValue: any, qnt: any) => {
         let totalTax = 0;
@@ -705,7 +706,7 @@ export const voucherTotal = (items: any) => {
             tax?.taxes?.forEach((tx: any) => {
                 let taxpriceDisplay = tx?.taxpercentage * taxableValue;
                 taxpriceDisplay = getFloatValue(taxpriceDisplay / 100);
-                totalTax = getFloatValue(taxpriceDisplay * qnt, 4);
+                totalTax += getFloatValue(taxpriceDisplay * qnt, 4);
             })
         }
         return totalTax;
@@ -717,7 +718,7 @@ export const voucherTotal = (items: any) => {
 
         vouchertotaldisplay += productratedisplay * productqnt;
 
-        if (!isEmpty(taxesList) && !isEmpty(taxesList[itemtaxgroupid])) {
+        if (!isEmpty(taxesList) && !isEmpty(taxesList[itemtaxgroupid]) && vouchertaxtype==='exclusive') {
             vouchertotaldisplay += taxCalculation(taxesList[itemtaxgroupid], productratedisplay, productqnt)
         }
 
@@ -726,7 +727,7 @@ export const voucherTotal = (items: any) => {
                 const pricingtype = pricing?.type;
                 const baseprice = pricing?.price?.default[0][pricingtype]?.baseprice || 0;
                 vouchertotaldisplay += baseprice * productqnt
-                if (!isEmpty(taxesList) && !isEmpty(taxesList[itemtaxgroupid])) {
+                if (!isEmpty(taxesList) && !isEmpty(taxesList[itemtaxgroupid])  && vouchertaxtype==='exclusive') {
                     vouchertotaldisplay += taxCalculation(taxesList[itemtaxgroupid], baseprice, productqnt)
                 }
 
@@ -1051,6 +1052,9 @@ export const selectItem = async (item: any) => {
 
 
     const setItemQnt = async (item: any) => {
+
+        try{
+
         const {addongroupid, addonid} = item?.addtags || {addongroupid: [], addonid: []}
 
 
@@ -1102,7 +1106,12 @@ export const selectItem = async (item: any) => {
 
             store.dispatch(setAlert({visible: true, message: duration.asMilliseconds()}))
         }
+        }
+        catch (e) {
+          appLog('e',e)
+        }
     }
+
     const directQnt = arraySome(store.getState()?.localSettings?.defaultAmountOpen, item.salesunit)
     if (directQnt) {
         onPressNumber(item, (productqnt: any) => {

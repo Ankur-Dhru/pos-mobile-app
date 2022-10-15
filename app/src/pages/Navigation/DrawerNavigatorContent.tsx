@@ -1,7 +1,7 @@
 import React from "react";
 import {appLog, isEmpty, isRestaurant, retrieveData, storeData, syncData} from "../../libs/function";
 import {Dimensions, Image, ScrollView, View} from "react-native";
-import {Card, List, Text,Paragraph} from "react-native-paper";
+import {Card, List, Text, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
 import Avatar from "../../components/Avatar";
 import {useNavigation} from "@react-navigation/native";
@@ -52,7 +52,7 @@ const Index = () => {
 
                     <View style={[styles.ml_2]}>
                         <View>
-                            <Paragraph style={[styles.paragraph,styles.bold,styles.text_lg]}>Dhru POS</Paragraph>
+                            <Paragraph style={[styles.paragraph, styles.bold, styles.text_lg]}>Dhru POS</Paragraph>
                         </View>
                         <Text style={[styles.paragraph, styles.text_md, {
                             lineHeight: 20,
@@ -66,7 +66,7 @@ const Index = () => {
         </Card>
 
 
-        <Card style={[styles.card,styles.flex,styles.h_100,]}>
+        <Card style={[styles.card, styles.flex, styles.h_100,]}>
             <Card.Content style={[styles.cardContent, {paddingHorizontal: 0}]}>
                 <ScrollView keyboardShouldPersistTaps='handled' style={[styles.h_100]}>
                     <List.Item
@@ -79,27 +79,24 @@ const Index = () => {
                     />
                 </ScrollView>
 
-                <View style={{marginTop:'auto'}}>
-                    {
-                        isRes && <>
-                            <List.Item
-                                style={[styles.listitem]}
-                                titleStyle={{marginLeft: 0, paddingLeft: 0}}
-                                title={'Default Amount Input Open'}
-                                onPress={() => {
-                                    navigation.navigate("InputOpenNavigator");
-                                }}
-                            />
-                            <List.Item
-                                style={[styles.listitem]}
-                                titleStyle={{marginLeft: 0, paddingLeft: 0}}
-                                title={'Quick Amount'}
-                                onPress={() => {
-                                    navigation.navigate("InputValueNavigator");
-                                }}
-                            />
-                        </>
-                    }
+                <View style={{marginTop: 'auto'}}>
+
+                    <List.Item
+                        style={[styles.listitem]}
+                        titleStyle={{marginLeft: 0, paddingLeft: 0}}
+                        title={'Default Quantity'}
+                        onPress={() => {
+                            navigation.navigate("InputOpenNavigator");
+                        }}
+                    />
+                    <List.Item
+                        style={[styles.listitem]}
+                        titleStyle={{marginLeft: 0, paddingLeft: 0}}
+                        title={'Quick Amounts'}
+                        onPress={() => {
+                            navigation.navigate("InputValueNavigator");
+                        }}
+                    />
 
                     <List.Item
                         style={[styles.listitem]}

@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {appLog, arraySome, isEmpty, removeItem} from "../../libs/function";
+import {appLog, arraySome, removeItem} from "../../libs/function";
 import {TouchableOpacity, View} from "react-native";
 import {Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
@@ -7,19 +7,15 @@ import {ProIcon} from "../../components";
 import {connect, useDispatch} from "react-redux";
 import {changeCartItem,} from "../../redux-store/reducer/cart-data";
 import {setBottomSheet, setDialog} from "../../redux-store/reducer/component";
-
-import CartItems from "../Cart/CartItems";
 import AddonActions from "./AddonActions";
-import {device} from "../../libs/static";
 import store from "../../redux-store/store";
-import Setting from "../PrinterSettings/Setting";
 import KeyPad from "../../components/KeyPad";
 
 
 const Index = (props: any) => {
 
 
-    let {bottomsheet, theme: {colors}, fromcart, item, setProduct, page, defaultAmountOpen} = props;
+    let {bottomsheet, theme: {colors}, item, defaultAmountOpen} = props;
 
 
     const dispatch = useDispatch();
@@ -34,17 +30,22 @@ const Index = (props: any) => {
                 height: '20%',
                 component: () => <AddonActions product={values}/>
             }))
-        }/* else if (action === 'remove' && !bottomsheet.visible && !device.tablet && !fromcart && values?.hasAddon) {
-            await dispatch(setBottomSheet({
-                visible: true,
-                height: '50%',
-                component: () => <CartItems itemid={values.productid || values.itemid}/>
-            }))
-        }*/ else {
-
+        } else {
             await updateCartItem(values, action)
         }
 
+    }
+
+    if (!item.productqnt) {
+        return (<View style={[styles.grid, styles.middle, {
+            minWidth: 50,
+            borderRadius: 5,
+            padding: 5,
+            backgroundColor: styles.secondary.color
+        }]}>
+            <Paragraph
+                style={[styles.paragraph, styles.caption, styles.flexGrow, styles.textCenter, styles.px_6, {color: styles.primary.color}]}> Add </Paragraph>
+        </View>)
     }
 
     const onPressNumber = () => {
@@ -81,21 +82,20 @@ const Index = (props: any) => {
                 borderRadius: 5,
                 backgroundColor: styles.accent.color
             }]}>
-                {!directQnt && <TouchableOpacity style={[styles.py_3]} onPress={() => {
+                {<TouchableOpacity style={[styles.py_3]} onPress={() => {
                     updateItem(item, 'remove').then(r => {
                     })
                 }}>
                     <ProIcon name={'minus'} color={colors.secondary} size={15}/>
                 </TouchableOpacity>}
                 <TouchableOpacity
-                    disabled={!directQnt}
                     style={[styles.paragraph, styles.caption, styles.flexGrow, styles.textCenter]}
                     onPress={onPressNumber}>
                     <Paragraph
                         style={[{color: colors.secondary}]}
                     >{parseInt(item?.productqnt || 1)}</Paragraph>
                 </TouchableOpacity>
-                {!directQnt && <TouchableOpacity style={[styles.py_3]} onPress={() => {
+                {<TouchableOpacity style={[styles.py_3]} onPress={() => {
                     updateItem(item, 'add').then(r => {
                     })
                 }}>

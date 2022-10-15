@@ -2,7 +2,6 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
-      <module name="app.react-native-esc-pos-printer" target="17" />
       <module name="app.react-native-haptic-feedback" target="17" />
       <module name="app.ReactAndroid" target="17" />
       <module name="app.ReactAndroid.hermes-engine" target="17" />

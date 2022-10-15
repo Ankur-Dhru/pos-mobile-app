@@ -1,51 +1,52 @@
 import React, {memo, useCallback, useEffect, useState} from "react";
 
-import {FlatList, View,Text, Dimensions} from "react-native";
+import {FlatList, View, TouchableOpacity} from "react-native";
 
 import {connect} from "react-redux";
 
-import Item from "./Item";
-import CartItem from "../Cart/Item";
-import {device, localredux} from "../../libs/static";
+import {localredux} from "../../libs/static";
 import {styles} from "../../theme";
-import {appLog, clone, filterArray} from "../../libs/function";
+import {appLog, isRestaurant, selectItem} from "../../libs/function";
 import {Paragraph} from "react-native-paper";
+import VegNonVeg from "./VegNonVeg";
 
-const {height, width} = Dimensions.get('window');
-const dim = Dimensions.get('screen');
+
+const hasRestaurant = isRestaurant()
+
+const Item = memo(({item}:any) => {
+    const {veg} = item;
+    return (<TouchableOpacity onPress={() => selectItem(item)} style={[styles.flexGrow,styles.center,styles.middle, {
+        width: 110,
+        padding: 10,
+        margin: 5,
+        backgroundColor: styles.secondary.color,
+        borderRadius: 5
+    }]}>
+        <Paragraph  style={[styles.paragraph, styles.bold, styles.text_xs, {textAlign: 'center'}]}>{item.itemname}</Paragraph>
+        {hasRestaurant && <View style={[styles.absolute, {top: 3, right: 3}]}>
+            <VegNonVeg type={veg}/>
+        </View>}
+    </TouchableOpacity>)
+},(r1, r2) => {
+    return (r1.item.itemid === r2.item.itemid);
+})
 
 
 const Index = (props: any) => {
 
-    const {selectedgroup,search} = props;
+    const {selectedgroup} = props;
 
-    const {groupItemsData,itemsData}:any = localredux
-
-    appLog('selectedgroup',selectedgroup)
+    const {groupItemsData}:any = localredux
 
     let [items,setItems] = useState(groupItemsData[selectedgroup]);
 
     useEffect(() => {
-        let finditems = groupItemsData[selectedgroup];
-        setItems(finditems);
+        setItems(groupItemsData[selectedgroup]);
     }, [selectedgroup])
-
-    useEffect(() => {
-        let finditems;
-        if (Boolean(search)) {
-            finditems = filterArray(Object.values(itemsData), ['itemname', 'uniqueproductcode'], search,false)
-        }
-        setItems(finditems);
-    }, [search])
-
-
-
 
     const renderItem = useCallback(({item, index}: any) => {
         return <Item item={item} index={index}  key={item.productid} />
     }, [selectedgroup]);
-
-    appLog('itemlist tablet')
 
     if(items?.length === 0) {
         return <></>

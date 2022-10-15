@@ -3,7 +3,7 @@ import moment from "moment";
 import {
   changeCartItem,
   resetCart,
-  setCartData,
+  setCartData, setCartItems,
   updateCartField,
   updateCartItems,
   updateCartKots
@@ -16,7 +16,7 @@ import {hideLoader, setAlert, setBottomSheet, setDialog, showLoader} from "../re
 import apiService from "./api-service";
 import {
   ACTIONS,
-  current,
+  current, isDevelopment,
   localredux,
   METHOD,
   posUrl,
@@ -46,6 +46,9 @@ import {getProductData, itemTotalCalculation} from "./item-calculation";
 import EscPosPrinter, {getPrinterSeriesByName} from "react-native-esc-pos-printer";
 import CancelReason from "../pages/Cart/CancelReason";
 import {isArray} from "util";
+import {setItemDetail} from "../redux-store/reducer/item-detail";
+import ItemDetail from "../pages/Items/ItemDetail";
+import AddonActions from "../pages/Items/AddonActions";
 
 let base64 = require('base-64');
 let utf8 = require('utf8');
@@ -1032,6 +1035,63 @@ export const  groupBy = (arr:any, property:any) => {
     memo[x[property]].push(x);
     return memo;
   }, {});
+}
+
+export const selectItem = async (item: any) => {
+
+
+
+  const {addongroupid, addonid} = item?.addtags || {addongroupid: [], addonid: []}
+
+
+  item = {
+    ...item,
+    key: uuid()
+  }
+
+  let start = moment();
+
+
+  if (Boolean(addongroupid.length) || Boolean(addonid.length)) {
+
+    item = {
+      ...item,
+      productqnt: item.productqnt || 0,
+      hasAddon: true
+    }
+
+    await store.dispatch(setItemDetail(item));
+
+    if (!Boolean(item.productqnt)) {
+      await store.dispatch(setBottomSheet({
+        visible: true,
+        height: '80%',
+        component: () => <ItemDetail/>
+      }))
+    } else {
+      await store.dispatch(setBottomSheet({
+        visible: true,
+        height: '20%',
+        component: () => <AddonActions product={item}/>
+      }))
+    }
+
+  } else {
+    const itemRowData:any = setItemRowData(item);
+    item = {
+      ...item,
+      ...itemRowData,
+    }
+    await  store.dispatch(setCartItems(item))
+  }
+
+  let end = moment();
+  var duration = moment.duration(end.diff(start));
+
+  if(isDevelopment) {
+    store.dispatch(setAlert({visible: true, message: duration.asMilliseconds()}))
+  }
+
 }
 
 export const testPrint = async (printer:any) => {

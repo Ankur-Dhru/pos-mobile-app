@@ -1,9 +1,35 @@
 import React, {memo, useCallback} from "react";
-import {FlatList,   View} from "react-native";
+import {FlatList, TouchableOpacity, View} from "react-native";
 
 
-import {connect} from "react-redux";
-import GroupItem from "./GroupItem";
+import {connect, useDispatch} from "react-redux";
+
+import {styles} from "../../theme";
+import {Divider, List} from "react-native-paper";
+
+import {setSelected} from "../../redux-store/reducer/selected-data";
+
+
+const GroupItem = (props:any) => {
+    const {item, selected} = props;
+
+    const dispatch = useDispatch()
+
+    const selectGroup = (group: any) => {
+        dispatch(setSelected({value:group.value,field:'group'}))
+    }
+
+    return <TouchableOpacity onPress={() => selectGroup(item)}
+                             style={[selected ? styles.bg_accent : '', {borderRadius: 5}]}>
+        <List.Item
+            title={item.label}
+            titleNumberOfLines={3}
+            titleStyle={[styles.text_sm,{color:selected?'white':'black'}]}
+        />
+        <Divider/>
+    </TouchableOpacity>
+}
+
 
 const Index = (props: any) => {
 

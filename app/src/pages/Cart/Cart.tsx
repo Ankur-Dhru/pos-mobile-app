@@ -33,7 +33,7 @@ const Index = (props: any) => {
     const {itemgroup} = localredux.initData
     const {tabledetails} = props;
     const navigation = useNavigation()
-    const [search,setSearch] = useState('')
+
     const [numpad,setNumpad] = useState(false)
 
 
@@ -45,9 +45,7 @@ const Index = (props: any) => {
         return {label: group.itemgroupname, value: group.itemgroupid}
     })
 
-    const handleSearch = (search:any) => {
-        setSearch(search)
-    }
+
 
     appLog('cart')
 
@@ -71,7 +69,7 @@ const Index = (props: any) => {
                     </TouchableOpacity>}
                     <View style={[styles.flexGrow]}>
                         <View style={[styles.grid,styles.justifyContent]}>
-                            <SearchItem  handleSearch={handleSearch}/>
+                            <SearchItem />
                             {/*<TouchableOpacity style={[styles.px_6,{backgroundColor:'white',padding:11,borderRadius:5,marginLeft:5}]} onPress={()=>setNumpad(!numpad)}>
                             <Paragraph><ProIcon name={'keyboard'} color={!numpad?'#ccc':'#000'} action_type={'text'}/></Paragraph>
                         </TouchableOpacity>*/}
@@ -108,7 +106,7 @@ const Index = (props: any) => {
                             <Card style={[styles.flexGrow, {maxWidth:500,marginLeft: 5,marginRight:5}]}>
 
                                 {!numpad ?
-                                    <ItemListTablet search={search}/>:
+                                    <ItemListTablet />:
                                     <NumPad/>
                                 }
                             </Card>
@@ -132,18 +130,16 @@ const Index = (props: any) => {
                         dispatch(showLoader());  saveTempLocalOrder().then(() => { navigation.goBack(); dispatch(hideLoader()); })
                     },
                     actions:()=>
-                        <TouchableOpacity style={{opacity:0}} onPress={() => dispatch(setModal({title: 'Restaurants',visible:true,component: ()=><SearchItem/>}))}><ProIcon name={'filter'} type={'light'}/>
+                        <TouchableOpacity  onPress={() => dispatch(setModal({title: 'Restaurants',visible:true,component: ()=><SearchItem  />}))}><ProIcon name={'filter'} type={'light'}/>
                         </TouchableOpacity>}}>
 
                 <View style={[styles.h_100, styles.flex, {flexDirection: 'column',paddingTop:5}]}>
 
 
-                    {Boolean(search) ? <View style={[styles.p_2,styles.ml_1]}>
-                        <Paragraph> Search Result ...</Paragraph>
-                    </View> : <GroupHeading />}
+                    <GroupHeading />
 
                     <Card style={[styles.h_100, styles.flex]}>
-                        <ItemListMobile  search={search}/>
+                        <ItemListMobile />
 
                         <View>
 
@@ -162,10 +158,8 @@ const Index = (props: any) => {
                                                 paddingLeft: 20,
                                                 paddingRight: 20
                                             }]}>
-                                            <Paragraph><ProIcon name={'bars-staggered'} type={"solid"} color={'white'}
-                                                                size={'18'} action_type={'text'}/> </Paragraph>
-                                            <Paragraph
-                                                style={[styles.paragraph, styles.bold, {color: 'white'}]}> Categories</Paragraph>
+                                            <Paragraph><ProIcon name={'bars-staggered'} type={"solid"} color={'white'}  size={'18'} action_type={'text'}/> </Paragraph>
+                                            <Paragraph  style={[styles.paragraph, styles.bold, {color: 'white'}]}> Categories</Paragraph>
                                         </View>
                                     </View>}
                                     list={groups}

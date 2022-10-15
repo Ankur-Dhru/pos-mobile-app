@@ -56,7 +56,6 @@ const Index = ({ordersData}: any) => {
         })
     }, [])
 
-
     const syncInvoice = (invoiceData: any) => {
         return new Promise((resolve) => {
             apiService({

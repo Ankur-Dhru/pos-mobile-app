@@ -561,7 +561,7 @@ export const syncData = async () => {
                             }
                         }
 
-           storeData('fusion-pro-pos-mobile',data).then(async ()=>{
+                        storeData('fusion-pro-pos-mobile', data).then(async () => {
 
 
                             localredux.initData = data.initData;
@@ -570,8 +570,8 @@ export const syncData = async () => {
                             localredux.localSettingsData = data.localSettingsData;
                             localredux.groupItemsData = groupBy(Object.values(itemsData), 'itemgroupid');
 
-            });
-          })
+                        });
+                    })
 
                 }
             }
@@ -697,12 +697,12 @@ export const errorAlert = (message: any, title?: any) => {
 export const voucherTotal = (items: any) => {
     let vouchertotaldisplay = 0;
 
-    let  taxesList:any = localredux.initData.tax;
+    let taxesList: any = localredux.initData.tax;
 
-    const taxCalculation = (tax:any, taxableValue:any, qnt:any)=>{
+    const taxCalculation = (tax: any, taxableValue: any, qnt: any) => {
         let totalTax = 0;
-        if (!isEmpty(tax?.taxes)){
-            tax?.taxes?.forEach((tx:any)=>{
+        if (!isEmpty(tax?.taxes)) {
+            tax?.taxes?.forEach((tx: any) => {
                 let taxpriceDisplay = tx?.taxpercentage * taxableValue;
                 taxpriceDisplay = getFloatValue(taxpriceDisplay / 100);
                 totalTax = getFloatValue(taxpriceDisplay * qnt, 4);
@@ -717,8 +717,8 @@ export const voucherTotal = (items: any) => {
 
         vouchertotaldisplay += productratedisplay * productqnt;
 
-        if (!isEmpty(taxesList) && !isEmpty(taxesList[itemtaxgroupid])){
-            vouchertotaldisplay += taxCalculation(taxesList[itemtaxgroupid], productratedisplay , productqnt)
+        if (!isEmpty(taxesList) && !isEmpty(taxesList[itemtaxgroupid])) {
+            vouchertotaldisplay += taxCalculation(taxesList[itemtaxgroupid], productratedisplay, productqnt)
         }
 
         if (Boolean(item?.itemaddon?.length)) {
@@ -726,7 +726,7 @@ export const voucherTotal = (items: any) => {
                 const pricingtype = pricing?.type;
                 const baseprice = pricing?.price?.default[0][pricingtype]?.baseprice || 0;
                 vouchertotaldisplay += baseprice * productqnt
-                if (!isEmpty(taxesList) && !isEmpty(taxesList[itemtaxgroupid])){
+                if (!isEmpty(taxesList) && !isEmpty(taxesList[itemtaxgroupid])) {
                     vouchertotaldisplay += taxCalculation(taxesList[itemtaxgroupid], baseprice, productqnt)
                 }
 
@@ -735,8 +735,6 @@ export const voucherTotal = (items: any) => {
     })
     return vouchertotaldisplay
 }
-
-
 
 
 export const setItemRowData = (data: any) => {
@@ -881,11 +879,11 @@ export const saveTempLocalOrder = async (order?: any) => {
                 [order.tableorderid]: order
             }
 
-      await storeData('fusion-pro-pos-mobile-tableorder', tableorders).then(async () => {
-        await store.dispatch(setCartData(order));
-        await store.dispatch(setTableOrdersData(tableorders));
-      });
-    }
+            await storeData('fusion-pro-pos-mobile-tableorder', tableorders).then(async () => {
+                await store.dispatch(setCartData(order));
+                await store.dispatch(setTableOrdersData(tableorders));
+            });
+        }
 
     } catch (e) {
         appLog('e', e)
@@ -963,7 +961,7 @@ export const saveLocalOrder = async (order?: any) => {
         await deleteTempLocalOrder(order.tableorderid).then(async () => {
             await storeData('fusion-pro-pos-mobile', data).then(async () => {
                 appLog("data?.orders2", data?.orders);
-                 store.dispatch(setOrder(order))
+                store.dispatch(setOrder(order))
             });
         })
     })
@@ -1100,13 +1098,13 @@ export const selectItem = async (item: any) => {
         let end = moment();
         var duration = moment.duration(end.diff(start));
 
-  if(isDevelopment) {
+        if (isDevelopment) {
 
-    store.dispatch(setAlert({visible: true, message: duration.asMilliseconds()}))
-  }
-
+            store.dispatch(setAlert({visible: true, message: duration.asMilliseconds()}))
+        }
+    }
     const directQnt = arraySome(store.getState()?.localSettings?.defaultAmountOpen, item.salesunit)
-    if (directQnt && !isRestaurant()) {
+    if (directQnt) {
         onPressNumber(item, (productqnt: any) => {
             setItemQnt({...item, productqnt: +productqnt}).then()
             store.dispatch(setDialog({visible: false}))
@@ -1473,8 +1471,8 @@ export const generateKOT = async () => {
     const {adminid, username}: any = localredux.loginuserData;
     const today: any = store.getState().localSettings?.today;
 
-  try{
-    await retrieveData('fusion-pro-pos-mobile-kotno').then(async (kotno: any) => {
+    try {
+        await retrieveData('fusion-pro-pos-mobile-kotno').then(async (kotno: any) => {
 
             if (!Boolean(kotno) && (today !== moment().format('YYYY-MM-DD'))) {
                 kotno = 1;
@@ -1645,19 +1643,18 @@ export const generateKOT = async () => {
                             return item
                         })
 
-            await store.dispatch(updateCartKots(kots))
-            await store.dispatch(updateCartItems(updateditems))
+                        await store.dispatch(updateCartKots(kots))
+                        await store.dispatch(updateCartItems(updateditems))
 
-            await store.dispatch(hideLoader())
+                        await store.dispatch(hideLoader())
 
-          }
-        }
-      }
-    });
-  }
-  catch (e) {
-    appLog('e',e)
-  }
+                    }
+                }
+            }
+        });
+    } catch (e) {
+        appLog('e', e)
+    }
 
 }
 

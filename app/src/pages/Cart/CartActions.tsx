@@ -83,20 +83,25 @@ const Index = ({
                         <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
 
-                                    onPress={() =>  generateKOT()}
+                                    onPress={() =>  generateKOT().then(()=>{
+                                        saveTempLocalOrder().then(() => {
+                                             dispatch(hideLoader())
+                                         })
+                                    })}
                                     more={{backgroundColor: styles.yellow.color,color:'black' }}
                             >KOT </Button>
                         </View>
                         <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
-                                    onPress={() => {
-                                        dispatch(showLoader())
-                                        saveTempLocalOrder().then(() => {
-                                            printInvoice().then();
-                                            dispatch(hideLoader())
-                                        })
 
-                                    }}
+                                    onPress={() =>
+                                        generateKOT().then(()=>{
+                                            saveTempLocalOrder().then(() => {
+                                                printInvoice().then();
+                                                 dispatch(hideLoader())
+                                             })
+                                    })}
+
                                     more={{backgroundColor: styles.accent.color,  }}
                             >Print </Button>
                         </View>
@@ -107,7 +112,7 @@ const Index = ({
 
                     {(!hasRestaurant) && <>
                         {<View style={[styles.w_auto, styles.ml_1]}>
-                            <Button disable={Boolean(vouchertotaldisplay)}
+                            <Button
                                     secondbutton={Boolean(vouchertotaldisplay)}
                                     onPress={async () => {
                                         await dispatch(setBottomSheet({
@@ -116,7 +121,7 @@ const Index = ({
                                             component: () => <HoldOrders/>
                                         }))
                                     }}
-                                    more={{backgroundColor: styles.yellow.color,  }}
+                                    more={{backgroundColor: styles.yellow.color,color:'black'  }}
                             > Recall </Button>
                         </View>}
                         <View style={[styles.w_auto, styles.ml_1]}>
@@ -132,7 +137,7 @@ const Index = ({
                                             }
                                         })}
                                     }
-                                    more={{backgroundColor: styles.yellow.color,  }}
+                                    more={{backgroundColor: styles.yellow.color,color:'black'  }}
                             > On Hold </Button>
                         </View></>}
 

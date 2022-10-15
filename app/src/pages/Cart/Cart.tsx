@@ -1,11 +1,10 @@
 import React, {Suspense, useEffect, useRef, useState} from "react";
 import {ActivityIndicator, TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
-import Items from "../Items/ItemList";
 import DetailView from "./DetailView";
 import GroupList from "../Items/GroupList";
 import {useDispatch} from "react-redux";
-import {Card, Paragraph,Text} from "react-native-paper";
+import {Card, Paragraph,Text,Button} from "react-native-paper";
 import InputField from "../../components/InputField";
 import CartTotal from "./CartTotal";
 
@@ -19,13 +18,14 @@ import SearchItem from "../Items/SearchItem";
 import GroupHeading from "../Items/GroupHeading";
 import ClientDetail from "../Client/ClientDetail";
 import {useNavigation} from "@react-navigation/native";
-import {appLog, cancelOrder, saveTempLocalOrder} from "../../libs/function";
+import {appLog, cancelOrder, isRestaurant, saveTempLocalOrder} from "../../libs/function";
 import NumPad from "../Items/NumPad";
 import {hideLoader, setModal, showLoader} from "../../redux-store/reducer/component";
 import ItemListMobile from "../Items/ItemListMobile";
 import ItemListTablet from "../Items/ItemListTablet";
-import Button from "../../components/Button";
 
+
+const hasrestaurant = isRestaurant();
 
 const Index = (props: any) => {
 
@@ -58,24 +58,31 @@ const Index = (props: any) => {
         {
             device.tablet ? <>
 
-                <View style={[styles.grid,styles.justifyContent]}>
-                    {Boolean(tabledetails?.tablename) &&  <TouchableOpacity onPress={()=> {
+                <View style={[styles.grid,styles.justifyContent,styles.w_100]}>
+                    {Boolean(tabledetails?.tablename) ?  <View style={{marginRight:5}}><Card style={[styles.noshadow]} onPress={()=> {
                         dispatch(showLoader());  saveTempLocalOrder().then(() => { navigation.goBack(); dispatch(hideLoader()); })
                     }}>
-                        <View  style={[styles.grid,styles.middle,styles.bg_white,{width:'auto',padding:11,borderRadius:5, marginRight:6}]}>
-                            <Paragraph><ProIcon name={'chevron-left'} action_type={'text'} /></Paragraph>
+                        <View  style={[styles.grid,styles.middle,styles.w_auto,{padding:11,marginRight:6,minWidth:120}]}>
+                             <ProIcon name={'chevron-left'} action_type={'text'} />
                             <Paragraph style={[styles.paragraph,styles.bold]}> {tabledetails?.tablename} </Paragraph>
                         </View>
-                    </TouchableOpacity>}
-                    <View style={[styles.flexGrow]}>
-                        <View style={[styles.grid,styles.justifyContent]}>
-                            <SearchItem />
-                            {/*<TouchableOpacity style={[styles.px_6,{backgroundColor:'white',padding:11,borderRadius:5,marginLeft:5}]} onPress={()=>setNumpad(!numpad)}>
+                    </Card></View> : <Card style={[styles.noshadow,{marginRight:5}]}>
+                        <TouchableOpacity onPress={()=> navigation.openDrawer()} style={[styles.px_6,{padding:11}]}>
+                            <ProIcon name={'bars'} action_type={'text'} />
+                        </TouchableOpacity>
+                    </Card> }
+                    <Card style={[styles.noshadow,styles.flexGrow,styles.grid,styles.justifyContent,styles.px_4,styles.w_auto,{minWidth:'25%'}]}>
+                        <TouchableOpacity  onPress={() => dispatch(setModal({title: 'Search Items',visible:true,component: ()=><SearchItem  />}))}>
+                            <View style={[styles.grid,styles.middle,{padding:11}]}>
+                                <Paragraph  style={[styles.paragraph]}> Search Item</Paragraph>
+                            </View>
+                        </TouchableOpacity>
+
+                        {/*<TouchableOpacity style={[styles.px_6,{backgroundColor:'white',padding:11,borderRadius:5,marginLeft:5}]} onPress={()=>setNumpad(!numpad)}>
                             <Paragraph><ProIcon name={'keyboard'} color={!numpad?'#ccc':'#000'} action_type={'text'}/></Paragraph>
                         </TouchableOpacity>*/}
-                        </View>
-                    </View>
-                    {<View style={{marginLeft:6,marginRight:6,width:385}}>
+                    </Card>
+                    {<View style={{marginLeft:5,marginRight:5,width:'auto',minWidth:'30%'}}>
                         <ClientDetail/>
                     </View>}
                     <View>
@@ -86,36 +93,22 @@ const Index = (props: any) => {
                     </View>
                 </View>
 
-                <View
-                    style={[styles.grid, styles.justifyContent, styles.noWrap, styles.h_100, styles.flex, styles.py_4]}>
+                <View  style={[styles.grid, styles.justifyContent, styles.noWrap, styles.h_100, styles.flex, styles.py_4]}>
 
 
-                    <View style={[styles.flex, styles.column, styles.h_100, {minWidth: '40%'}]}>
+                    <Card  style={[styles.h_100, styles.w_auto, {minWidth: 120}]} >
+                        <GroupList groups={groups}/>
+                    </Card>
 
+                    <Card style={[styles.flexGrow,styles.noshadow,styles.w_auto,{marginLeft: 5,marginRight:5,minWidth:'40%'}]}>
 
+                        {!numpad ?
+                            <ItemListTablet />:
+                            <NumPad/>
+                        }
+                    </Card>
 
-                        <View style={[styles.grid, styles.flex, styles.h_100, styles.noWrap]}>
-                            <View style={[styles.grid, styles.flexGrow, styles.h_100, styles.w_auto, {
-                                minWidth: 150,
-                                maxWidth: 150
-                            }]}>
-                                <Card style={[styles.w_100]}>
-                                    <GroupList groups={groups}/>
-                                </Card>
-                            </View>
-                            <Card style={[styles.flexGrow, {maxWidth:500,marginLeft: 5,marginRight:5}]}>
-
-                                {!numpad ?
-                                    <ItemListTablet />:
-                                    <NumPad/>
-                                }
-                            </Card>
-
-                        </View>
-
-                    </View>
-
-                    <View style={[styles.flexGrow, {width: 200}]}>
+                    <View style={[styles.w_auto, {minWidth: '40%'}]}>
                         <DetailView style={{padding: 0}}/>
                     </View>
 
@@ -125,16 +118,14 @@ const Index = (props: any) => {
 
 
             </> : <Container
-                config={{title:tabledetails?.tablename,
+                config={{title:tabledetails?.tablename || 'Retail Order',hideback:!hasrestaurant,drawer:!hasrestaurant,
                     backAction:()=> {
                         dispatch(showLoader());  saveTempLocalOrder().then(() => { navigation.goBack(); dispatch(hideLoader()); })
                     },
                     actions:()=>
-                        <TouchableOpacity  onPress={() => dispatch(setModal({title: 'Restaurants',visible:true,component: ()=><SearchItem  />}))}><ProIcon name={'filter'} type={'light'}/>
-                        </TouchableOpacity>}}>
+                        <Button onPress={() => dispatch(setModal({title: 'Search Items',visible:true,component: ()=><SearchItem  />}))}>Search</Button> }}>
 
                 <View style={[styles.h_100, styles.flex, {flexDirection: 'column',paddingTop:5}]}>
-
 
                     <GroupHeading />
 

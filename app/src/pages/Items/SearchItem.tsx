@@ -1,5 +1,5 @@
 import {localredux} from "../../libs/static";
-import React, {memo, useState} from "react";
+import React, {memo, useEffect, useState} from "react";
 import {FlatList, TouchableOpacity, View} from "react-native";
 import {Card, Divider, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
@@ -8,26 +8,24 @@ import {SearchBox} from "../../components";
 import {appLog, filterArray, selectItem} from "../../libs/function";
 
 import AddButton from "./AddButton";
-import {connect} from "react-redux";
+import {connect, useDispatch} from "react-redux";
+import {setModal} from "../../redux-store/reducer/component";
 
 const Item = memo(({item}:any) => {
 
+    const dispatch = useDispatch()
 
-    return (<TouchableOpacity onPress={() => {!Boolean(item?.productqnt) && selectItem(item)}}
-                              style={[styles.noshadow]}>
-
-        <View>
-            <View>
-                <View style={[styles.autoGrid, styles.noWrap, styles.top,styles.p_4]}>
-                    <View style={[{width:'62%'}]}>
-                        <Paragraph style={[styles.paragraph,styles.bold, styles.text_xs]}>{item.itemname}</Paragraph>
-                    </View>
-                    {<View  style={[styles.ml_auto]}>
-                        <AddButton item={item}  />
-                    </View>}
-                </View>
+    return (<TouchableOpacity onPress={() => {
+        selectItem(item);
+        dispatch(setModal({visible:false}))
+    }} style={[styles.noshadow]}>
+        <View style={[styles.grid, styles.noWrap, styles.top,styles.p_4]}>
+            <View style={[{width:'62%'}]}>
+                <Paragraph style={[styles.paragraph,styles.bold, styles.text_xs]}>{item.itemname}</Paragraph>
             </View>
-
+            {<View  style={[styles.ml_auto]}>
+                <AddButton item={item}  />
+            </View>}
         </View>
 
         <Divider/>
@@ -40,16 +38,20 @@ const Item = memo(({item}:any) => {
 const Index = ({invoiceitems}: any) => {
 
     const {itemsData}: any = localredux
-    const [items, setItems] = useState([]);
+    let [items, setItems] = useState([]);
+    const [search, setSearch] = useState('');
 
     const handleSearch = (search:any) => {
-        let finditems;
         if (Boolean(search) && search.length>3) {
-            appLog('search',search)
-            finditems = filterArray(Object.values(itemsData), ['itemname', 'uniqueproductcode'], search,false)
+            let finditems = filterArray(Object.values(itemsData), ['itemname', 'uniqueproductcode'], search,false);
+            setItems(finditems);
+           // setSearch(search)
         }
+    }
 
-        finditems = finditems?.map((i: any) => {
+/*    useEffect(()=>{
+        let uitems:any = items?.map((i: any) => {
+
             const find = invoiceitems?.filter((ii: any) => {
                 return i.itemid === ii.itemid;
             })
@@ -58,9 +60,8 @@ const Index = ({invoiceitems}: any) => {
             }
             return i;
         })
-
-        setItems(finditems);
-    }
+        setItems(uitems);
+    },[invoiceitems,search])*/
 
     const renderitems = (i: any) => {
         return (

@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 
-import {TouchableOpacity, View} from "react-native";
+import {Image, TouchableOpacity, View} from "react-native";
 import Container from "../../components/Container";
 import ReactNativePinView from "react-native-pin-view"
 import {useDispatch} from "react-redux";
@@ -108,6 +108,16 @@ const Index = (props: any) => {
                 <View style={{width:300}}>
 
                     <View>
+                        <Paragraph style={[{textAlign:'center',height:70}]}>
+                            <Image
+                                style={[{width: 50, height: 50,margin:'auto'}]}
+                                source={require('../../assets/dhru-logo-22.png')}
+                            />
+                        </Paragraph>
+                    </View>
+
+                    <View>
+
                         <Paragraph style={[styles.paragraph,{textAlign:'center'}]}>{params.username}</Paragraph>
                     </View>
 
@@ -133,14 +143,14 @@ const Index = (props: any) => {
                         color: "#000",
                     }}
                     inputViewStyle={{
-                        marginBottom:10
+                        marginBottom:5
                     }}
 
 
                 />
                 </View>
 
-                <View style={{marginTop:20}}>
+                <View style={{marginTop:10}}>
                     <TouchableOpacity onPress={() => {syncData().then()}}><Text>Sync</Text></TouchableOpacity>
                 </View>
 

@@ -7,7 +7,7 @@ import InputBox from "../../components/InputBox";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
 import Button from "../../components/Button";
-import {setDialog} from "../../redux-store/reducer/component";
+import {setAlert, setDialog} from "../../redux-store/reducer/component";
 import {appLog, objToArray, printKOT, saveLocalOrder, voucherTotal} from "../../libs/function";
 import {localredux} from "../../libs/static";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
@@ -40,7 +40,7 @@ const Index = (props: any) => {
                 printKOT({...kot,cancelreason:cancelreason});
             })
             await saveLocalOrder().then(async () => {
-
+                store.dispatch(setAlert({visible:true,message:'Order cancelled'}))
             })
         }
         catch(e){

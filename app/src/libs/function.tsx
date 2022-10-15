@@ -562,7 +562,7 @@ export const syncData = async () => {
               }
             }
 
-            storeData('fusion-pro-pos-mobile',data).then(async ()=>{
+           storeData('fusion-pro-pos-mobile',data).then(async ()=>{
 
 
               localredux.initData = data.initData;
@@ -570,15 +570,6 @@ export const syncData = async () => {
               localredux.clientsData = data.clientsData;
               localredux.localSettingsData = data.localSettingsData;
               localredux.groupItemsData = groupBy(Object.values(itemsData), 'itemgroupid');
-
-
-              /*await store.dispatch(setInitData(initData))
-              await store.dispatch(setCurrentLocation(locations[locationid]));
-              await store.dispatch(setItemsData(itemsData));
-              await store.dispatch(setAddonsData(addonsData))
-              await store.dispatch(setclientsData(clientsData));
-              await store.dispatch(setLastSyncTime(lastsync));
-              await store.dispatch(setRestaurant(isRestaurant));*/
 
             });
           })
@@ -868,8 +859,6 @@ export const saveTempLocalOrder = async (order?:any) => {
         [order.tableorderid]: order
       }
 
-
-
       await storeData('fusion-pro-pos-mobile-tableorder', tableorders).then(async () => {
         await store.dispatch(setCartData(order));
         await store.dispatch(setTableOrdersData(tableorders));
@@ -1089,6 +1078,7 @@ export const selectItem = async (item: any) => {
   var duration = moment.duration(end.diff(start));
 
   if(isDevelopment) {
+
     store.dispatch(setAlert({visible: true, message: duration.asMilliseconds()}))
   }
 
@@ -1117,7 +1107,6 @@ export const testPrint = async (printer:any) => {
 
 export const printInvoice = async (order?:any) => {
 
-  generateKOT()
 
   const getTrimChar = (count: number, char?: string, defaultLength: number = PAGE_WIDTH) => {
     let space = "";
@@ -1443,7 +1432,7 @@ export const generateKOT = async () => {
   const today:any = store.getState().localSettings?.today;
 
   try{
-    retrieveData('fusion-pro-pos-mobile-kotno').then(async (kotno: any) => {
+    await retrieveData('fusion-pro-pos-mobile-kotno').then(async (kotno: any) => {
 
       if(!Boolean(kotno) && (today !== moment().format('YYYY-MM-DD'))){
         kotno = 1;
@@ -1613,12 +1602,12 @@ export const generateKOT = async () => {
               return item
             })
 
+
             await store.dispatch(updateCartKots(kots))
+
             await store.dispatch(updateCartItems(updateditems))
 
-            store.dispatch(hideLoader())
-
-
+            await store.dispatch(hideLoader())
 
           }
         }

@@ -1,6 +1,6 @@
 import React, {memo, useCallback, useEffect, useState} from "react";
 
-import {FlatList, View,  TouchableOpacity} from "react-native";
+import {FlatList, View,  TouchableOpacity, Text} from "react-native";
 
 import {connect} from "react-redux";
 
@@ -30,25 +30,18 @@ const Item = memo(({item}:any) => {
         <View
             style={[{backgroundColor: hasKot ? styles.yellow.color : ''}]}>
             <View>
-                <View style={[styles.autoGrid, styles.noWrap, styles.top,styles.p_4]}>
+                <View style={[styles.grid,styles.top, styles.noWrap, styles.top,styles.p_4]}>
                     {<View>
-                        <Avatar label={item.itemname} value={1} fontsize={15} lineheight={30} size={35}/>
-                    </View>}
-                    <View style={[styles.ml_2,{width:'62%'}]}>
-                        <Paragraph style={[styles.paragraph,styles.bold, styles.text_xs]}>{item.itemname}</Paragraph>
-
-                        <View style={[styles.grid, styles.justifyContentSpaceBetween]}>
-
-                            {<Paragraph style={[styles.paragraph, styles.text_xs]}>
-                                {toCurrency(baseprice * (item?.productqnt || 1))}
-                            </Paragraph>}
-
-                        </View>
-
-                        {hasRestaurant && <View style={[styles.absolute, {top: 3, right: 3}]}>
+                        {hasRestaurant && <View>
                             <VegNonVeg type={veg}/>
                         </View>}
+                    </View>}
+                    <View style={[styles.ml_2]}>
+                        <Paragraph style={[styles.paragraph,styles.bold, styles.text_xs]}>{item.itemname}</Paragraph>
 
+                        <Paragraph style={[styles.paragraph, styles.text_xs]}>
+                            {toCurrency(baseprice * (item?.productqnt || 1))}
+                        </Paragraph>
                     </View>
 
                     {<View  style={[styles.ml_auto]}>
@@ -88,6 +81,7 @@ const Index = (props: any) => {
     const {selectedgroup,invoiceitems} = props;
 
     const {groupItemsData}:any = localredux
+
 
     let [items,setItems] = useState(clone(groupItemsData[selectedgroup]));
 

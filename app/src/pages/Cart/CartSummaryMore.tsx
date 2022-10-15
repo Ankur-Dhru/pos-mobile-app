@@ -116,9 +116,12 @@ const Index =   ({vouchersubtotaldisplay, globaltax,voucherroundoffdisplay,loadi
 
                 {
                     globaltax?.map((tax: any, key: any) => {
+                        if(!Boolean(tax.taxpercentage)){
+                            return <></>
+                        }
                         return (
                             <View style={[styles.grid, styles.justifyContent]} key={key}>
-                                <View><Paragraph style={[styles.paragraph]}>{tax.taxname}</Paragraph></View>
+                                <View><Paragraph style={[styles.paragraph]}>{tax.taxname} ({tax.taxpercentage}%)</Paragraph></View>
                                 <View><Paragraph
                                     style={[styles.paragraph]}>{toCurrency(!loading ? tax.taxpricedisplay : '0')}</Paragraph></View>
                             </View>

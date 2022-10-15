@@ -83,20 +83,25 @@ const Index = ({
                         <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
 
-                                    onPress={() =>  generateKOT()}
+                                    onPress={() =>  generateKOT().then(()=>{
+                                        saveTempLocalOrder().then(() => {
+                                             dispatch(hideLoader())
+                                         })
+                                    })}
                                     more={{backgroundColor: styles.yellow.color,color:'black' }}
                             >KOT </Button>
                         </View>
                         <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
-                                    onPress={() => {
-                                        dispatch(showLoader())
-                                        saveTempLocalOrder().then(() => {
-                                            printInvoice().then();
-                                            dispatch(hideLoader())
-                                        })
 
-                                    }}
+                                    onPress={() =>
+                                        generateKOT().then(()=>{
+                                            saveTempLocalOrder().then(() => {
+                                                printInvoice().then();
+                                                 dispatch(hideLoader())
+                                             })
+                                    })}
+
                                     more={{backgroundColor: styles.accent.color,  }}
                             >Print </Button>
                         </View>

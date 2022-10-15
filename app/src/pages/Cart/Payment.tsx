@@ -21,7 +21,7 @@ import {useNavigation} from "@react-navigation/native";
 import {localredux} from "../../libs/static";
 import PageLoader from "../../components/PageLoader";
 import store from "../../redux-store/store";
-import { hideLoader, showLoader } from "../../redux-store/reducer/component";
+import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
 
 
 const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}: any) => {
@@ -118,9 +118,14 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
 
             saveLocalOrder(clone(cartData)).then(() => {
                 if(config?.print){
-                    printInvoice(cartData).then();
+                    printInvoice(cartData).then(()=>{
+                        navigation.replace('DrawerStackNavigator');
+                    });
                 }
-                navigation.replace('DrawerStackNavigator');
+                else{
+                    navigation.replace('DrawerStackNavigator');
+                }
+                dispatch(setAlert({visible:true,message:'Order Save Successfully'}))
                 dispatch(hideLoader())
             })
             ////////// SAVE FINAL DATA //////////
@@ -129,7 +134,7 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
 
     }
 
-    const skipPayment = () => {
+    const skipPayment = async () => {
         let cartData:any = store.getState().cartData;
         cartData.payments = [
             {
@@ -139,8 +144,9 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
             }
         ]
         dispatch(showLoader())
-        saveLocalOrder(cartData).then(() => {
-            printInvoice(cartData).then();
+        await saveLocalOrder(cartData).then(async () => {
+            await printInvoice(cartData).then();
+            dispatch(setAlert({visible:true,message:'Order Save Successfully'}))
             navigation.replace('DrawerStackNavigator');
             dispatch(hideLoader())
         })

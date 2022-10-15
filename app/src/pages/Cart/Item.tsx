@@ -138,7 +138,7 @@ const Index = memo((props: any) => {
                                             <View>
                                                 <View style={[styles.grid]}>
                                                     <Paragraph style={[styles.paragraph, styles.text_xs]}>
-                                                        {item.productqnt} {!isRestaurant && unit[item.itemunit] && unit[item.itemunit].unitcode} x {toCurrency(item.productratedisplay || '0')} each =
+                                                        {item.productqnt} {!isRestaurant && unit[item.itemunit] && unit[item.itemunit].unitcode} x {toCurrency(item.productratedisplay || '0')}  =
                                                     </Paragraph>
 
                                                 </View>
@@ -172,7 +172,7 @@ const Index = memo((props: any) => {
                                                                     </Paragraph>
 
                                                                     <Paragraph
-                                                                        style={[styles.paragraph, styles.text_xs, {paddingLeft: 5}]}>{toCurrency(baseprice || '0')} each = </Paragraph>
+                                                                        style={[styles.paragraph, styles.text_xs, {paddingLeft: 5}]}>{toCurrency(baseprice || '0')} = </Paragraph>
 
                                                                 </View>
 

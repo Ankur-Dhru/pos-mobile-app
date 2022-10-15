@@ -23,7 +23,7 @@ const Index = () => {
     }
 
 
-    return <View style={[styles.h_100, styles.px_5]}>
+    return <View style={[styles.h_100]}>
         {/*<Card style={[styles.card]}>*/}
         {/*    <Card.Content>*/}
         {/*        <View style={[styles.grid, styles.middle, styles.noWrap]}>*/}
@@ -58,26 +58,20 @@ const Index = () => {
         </Card>
 
 
-        <Card style={[styles.card, {height: windowHeight - 400}]}>
+        <Card style={[styles.card,styles.flex,styles.h_100,]}>
             <Card.Content style={[styles.cardContent, {paddingHorizontal: 0}]}>
-                <ScrollView keyboardShouldPersistTaps='handled'>
+                <ScrollView keyboardShouldPersistTaps='handled' style={[styles.h_100]}>
                     <List.Item
                         style={[styles.listitem]}
                         titleStyle={{marginLeft: 0, paddingLeft: 0}}
                         title={'Sales Report'}
                         onPress={() => {
                             navigation.navigate("SalesReportNavigator");
-
-
                         }}
                     />
                 </ScrollView>
-            </Card.Content>
-        </Card>
 
-        <Card style={[styles.card]}>
-            <Card.Content style={[styles.cardContent, {paddingHorizontal: 0}]}>
-                <View>
+                <View style={{marginTop:'auto'}}>
                     {
                         isRes && <>
                             <List.Item
@@ -118,14 +112,6 @@ const Index = () => {
                         }}
                     />
 
-                </View>
-            </Card.Content>
-        </Card>
-
-        <Card style={[styles.card]}>
-            <Card.Content style={[styles.cardContent, {paddingHorizontal: 0}]}>
-                <View>
-
                     <List.Item
                         style={[styles.listitem]}
                         titleStyle={[styles.red]}
@@ -138,6 +124,7 @@ const Index = () => {
                 </View>
             </Card.Content>
         </Card>
+
 
     </View>
 }

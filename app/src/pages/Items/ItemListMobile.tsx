@@ -6,11 +6,12 @@ import {connect} from "react-redux";
 
 import {localredux} from "../../libs/static";
 import {styles} from "../../theme";
-import {appLog, clone, isRestaurant, selectItem, toCurrency} from "../../libs/function";
+import {appLog, arraySome, clone, isRestaurant, selectItem, toCurrency} from "../../libs/function";
 import {Divider, Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
 import Avatar from "../../components/Avatar";
-import AddButton from "./AddButton";
+import AddButton, {onPressNumber} from "./AddButton";
+import store from "../../redux-store/store";
 
 
 
@@ -24,7 +25,11 @@ const Item = memo(({item}:any) => {
     const hasKot = Boolean(item?.kotid);
     const {veg} = item;
 
-    return (<TouchableOpacity onPress={() => {!Boolean(item?.productqnt) && selectItem(item)}}
+
+
+    return (<TouchableOpacity onPress={() => {
+        !Boolean(item?.productqnt) && selectItem(item)}
+    }
                               style={[styles.noshadow]}>
 
         <View
@@ -144,7 +149,7 @@ const Index = (props: any) => {
 
 const mapStateToProps = (state: any) => ({
     invoiceitems: state.cartData.invoiceitems,
-    selectedgroup: state.selectedData.group?.value
+    selectedgroup: state.selectedData.group?.value,
 })
 
 export default connect(mapStateToProps)(Index);

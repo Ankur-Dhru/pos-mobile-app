@@ -74,7 +74,7 @@ const apiService = async (config: configData) => {
     store.dispatch(showLoader())
   }
 
-  log('apiPath',apiPath)
+  appLog('apiPath',apiPath)
 
     return await fetch(apiPath, requestOptions)
       .then(response => response.json())

@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {appLog, arraySome, removeItem} from "../../libs/function";
+import {appLog, arraySome, isRestaurant, removeItem} from "../../libs/function";
 import {TouchableOpacity, View} from "react-native";
 import {Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
@@ -48,31 +48,33 @@ const Index = (props: any) => {
         </View>)
     }
 
-    const onPressNumber = () => {
-        store.dispatch(setDialog({
-            visible: true,
-            title: "Amount",
-            hidecancel: true,
-            width: 380,
-            component: () => <KeyPad
-                defaultValue={item?.productqnt}
-                onPressCancel={() => {
-                    dispatch(setDialog({visible: false}))
-                }}
-                onPressOK={(productqnt: any) => {
-                    updateItem({...item, productqnt: +productqnt}, "update").then(() => {
-                        dispatch(setDialog({visible: false}))
-                    })
-                }}
-            />
-        }))
-    }
+    const onPressNumberIN = () => {
 
-    useEffect(() => {
-        if (directQnt) {
-            onPressNumber();
-        }
-    }, [])
+
+        onPressNumber(item, (productqnt: any) => {
+            updateItem({...item, productqnt: +productqnt}, "update").then(() => {
+                store.dispatch(setDialog({visible: false}))
+            })
+        })
+
+        // store.dispatch(setDialog({
+        //     visible: true,
+        //     title: "Amount",
+        //     hidecancel: true,
+        //     width: 380,
+        //     component: () => <KeyPad
+        //         defaultValue={item?.productqnt}
+        //         onPressCancel={() => {
+        //             dispatch(setDialog({visible: false}))
+        //         }}
+        //         onPressOK={(productqnt: any) => {
+        //             updateItem({...item, productqnt: +productqnt}, "update").then(() => {
+        //                 dispatch(setDialog({visible: false}))
+        //             })
+        //         }}
+        //     />
+        // }))
+    }
 
     return (
         <>
@@ -90,10 +92,10 @@ const Index = (props: any) => {
                 </TouchableOpacity>}
                 <TouchableOpacity
                     style={[styles.paragraph, styles.caption, styles.flexGrow, styles.textCenter]}
-                    onPress={onPressNumber}>
+                    onPress={onPressNumberIN}>
                     <Paragraph
                         style={[{color: colors.secondary}]}
-                    >{parseInt(item?.productqnt || 1)}</Paragraph>
+                    >{parseFloat(item?.productqnt || 1)}</Paragraph>
                 </TouchableOpacity>
                 {<TouchableOpacity style={[styles.py_3]} onPress={() => {
                     updateItem(item, 'add').then(r => {
@@ -163,4 +165,28 @@ export const updateCartItem = async (values: any, action: any) => {
     } catch (e) {
         appLog('e', e)
     }
+}
+
+
+export const onPressNumber = (item: any, onPressOK: any) => {
+    let isRes  = isRestaurant(), directQnt = false;
+
+    if (!isRes){
+        directQnt = arraySome(store.getState()?.localSettings?.defaultAmountOpen, item?.salesunit || item?.productqntunitid)
+    }
+
+    store.dispatch(setDialog({
+        visible: true,
+        title: "Set Quantity",
+        hidecancel: true,
+        width: 380,
+        component: () => <KeyPad
+            defaultValue={item?.productqnt}
+            customNumber={directQnt}
+            onPressCancel={() => {
+                store.dispatch(setDialog({visible: false}))
+            }}
+            onPressOK={onPressOK}
+        />
+    }))
 }

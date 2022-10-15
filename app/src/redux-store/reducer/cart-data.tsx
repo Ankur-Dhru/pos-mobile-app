@@ -47,7 +47,7 @@ let intialState: any = {
     isPaymentReceived: false,
     selectedindex: [],
     kots: [],
-    ordersource: 1,
+    ordersource: "POS",
     vouchersubtotaldisplay:0,
     vouchertotaldisplay:0,
     globaldiscountvalue:0,
@@ -66,18 +66,18 @@ export const cartData = createSlice({
         },
         refreshCartData: (state: any, action) => {
             appLog('refreshCartData')
-            return {...intialState,...action.payload}
+            return {...intialState, ...action.payload}
         },
         setCartItems: (state: any, action) => {
             appLog('setCartItems')
-            let invoiceitems =  [
+            let invoiceitems = [
                 ...state?.invoiceitems,
                 action.payload
             ];
             return {
                 ...state,
                 invoiceitems,
-                vouchertotaldisplay:voucherTotal(invoiceitems),
+                vouchertotaldisplay: voucherTotal(invoiceitems),
             }
         },
 
@@ -86,7 +86,7 @@ export const cartData = createSlice({
             const {itemIndex, item} = action.payload;
             state.invoiceitems[itemIndex] = clone({...state.invoiceitems[itemIndex], ...item});
             state.vouchertotaldisplay = voucherTotal(state.invoiceitems),
-            state.updatecart = true;
+                state.updatecart = true;
             return state
         },
         updateCartItems: (state: any, action) => {
@@ -94,7 +94,7 @@ export const cartData = createSlice({
             return {
                 ...state,
                 invoiceitems: action.payload,
-                vouchertotaldisplay : voucherTotal(action.payload),
+                vouchertotaldisplay: voucherTotal(action.payload),
                 updatecart: true
             }
         },
@@ -144,7 +144,8 @@ export const cartData = createSlice({
             return clone(intialState);
         }
     },
-})
+});
+
 
 // Action creators are generated for each case reducer function
 export const {

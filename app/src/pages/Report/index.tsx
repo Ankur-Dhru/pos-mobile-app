@@ -9,10 +9,14 @@ import {ACTIONS, localredux, METHOD, posUrl, STATUS} from "../../libs/static";
 import apiService from "../../libs/api-service";
 import {setOrder} from "../../redux-store/reducer/orders-data";
 import Button from "../../components/Button";
+import {hideLoader, showLoader} from "../../redux-store/reducer/component";
 
 const Index = ({ordersData}: any) => {
 
     const dispatch = useDispatch()
+
+    appLog("ordersData", ordersData)
+
     let {
         initData,
         licenseData,
@@ -29,7 +33,7 @@ const Index = ({ordersData}: any) => {
     const [liveData, setLiveData] = useState<any>([]);
 
     useEffect(() => {
-       Boolean(ordersData) && setData(Object.values(ordersData))
+        Boolean(ordersData) && setData((prev: any) => ({...prev, ...ordersData}))
     }, [ordersData])
 
     useEffect(() => {
@@ -42,8 +46,11 @@ const Index = ({ordersData}: any) => {
             hideLoader: true,
             other: {url: posUrl},
         }).then((response: any) => {
+            appLog("RESPONSE", response);
             if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
-                setLiveData(Object.values(response?.data))
+                setData((prev: any) => {
+                    return {...prev, ...response.data}
+                })
             }
         }).catch(() => {
         })
@@ -61,6 +68,10 @@ const Index = ({ordersData}: any) => {
                 hideLoader: true,
                 other: {url: posUrl},
             }).then((response: any) => {
+
+                appLog("response", response);
+
+                dispatch(hideLoader())
                 if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
                     retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
                         let localOrder: any = data?.orders
@@ -107,7 +118,10 @@ const Index = ({ordersData}: any) => {
 
                     {
                         Boolean(item?.synced) && <Paragraph
-                            style={[styles.paragraph, styles.text_xs, {textAlign: 'right'}]}>Synced</Paragraph>
+                            style={[styles.paragraph, styles.text_xs, {
+                                textAlign: 'right',
+                                color: styles.green.color
+                            }]}>Synced</Paragraph>
                     }
 
                 </View>}
@@ -118,27 +132,23 @@ const Index = ({ordersData}: any) => {
         </TouchableOpacity>
     }
 
+    appLog("DARA", Object.keys(data))
+
     return <Container config={{
         title: "Sales Report",
     }}>
-        <View style={[styles.h_100, styles.flex]}>
-            <View>
-                <FlatList
-                    data={data}
-                    renderItem={renderItem}
-                />
-                <FlatList
-                    data={liveData}
-                    renderItem={renderItem}
-                />
-            </View>
-        </View>
+        <FlatList
+            data={Object.values(data).reverse()}
+            renderItem={renderItem}
+        />
         <View style={[styles.submitbutton]}>
             <Button
                 onPress={() => {
+                    appLog("invoiceData", licenseData?.token)
                     retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
                         if (!isEmpty(data.orders)) {
-                            let invoice = Object.values(data.orders)[0]
+                            let invoice: any = Object.values(data.orders)[0]
+                            dispatch(showLoader())
                             let response = await syncInvoice(invoice)
                             appLog("invoice data call", response);
                         }
@@ -146,13 +156,12 @@ const Index = ({ordersData}: any) => {
                 }}> Sync
             </Button>
         </View>
-
     </Container>
 
 }
 
 const mapStateToProps = (state: any) => ({
-    ordersData: state?.ordersData,
+    ordersData: state.ordersData,
 })
 
 export default connect(mapStateToProps)(Index);

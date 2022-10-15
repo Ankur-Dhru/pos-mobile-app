@@ -8,8 +8,11 @@ import {setSelected} from "../../redux-store/reducer/selected-data";
 import {refreshCartData} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
-import { Container } from "../../components";
-import {hideLoader, showLoader} from "../../redux-store/reducer/component";
+import {Container} from "../../components";
+import {hideLoader, setDialog, showLoader} from "../../redux-store/reducer/component";
+import store from "../../redux-store/store";
+import KeyPad from "../../components/KeyPad";
+import ClientAndSource from "./ClientAndSource";
 
 const Index = ({tabledetails}: any) => {
 
@@ -22,8 +25,20 @@ const Index = ({tabledetails}: any) => {
 
     useEffect(() => {
         const voucherDataJson: any = voucherData(VOUCHER.INVOICE, false);
-        dispatch(refreshCartData({...tabledetails,...voucherDataJson}))
+        dispatch(refreshCartData({...tabledetails, ...voucherDataJson}))
         dispatch(setSelected({value: mainproductgroupid, field: 'group'}))
+
+        appLog("tabledetails", tabledetails?.tableorderid)
+        if (tabledetails?.ordertype !== "tableorder" && !Boolean(tabledetails?.tableorderid)) {
+            dispatch(setDialog({
+                visible: true,
+                title: "Source & Client",
+                hidecancel: true,
+                width: 380,
+                component: () => <ClientAndSource tabledetails={tabledetails}/>
+            }))
+        }
+
     }, [])
 
     const [loaded, setLoaded] = useState(false)

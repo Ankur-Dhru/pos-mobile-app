@@ -11,7 +11,7 @@ const Index = (props: any) => {
     const {itemgroup} = localredux.initData
     const {selectedgroup} = props;
 
-    return <View style={[styles.p_2,styles.ml_1]}>
+    return <View style={[styles.p_2,styles.bg_light,{paddingLeft:15}]}>
         <Paragraph> {itemgroup[selectedgroup]?.itemgroupname}</Paragraph>
     </View>
 }

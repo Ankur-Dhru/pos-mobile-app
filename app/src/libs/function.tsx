@@ -946,8 +946,6 @@ export const saveLocalOrder = async (order?:any) => {
 }
 
 
-
-
 export const getTicketStatus = (statusid: any) => {
   const {localSettingsData}: any = localredux;
   let status: any = {};

@@ -1,7 +1,7 @@
 import React from "react";
 import {appLog, isEmpty, isRestaurant, retrieveData, storeData, syncData} from "../../libs/function";
-import {Dimensions, ScrollView, View} from "react-native";
-import {Card, List, Text} from "react-native-paper";
+import {Dimensions, Image, ScrollView, View} from "react-native";
+import {Card, List, Text,Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
 import Avatar from "../../components/Avatar";
 import {useNavigation} from "@react-navigation/native";
@@ -42,16 +42,24 @@ const Index = () => {
 
         <Card style={[styles.card]}>
             <Card.Content>
+
                 <View style={[styles.grid, styles.middle, styles.noWrap]}>
-                    <Avatar label={firstname + ' ' + lastname} value={1} fontsize={20} lineheight={50}
-                            size={50}/>
+
+                    <Image
+                        style={[{width: 50, height: 50}]}
+                        source={require('../../assets/dhru-logo-22.png')}
+                    />
+
                     <View style={[styles.ml_2]}>
+                        <View>
+                            <Paragraph style={[styles.paragraph,styles.bold,styles.text_lg]}>Dhru POS</Paragraph>
+                        </View>
                         <Text style={[styles.paragraph, styles.text_md, {
                             lineHeight: 20,
                             fontSize: 16
                         }]}>{firstname + ' ' + lastname}</Text>
-                        {Boolean(email) &&
-                            <Text style={[styles.paragraph, styles.muted, styles.text_xs]}>{email}</Text>}
+                        {/*{Boolean(email) &&
+                            <Text style={[styles.paragraph, styles.muted, styles.text_xs]}>{email}</Text>}*/}
                     </View>
                 </View>
             </Card.Content>

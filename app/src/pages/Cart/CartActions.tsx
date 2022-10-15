@@ -112,7 +112,7 @@ const Index = ({
 
                     {(!hasRestaurant) && <>
                         {<View style={[styles.w_auto, styles.ml_1]}>
-                            <Button disable={Boolean(vouchertotaldisplay)}
+                            <Button
                                     secondbutton={Boolean(vouchertotaldisplay)}
                                     onPress={async () => {
                                         await dispatch(setBottomSheet({
@@ -121,7 +121,7 @@ const Index = ({
                                             component: () => <HoldOrders/>
                                         }))
                                     }}
-                                    more={{backgroundColor: styles.yellow.color,  }}
+                                    more={{backgroundColor: styles.yellow.color,color:'black'  }}
                             > Recall </Button>
                         </View>}
                         <View style={[styles.w_auto, styles.ml_1]}>
@@ -137,7 +137,7 @@ const Index = ({
                                             }
                                         })}
                                     }
-                                    more={{backgroundColor: styles.yellow.color,  }}
+                                    more={{backgroundColor: styles.yellow.color,color:'black'  }}
                             > On Hold </Button>
                         </View></>}
 

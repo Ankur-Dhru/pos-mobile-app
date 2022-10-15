@@ -4,7 +4,7 @@ import {styles} from "../../theme";
 import DetailView from "./DetailView";
 import GroupList from "../Items/GroupList";
 import {useDispatch} from "react-redux";
-import {Card, Paragraph,Text} from "react-native-paper";
+import {Card, Paragraph,Text,Button} from "react-native-paper";
 import InputField from "../../components/InputField";
 import CartTotal from "./CartTotal";
 
@@ -23,7 +23,6 @@ import NumPad from "../Items/NumPad";
 import {hideLoader, setModal, showLoader} from "../../redux-store/reducer/component";
 import ItemListMobile from "../Items/ItemListMobile";
 import ItemListTablet from "../Items/ItemListTablet";
-import Button from "../../components/Button";
 
 
 const hasrestaurant = isRestaurant();
@@ -60,14 +59,18 @@ const Index = (props: any) => {
             device.tablet ? <>
 
                 <View style={[styles.grid,styles.justifyContent,styles.w_100]}>
-                    {Boolean(tabledetails?.tablename) &&  <View style={{marginRight:5}}><Card style={[styles.noshadow]} onPress={()=> {
+                    {Boolean(tabledetails?.tablename) ?  <View style={{marginRight:5}}><Card style={[styles.noshadow]} onPress={()=> {
                         dispatch(showLoader());  saveTempLocalOrder().then(() => { navigation.goBack(); dispatch(hideLoader()); })
                     }}>
                         <View  style={[styles.grid,styles.middle,styles.w_auto,{padding:11,marginRight:6,minWidth:120}]}>
                              <ProIcon name={'chevron-left'} action_type={'text'} />
                             <Paragraph style={[styles.paragraph,styles.bold]}> {tabledetails?.tablename} </Paragraph>
                         </View>
-                    </Card></View> }
+                    </Card></View> : <Card style={[styles.noshadow,{marginRight:5}]}>
+                        <TouchableOpacity onPress={()=> navigation.openDrawer()} style={[styles.px_6,{padding:11}]}>
+                            <ProIcon name={'bars'} action_type={'text'} />
+                        </TouchableOpacity>
+                    </Card> }
                     <Card style={[styles.noshadow,styles.flexGrow,styles.grid,styles.justifyContent,styles.px_4,styles.w_auto,{minWidth:'25%'}]}>
                         <TouchableOpacity  onPress={() => dispatch(setModal({title: 'Search Items',visible:true,component: ()=><SearchItem  />}))}>
                             <View style={[styles.grid,styles.middle,{padding:11}]}>
@@ -120,8 +123,7 @@ const Index = (props: any) => {
                         dispatch(showLoader());  saveTempLocalOrder().then(() => { navigation.goBack(); dispatch(hideLoader()); })
                     },
                     actions:()=>
-                        <TouchableOpacity  onPress={() => dispatch(setModal({title: 'Search Items',visible:true,component: ()=><SearchItem  />}))}><Text> Search </Text>
-                        </TouchableOpacity>}}>
+                        <Button onPress={() => dispatch(setModal({title: 'Search Items',visible:true,component: ()=><SearchItem  />}))}>Search</Button> }}>
 
                 <View style={[styles.h_100, styles.flex, {flexDirection: 'column',paddingTop:5}]}>
 

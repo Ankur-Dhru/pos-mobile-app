@@ -31,12 +31,12 @@ const Item = memo(({item}:any) => {
             style={[{backgroundColor: hasKot ? styles.yellow.color : ''}]}>
             <View>
                 <View style={[styles.grid,styles.top, styles.noWrap, styles.top,styles.p_4]}>
-                    {<View>
+                    {<View  style={[styles.mr_2]}>
                         {hasRestaurant && <View>
                             <VegNonVeg type={veg}/>
                         </View>}
                     </View>}
-                    <View style={[styles.ml_2]}>
+                    <View>
                         <Paragraph style={[styles.paragraph,styles.bold, styles.text_xs]}>{item.itemname}</Paragraph>
 
                         <Paragraph style={[styles.paragraph, styles.text_xs]}>
@@ -90,7 +90,7 @@ const Index = (props: any) => {
 
         if(Boolean(items)){
 
-            finditems = finditems.map((i: any) => {
+            finditems = finditems?.map((i: any) => {
                 const find = invoiceitems.filter((ii: any) => {
                     return i.itemid === ii.itemid;
                 })

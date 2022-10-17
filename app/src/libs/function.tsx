@@ -1495,7 +1495,7 @@ export const generateKOT = async () => {
         await retrieveData('fusion-pro-pos-mobile-kotno').then(async (kotno: any) => {
 
             if (!Boolean(kotno) && (today !== moment().format('YYYY-MM-DD'))) {
-                kotno = 1;
+                kotno = 0;
             }
             kotid = kotno;
             if (isEmpty(departments)) {
@@ -1549,7 +1549,7 @@ export const generateKOT = async () => {
                         });
 
 
-                        const openTicketStatus = getTicketStatus(TICKET_STATUS.OPEN);
+                        const openTicketStatus = getTicketStatus(TICKET_STATUS.DONE);
 
                         kitchens.forEach((k: any) => {
                             kotid++;
@@ -1639,6 +1639,8 @@ export const generateKOT = async () => {
                                 staffname: username,
                                 ordertype: ordertype,
                             };
+
+                            appLog('newkot',newkot)
 
 
                             kots = [...kots, newkot];

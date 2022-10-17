@@ -8,8 +8,8 @@ import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
 import Button from "../../components/Button";
 import {setAlert, setDialog} from "../../redux-store/reducer/component";
-import {appLog, objToArray, printKOT, saveLocalOrder, voucherTotal} from "../../libs/function";
-import {localredux} from "../../libs/static";
+import {appLog, getTicketStatus, objToArray, printKOT, saveLocalOrder, voucherTotal} from "../../libs/function";
+import {localredux, TICKET_STATUS} from "../../libs/static";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
 import store from "../../redux-store/store";
 import { useNavigation } from "@react-navigation/native";
@@ -56,8 +56,12 @@ const Index = (props: any) => {
             invoiceitemsdeleted = []
         }
 
+        const openTicketStatus = getTicketStatus(TICKET_STATUS.DECLINED);
+
         kot = {
             ...kot,
+            ticketstatus: openTicketStatus?.statusid,
+            ticketstatusname: "Cancelled",
             cancelreason: cancelreason,
             cancelreasonid: cancelreasonid,
         }

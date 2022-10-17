@@ -13,10 +13,12 @@ import SwitchC from "../../components/Switch";
 import CartSummaryMore from "./CartSummaryMore";
 import {contentLoader, hideLoader, showLoader } from "../../redux-store/reducer/component";
 import store from "../../redux-store/store";
+import moment from "moment";
 
 
-const Index = ({vouchertotaldisplay}: any) => {
+const Index = ({vouchertotaldisplay,advanceorder}: any) => {
 
+    appLog('advanceorder',advanceorder)
 
     const dispatch = useDispatch()
     const moreSummaryRef:any = React.useRef();
@@ -46,9 +48,10 @@ const Index = ({vouchertotaldisplay}: any) => {
 
 
     return (<>
-        <View style={[styles.dottedBorder,styles.p_5,styles.m_3,{borderRadius:5}]}>
-            <Paragraph>Delivery on </Paragraph>
-        </View>
+        {Boolean(advanceorder?.date) &&  <View style={[styles.dottedBorder,styles.p_5,styles.m_3,{borderRadius:5}]}>
+            <Paragraph>Delivery on :  {moment(advanceorder.date).format('DD/MM/YYYY')} {moment(advanceorder.time).format('HH:mm A')}</Paragraph>
+            {Boolean(advanceorder.notes) &&  <Paragraph>{advanceorder.notes}</Paragraph>}
+        </View>}
         <Card   onPress={()=>{ viewSummary() }} style={[styles.mt_3,styles.m_2,styles.noshadow,styles.bg_light]}>
         <Card.Content >
 
@@ -66,6 +69,7 @@ const Index = ({vouchertotaldisplay}: any) => {
 }
 
 const mapStateToProps = (state: any) => ({
+    advanceorder:state.cartData?.advanceorder,
     vouchertotaldisplay: parseInt(state.cartData.vouchertotaldisplay),
 })
 

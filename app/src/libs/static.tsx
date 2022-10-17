@@ -214,7 +214,7 @@ export const ordertypes: any = [
     {label: 'Home Delivery', value: 'homedelivery'},
     {label: 'Takeaway', value: 'takeaway'},
     {label: 'QSR',value: 'qsr'},
-    {label: 'Advance Order',value: 'advanceorder'}
+    {label: 'Advance Order',value: 'advanceorder'},
 ];
 
 

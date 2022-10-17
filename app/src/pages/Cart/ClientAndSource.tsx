@@ -9,21 +9,23 @@ import React, {memo, useState} from "react";
 import {localredux} from "../../libs/static";
 import {appLog, errorAlert, isEmpty} from "../../libs/function";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
+import moment from "moment";
 
 
 const ClientAndSource = (props: any) => {
-    const {tabledetails,navigation} = props;
+    const {tabledetails,navigation,placeOrder} = props;
 
     const dispatch = useDispatch();
 
     const [clientSearch, setClientSearch] = useState<any>();
     const [selectedClient, setSelectedClient] = useState<any>({})
+    const [table, setTable] = useState<any>({tableid:'',paxes:''})
     const [ordersource, setOrderSource] = useState<any>();
-    const [advance, setAdvance] = useState<any>({datetime:'',notes:''})
+    const [advance, setAdvance] = useState<any>({date:moment().format('YYYY-MM-DD'),time:moment().format('YYYY-MM-DD HH:mm'),notes:''})
 
     const onClientSearch = () => {
         let findClient: any = Object.values(localredux?.clientsData).find((client: any) => client?.phone == clientSearch);
-        appLog("findClient", findClient);
+
         if (isEmpty(findClient)) {
             findClient = {
                 "clientid": "0",
@@ -66,71 +68,134 @@ const ClientAndSource = (props: any) => {
             }
         })
     }
+    const setTableData = (key: any, value: any) => {
+        setTable((prev: any) => {
+            return {
+                ...prev,
+                [key]: value
+            }
+        })
+    }
 
-    let isSource = Boolean(tabledetails?.ordertype == "homedelivery")
-    let isAdvanceorder = Boolean(tabledetails?.ordertype == "advanceorder")
+    const hasLeft = Boolean(tabledetails?.ordertype == "homedelivery" || tabledetails?.ordertype == "advanceorder"  || tabledetails?.ordertype == "tableorder")
+    const isSource = Boolean(tabledetails?.ordertype == "homedelivery")
+    const isAdvanceorder = Boolean(tabledetails?.ordertype == "advanceorder")
+    const isReserveTable = Boolean(tabledetails?.ordertype == "tableorder")
+
+
+
+    const {currentLocation} = localredux.localSettingsData;
 
     return <View >
 
 
-        <ScrollView>
 
         <View  style={[styles.grid, styles.justifyContent,styles.top]}>
 
-        {isAdvanceorder && <View style={[styles.flexGrow, {maxWidth:400,marginRight:20}]}><View style={[styles.grid, styles.justifyContent]}>
-            <View style={[styles.flexGrow, {marginRight: 12}]}>
+        {hasLeft && <View style={[styles.flexGrow, {maxWidth:200,marginRight:20}]}>
 
-
-                <InputField
-                    value={advance?.datetime}
-                    label={'Delivery Date Time'}
-                    inputtype={'datepicker'}
-                    onChange={(value: any) => {
-                        setAdvanceData("datetime", value);
-                    }}
-                />
-            </View>
-
-
-
-            <View style={[styles.grid, styles.justifyContent]}>
-                <View style={[styles.flexGrow]}>
+            {
+                isReserveTable && <View style={{width:360}}>
                     <InputField
-                        value={advance?.notes}
-                        label={'Notes'}
-                        multiline={true}
-                        inputtype={'textbox'}
+                        label={'Select Table'}
+                        mode={'flat'}
+                        list={currentLocation?.tables?.map((t: any) => ({
+                            ...t,
+                            label:t.tablename,
+                            value:t.tableid
+                        }))}
+                        value={table.tableid}
+                        selectedValue={table.tableid}
+                        displaytype={'pagelist'}
+                        inputtype={'dropdown'}
+                        listtype={'other'}
                         onChange={(value: any) => {
-                            setAdvanceData("notes", value);
+                            setTableData('tableid',value)
+                        }}>
+                    </InputField>
+
+
+                    <InputField
+                        value={table.paxes}
+                        label={'Paxes'}
+                        inputtype={'textbox'}
+                        keyboardType='numeric'
+                        onChange={(value: any) => {
+                            setTableData('paxes',value)
                         }}
                     />
-                </View>
-            </View>
 
-        </View></View>}
+                </View>
+            }
+
+            {
+                isSource && <View style={{width:360}}>
+                    <InputField
+                        label={'Select Source'}
+                        mode={'flat'}
+                        list={Object.values(localredux?.initData?.sources).map((s) => ({label: s, value: s}))}
+                        value={ordersource}
+                        selectedValue={ordersource}
+                        displaytype={'pagelist'}
+                        inputtype={'dropdown'}
+                        listtype={'other'}
+                        onChange={(value: any) => {
+                            setOrderSource(value)
+                        }}>
+                    </InputField>
+                </View>
+            }
+
+            {isAdvanceorder && <>
+                <View style={[styles.grid, styles.justifyContent]}>
+                    <View style={[styles.flexGrow, {marginRight: 12}]}>
+                        <InputField
+                            label={"Delivery Date"}
+                            displaytype={'bottomlist'}
+                            inputtype={'datepicker'}
+                            mode={'date'}
+                            selectedValue={advance.date}
+                            onChange={(value: any) => {
+                                setAdvanceData("date", value);
+                            }}
+                        />
+                    </View>
+                    <View style={[styles.flexGrow, {marginRight: 12}]}>
+                        <InputField
+                            label={"Delivery Time"}
+                            displaytype={'bottomlist'}
+                            inputtype={'datepicker'}
+                            mode={'time'}
+                            selectedValue={advance.time}
+                            onChange={(value: any) => {
+                                setAdvanceData("time", value);
+                            }}
+                        />
+                    </View>
+                </View>
+                <View style={[styles.grid, styles.justifyContent]}>
+                    <View style={[styles.flexGrow]}>
+                        <InputField
+                            value={advance?.notes}
+                            label={'Notes'}
+                            multiline={true}
+                            inputtype={'textbox'}
+                            onChange={(value: any) => {
+                                setAdvanceData("notes", value);
+                            }}
+                        />
+                    </View>
+                </View>
+            </>}
+
+        </View>}
 
 
         <View  style={[styles.flexGrow,{maxWidth:400,}]}>
 
-        {
-            isSource && <View>
-                <InputField
-                    label={'Select Source'}
-                    mode={'flat'}
-                    list={Object.values(localredux?.initData?.sources).map((s) => ({label: s, value: s}))}
-                    value={ordersource}
-                    selectedValue={ordersource}
-                    displaytype={'pagelist'}
-                    inputtype={'dropdown'}
-                    listtype={'other'}
-                    onChange={(value: any) => {
-                        setOrderSource(value)
-                    }}>
-                </InputField>
-            </View>
-        }
+
         <View style={[styles.grid, styles.justifyContent]}>
-            <View style={[styles.flexGrow, {width: "70%", marginRight: 12}]}>
+            <View style={[styles.flexGrow,styles.w_auto, {  marginRight: 12}]}>
                 <InputField
                     value={clientSearch}
                     label={'Mobile'}
@@ -141,7 +206,7 @@ const ClientAndSource = (props: any) => {
                     }}
                 />
             </View>
-            <View style={[styles.flexGrow, {width: "20%"}]}>
+            <View style={[styles.flexGrow,{maxWidth:120}]}>
                 <Button onPress={onClientSearch}>Search</Button>
             </View>
         </View>
@@ -160,7 +225,7 @@ const ClientAndSource = (props: any) => {
         </View>
 
         <View style={[styles.grid, styles.justifyContent]}>
-            <View style={[styles.flexGrow, {marginRight: 12}]}>
+            <View style={[styles.flexGrow, {width:200,marginRight: 12}]}>
                 <InputField
                     value={selectedClient?.address1}
                     label={'Address1'}
@@ -173,7 +238,7 @@ const ClientAndSource = (props: any) => {
         </View>
 
         <View style={[styles.grid, styles.justifyContent]}>
-            <View style={[styles.flexGrow, {marginRight: 12}]}>
+            <View style={[styles.flexGrow, {width:200,marginRight: 12}]}>
                 <InputField
                     value={selectedClient?.address2}
                     label={'Address2'}
@@ -201,14 +266,13 @@ const ClientAndSource = (props: any) => {
         </View>
         </View>
 
-        </ScrollView>
 
         <View style={[styles.grid,styles.justifyContent]}>
 
             <Button more={{backgroundColor: styles.light.color,color:'black'  }}
                     onPress={() => {
                         dispatch(setDialog({visible: false,}));
-                        navigation.replace('DrawerStackNavigator');
+
                     }}>Cancel</Button>
 
 
@@ -217,14 +281,16 @@ const ClientAndSource = (props: any) => {
              if (Boolean(selectedClient?.displayname) && (isSource ? Boolean(ordersource): true)){
                  let pass = {
                      ordersource: "POS",
-                     tablename: ordersource,
+                     tablename: tabledetails.tablename,
                      clientid: selectedClient.clientid,
                      clientname: selectedClient.displayname,
                      newclient: Boolean(selectedClient?.clientid == "0") ? 1 : 0,
                      client: selectedClient,
-                     advanceorder:advance
+                     advanceorder:isAdvanceorder ? advance : false,
+                     reservetable:isReserveTable ? table : false
                  }
-                 dispatch(updateCartField(pass))
+                 placeOrder(pass)
+
                  dispatch(setDialog({visible: false}))
              }else {
                  let message = "";

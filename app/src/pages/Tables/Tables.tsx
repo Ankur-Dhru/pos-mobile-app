@@ -1,15 +1,18 @@
 import {current, device, localredux} from "../../libs/static";
 import React, {memo, useCallback, useEffect, useState} from "react";
-import {appLog, isEmpty, toCurrency} from "../../libs/function";
+import {appLog, filterArray, isEmpty, saveTempLocalOrder, toCurrency} from "../../libs/function";
 import {FlatList, Text, TouchableOpacity, View} from "react-native";
 import {Card, FAB, Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 
 import {connect, useDispatch} from "react-redux";
 import ProIcon from "../../components/ProIcon";
-import {refreshCartData, resetCart, setCartData} from "../../redux-store/reducer/cart-data";
+import {refreshCartData, resetCart, setCartData, updateCartField} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
 import Button from "../../components/Button";
+import {hideLoader, setDialog} from "../../redux-store/reducer/component";
+import ClientAndSource from "../Cart/ClientAndSource";
+import moment from "moment";
 
 
 
@@ -44,6 +47,7 @@ const Index = (props: any) => {
 
 
 
+
     const getOrder = async () => {
         let newtables = getOriginalTablesData();
         let newothertables: any = [];
@@ -60,20 +64,61 @@ const Index = (props: any) => {
     }
 
 
-    const placeOrder = (ordertype:any) => {
-        dispatch(resetCart())
-        current.table = {'tablename': ordertype.label, ordertype: ordertype.value,invoiceitems:[],kots:[]};
-        dispatch(refreshCartData(current.table))
-        navigation.navigate('CartStackNavigator', current.table)
+
+    const setOrderSetting = (ordertype:any) => {
+
+        current.table = {'tablename':  ordertype.label, ordertype: ordertype.value,invoiceitems:[],kots:[]};
+
+        dispatch(setDialog({
+            visible: true,
+            title: "Source & Client",
+            hidecancel: true,
+            width: 'auto',
+            component: () => <ClientAndSource tabledetails={current.table} placeOrder={placeOrder} navigation={navigation} />
+        }))
+
+
+        const placeOrder = async (config:any) => {
+
+            //await dispatch(resetCart())
+            let tabledetail = {...current.table,...config}
+
+            if(Boolean(tabledetail.reservetable)){
+                const finditems =  currentLocation?.tables.find((t:any)=>{
+                    return t.tableid == tabledetail.reservetable.tableid
+                })
+
+                tabledetail = {
+                    ...tabledetail,
+                    ...tabledetail.reservetable,
+                    tablename:finditems.tablename
+                }
+            }
+
+            await dispatch(refreshCartData(tabledetail))
+
+            if(tabledetail.ordertype ==='tableorder'){
+                saveTempLocalOrder().then(() => {})
+            }
+            else{
+                navigation.navigate('CartStackNavigator',tabledetail);
+            }
+        }
+
     }
+
+
 
     const Item = memo(
         ({item}: any) => {
 
+            appLog('item',item)
+
             return (
                 <View style={[{minWidth: 150}, styles.flexGrow,]} key={item.tableid}>
-                    <TouchableOpacity style={[styles.m_2,styles.noshadow,  {height: 125,backgroundColor: Boolean(item.kots?.length) ? styles.yellow.color : Boolean(item.invoiceitems?.length) ? styles.secondary.color : styles.light.color,borderRadius:5}]}
+                    <TouchableOpacity style={[styles.m_2,styles.noshadow,  {height: 135,backgroundColor: Boolean(item.kots?.length) ? styles.yellow.color : Boolean(item.clientname) ? styles.secondary.color : styles.light.color,borderRadius:5}]}
                                       onPress={() => {
+                                          appLog('item',item)
                                           current.table = {invoiceitems:[],kots:[],...item};
                                           navigation.navigate('CartStackNavigator', current.table)
                                       }}>
@@ -81,8 +126,8 @@ const Index = (props: any) => {
                             <View style={[styles.grid, styles.mb_3]}>
                                 <View
                                     style={[styles.badge, styles.px_5, {backgroundColor:  styles.primary.color}]}>
-                                    <Text style={[styles.paragraph, styles.text_xs, {color: 'white'}]}>{item.tablename || 'Retail'}</Text></View></View>
-                            {Boolean(item.invoiceitems?.length) && <>
+                                    <Text style={[styles.paragraph, styles.text_xs, {color: 'white'}]}>{item.tablename || 'Retail'} </Text></View></View>
+                            {Boolean(item.clientname) && <>
                                 <Paragraph><ProIcon align={'left'} name={'user'} action_type={'text'}
                                                     size={13}/> {item.paxes} x {item.clientname}</Paragraph>
                                 <View style={[styles.mt_3]}>
@@ -90,6 +135,11 @@ const Index = (props: any) => {
                                         style={[styles.paragraph, styles.text_lg,styles.bold,{color:'black'}]}>{toCurrency(item.vouchertotaldisplay)}</Text>
                                 </View>
                             </>}
+                            {Boolean(item?.advanceorder?.date) &&
+                                <Paragraph>Delivery on :  {moment(item?.advanceorder.date).format('DD/MM/YYYY')} {moment(item?.advanceorder.time).format('HH:mm A')}</Paragraph>}
+
+                            {Boolean(item.reservetable) && <Paragraph>Reserved</Paragraph>}
+
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -144,10 +194,6 @@ const Index = (props: any) => {
         </View>
 
 
-
-
-
-
             <FAB.Group
                 open={floating}
                 fabStyle={{backgroundColor:'black',marginBottom:10}}
@@ -157,36 +203,44 @@ const Index = (props: any) => {
                     {
                         icon: 'truck',
                         label: 'Home Delivery',
-                        onPress: () => placeOrder({'label': 'Home Delivery', value: 'homedelivery'}),
+                        onPress: () => setOrderSetting({'label': 'Home Delivery', value: 'homedelivery'}),
                     },
                     {
                         icon: 'sack',
                         label: 'Takeaway',
-                        onPress: () => placeOrder({'label': 'Takeaway', value: 'takeaway'}),
+                        onPress: () => setOrderSetting({'label': 'Takeaway', value: 'takeaway'}),
                     },
                     {
                         icon: 'popcorn',
                         label: 'QSR',
-                        onPress: () => placeOrder({'label': 'QSR', value: 'qsr'}),
+                        onPress: () => setOrderSetting({'label': 'QSR', value: 'qsr'}),
                     },
                     {
                         icon: 'sack',
                         label: 'Advance Order',
-                        onPress: () => placeOrder({'label': 'Advance Order', value: 'advanceorder'}),
+                        onPress: () => setOrderSetting({'label': 'Advance Order', value: 'advanceorder'}),
+                    },
+                    {
+                        icon: 'popcorn',
+                        label: 'Reserve Table',
+                        onPress: () => setOrderSetting({'label': 'Reserve Table', value: 'tableorder'}),
                     },
                 ]}
                 onStateChange={()=>{
                     if(ordertype.value === 'qsr'){
-                        placeOrder({'label': 'QSR', value: 'qsr'})
+                        setOrderSetting({'label': 'QSR', value: 'qsr'})
                     }
                     else if(ordertype.value === 'takeaway'){
-                        placeOrder({'label': 'Takeaway', value: 'takeaway'})
+                        setOrderSetting({'label': 'Takeaway', value: 'takeaway'})
                     }
                     else if(ordertype.value === 'advanceorder'){
-                        placeOrder({'label': 'Advance Order', value: 'advanceorder'})
+                        setOrderSetting({'label': 'Advance Order', value: 'advanceorder'})
                     }
                     else if(ordertype.value === 'homedelivery'){
-                        placeOrder({'label': 'Home Delivery', value: 'homedelivery'})
+                        setOrderSetting({'label': 'Home Delivery', value: 'homedelivery'})
+                    }
+                    else if(ordertype.value === 'tableorder'){
+                        setOrderSetting({'label': 'Reserve Table', value: 'tableorder'})
                     }
                     else{
                         setFloating(!floating)

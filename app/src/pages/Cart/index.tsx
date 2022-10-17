@@ -24,20 +24,12 @@ const Index = ({tabledetails}: any) => {
 
 
     useEffect(() => {
+
+        appLog('tabledetails',tabledetails)
+
         const voucherDataJson: any = voucherData(VOUCHER.INVOICE, false);
         dispatch(refreshCartData({...tabledetails, ...voucherDataJson}))
         dispatch(setSelected({value: mainproductgroupid, field: 'group'}))
-
-
-        if ((Boolean(tabledetails?.ordertype) && tabledetails?.ordertype !== "tableorder") && !Boolean(tabledetails?.tableorderid)) {
-            dispatch(setDialog({
-                visible: true,
-                title: "Source & Client",
-                hidecancel: true,
-                width: 'auto',
-                component: () => <ClientAndSource navigation={navigation} tabledetails={tabledetails}/>
-            }))
-        }
 
     }, [])
 

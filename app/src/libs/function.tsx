@@ -857,40 +857,37 @@ export const saveTempLocalOrder = async (order?: any) => {
             order = store.getState().cartData
         }
 
-        if (Boolean(order.invoiceitems.length > 0)) {
-
-            order = await itemTotalCalculation(clone(order), undefined, undefined, undefined, undefined, 2, 2, false, false);
+        order = await itemTotalCalculation(clone(order), undefined, undefined, undefined, undefined, 2, 2, false, false);
 
 
-            if (!Boolean(order.tableorderid)) {
-                order = {
-                    ...order,
-                    tableorderid: uuid(),
-                }
-            }
-            if (!Boolean(order.tableid)) {
-                order = {
-                    ...order,
-                    tableid: uuid(),
-                }
-            }
-
+        if (!Boolean(order.tableorderid)) {
             order = {
                 ...order,
-                terminalid: localredux?.licenseData?.data?.terminal_id
+                tableorderid: uuid(),
             }
-
-            let tableorders: any = store.getState().tableOrdersData || {}
-            tableorders = {
-                ...tableorders,
-                [order.tableorderid]: order
-            }
-
-            await storeData('fusion-pro-pos-mobile-tableorder', tableorders).then(async () => {
-                await store.dispatch(setCartData(order));
-                await store.dispatch(setTableOrdersData(tableorders));
-            });
         }
+        if (!Boolean(order.tableid)) {
+            order = {
+                ...order,
+                tableid: uuid(),
+            }
+        }
+
+        order = {
+            ...order,
+            terminalid: localredux?.licenseData?.data?.terminal_id
+        }
+
+        let tableorders: any = store.getState().tableOrdersData || {}
+        tableorders = {
+            ...tableorders,
+            [order.tableorderid]: order
+        }
+
+        await storeData('fusion-pro-pos-mobile-tableorder', tableorders).then(async () => {
+            await store.dispatch(setCartData(order));
+            await store.dispatch(setTableOrdersData(tableorders));
+        });
 
     } catch (e) {
         appLog('e', e)

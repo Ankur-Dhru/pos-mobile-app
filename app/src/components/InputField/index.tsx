@@ -22,6 +22,7 @@ import {findObject, getType, isEmpty, log} from "../../libs/function";
 //import {PERMISSIONS, requestMultiple} from "react-native-permissions";
 import ToggleSwitch from "./Switch";
 import {chevronRight} from "../../libs/function";
+import {localredux} from "../../libs/static";
 
 
 class Index extends React.Component<any, any> {
@@ -144,7 +145,8 @@ class Index extends React.Component<any, any> {
         }
 
 
-        const dateformat: any = settings?.general?.date_format.toUpperCase();
+        const dateformat: any = localredux?.initData?.general?.date_format.toUpperCase();
+
 
         const {colors} = this.props.theme;
         let {selectedValue, selectedLabel, showDatePicker}: any = this.state
@@ -428,6 +430,9 @@ const mapStateToProps = (state: any) => ({
 })
 const mapDispatchToProps = (dispatch: any) => ({
     setBottomSheet: (dialog: any) => dispatch(setBottomSheet(dialog)),
+    setPageSheet: (dialog: any) => dispatch(setPageSheet(dialog)),
+    setModal: (dialog: any) => dispatch(setModal(dialog)),
+
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withTheme(Index));

@@ -50,6 +50,9 @@ const Index = (props: any) => {
                         })
                     }
                 </ScrollView>
+
+
+
             </View>
 
 

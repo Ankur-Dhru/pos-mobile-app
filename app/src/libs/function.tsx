@@ -936,8 +936,8 @@ export const saveLocalOrder = async (order?: any) => {
         }
     }
 
-    if(isRestaurant()){
-        order = order.kots.map((kot:any)=>{
+    if(order?.kots.length > 0){
+        order.kots = order?.kots.map((kot:any)=>{
             kot = {
                 ...kot,
                 orderid:order.orderid
@@ -966,8 +966,6 @@ export const saveLocalOrder = async (order?: any) => {
             ...data.orders,
             [order.orderid]: order
         }
-
-        appLog("data?.orders1", data?.orders);
 
         await deleteTempLocalOrder(order.tableorderid).then(async () => {
             await storeData('fusion-pro-pos-mobile', data).then(async () => {

@@ -23,7 +23,7 @@ import {
     PRINTER,
     STATUS,
     taxTypes,
-    TICKET_STATUS,
+    TICKET_STATUS, TICKETS_TYPE,
     VOUCHER
 } from "./static";
 import {setInitData} from "../redux-store/reducer/init-data";
@@ -971,11 +971,11 @@ export const saveLocalOrder = async (order?: any) => {
 
 
 export const getTicketStatus = (statusid: any) => {
-    const {localSettingsData}: any = localredux;
+    const  currentTicketType = localredux.initData?.tickets[TICKETS_TYPE.KOT];
     let status: any = {};
-    if (!isEmpty(localSettingsData?.currentTicketType?.ticketstatuslist) && localSettingsData?.currentTicketType?.ticketstatuslist[statusid]) {
+    if (!isEmpty(currentTicketType?.ticketstatuslist) && currentTicketType?.ticketstatuslist[statusid]) {
         status = {
-            ...localSettingsData?.currentTicketType?.ticketstatuslist[statusid],
+            ...currentTicketType?.ticketstatuslist[statusid],
             statusid
         };
     }
@@ -1476,7 +1476,10 @@ export const generateKOT = async () => {
     let kotid: any = '';
     store.dispatch(showLoader())
     let cartData = store.getState().cartData;
-    const {currentLocation: {departments, currentTicketType}} = localredux.localSettingsData;
+    const {currentLocation: {departments}} = localredux.localSettingsData;
+
+    const  currentTicketType = localredux.initData?.tickets[TICKETS_TYPE.KOT];
+
     const {adminid, username}: any = localredux.loginuserData;
     const today: any = store.getState().localSettings?.today;
 
@@ -1608,11 +1611,10 @@ export const generateKOT = async () => {
                             const department = findObject(departments, 'departmentid', k, true)
 
                             newkot = {
-
                                 tickettypeid: currentTicketType?.tickettypeid,
                                 ticketnumberprefix: currentTicketType?.ticketnumberprefix,
                                 ticketstatus: openTicketStatus?.statusid,
-                                ticketstatusname: openTicketStatus?.ticketstatusname,
+                                ticketstatusname: "Close",
                                 ticketitems: kotitems,
                                 ticketdate: moment().format("YYYY-MM-DD"),
                                 tickettime: moment().format("hh:mm A"),

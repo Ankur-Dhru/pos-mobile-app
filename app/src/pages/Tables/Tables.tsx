@@ -106,7 +106,7 @@ const Index = (props: any) => {
     return (
         <>
 
-        <View  style={[styles.px_4]}>
+        <View  style={[styles.px_4,styles.flex,styles.h_100]}>
 
         <FlatList
             data={tables?.filter((table: any) => {
@@ -133,7 +133,19 @@ const Index = (props: any) => {
                 )
             }}
         />
+
+            <View style={[{marginTop:'auto'}]}>
+                <TouchableOpacity onPress={()=> {  }} style={[styles.p_5]}>
+                    <Paragraph>Shift Table</Paragraph>
+                </TouchableOpacity>
+            </View>
+
         </View>
+
+
+
+
+
 
             <FAB.Group
                 open={floating}
@@ -156,6 +168,11 @@ const Index = (props: any) => {
                         label: 'QSR',
                         onPress: () => placeOrder({'label': 'QSR', value: 'qsr'}),
                     },
+                    {
+                        icon: 'sack',
+                        label: 'Advance Order',
+                        onPress: () => placeOrder({'label': 'Advance Order', value: 'advanceorder'}),
+                    },
                 ]}
                 onStateChange={()=>{
                     if(ordertype.value === 'qsr'){
@@ -163,6 +180,9 @@ const Index = (props: any) => {
                     }
                     else if(ordertype.value === 'takeaway'){
                         placeOrder({'label': 'Takeaway', value: 'takeaway'})
+                    }
+                    else if(ordertype.value === 'advanceorder'){
+                        placeOrder({'label': 'Advance Order', value: 'advanceorder'})
                     }
                     else if(ordertype.value === 'homedelivery'){
                         placeOrder({'label': 'Home Delivery', value: 'homedelivery'})

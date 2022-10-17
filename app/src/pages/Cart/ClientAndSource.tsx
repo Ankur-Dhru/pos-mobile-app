@@ -9,13 +9,12 @@ import React, {memo, useState} from "react";
 import {localredux} from "../../libs/static";
 import {appLog, errorAlert, isEmpty} from "../../libs/function";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
+import DateTimePicker from "../../components/InputField/DateTimePicker";
 
 const ClientAndSource = (props: any) => {
     const {tabledetails} = props;
 
     const dispatch = useDispatch();
-
-    appLog("localredux?.initData?.sources", localredux?.clientsData)
 
     const [clientSearch, setClientSearch] = useState<any>();
     const [selectedClient, setSelectedClient] = useState<any>({})
@@ -60,8 +59,56 @@ const ClientAndSource = (props: any) => {
     }
 
     let isSource = Boolean(tabledetails?.ordertype == "homedelivery")
+    let isAdvanceorder = Boolean(tabledetails?.ordertype == "advanceorder")
 
-    return <View>
+    return <View> 
+
+
+
+        {isAdvanceorder && <><View style={[styles.grid, styles.justifyContent]}>
+            <View style={[styles.flexGrow, {marginRight: 12}]}>
+
+                {/*<DateTimePicker/>*/}
+
+                <InputField
+                    value={selectedClient?.address1}
+                    label={'Delivery Date'}
+                    inputtype={'textbox'}
+                    onChange={(value: any) => {
+
+                    }}
+                />
+            </View>
+            <View style={[styles.flexGrow]}>
+                <InputField
+                    value={selectedClient?.address1}
+                    label={'Delivery Time'}
+                    inputtype={'textbox'}
+                    onChange={(value: any) => {
+
+                    }}
+                />
+            </View>
+
+
+            <View style={[styles.grid, styles.justifyContent]}>
+                <View style={[styles.flexGrow]}>
+                    <InputField
+                        value={selectedClient?.displayname}
+                        label={'Notes'}
+                        inputtype={'textbox'}
+                        onChange={(value: any) => {
+
+                        }}
+                    />
+                </View>
+            </View>
+
+        </View></>}
+
+
+
+
         {
             isSource && <View>
                 <InputField

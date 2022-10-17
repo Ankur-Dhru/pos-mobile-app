@@ -15,8 +15,6 @@ const Index = ({ordersData}: any) => {
 
     const dispatch = useDispatch()
 
-    appLog("ordersData", ordersData)
-
     let {
         initData,
         licenseData,
@@ -44,6 +42,7 @@ const Index = ({ordersData}: any) => {
             token: licenseData?.token,
             queryString: {terminalid: licenseData?.data?.terminal_id},
             hideLoader: true,
+            hidealert:true,
             other: {url: posUrl},
         }).then((response: any) => {
             appLog("RESPONSE", response);
@@ -65,6 +64,7 @@ const Index = ({ordersData}: any) => {
                 workspace: initData.workspace,
                 token: licenseData?.token,
                 hideLoader: true,
+                hidealert:true,
                 other: {url: posUrl},
             }).then((response: any) => {
 

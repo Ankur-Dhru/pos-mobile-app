@@ -53,7 +53,11 @@ export enum ACTIONS {
 export enum VOUCHER {
     INVOICE = "b152d626-b614-4736-8572-2ebd95e24173",
     TAX_INVOICE = "372278d3-c3c9-4c5e-9890-f66cfa2cb1e4",
-    RECEIPT = "be0e9672-a46e-4e91-a2bf-815530b22b43"
+    RECEIPT = "be0e9672-a46e-4e91-a2bf-815530b22b43",
+}
+
+export  enum TICKETS_TYPE {
+    KOT = "2ecf3967-4083-4070-9912-d0fbcd3cf25e"
 }
 
 export enum TICKET_STATUS {
@@ -204,13 +208,14 @@ export const device: any = {tablet: true}
 
 export const defaultclient: any = {clientid: 1, clientname: 'Walkin'}
 
-export const ordertypes: any = [{label: 'All', value: 'all'}, {
-    label: 'Tables',
-    value: 'tableorder'
-}, {label: 'Home Delivery', value: 'homedelivery'}, {label: 'Takeaway', value: 'takeaway'}, {
-    label: 'QSR',
-    value: 'qsr'
-}];
+export const ordertypes: any = [
+    {label: 'All', value: 'all'},
+    {label: 'Tables',value: 'tableorder'},
+    {label: 'Home Delivery', value: 'homedelivery'},
+    {label: 'Takeaway', value: 'takeaway'},
+    {label: 'QSR',value: 'qsr'},
+    {label: 'Advance Order',value: 'advanceorder'}
+];
 
 
 export const current: any = {table: {tablename: 'Retail'}}

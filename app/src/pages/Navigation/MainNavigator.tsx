@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import 'react-native-gesture-handler';
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import StaffList from "../Pin/Stafflist";
@@ -6,14 +6,14 @@ import Terminal from "../Setup/Terminal";
 import Workspaces from "../Setup/Workspaces";
 import Login from "../Setup/Login";
 import Pin from "../Pin";
-import {localredux, screenOptionStyle} from "../../libs/static";
+import {ACTIONS, localredux, METHOD, posUrl, screenOptionStyle, STATUS} from "../../libs/static";
 
 import Splash from "../Splash";
 import {createDrawerNavigator} from "@react-navigation/drawer";
 import DrawerNavigatorContent from ".//DrawerNavigatorContent"
 import Tables from "../Tables";
 import Cart from "../Cart";
-import {isRestaurant} from "../../libs/function";
+import {appLog, isEmpty, isRestaurant, retrieveData, storeData} from "../../libs/function";
 import DetailView from "../Cart/DetailView";
 import Payment from "../Cart/Payment";
 import Preview from "../Cart/Preview";
@@ -22,6 +22,10 @@ import Report from "../Report";
 import PrinterSettings from "../PrinterSettings";
 import InputOpenSetting from "../InputOpenSetting";
 import DefaultInputValues from "../DefaultInputValues";
+import {hideLoader, showLoader} from "../../redux-store/reducer/component";
+import apiService from "../../libs/api-service";
+import {setOrder} from "../../redux-store/reducer/orders-data";
+import {useDispatch} from "react-redux";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -31,6 +35,63 @@ const Stack = createNativeStackNavigator();
 
 
 const MainStackNavigator = () => {
+
+
+    const dispatch = useDispatch();
+
+    let interval: any = null;
+
+
+    const syncInvoice = (invoiceData: any) => {
+        return new Promise((resolve) => {
+            let {
+                initData,
+                licenseData,
+            }: any = localredux;
+            apiService({
+                method: METHOD.POST,
+                action: ACTIONS.INVOICE,
+                body: invoiceData,
+                workspace: initData.workspace,
+                token: licenseData?.token,
+                hideLoader: true,
+                other: {url: posUrl},
+            }).then((response: any) => {
+                if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
+                    retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
+                        let localOrder: any = data?.orders
+                        delete localOrder[invoiceData?.orderid];
+                        storeData('fusion-pro-pos-mobile', data).then(async () => {
+                            dispatch(setOrder({...invoiceData, synced: true}))
+                        });
+                    })
+                } else {
+                    resolve({status: "ERROR"})
+                }
+            }).catch(() => {
+                resolve({status: "TRY CATCH ERROR"})
+            })
+        })
+    }
+
+    useEffect(() => {
+        if (!interval) {
+            interval = setInterval(() => {
+                retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
+                    if (!isEmpty(data.orders)) {
+                        let invoice: any = Object.values(data.orders)[0]
+                        let response = await syncInvoice(invoice)
+                        appLog("invoice data call", response);
+                    }
+                })
+            }, 60000);
+        }
+        return () => {
+            clearInterval(interval);
+            interval = null;
+        };
+    }, []);
+
     return (
         <Stack.Navigator
 

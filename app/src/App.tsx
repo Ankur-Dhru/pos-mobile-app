@@ -1,5 +1,3 @@
-
-
 import * as React from 'react';
 import {
     Appearance, Dimensions,
@@ -41,7 +39,9 @@ import {MainStackNavigator} from "./pages/Navigation/MainNavigator";
 import SnackBar from "./components/SnackBar";
 import {device} from "./libs/static";
 import Dialog from "./components/Dialog";
-import { appLog } from './libs/function';
+import {appLog, isEmpty, retrieveData} from './libs/function';
+import {useEffect} from "react";
+import {showLoader} from "./redux-store/reducer/component";
 
 
 configureFontAwesomePro();
@@ -50,23 +50,23 @@ LogBox.ignoreAllLogs();
 
 
 const {height, width} = Dimensions.get('window');
-const aspectRatio = height/width;
+const aspectRatio = height / width;
 
-if(aspectRatio>1.6) {
+if (aspectRatio > 1.6) {
     device.tablet = false
 }
 
 
 const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+    const isDarkMode = useColorScheme() === 'dark';
 
-   // StatusBar.setHidden(true);
+    // StatusBar.setHidden(true);
 
-  const backgroundStyle = {
-    backgroundColor: 'white',
-    height:'100%',
-      flex:1
-  };
+    const backgroundStyle = {
+        backgroundColor: 'white',
+        height: '100%',
+        flex: 1
+    };
 
     const CombinedDefaultTheme = {
         ...PaperDefaultTheme,
@@ -93,7 +93,7 @@ const App = () => {
             filterbox: '#E6EFFE',
             loadersecondary: '#eeeeee',
             loaderprimary: '#ddd',
-            walkthroughbg:"#fff"
+            walkthroughbg: "#fff"
         },
     };
     const CombinedDarkTheme = {
@@ -120,7 +120,7 @@ const App = () => {
             filterbox: '#000',
             loadersecondary: '#222',
             loaderprimary: '#000',
-            walkthroughbg:"#333"
+            walkthroughbg: "#333"
         },
     };
 
@@ -134,10 +134,12 @@ const App = () => {
 
 
 
-  return (
+
+    return (
         <Provider store={store}>
             <PaperProvider theme={CombinedDefaultTheme}>
-                <StatusBar   barStyle={isDarkMode ? 'light-content' : 'light-content'} backgroundColor={CombinedDefaultTheme.colors.primary} />
+                <StatusBar barStyle={isDarkMode ? 'light-content' : 'light-content'}
+                           backgroundColor={CombinedDefaultTheme.colors.primary}/>
                 <SafeAreaView style={backgroundStyle}>
                     <NavigationContainer>
                         <MainStackNavigator/>
@@ -151,7 +153,7 @@ const App = () => {
                 </SafeAreaView>
             </PaperProvider>
         </Provider>
-  );
+    );
 };
 
 

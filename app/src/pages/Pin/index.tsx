@@ -31,6 +31,8 @@ const Index = (props: any) => {
     const pinView: any = useRef(null)
     const [enteredPin, setEnteredPin] = useState("")
 
+
+
     useEffect(() => {
         setTimeout(async ()=>{
             if(enteredPin.length === 5){

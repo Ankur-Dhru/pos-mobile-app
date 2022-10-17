@@ -51,7 +51,7 @@ import {setItemDetail} from "../redux-store/reducer/item-detail";
 import ItemDetail from "../pages/Items/ItemDetail";
 import AddonActions from "../pages/Items/AddonActions";
 import {onPressNumber} from "../pages/Items/AddButton";
-
+import NetInfo from "@react-native-community/netinfo";
 let base64 = require('base-64');
 let utf8 = require('utf8');
 
@@ -462,6 +462,12 @@ export const selectItemObject = (label: string, value: string | number, rank: nu
     rank, ...otherData
 })
 
+export const CheckConnectivity = () => {
+    NetInfo.addEventListener((networkState: any) => {
+        //store.dispatch(setConnection({internet: networkState.isConnected}));
+        store.dispatch(setSettings({internet: networkState.isConnected}))
+    });
+};
 
 export const syncData = async () => {
 

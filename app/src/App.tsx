@@ -18,6 +18,7 @@ import store from "./redux-store/store";
 import ActivityIndicator from "./components/ActivityIndicator";
 import BottomSheet from "./components/BottomSheet";
 import PageSheet from "./components/PageSheet";
+import NetworkStatus from "./components/NetworkStatus"
 import Modal from "./components/Modal";
 import 'react-native-get-random-values';
 
@@ -140,6 +141,7 @@ const App = () => {
             <PaperProvider theme={CombinedDefaultTheme}>
                 <StatusBar barStyle={isDarkMode ? 'light-content' : 'light-content'}
                            backgroundColor={CombinedDefaultTheme.colors.primary}/>
+                <NetworkStatus/>
                 <SafeAreaView style={backgroundStyle}>
                     <NavigationContainer>
                         <MainStackNavigator/>

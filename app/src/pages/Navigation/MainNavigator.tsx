@@ -13,7 +13,7 @@ import {createDrawerNavigator} from "@react-navigation/drawer";
 import DrawerNavigatorContent from ".//DrawerNavigatorContent"
 import Tables from "../Tables";
 import Cart from "../Cart";
-import {appLog, isEmpty, isRestaurant, retrieveData, storeData} from "../../libs/function";
+import {appLog, CheckConnectivity, isEmpty, isRestaurant, retrieveData, storeData} from "../../libs/function";
 import DetailView from "../Cart/DetailView";
 import Payment from "../Cart/Payment";
 import Preview from "../Cart/Preview";
@@ -55,9 +55,10 @@ const MainStackNavigator = () => {
                 workspace: initData.workspace,
                 token: licenseData?.token,
                 hideLoader: true,
-                hidealert:true,
+                hidealert: true,
                 other: {url: posUrl},
             }).then((response: any) => {
+                appLog("SYNC REPOSNE", response);
                 if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
                     retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
                         let localOrder: any = data?.orders
@@ -87,6 +88,7 @@ const MainStackNavigator = () => {
                 })
             }, 60000);
         }
+        CheckConnectivity()
         return () => {
             clearInterval(interval);
             interval = null;

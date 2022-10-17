@@ -24,6 +24,7 @@
             <option value="$PROJECT_DIR$/app/android/app" />
             <option value="$PROJECT_DIR$/app/node_modules/@react-native-async-storage/async-storage/android" />
             <option value="$PROJECT_DIR$/app/node_modules/@react-native-community/datetimepicker/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/@react-native-community/netinfo/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-esc-pos-printer/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-extra-dimensions-android/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-gesture-handler/android" />

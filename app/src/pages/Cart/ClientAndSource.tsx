@@ -1,4 +1,4 @@
-import {Alert, TouchableOpacity, View} from "react-native";
+import {Alert, ScrollView, TouchableOpacity, View} from "react-native";
 import {Text, withTheme} from "react-native-paper";
 import {connect, useDispatch} from "react-redux";
 import {setDialog} from "../../redux-store/reducer/component";
@@ -12,13 +12,14 @@ import {updateCartField} from "../../redux-store/reducer/cart-data";
 import DateTimePicker from "../../components/InputField/DateTimePicker";
 
 const ClientAndSource = (props: any) => {
-    const {tabledetails} = props;
+    const {tabledetails,navigation} = props;
 
     const dispatch = useDispatch();
 
     const [clientSearch, setClientSearch] = useState<any>();
     const [selectedClient, setSelectedClient] = useState<any>({})
-    const [ordersource, setOrderSource] = useState<any>()
+    const [ordersource, setOrderSource] = useState<any>();
+    const [advance, setAdvance] = useState<any>({datetime:'',notes:''})
 
     const onClientSearch = () => {
         let findClient: any = Object.values(localredux?.clientsData).find((client: any) => client?.phone == clientSearch);
@@ -57,57 +58,59 @@ const ClientAndSource = (props: any) => {
             }
         })
     }
+    const setAdvanceData = (key: any, value: any) => {
+        setAdvance((prev: any) => {
+            return {
+                ...prev,
+                [key]: value
+            }
+        })
+    }
 
     let isSource = Boolean(tabledetails?.ordertype == "homedelivery")
     let isAdvanceorder = Boolean(tabledetails?.ordertype == "advanceorder")
 
-    return <View> 
+    return <View >
 
 
+        <ScrollView>
 
-        {isAdvanceorder && <><View style={[styles.grid, styles.justifyContent]}>
+        <View  style={[styles.grid, styles.justifyContent,styles.top]}>
+
+        {isAdvanceorder && <View style={[styles.flexGrow, {maxWidth:400,marginRight:20}]}><View style={[styles.grid, styles.justifyContent]}>
             <View style={[styles.flexGrow, {marginRight: 12}]}>
 
-                {/*<DateTimePicker/>*/}
 
                 <InputField
-                    value={selectedClient?.address1}
-                    label={'Delivery Date'}
-                    inputtype={'textbox'}
+                    value={advance?.datetime}
+                    label={'Delivery Date Time'}
+                    inputtype={'datepicker'}
                     onChange={(value: any) => {
-
+                        setAdvanceData("datetime", value);
                     }}
                 />
             </View>
-            <View style={[styles.flexGrow]}>
-                <InputField
-                    value={selectedClient?.address1}
-                    label={'Delivery Time'}
-                    inputtype={'textbox'}
-                    onChange={(value: any) => {
 
-                    }}
-                />
-            </View>
 
 
             <View style={[styles.grid, styles.justifyContent]}>
                 <View style={[styles.flexGrow]}>
                     <InputField
-                        value={selectedClient?.displayname}
+                        value={advance?.notes}
                         label={'Notes'}
+                        multiline={true}
                         inputtype={'textbox'}
                         onChange={(value: any) => {
-
+                            setAdvanceData("notes", value);
                         }}
                     />
                 </View>
             </View>
 
-        </View></>}
+        </View></View>}
 
 
-
+        <View  style={[styles.flexGrow,{maxWidth:400,}]}>
 
         {
             isSource && <View>
@@ -195,6 +198,19 @@ const ClientAndSource = (props: any) => {
             </View>
         </View>
 
+        </View>
+        </View>
+
+        </ScrollView>
+
+        <View style={[styles.grid,styles.justifyContent]}>
+
+            <Button more={{backgroundColor: styles.light.color,color:'black'  }}
+                    onPress={() => {
+                        dispatch(setDialog({visible: false,}));
+                        navigation.replace('DrawerStackNavigator');
+                    }}>Cancel</Button>
+
 
         <Button onPress={() => {
 
@@ -205,7 +221,8 @@ const ClientAndSource = (props: any) => {
                      clientid: selectedClient.clientid,
                      clientname: selectedClient.displayname,
                      newclient: Boolean(selectedClient?.clientid == "0") ? 1 : 0,
-                     client: selectedClient
+                     client: selectedClient,
+                     advanceorder:advance
                  }
                  dispatch(updateCartField(pass))
                  dispatch(setDialog({visible: false}))
@@ -220,6 +237,8 @@ const ClientAndSource = (props: any) => {
                  errorAlert(message);
              }
         }}>Save</Button>
+
+        </View>
 
     </View>
 }

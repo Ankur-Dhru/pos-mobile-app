@@ -45,7 +45,11 @@ const Index = ({vouchertotaldisplay}: any) => {
     }
 
 
-    return (<Card   onPress={()=>{ viewSummary() }} style={[styles.mt_3,styles.m_2,styles.noshadow,styles.bg_light]}>
+    return (<>
+        <View style={[styles.dottedBorder,styles.p_5,styles.m_3,{borderRadius:5}]}>
+            <Paragraph>Delivery on </Paragraph>
+        </View>
+        <Card   onPress={()=>{ viewSummary() }} style={[styles.mt_3,styles.m_2,styles.noshadow,styles.bg_light]}>
         <Card.Content >
 
             <View><Paragraph style={[styles.absolute,{top:0,left:'50%',marginLeft:-10}]}><ProIcon name={'chevron-up'} action_type={'text'} size={15}/></Paragraph></View>
@@ -58,7 +62,7 @@ const Index = ({vouchertotaldisplay}: any) => {
                     style={[styles.paragraph, styles.bold, styles.text_lg, styles.green,{textAlign:'right'}]}>{toCurrency(vouchertotaldisplay || '0')} </Paragraph></View>
             </View>
         </Card.Content>
-    </Card>)
+    </Card></>)
 }
 
 const mapStateToProps = (state: any) => ({

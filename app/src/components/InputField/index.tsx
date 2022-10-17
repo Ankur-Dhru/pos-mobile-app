@@ -365,7 +365,7 @@ class Index extends React.Component<any, any> {
 
 
 
-                {/*{inputtype === 'datepicker' &&
+                {inputtype === 'datepicker' &&
                     <View>
                         <TouchableOpacity
                             onPress={() => editmode && (Platform.OS === "ios" ? setBottomSheet({
@@ -405,7 +405,7 @@ class Index extends React.Component<any, any> {
 
 
                     </View>
-                }*/}
+                }
 
 
 

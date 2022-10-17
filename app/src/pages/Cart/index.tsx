@@ -34,8 +34,8 @@ const Index = ({tabledetails}: any) => {
                 visible: true,
                 title: "Source & Client",
                 hidecancel: true,
-                width: 380,
-                component: () => <ClientAndSource tabledetails={tabledetails}/>
+                width: 'auto',
+                component: () => <ClientAndSource navigation={navigation} tabledetails={tabledetails}/>
             }))
         }
 

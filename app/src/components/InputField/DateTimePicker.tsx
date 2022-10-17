@@ -1,11 +1,11 @@
 import * as React from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Platform, TouchableOpacity, View} from "react-native";
-import {clone, log} from "../../libs/function";
+import {appLog, clone, log} from "../../libs/function";
 import {connect} from "react-redux";
 import {Paragraph, withTheme} from "react-native-paper";
 import moment from "moment";
-import {defalut_payment_term} from "../../libs/static";
+import {defalut_payment_term, localredux} from "../../libs/static";
 import {styles} from "../../theme";
 import {ScrollView} from "react-native-gesture-handler";
 
@@ -18,7 +18,11 @@ class Index extends React.Component<any> {
     constructor(props: any) {
         super(props);
 
-        const {settings: {paymentterms}, defaultValue}: any = props;
+        const {defaultValue}: any = props;
+
+        const {paymentterms}: any = localredux.initData;
+
+
 
         this.tempdate = clone(defaultValue);
 
@@ -72,7 +76,7 @@ class Index extends React.Component<any> {
             label,
             dueterm,
             minimumDate,
-            theme:{dark}
+
         }: any = this.props;
 
 
@@ -117,7 +121,7 @@ class Index extends React.Component<any> {
                         value={new Date(year, month, date)}
                         mode={mode}
                         is24Hour={true}
-                        themeVariant={dark?'dark':'light'}
+
                         minimumDate={minimumDate}
                         display={Platform.OS === "ios" ? "inline" : "default"}
                         onChange={this.setDate}/>
@@ -129,10 +133,4 @@ class Index extends React.Component<any> {
 }
 
 
-const mapStateToProps = (state: any) => ({
-    settings: state.appApiData.settings,
-})
-const mapDispatchToProps = (dispatch: any) => ({
-
-});
-export default connect(mapStateToProps, mapDispatchToProps)(withTheme(Index));
+export default  Index;

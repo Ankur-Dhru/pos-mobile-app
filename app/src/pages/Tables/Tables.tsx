@@ -9,6 +9,7 @@ import {connect, useDispatch} from "react-redux";
 import ProIcon from "../../components/ProIcon";
 import {refreshCartData, resetCart, setCartData} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
+import Button from "../../components/Button";
 
 
 
@@ -134,10 +135,10 @@ const Index = (props: any) => {
             }}
         />
 
-            <View style={[{marginTop:'auto'}]}>
-                <TouchableOpacity onPress={()=> {  }} style={[styles.p_5]}>
-                    <Paragraph>Shift Table</Paragraph>
-                </TouchableOpacity>
+            <View style={[styles.grid,styles.mb_3,{marginTop:'auto'}]}>
+                <Button onPress={()=> {  }}  >
+                    Shift Table
+                </Button>
             </View>
 
         </View>

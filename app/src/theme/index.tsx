@@ -422,6 +422,7 @@ export const styles: any = StyleSheet.create({
     borderBottom: {borderBottomColor: '#f3f3f32d', borderBottomWidth: 1},
     borderLeft: {borderLeftColor: '#f3f3f32d', borderLeftWidth: 1},
     borderRight: {borderRightColor: '#f3f3f32d', borderRightWidth: 1},
+    dottedBorder:{borderColor: '#980202', borderStyle: 'dashed', borderWidth: 1},
     light_paragraph: {
         lineHeight: 14,
         color: "#A7AEB7"

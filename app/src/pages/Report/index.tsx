@@ -140,21 +140,6 @@ const Index = ({ordersData}: any) => {
             data={Object.values(data).reverse()}
             renderItem={renderItem}
         />
-        <View style={[styles.submitbutton]}>
-            <Button
-                onPress={() => {
-                    appLog("invoiceData", licenseData?.token)
-                    retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
-                        if (!isEmpty(data.orders)) {
-                            let invoice: any = Object.values(data.orders)[0]
-                            dispatch(showLoader())
-                            let response = await syncInvoice(invoice)
-                            appLog("invoice data call", response);
-                        }
-                    })
-                }}> Sync
-            </Button>
-        </View>
     </Container>
 
 }

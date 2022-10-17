@@ -9,7 +9,7 @@ import React, {memo, useState} from "react";
 import {localredux} from "../../libs/static";
 import {appLog, errorAlert, isEmpty} from "../../libs/function";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
-import DateTimePicker from "../../components/InputField/DateTimePicker";
+
 
 const ClientAndSource = (props: any) => {
     const {tabledetails,navigation} = props;

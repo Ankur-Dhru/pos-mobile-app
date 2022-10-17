@@ -55,38 +55,6 @@ const Index = ({ordersData}: any) => {
         })
     }, [])
 
-    const syncInvoice = (invoiceData: any) => {
-        return new Promise((resolve) => {
-            apiService({
-                method: METHOD.POST,
-                action: ACTIONS.INVOICE,
-                body: invoiceData,
-                workspace: initData.workspace,
-                token: licenseData?.token,
-                hideLoader: true,
-                hidealert:true,
-                other: {url: posUrl},
-            }).then((response: any) => {
-
-                appLog("response", response);
-
-                dispatch(hideLoader())
-                if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
-                    retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
-                        let localOrder: any = data?.orders
-                        delete localOrder[invoiceData?.orderid];
-                        storeData('fusion-pro-pos-mobile', data).then(async () => {
-                            dispatch(setOrder({...invoiceData, synced: true}))
-                        });
-                    })
-                } else {
-                    resolve({status: "ERROR"})
-                }
-            }).catch(() => {
-                resolve({status: "TRY CATCH ERROR"})
-            })
-        })
-    }
 
     const renderItem = ({item, index}: any) => {
         let name = item?.clientname;
@@ -130,8 +98,6 @@ const Index = ({ordersData}: any) => {
 
         </TouchableOpacity>
     }
-
-    appLog("DARA", Object.keys(data))
 
     return <Container config={{
         title: "Sales Report",

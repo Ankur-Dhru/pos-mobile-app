@@ -927,7 +927,6 @@ export const saveLocalOrder = async (order?: any) => {
         order = {
             ...order,
             orderid: uuid(),
-
         }
     }
     if (!Boolean(order.tableorderid)) {
@@ -936,6 +935,17 @@ export const saveLocalOrder = async (order?: any) => {
             tableorderid: uuid(),
         }
     }
+
+    if(isRestaurant()){
+        order = order.kots.map((kot:any)=>{
+            kot = {
+                ...kot,
+                orderid:order.orderid
+            }
+            return kot
+        })
+    }
+
 
     ///////// CREATE LOCALORDER ID //////////
     if (!Boolean(order.invoice_display_number)) {

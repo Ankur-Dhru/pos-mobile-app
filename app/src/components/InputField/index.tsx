@@ -428,9 +428,6 @@ const mapStateToProps = (state: any) => ({
 })
 const mapDispatchToProps = (dispatch: any) => ({
     setBottomSheet: (dialog: any) => dispatch(setBottomSheet(dialog)),
-    setPageSheet: (dialog: any) => dispatch(setPageSheet(dialog)),
-    setModal: (dialog: any) => dispatch(setModal(dialog)),
-
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withTheme(Index));

@@ -55,6 +55,7 @@ const MainStackNavigator = () => {
                 workspace: initData.workspace,
                 token: licenseData?.token,
                 hideLoader: true,
+                hidealert:true,
                 other: {url: posUrl},
             }).then((response: any) => {
                 if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {

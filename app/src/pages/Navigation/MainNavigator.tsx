@@ -228,11 +228,11 @@ const DrawerStackNavigator = () => {
                 title: route?.params?.tablename || 'POS'
             })}/>
             <Drawer.Screen name={'InputOpenNavigator'} component={InputOpenNavigator}
-                           options={({route}: any) => ({headerShown: false, title: 'Default Amount Input Open'})}/>
+                           options={({route}: any) => ({headerShown: false, title: 'Quick Quantity Unit'})}/>
             <Drawer.Screen
                 name={'InputValueNavigator'}
                 component={InputValueNavigator}
-                options={({route}: any) => ({headerShown: false, title: 'Quick Amount'})}
+                options={({route}: any) => ({headerShown: false, title: 'Quick Quantity & Amount'})}
             />
             <Drawer.Screen name={'PrinterNavigator'} component={PrinterNavigator}
                            options={({route}: any) => ({headerShown: false, title: 'Printer Settings'})}/>

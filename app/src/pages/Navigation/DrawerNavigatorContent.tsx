@@ -84,7 +84,7 @@ const Index = () => {
                     <List.Item
                         style={[styles.listitem]}
                         titleStyle={{marginLeft: 0, paddingLeft: 0}}
-                        title={'Default Quantity'}
+                        title={'Quick Quantity Unit'}
                         onPress={() => {
                             navigation.navigate("InputOpenNavigator");
                         }}
@@ -92,7 +92,7 @@ const Index = () => {
                     <List.Item
                         style={[styles.listitem]}
                         titleStyle={{marginLeft: 0, paddingLeft: 0}}
-                        title={'Quick Amounts'}
+                        title={'Quick Quantity & Amount'}
                         onPress={() => {
                             navigation.navigate("InputValueNavigator");
                         }}

@@ -250,4 +250,11 @@ export const defaultInputValues = [
     "0.750",
 ]
 
+export const defaultInputAmounts = [
+    "50",
+    "100",
+    "200",
+    "500",
+]
+
 export const APP_NAME = "Dhru POS";

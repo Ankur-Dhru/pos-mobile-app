@@ -43,7 +43,7 @@ const Index = (props: any) => {
         closeMenu();
         dispatch(setDialog({
             visible: true,
-            title: "Reserve Tables",
+            title: "Reserved Tables",
             hidecancel: true,
             width: '90%',
             component: () => <ReserveList navigation={navigation}/>

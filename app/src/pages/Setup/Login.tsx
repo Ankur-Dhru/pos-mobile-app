@@ -64,7 +64,7 @@ const Index = (props: any) => {
 
 
 
-                <View style={{width:360}}>
+                <View style={{width:350}}>
                 <Form
                     onSubmit={handleSubmit}
 

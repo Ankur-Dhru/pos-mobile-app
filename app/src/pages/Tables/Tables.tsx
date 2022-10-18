@@ -233,10 +233,8 @@ const Index = (props: any) => {
                         return (
                             <>
                                 <View style={{marginTop: 70}}><Paragraph
-                                    style={[styles.paragraph, {textAlign: 'center'}]}>No any order</Paragraph></View>
-                                <View style={{marginTop: 20}}><Paragraph
-                                    style={[styles.paragraph, {textAlign: 'center'}]}><ProIcon name={'utensils'}
-                                                                                               size={25}/></Paragraph></View>
+                                    style={[styles.paragraph, {textAlign: 'center'}]}>No any order </Paragraph></View>
+
                             </>
                         )
                     }}

@@ -224,10 +224,12 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
                         {propsValues => (
                             <>
 
-                                <View style={[styles.grid,styles.flex, styles.bottom, styles.center,styles.wrap]}>
+                                <View style={[styles.grid, styles.justifyContent,  styles.h_100, styles.flex, styles.px_6]}>
 
 
-                                    <View style={[styles.w_auto,{minWidth:400,maxWidth:400,padding:5}]}>
+                                    <View style={[styles.noshadow,styles.w_auto,{
+                                        minWidth:360,maxWidth:'100%',marginRight:20,marginBottom:20
+                                    }]}>
 
 
                                     <View style={[styles.grid, styles.middle, styles.center]}>
@@ -351,7 +353,7 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
 
 
 
-                                        <View style={[styles.py_6]}>
+                                        <View style={[styles.py_6,styles.mb_5]}>
                                             <TouchableOpacity onPress={() => { skipPayment() }} style={[styles.center,styles.middle]}><Text>Skip Payment</Text></TouchableOpacity>
                                         </View>
 
@@ -367,7 +369,7 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
                                     </View>
 
 
-                                    <View  style={[styles.w_auto,{padding:10}]}>
+                                    <View  style={[styles.w_auto,styles.h_100,  {minWidth: 360,maxWidth:'100%'}]}>
 
 
                                     <View>
@@ -405,7 +407,7 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
                                     </View>
 
 
-                                        <View>
+                                        <View  >
 
 
                                             {Boolean(payments.length) &&  <View>
@@ -415,9 +417,11 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
                                                 }}> {`Generate Invoice`} </Button>
                                                 </View>
 
-                                                <View>
+                                                <View style={[styles.mt_5]}>
 
-                                                <Button onPress={() => {
+                                                <Button
+                                                    more={{backgroundColor: styles.yellow.color,color:'black' }}
+                                                    onPress={() => {
                                                     validatePayment({print:true})
                                                 }}> {`Generate Invoice & Print`} </Button>
 

@@ -46,9 +46,6 @@ const Index = (props: any) => {
     })
 
 
-
-    appLog('cart')
-
     return <>
 
         <View style={[styles.h_100, styles.flex, device.tablet?styles.p_4:styles.bg_white]}>

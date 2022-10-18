@@ -5,20 +5,20 @@ import {styles} from "../../theme";
 import {Button} from "../../components";
 import {setDialog} from "../../redux-store/reducer/component";
 import {connect, useDispatch} from "react-redux";
-import {updateCartField} from "../../redux-store/reducer/cart-data";
 import CancelReason from "./CancelReason";
 import {appLog, printKOT} from "../../libs/function";
 
 
 const Index = memo((props: any) => {
 
-    let {kot: kt, kots,   theme: {colors},hasLast}: any = props;
-    const {departmentname, table, commonkotnote, staffname, kotid, tickettime, ticketitems}: any = kt;
+    let {kot: kt, tablename,   theme: {colors},hasLast}: any = props;
+
+    const {departmentname, commonkotnote, staffname, kotid, tickettime, ticketitems}: any = kt;
     const dispatch = useDispatch();
 
     let [kot, setKot]: any = useState(kt);
     const reprint = (kot: any) => {
-        printKOT(kot)
+        printKOT(kot).then()
     }
 
 
@@ -31,8 +31,6 @@ const Index = memo((props: any) => {
         }))
     }
 
-    appLog('kot item')
-
     return (
         <View style={[{minWidth: '100%', marginBottom: 4}]}>
             <View>
@@ -43,7 +41,7 @@ const Index = memo((props: any) => {
                                 <View style={[styles.mb_2]}><Text style={[styles.paragraph, {color: styles.red.color}]}>Cancel
                                     : {kot.cancelreason}</Text></View>}
                             <View style={[styles.mb_2]}><Text
-                                style={[styles.bold]}>#{table}-{kotid}</Text><Text>{tickettime}</Text></View>
+                                style={[styles.bold]}>#{tablename}-{kotid}</Text><Text>{tickettime}</Text></View>
                         </View>
                     </View>
 
@@ -84,5 +82,6 @@ const Index = memo((props: any) => {
 
 const mapStateToProps = (state: any) => ({
     kots: state.cartData.kots,
+    tablename: state.cartData.tablename,
 })
 export default connect(mapStateToProps)(withTheme(Index));

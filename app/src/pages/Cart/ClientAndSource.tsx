@@ -351,7 +351,7 @@ const ClientAndSource = (props: any) => {
                  }
                  errorAlert(message);
              }
-        }}>Save</Button>
+        }}>Next</Button>
 
         </View>
 

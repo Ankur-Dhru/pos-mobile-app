@@ -10,7 +10,7 @@ let numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Clear", "0", "."]
 
 const index = (props: any) => {
 
-    const {defaultValue, onPressCancel, onPressOK, defaultInputValues, customNumber, rate} = props;
+    const {defaultValue, onPressCancel, onPressOK, defaultInputValues,defaultInputAmounts, customNumber, rate} = props;
 
     const [numPadValue, setNumPadValue] = useState<any>(defaultValue || "");
     const [selectedTab, setSelectedTab] = useState<any>("num");
@@ -47,21 +47,21 @@ const index = (props: any) => {
     const amtRef = React.useRef<View>(null);
 
     return <View>
-        <View style={[styles.grid, styles.justifyContent, styles.p_4]}>
+        <View style={[styles.grid, styles.justifyContent,styles.mb_5]}>
             <Button style={[styles.w_auto]} compact={true} onPress={() => {
                 setNumPadValue("")
                 setSelectedTab("num")
                 updateComponent(qntRef, 'display', 'flex')
                 updateComponent(amtRef, 'display', 'none')
 
-            }} secondbutton={true}><Text style={{color: 'black'}}>Quantity</Text></Button>
+            }} secondbutton={true}><Text style={{color: 'black'}}>Quick Quantity</Text></Button>
             <Button style={[styles.ml_2, styles.w_auto]} compact={true} onPress={() => {
                 setNumPadValue("")
                 setSelectedTab("amt")
                 updateComponent(qntRef, 'display', 'none')
                 updateComponent(amtRef, 'display', 'flex')
 
-            }} secondbutton={true}><Text style={{color: 'black'}}>Amount</Text></Button>
+            }} secondbutton={true}><Text style={{color: 'black'}}>Quick Amount</Text></Button>
         </View>
         <View style={[styles.border, styles.mb_5, styles.p_4]}>
             <Text style={[{fontSize: 24}]}>{numPadValue}</Text>
@@ -85,7 +85,26 @@ const index = (props: any) => {
         </View>
 
         <View ref={amtRef}
-              style={[styles.grid, styles.justifyContent, {marginLeft: -4, marginRight: -4, display: "none"}]}>
+              style={[styles.grid, styles.justifyContent, {marginLeft: -4, marginRight: -4,display:'none'}]}>
+            {
+                defaultInputAmounts.map((num: string) => {
+                    return <TouchableOpacity
+                        onPress={() => onPressDefaultNum(num)}
+                        style={[styles.flexGrow, styles.p_5, styles.m_2, {
+                            width: "30%",
+                            backgroundColor: "#fafafa"
+                        }]}>
+                        <Paragraph style={[styles.textCenter, styles.bold]}>
+                            {num}
+                        </Paragraph>
+                    </TouchableOpacity>
+                })
+            }
+        </View>
+
+
+        <View
+              style={[styles.grid, styles.justifyContent, {marginLeft: -4, marginRight: -4}]}>
             {
                 numbers.map((num: string) => {
                     let okButton = Boolean(num === numbers[13])
@@ -130,7 +149,8 @@ const index = (props: any) => {
 }
 
 const mapStateToProps = (state: any) => ({
-    defaultInputValues: state.localSettings?.defaultInputValues
+    defaultInputValues: state.localSettings?.defaultInputValues,
+    defaultInputAmounts: state.localSettings?.defaultInputAmounts
 })
 
 export default connect(mapStateToProps)(index);

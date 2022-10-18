@@ -9,7 +9,7 @@ import KeyboardScroll from "../../components/KeyboardScroll";
 import {Card, Paragraph, Title, Text} from "react-native-paper";
 import {
     ACTIONS,
-    composeValidators,
+    composeValidators, defaultInputAmounts,
     defaultInputValues,
     localredux,
     METHOD,
@@ -76,6 +76,7 @@ const Terminal = (props: any) => {
                 localredux.licenseData = licensedata;
 
                 saveLocalSettings("defaultInputValues", defaultInputValues).then()
+                saveLocalSettings("defaultInputAmounts", defaultInputAmounts).then()
 
                 storeData('fusion-pro-pos-mobile', {
                     initData,

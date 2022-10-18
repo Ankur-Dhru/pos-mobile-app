@@ -972,7 +972,6 @@ export const saveLocalOrder = async (order?: any) => {
 
         await deleteTempLocalOrder(order.tableorderid).then(async () => {
             await storeData('fusion-pro-pos-mobile', data).then(async () => {
-                appLog("data?.orders2", data?.orders);
                 store.dispatch(setOrder(order))
             });
         })

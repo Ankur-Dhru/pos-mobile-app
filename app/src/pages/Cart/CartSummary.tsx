@@ -6,14 +6,15 @@ import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {itemTotalCalculation} from "../../libs/item-calculation";
 import {setCartData, setUpdateCart} from "../../redux-store/reducer/cart-data";
-import {device, VOUCHER} from "../../libs/static";
+import {current, device, VOUCHER} from "../../libs/static";
 import {ProIcon} from "../../components";
 import Discount from "./Discount";
 import SwitchC from "../../components/Switch";
 import CartSummaryMore from "./CartSummaryMore";
-import {contentLoader, hideLoader, showLoader } from "../../redux-store/reducer/component";
+import {contentLoader, hideLoader, setModal, showLoader} from "../../redux-store/reducer/component";
 import store from "../../redux-store/store";
 import moment from "moment";
+import ClientAndSource from "./ClientAndSource";
 
 
 const Index = ({vouchertotaldisplay,advanceorder}: any) => {
@@ -48,10 +49,17 @@ const Index = ({vouchertotaldisplay,advanceorder}: any) => {
 
 
     return (<>
-        {Boolean(advanceorder?.date) &&  <View style={[styles.dottedBorder,styles.p_5,styles.m_3,{borderRadius:5}]}>
+        {Boolean(advanceorder?.date) &&  <Card style={[styles.dottedBorder,styles.noshadow,styles.p_5,styles.m_3,{borderRadius:5}]} onPress={()=>{
+            /*dispatch(setModal({
+                visible: true,
+                hidecancel: true,
+                width: '98%',
+                component: () => <ClientAndSource title={'Advance Order'} />
+            }))*/
+        }}>
             <Paragraph>Delivery on :  {moment(advanceorder.date).format('DD/MM/YYYY')} {moment(advanceorder.time).format('HH:mm A')}</Paragraph>
             {Boolean(advanceorder.notes) &&  <Paragraph>{advanceorder.notes}</Paragraph>}
-        </View>}
+        </Card>}
         <Card   onPress={()=>{ viewSummary() }} style={[styles.mt_3,styles.m_2,styles.noshadow,styles.bg_light]}>
         <Card.Content >
 

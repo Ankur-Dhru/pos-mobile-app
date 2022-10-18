@@ -1,12 +1,13 @@
 import {FlatList, TouchableOpacity, View} from "react-native";
-import {Divider, Text} from "react-native-paper";
+import {Divider, Paragraph, Text} from "react-native-paper";
 import {setDialog} from "../../redux-store/reducer/component";
 import React from "react";
 import {connect, useDispatch} from "react-redux";
-import {isEmpty} from "../../libs/function";
+import {appLog, isEmpty} from "../../libs/function";
 import {styles} from "../../theme";
 import {Button} from "../../components";
 import {current} from "../../libs/static";
+import moment from "moment";
 
 const ReserveList = (props: any) => {
 
@@ -19,7 +20,7 @@ const ReserveList = (props: any) => {
     }
 
     const onClickReserveItem = (item: any) => {
-        onClickReserveTable()      ;
+        onClickReserveTable();
         navigation.navigate('CartStackNavigator', item)
     }
 
@@ -27,15 +28,23 @@ const ReserveList = (props: any) => {
         <FlatList
             data={Object.values(tableOrdersData).filter((item: any) => !isEmpty(item?.reservetable))}
             renderItem={(data: any) => {
+
                 return <TouchableOpacity onPress={() => onClickReserveItem(data?.item)}>
                     <View style={[styles.py_4]}>
                         <View><Text style={[styles.bold]}>{data?.item?.clientname}</Text></View>
-                        <View><Text>{data?.item?.tablename}</Text></View>
+                        <View style={[styles.grid]}><Text>{data?.item?.tablename} </Text><Text> {moment(data?.item?.date).format('DD/MM/YYYY')}</Text><Text> {moment(data?.item?.time).format('HH:mm')}</Text></View>
                     </View>
                     <Divider/>
                 </TouchableOpacity>
             }}
             initialNumToRender={5}
+
+            ListEmptyComponent={() => {
+                return (<View style={[]}><Paragraph
+                    style={[styles.paragraph, styles.p_6, styles.muted, {textAlign: 'center'}]}>No any
+                    Table</Paragraph></View>)
+            }}
+
         />
         <View style={[styles.grid, styles.justifyContent, styles.mt_4]}>
             <View></View>

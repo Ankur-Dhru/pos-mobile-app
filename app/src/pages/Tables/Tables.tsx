@@ -9,12 +9,13 @@ import {connect, useDispatch} from "react-redux";
 import ProIcon from "../../components/ProIcon";
 import {refreshCartData} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
-import {hideLoader, setDialog, showLoader} from "../../redux-store/reducer/component";
+import {hideLoader, setAlert, setModal, showLoader} from "../../redux-store/reducer/component";
 import ClientAndSource from "../Cart/ClientAndSource";
 import moment from "moment";
 
 import OrderTypes from "./OrderTypes";
 import {setSelected} from "../../redux-store/reducer/selected-data";
+import store from "../../redux-store/store";
 
 const Index = (props: any) => {
 
@@ -81,12 +82,11 @@ const Index = (props: any) => {
 
         current.table = {'tablename': ordertype.label, ordertype: ordertype.value, invoiceitems: [], kots: []};
 
-        dispatch(setDialog({
+        dispatch(setModal({
             visible: true,
-            title,
             hidecancel: true,
-            width: 'auto',
-            component: () => <ClientAndSource tabledetails={current.table} placeOrder={placeOrder}
+            width: '98%',
+            component: () => <ClientAndSource title={title} tabledetails={current.table} placeOrder={placeOrder}
                                               navigation={navigation}/>
         }))
 
@@ -112,6 +112,7 @@ const Index = (props: any) => {
 
             if (tabledetail.ordertype === 'tableorder') {
                 saveTempLocalOrder().then(() => {
+                    dispatch(setAlert({visible: true, message: 'Table Reserve Successfully'}))
                 })
             } else {
                 navigation.navigate('CartStackNavigator', tabledetail);
@@ -156,8 +157,8 @@ const Index = (props: any) => {
             return (
                 <View style={[{minWidth: 150}, styles.flexGrow,]} key={item.tableid}>
                     {<TouchableOpacity style={[styles.m_2, styles.noshadow, {
-                        height: 135,
-                        backgroundColor: Boolean(item.kots?.length) ? styles.yellow.color : Boolean(item.clientname) ? styles.secondary.color : styles.light.color,
+                        height: 140,
+                        backgroundColor: Boolean(item.kots?.length) ? styles.yellow.color : Boolean(item.invoiceitems?.length) ? styles.secondary.color : styles.light.color,
                         borderRadius: 5
                     }]}
                                        onPress={() => {
@@ -170,19 +171,21 @@ const Index = (props: any) => {
                                     style={[styles.badge, styles.px_5, {backgroundColor: styles.primary.color}]}>
                                     <Text
                                         style={[styles.paragraph, styles.text_xs, {color: 'white'}]}>{item.tablename || 'Retail'} </Text></View></View>
-                            {Boolean(item.clientname) && <>
+                            {Boolean(item.invoiceitems?.length) && <>
                                 <Paragraph><ProIcon align={'left'} name={'user'} action_type={'text'}
                                                     size={13}/> {item.paxes} x {item.clientname}</Paragraph>
+
+                                {Boolean(item?.advanceorder?.date) &&
+                                    <Paragraph>Delivery on
+                                        : {moment(item?.advanceorder.date).format('DD/MM/YYYY')} {moment(item?.advanceorder.time).format('HH:mm')}</Paragraph>}
+
                                 <View style={[styles.mt_3]}>
                                     <Text
                                         style={[styles.paragraph, styles.text_lg, styles.bold, {color: 'black'}]}>{toCurrency(item.vouchertotaldisplay)}</Text>
                                 </View>
                             </>}
-                            {Boolean(item?.advanceorder?.date) &&
-                                <Paragraph>Delivery on
-                                    : {moment(item?.advanceorder.date).format('DD/MM/YYYY')} {moment(item?.advanceorder.time).format('HH:mm A')}</Paragraph>}
 
-                            {Boolean(item.reservetable) && <Paragraph>Reserved</Paragraph>}
+
 
                         </View>}
                     </TouchableOpacity>}

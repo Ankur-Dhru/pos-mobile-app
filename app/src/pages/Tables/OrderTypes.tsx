@@ -19,10 +19,9 @@ const OrderType = (props: any) => {
 
 
     return <>
-        <TouchableOpacity
-                           onPress={() => {
+        <TouchableOpacity  onPress={() => {
                                dispatch(setSelected({...type, field: 'ordertype'}))
-                           } }>
+                           }}>
             <Paragraph style={[selected?styles.muted:styles.primary,styles.bold,styles.text_sm,styles.p_6]}>{type.label}</Paragraph>
         </TouchableOpacity>
     </>

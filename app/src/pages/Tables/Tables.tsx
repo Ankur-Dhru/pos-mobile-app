@@ -276,29 +276,28 @@ const Index = (props: any) => {
                         }),
                     },
                     {
-                        icon: 'popcorn',
-                        label: 'Reserve Table',
+                        icon: 'table',
+                        label: 'Table Reservation',
                         onPress: () => setOrderSetting("Table Reservation", {
-                            'label': 'Reserve Table',
+                            'label': 'Table Reservation',
                             value: 'tableorder'
                         }),
                     },
                 ]}
                 onStateChange={() => {
                     if (ordertype.value === 'qsr') {
-                        setOrderSetting({'label': 'QSR', value: 'qsr'})
+                        setOrderSetting("QSR", {'label': 'QSR', value: 'qsr'})
                     } else if (ordertype.value === 'takeaway') {
-                        setOrderSetting({'label': 'Takeaway', value: 'takeaway'})
+                        setOrderSetting("Takeaway", {'label': 'Takeaway', value: 'takeaway'})
                     } else if (ordertype.value === 'advanceorder') {
-                        setOrderSetting({'label': 'Advance Order', value: 'advanceorder'})
+                        setOrderSetting("Advanced Order", {'label': 'Advance Order', value: 'advanceorder'})
                     } else if (ordertype.value === 'homedelivery') {
-                        setOrderSetting({'label': 'Home Delivery', value: 'homedelivery'})
+                        setOrderSetting("Home Delivery", {'label': 'Home Delivery', value: 'homedelivery'})
                     } else if (ordertype.value === 'tableorder') {
-                        setOrderSetting({'label': 'Reserve Table', value: 'tableorder'})
+                        setOrderSetting("Table Reservation", {'label': 'Table Reservation', value: 'tableorder'})
                     } else {
                         setFloating(!floating)
                     }
-
                 }}
                 onPress={() => {
                     if (floating) {

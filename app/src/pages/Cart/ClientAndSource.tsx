@@ -15,10 +15,30 @@ import moment from "moment";
 const ClientAndSource = (props: any) => {
     const {tabledetails,navigation,placeOrder} = props;
 
+    let defaultClientData =  {
+        "clientid": "0",
+        "newclient": "1",
+        "customertype": "individual",
+        "clientconfig": {"pricingtemplate": "default", "taxregtype": ["c"], "taxid": [[""]]},
+        "status": "active",
+        "firstname": "",
+        "lastname": "",
+        "company": "",
+        "paymentterm": "date",
+        "clienttype": 0,
+        "country": localredux?.initData?.general?.data?.country || "IN",
+        "state": localredux?.initData?.general?.data?.state || "IN-GJ",
+        "email": "",
+        "address1": "",
+        "address2": "",
+        "city": "",
+        "pin": "",
+    }
+
     const dispatch = useDispatch();
 
     const [clientSearch, setClientSearch] = useState<any>();
-    const [selectedClient, setSelectedClient] = useState<any>({})
+    const [selectedClient, setSelectedClient] = useState<any>(defaultClientData)
     const [table, setTable] = useState<any>({tableid:'',paxes:''})
     const [ordersource, setOrderSource] = useState<any>();
     const [advance, setAdvance] = useState<any>({date:moment().format('YYYY-MM-DD'),time:moment().format('YYYY-MM-DD HH:mm'),notes:''})
@@ -27,26 +47,8 @@ const ClientAndSource = (props: any) => {
         let findClient: any = Object.values(localredux?.clientsData).find((client: any) => client?.phone == clientSearch);
 
         if (isEmpty(findClient)) {
-            findClient = {
-                "clientid": "0",
-                "newclient": "1",
-                "customertype": "individual",
-                "clientconfig": {"pricingtemplate": "default", "taxregtype": ["c"], "taxid": [[""]]},
-                "status": "active",
-                "firstname": "",
-                "lastname": "",
-                "company": "",
-                "paymentterm": "date",
-                "clienttype": 0,
-                "country": localredux?.initData?.general?.data?.country || "IN",
-                "state": localredux?.initData?.general?.data?.state || "IN-GJ",
-                "email": "",
-                "phone": clientSearch,
-                "address1": "",
-                "address2": "",
-                "city": "",
-                "pin": "",
-            };
+            errorAlert("Phone number not found!");
+            findClient = defaultClientData;
         }
         setSelectedClient({...findClient, phone: clientSearch})
     }
@@ -278,12 +280,15 @@ const ClientAndSource = (props: any) => {
 
         <Button onPress={() => {
 
-             if (Boolean(selectedClient?.displayname) && (isSource ? Boolean(ordersource): true)){
+            let clientDisplayName  = selectedClient?.displayname?.trim();
+            let selectedTable = !isEmpty(table) && Boolean(table?.tableid);
+
+             if (Boolean(clientDisplayName) && (isSource ? Boolean(ordersource): true) && (isReserveTable ? selectedTable :true)){
                  let pass = {
                      ordersource: "POS",
                      tablename: tabledetails.tablename,
                      clientid: selectedClient.clientid,
-                     clientname: selectedClient.displayname,
+                     clientname: clientDisplayName,
                      newclient: Boolean(selectedClient?.clientid == "0") ? 1 : 0,
                      client: selectedClient,
                      advanceorder:isAdvanceorder ? advance : false,
@@ -297,7 +302,10 @@ const ClientAndSource = (props: any) => {
                  if (isSource && !Boolean(ordersource)){
                      message += "Please Select Order Source\n";
                  }
-                 if (!Boolean(selectedClient?.displayname) ){
+                 if (isReserveTable && !selectedTable){
+                     message += "Please Select Table\n";
+                 }
+                 if (!Boolean(clientDisplayName) ){
                      message += "Please Enter Display Name"
                  }
                  errorAlert(message);

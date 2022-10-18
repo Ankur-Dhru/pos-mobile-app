@@ -16,7 +16,6 @@ import moment from "moment";
 import OrderTypes from "./OrderTypes";
 import {setSelected} from "../../redux-store/reducer/selected-data";
 
-
 const Index = (props: any) => {
 
     const {tableorders, ordertype} = props;
@@ -78,13 +77,14 @@ const Index = (props: any) => {
     }
 
 
-    const setOrderSetting = (ordertype: any) => {
+
+    const setOrderSetting = (title: any, ordertype: any) => {
 
         current.table = {'tablename': ordertype.label, ordertype: ordertype.value, invoiceitems: [], kots: []};
 
         dispatch(setDialog({
             visible: true,
-            title: "Source & Client",
+            title,
             hidecancel: true,
             width: 'auto',
             component: () => <ClientAndSource tabledetails={current.table} placeOrder={placeOrder}
@@ -205,7 +205,6 @@ const Index = (props: any) => {
                                                                  resetTables={resetTables} item={item}
                                                                  key={index}/>, [shifttable, shiftingFromtable, shiftingTotable]);
 
-
     return (
         <>
             <OrderTypes  shifttable={shifttable} setShifttable={(value: any) => shiftStart(value)} />
@@ -253,27 +252,36 @@ const Index = (props: any) => {
                     {
                         icon: 'truck',
                         label: 'Home Delivery',
-                        onPress: () => setOrderSetting({'label': 'Home Delivery', value: 'homedelivery'}),
+                        onPress: () => setOrderSetting("Home Delivery", {
+                            'label': 'Home Delivery',
+                            value: 'homedelivery'
+                        }),
                     },
                     {
                         icon: 'sack',
                         label: 'Takeaway',
-                        onPress: () => setOrderSetting({'label': 'Takeaway', value: 'takeaway'}),
+                        onPress: () => setOrderSetting("Takeaway", {'label': 'Takeaway', value: 'takeaway'}),
                     },
                     {
                         icon: 'popcorn',
                         label: 'QSR',
-                        onPress: () => setOrderSetting({'label': 'QSR', value: 'qsr'}),
+                        onPress: () => setOrderSetting("QSR", {'label': 'QSR', value: 'qsr'}),
                     },
                     {
                         icon: 'sack',
                         label: 'Advance Order',
-                        onPress: () => setOrderSetting({'label': 'Advance Order', value: 'advanceorder'}),
+                        onPress: () => setOrderSetting("Advanced Order", {
+                            'label': 'Advance Order',
+                            value: 'advanceorder'
+                        }),
                     },
                     {
                         icon: 'popcorn',
                         label: 'Reserve Table',
-                        onPress: () => setOrderSetting({'label': 'Reserve Table', value: 'tableorder'}),
+                        onPress: () => setOrderSetting("Table Reservation", {
+                            'label': 'Reserve Table',
+                            value: 'tableorder'
+                        }),
                     },
                 ]}
                 onStateChange={() => {

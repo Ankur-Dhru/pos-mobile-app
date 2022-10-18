@@ -305,37 +305,53 @@ const ClientAndSource = (props: any) => {
 
             <Button onPress={() => {
 
-                let clientDisplayName = selectedClient?.displayname?.trim();
-                let selectedTable = !isEmpty(table) && Boolean(table?.tableid);
+            let clientDisplayName  = selectedClient?.displayname?.trim();
 
-                if (Boolean(clientDisplayName) && (isSource ? Boolean(ordersource) : true) && (isReserveTable ? selectedTable : true)) {
-                    let pass = {
-                        ordersource: "POS",
-                        tablename: tabledetails.tablename,
-                        clientid: selectedClient.clientid,
-                        clientname: clientDisplayName,
-                        newclient: Boolean(selectedClient?.clientid == "0") ? 1 : 0,
-                        client: selectedClient,
-                        advanceorder: isAdvanceorder ? advance : false,
-                        reservetable: isReserveTable ? table : false
-                    }
-                    placeOrder(pass)
 
-                    dispatch(setModal({visible: false}))
-                } else {
-                    let message = "";
-                    if (isSource && !Boolean(ordersource)) {
-                        message += "Please Select Order Source\n";
-                    }
-                    if (isReserveTable && !selectedTable) {
-                        message += "Please Select Table\n";
-                    }
-                    if (!Boolean(clientDisplayName)) {
-                        message += "Please Enter Display Name"
-                    }
-                    errorAlert(message);
-                }
-            }}> Save </Button>
+            let selectedTable = !isEmpty(table) && Boolean(table?.tableid);
+            let isPaxes = !isEmpty(table) && Boolean(table?.paxes);
+
+             if (Boolean(clientDisplayName) && (isSource ? Boolean(ordersource): true) && (isReserveTable ? selectedTable && isPaxes :true)){
+                 let pass = {
+                     ordersource: "POS",
+                     tablename: tabledetails.tablename,
+                     clientid: selectedClient.clientid,
+                     clientname: clientDisplayName,
+                     newclient: Boolean(selectedClient?.clientid == "0") ? 1 : 0,
+                     client: selectedClient,
+                     advanceorder:isAdvanceorder ? advance : false,
+                     reservetable:isReserveTable ? table : false
+                 }
+
+                 if (isSource){
+                     pass = {
+                         ...pass,
+                         tablename: ordersource
+                     }
+                 }
+
+                 placeOrder(pass)
+
+                 dispatch(setModal({visible: false}))
+             }else {
+                 let message = "";
+                 if (isSource && !Boolean(ordersource)){
+                     message += "Please Select Order Source\n";
+                 }
+                 if (isReserveTable){
+                     if (!selectedTable){
+                         message += "Please Select Table\n";
+                     }
+                     if (!isPaxes){
+                         message += "Please Enter Pax\n";
+                     }
+                 }
+                 if (!Boolean(clientDisplayName) ){
+                     message += "Please Enter Display Name"
+                 }
+                 errorAlert(message);
+             }
+        }}>Save</Button>
 
         </View>
 

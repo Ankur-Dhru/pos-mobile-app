@@ -104,7 +104,6 @@ const Index = (props: any) => {
 
     }
 
-
     const Item = memo(
         ({item}: any) => {
 

@@ -24,9 +24,6 @@ const Index = ({tabledetails}: any) => {
 
 
     useEffect(() => {
-
-        appLog('tabledetails',tabledetails)
-
         const voucherDataJson: any = voucherData(VOUCHER.INVOICE, false);
         dispatch(refreshCartData({...tabledetails, ...voucherDataJson}))
         dispatch(setSelected({value: mainproductgroupid, field: 'group'}))

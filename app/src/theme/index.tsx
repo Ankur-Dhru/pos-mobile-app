@@ -91,6 +91,8 @@ export const styles: any = StyleSheet.create({
     p_0: {padding: hp('0%')},
     p_1: {padding: hp('0.1%')},
     p_2: {padding: hp('0.2%')},
+    pb_2: {paddingBottom: hp('0.2%')},
+    pt_2: {paddingTop: hp('0.2%')},
     p_3: {padding: hp('0.5%')},
     p_4: {padding: hp('1%')},
 

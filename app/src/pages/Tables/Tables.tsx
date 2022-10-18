@@ -54,7 +54,7 @@ const Index = (props: any) => {
     }
 
     const shiftStart = (value: any) => {
-        dispatch(setSelected({ label: 'Tables', value: 'tableorder', field: 'ordertype' }))
+        dispatch(setSelected({label: 'Tables', value: 'tableorder', field: 'ordertype'}))
         setShifttable(value)
         setShiftingFromtable('');
         setShiftingTotable('');
@@ -75,7 +75,6 @@ const Index = (props: any) => {
         newtables = newtables.concat(newothertables);
         await setTables(newtables);
     }
-
 
 
     const setOrderSetting = (title: any, ordertype: any) => {
@@ -207,7 +206,7 @@ const Index = (props: any) => {
 
     return (
         <>
-            <OrderTypes  shifttable={shifttable} setShifttable={(value: any) => shiftStart(value)} />
+            <OrderTypes shifttable={shifttable} setShifttable={(value: any) => shiftStart(value)}/>
 
             <View style={[styles.px_4, styles.flex, styles.h_100]}>
 

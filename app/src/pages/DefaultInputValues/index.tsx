@@ -9,7 +9,7 @@ import Button from "../../components/Button";
 import InputField from "../../components/InputField";
 import {ProIcon} from "../../components";
 
-const Index = ({defaultInputValues,defaultInputAmounts}: any) => {
+const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
 
     const dispatch = useDispatch();
     const [inputValues, setInputValues] = useState<any>();
@@ -23,17 +23,16 @@ const Index = ({defaultInputValues,defaultInputAmounts}: any) => {
     const onClickAddInputValues = async () => {
         let newData = [];
         let isNumSelected = (selectedTab === 'num');
-        if(isNumSelected) {
+        if (isNumSelected) {
             if (!isEmpty(defaultInputValues)) {
                 newData = clone(defaultInputValues)
             }
-        }
-        else{
+        } else {
             if (!isEmpty(defaultInputAmounts)) {
                 newData = clone(defaultInputAmounts)
             }
         }
-        if(Boolean(inputValues)) {
+        if (Boolean(inputValues)) {
             await saveLocalSettings(isNumSelected ? 'defaultInputValues' : 'defaultInputAmounts', [...newData, inputValues]).then(() => {
                 setInputValues("")
             })
@@ -49,12 +48,13 @@ const Index = ({defaultInputValues,defaultInputAmounts}: any) => {
                     borderRadius: 5,
                 }]}>
                     <Paragraph style={[styles.paragraph, styles.bold]}>{item}</Paragraph>
-                    <TouchableOpacity onPress={async ()=>{
-                        if(selectedTab === 'num') {
-                            await saveLocalSettings('defaultInputValues', defaultInputValues.filter((v: any) => v !== item)).then(() => {})
-                        }
-                        else{
-                            await saveLocalSettings('defaultInputAmounts', defaultInputAmounts.filter((v: any) => v !== item)).then(() => {})
+                    <TouchableOpacity onPress={async () => {
+                        if (selectedTab === 'num') {
+                            await saveLocalSettings('defaultInputValues', defaultInputValues.filter((v: any) => v !== item)).then(() => {
+                            })
+                        } else {
+                            await saveLocalSettings('defaultInputAmounts', defaultInputAmounts.filter((v: any) => v !== item)).then(() => {
+                            })
                         }
                     }}>
                         <Paragraph>
@@ -76,7 +76,7 @@ const Index = ({defaultInputValues,defaultInputAmounts}: any) => {
 
 
         <View>
-            <View style={[styles.grid, styles.justifyContent,styles.p_4]}>
+            <View style={[styles.grid, styles.justifyContent, styles.p_4]}>
                 <Button style={[styles.w_auto]} compact={true} onPress={() => {
                     setSelectedTab("num")
 
@@ -94,7 +94,7 @@ const Index = ({defaultInputValues,defaultInputAmounts}: any) => {
             <View style={[styles.flexGrow, {width: "70%", marginRight: 12}]}>
                 <InputField
                     value={inputValues}
-                    label={'Amount'}
+                    label={selectedTab === 'num' ? 'Quantity' : 'Amount'}
                     inputtype={'textbox'}
                     keyboardType='numeric'
                     onChange={(value: any) => {
@@ -107,7 +107,7 @@ const Index = ({defaultInputValues,defaultInputAmounts}: any) => {
             </View>
         </View>
         <FlatList
-            data={selectedTab === 'num'? isEmpty(defaultInputValues) ? [] : defaultInputValues :  isEmpty(defaultInputAmounts) ? [] : defaultInputAmounts}
+            data={selectedTab === 'num' ? isEmpty(defaultInputValues) ? [] : defaultInputValues : isEmpty(defaultInputAmounts) ? [] : defaultInputAmounts}
             renderItem={renderitem}
             initialNumToRender={5}
         />

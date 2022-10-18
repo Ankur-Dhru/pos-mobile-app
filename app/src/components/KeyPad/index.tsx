@@ -69,7 +69,7 @@ const index = (props: any) => {
 
         <View ref={qntRef} style={[styles.grid, styles.justifyContent, styles.mb_4, {marginLeft: -4, marginRight: -4}]}>
             {
-                defaultInputValues.map((num: string) => {
+                defaultInputValues?.map((num: string) => {
                     return <TouchableOpacity
                         onPress={() => onPressDefaultNum(num)}
                         style={[styles.flexGrow, styles.p_5, styles.m_2, {
@@ -87,7 +87,7 @@ const index = (props: any) => {
         <View ref={amtRef}
               style={[styles.grid, styles.justifyContent, {marginLeft: -4, marginRight: -4,display:'none'}]}>
             {
-                defaultInputAmounts.map((num: string) => {
+                defaultInputAmounts?.map((num: string) => {
                     return <TouchableOpacity
                         onPress={() => onPressDefaultNum(num)}
                         style={[styles.flexGrow, styles.p_5, styles.m_2, {

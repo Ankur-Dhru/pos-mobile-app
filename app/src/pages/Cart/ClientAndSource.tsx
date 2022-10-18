@@ -281,9 +281,13 @@ const ClientAndSource = (props: any) => {
         <Button onPress={() => {
 
             let clientDisplayName  = selectedClient?.displayname?.trim();
-            let selectedTable = !isEmpty(table) && Boolean(table?.tableid);
 
-             if (Boolean(clientDisplayName) && (isSource ? Boolean(ordersource): true) && (isReserveTable ? selectedTable :true)){
+            appLog("table", table);
+
+            let selectedTable = !isEmpty(table) && Boolean(table?.tableid);
+            let isPaxes = !isEmpty(table) && Boolean(table?.paxes);
+
+             if (Boolean(clientDisplayName) && (isSource ? Boolean(ordersource): true) && (isReserveTable ? selectedTable && isPaxes :true)){
                  let pass = {
                      ordersource: "POS",
                      tablename: tabledetails.tablename,
@@ -294,6 +298,14 @@ const ClientAndSource = (props: any) => {
                      advanceorder:isAdvanceorder ? advance : false,
                      reservetable:isReserveTable ? table : false
                  }
+
+                 if (isSource){
+                     pass = {
+                         ...pass,
+                         tablename: ordersource
+                     }
+                 }
+
                  placeOrder(pass)
 
                  dispatch(setDialog({visible: false}))
@@ -302,8 +314,13 @@ const ClientAndSource = (props: any) => {
                  if (isSource && !Boolean(ordersource)){
                      message += "Please Select Order Source\n";
                  }
-                 if (isReserveTable && !selectedTable){
-                     message += "Please Select Table\n";
+                 if (isReserveTable){
+                     if (!selectedTable){
+                         message += "Please Select Table\n";
+                     }
+                     if (!isPaxes){
+                         message += "Please Enter Pax\n";
+                     }
                  }
                  if (!Boolean(clientDisplayName) ){
                      message += "Please Enter Display Name"

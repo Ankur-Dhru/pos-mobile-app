@@ -1,8 +1,9 @@
-package com.app;
+package com.dhru.pos.terminal;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
+import com.dhru.pos.terminal.BuildConfig;
 
 public class MainActivity extends ReactActivity {
 

@@ -1,7 +1,8 @@
-package com.app.newarchitecture;
+package com.dhru.pos.terminal.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
+import com.dhru.pos.terminal.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
@@ -19,9 +20,9 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.app.BuildConfig;
-import com.app.newarchitecture.components.MainComponentsRegistry;
-import com.app.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.dhru.pos.terminal.BuildConfig;
+import com.dhru.pos.terminal.newarchitecture.components.MainComponentsRegistry;
+
 import java.util.ArrayList;
 import java.util.List;
 

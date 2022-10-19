@@ -42,7 +42,7 @@ const Index = ({cartData}: any) => {
                 divider={true}
                 displaytype={'pagelist'}
                 inputtype={'dropdown'}
-                render={() => <View style={[styles.grid, styles.justifyContent, styles.py_5]}>
+                render={() => <View style={[styles.grid, styles.justifyContent,{paddingTop:8,paddingBottom:8}]}>
                     <View style={[styles.grid, styles.justifyContent,styles.noWrap]}>
                         <Avatar label={client.label} value={client.value} fontsize={12}  size={30}/>
                         <View style={[styles.ml_2]}><Paragraph style={[styles.paragraph,styles.bold]}> {client.label}</Paragraph></View>

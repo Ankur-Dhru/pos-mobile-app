@@ -122,7 +122,8 @@ const Index = (props: any) => {
                     </View>
 
                 <ReactNativePinView
-                    inputSize={20}
+                    inputSize={18}
+                    buttonSize={55}
                     ref={pinView}
                     pinLength={5}
                     onValueChange={value => value.length === 5 && setEnteredPin(value)}

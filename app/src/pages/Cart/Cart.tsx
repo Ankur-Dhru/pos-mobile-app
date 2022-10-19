@@ -4,7 +4,8 @@ import {styles} from "../../theme";
 import DetailView from "./DetailView";
 import GroupList from "../Items/GroupList";
 import {useDispatch} from "react-redux";
-import {Card, Paragraph,Text,Button} from "react-native-paper";
+import {Card, Paragraph,Text,Button as Btn} from "react-native-paper";
+import Button from "../../components/Button";
 import InputField from "../../components/InputField";
 import CartTotal from "./CartTotal";
 
@@ -18,7 +19,7 @@ import SearchItem from "../Items/SearchItem";
 import GroupHeading from "../Items/GroupHeading";
 import ClientDetail from "../Client/ClientDetail";
 import {useNavigation} from "@react-navigation/native";
-import {appLog, cancelOrder, isRestaurant, saveTempLocalOrder} from "../../libs/function";
+import {cancelOrder, isRestaurant, saveTempLocalOrder} from "../../libs/function";
 import NumPad from "../Items/NumPad";
 import {hideLoader, setModal, showLoader} from "../../redux-store/reducer/component";
 import ItemListMobile from "../Items/ItemListMobile";
@@ -82,14 +83,12 @@ const Index = (props: any) => {
                     {<View style={{marginLeft:5,marginRight:5,width:'auto',minWidth:'30%'}}>
                         <ClientDetail/>
                     </View>}
-                    <Card>
-                        <View style={{padding:5}}>
-                            <Button
-                                onPress={() => cancelOrder(navigation).then()}
-                                more={{backgroundColor: styles.red.color, color: 'white'}}
-                            > Cancel </Button>
-                        </View>
-                    </Card>
+                    <View>
+                        <Button
+                            onPress={() => cancelOrder(navigation).then()}
+                            more={{backgroundColor: styles.red.color, color: 'white'}}
+                        > Cancel </Button>
+                    </View>
                 </View>
 
                 <View  style={[styles.grid, styles.justifyContent, styles.noWrap, styles.h_100, styles.flex, styles.py_4]}>
@@ -122,7 +121,7 @@ const Index = (props: any) => {
                         dispatch(showLoader());  saveTempLocalOrder().then(() => { navigation.goBack(); dispatch(hideLoader()); })
                     },
                     actions:()=>
-                        <Button onPress={() => dispatch(setModal({title: 'Search Items',visible:true,component: ()=><SearchItem  />}))}>Search</Button> }}>
+                        <Btn onPress={() => dispatch(setModal({title: 'Search Items',visible:true,component: ()=><SearchItem  />}))}>Search</Btn> }}>
 
                 <View style={[styles.h_100, styles.flex, {flexDirection: 'column',paddingTop:5}]}>
 

@@ -4,15 +4,15 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.app",
+  "applicationId": "com.dhru.pos.terminal",
   "variantName": "release",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 1,
-      "versionName": "1.0",
+      "versionCode": 301,
+      "versionName": "3.0.1",
       "outputFile": "app-release.apk"
     }
   ],

@@ -1,21 +1,24 @@
 import {ScrollView, TouchableOpacity, View} from "react-native";
 import {Card, Paragraph} from "react-native-paper";
 import {useDispatch} from "react-redux";
-import {setModal} from "../../redux-store/reducer/component";
+import {hideLoader, setModal, showLoader} from "../../redux-store/reducer/component";
 import {styles} from "../../theme";
 import InputField from "../../components/InputField";
 import Button from "../../components/Button";
 import React, {useState} from "react";
 import {localredux} from "../../libs/static";
-import {appLog, errorAlert, isEmpty} from "../../libs/function";
+import {appLog, errorAlert, isEmpty, saveTempLocalOrder} from "../../libs/function";
 
 import moment from "moment";
 
 import CartActions from "./CartActions";
+import store from "../../redux-store/store";
 
 
 const ClientAndSource = (props: any) => {
-    const {tabledetails, placeOrder, title} = props;
+    let {tabledetails, placeOrder, title,edit} = props;
+
+
 
     let defaultClientData = {
         "clientid": "0",
@@ -37,17 +40,22 @@ const ClientAndSource = (props: any) => {
         "pin": "",
     }
 
+    if(edit){
+        tabledetails = store.getState().cartData;
+
+    }
+
     const dispatch = useDispatch();
 
     const [clientSearch, setClientSearch] = useState<any>();
-    const [selectedClient, setSelectedClient] = useState<any>(defaultClientData)
-    const [table, setTable] = useState<any>({tableid: '', paxes: '',date: moment().format('YYYY-MM-DD'),
-        time: moment().format('YYYY-MM-DD HH:mm'),})
+    const [selectedClient, setSelectedClient] = useState<any>({...defaultClientData,...tabledetails?.client})
+    const [table, setTable] = useState<any>({tableid: '', paxes: '',date: moment().format('YYYY-MM-DD'),time: moment().format('YYYY-MM-DD HH:mm'),...tabledetails?.reservetable})
     const [ordersource, setOrderSource] = useState<any>();
     const [advance, setAdvance] = useState<any>({
-        date: moment().format('YYYY-MM-DD'),
-        time: moment().format('YYYY-MM-DD HH:mm'),
-        notes: ''
+        date:  moment().format('YYYY-MM-DD'),
+        time:  moment().format('YYYY-MM-DD HH:mm'),
+        notes:  '',
+        ...tabledetails.advanceorder
     })
 
     const onClientSearch = () => {
@@ -225,7 +233,8 @@ const ClientAndSource = (props: any) => {
 
 
             <View style={[styles.w_auto,styles.h_100,  {minWidth: 360,maxWidth:'100%'}]}>
-                <Paragraph style={[styles.caption]}>Client Information</Paragraph>
+                {<>
+                    <Paragraph style={[styles.caption]}>Client Information</Paragraph>
                     <View style={[styles.grid, styles.justifyContent]}>
                         <View style={[styles.flexGrow, styles.w_auto, {marginRight: 12}]}>
                             <InputField
@@ -290,7 +299,7 @@ const ClientAndSource = (props: any) => {
                             />
                         </View>
                     </View>
-
+                </>}
             </View>
 
         </View>
@@ -303,7 +312,7 @@ const ClientAndSource = (props: any) => {
                         dispatch(setModal({visible: false,}));
                     }}> Cancel </Button>
 
-            <Button onPress={() => {
+             <Button onPress={() => {
 
             let clientDisplayName  = selectedClient?.displayname?.trim();
 
@@ -330,7 +339,19 @@ const ClientAndSource = (props: any) => {
                      }
                  }
 
-                 placeOrder(pass)
+                 if(edit){
+                     tabledetails = {
+                         ...tabledetails,
+                         ...pass
+                     }
+                     dispatch(showLoader())
+                     saveTempLocalOrder(tabledetails).then(() => {
+                         dispatch(hideLoader())
+                     })
+                 }
+                 else {
+                     placeOrder(pass)
+                 }
 
                  dispatch(setModal({visible: false}))
              }else {
@@ -351,7 +372,7 @@ const ClientAndSource = (props: any) => {
                  }
                  errorAlert(message);
              }
-        }}>Next</Button>
+        }}> {edit?'Update':'Next'} </Button>
 
         </View>
 

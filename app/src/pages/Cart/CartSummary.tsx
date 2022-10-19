@@ -19,8 +19,6 @@ import ClientAndSource from "./ClientAndSource";
 
 const Index = ({vouchertotaldisplay,advanceorder}: any) => {
 
-    appLog('advanceorder',advanceorder)
-
     const dispatch = useDispatch()
     const moreSummaryRef:any = React.useRef();
     let summary:any = false
@@ -50,12 +48,12 @@ const Index = ({vouchertotaldisplay,advanceorder}: any) => {
 
     return (<>
         {Boolean(advanceorder?.date) &&  <Card style={[styles.dottedBorder,styles.noshadow,styles.p_5,styles.m_3,{borderRadius:5}]} onPress={()=>{
-            /*dispatch(setModal({
+            dispatch(setModal({
                 visible: true,
                 hidecancel: true,
                 width: '98%',
-                component: () => <ClientAndSource title={'Advance Order'} />
-            }))*/
+                component: () => <ClientAndSource title={'Advance Order'} edit={true} />
+            }))
         }}>
             <Paragraph>Delivery on :  {moment(advanceorder.date).format('DD/MM/YYYY')} {moment(advanceorder.time).format('HH:mm A')}</Paragraph>
             {Boolean(advanceorder.notes) &&  <Paragraph>{advanceorder.notes}</Paragraph>}

@@ -61,6 +61,8 @@ const Terminal = (props: any) => {
         }).then(async (response: any) => {
 
             if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
+
+
                 const licensedata = {
                     data: response.data,
                     token: response.token

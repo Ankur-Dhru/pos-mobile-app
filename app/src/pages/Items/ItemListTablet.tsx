@@ -36,7 +36,7 @@ const Index = (props: any) => {
 
     const {selectedgroup} = props;
 
-    const {groupItemsData}:any = localredux
+    const {groupItemsData,itemsData}:any = localredux;
 
     let [items,setItems] = useState(groupItemsData[selectedgroup]);
 

@@ -26,9 +26,7 @@ import {
     TICKET_STATUS, TICKETS_TYPE,
     VOUCHER
 } from "./static";
-import {setInitData} from "../redux-store/reducer/init-data";
-import {setItemsData} from "../redux-store/reducer/items-data";
-import {setclientsData} from "../redux-store/reducer/clients-data";
+
 import {
     setSettings
 } from "../redux-store/reducer/local-settings-data";
@@ -321,8 +319,6 @@ export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = t
 
     let local = utcDate;
 
-    appLog("licenseData?.data?.location_id", licenseData?.data?.location_id)
-
     let data: any = {
         localdatetime: local,
         date,
@@ -437,11 +433,12 @@ export const getInvoiceType = (vouchertypeid: string) => {
 }
 
 
-export const storeData = async (key: any, value: any) => { //elo
+export const storeData = async (key: any, value: any) => {
     try {
         await AsyncStorage.setItem(key, JSON.stringify(value));
         return true
     } catch (error) {
+        appLog('error',error)
         return false;
     }
 };
@@ -471,126 +468,142 @@ export const CheckConnectivity = () => {
 
 export const syncData = async () => {
 
-    let itemsData: any;
-    await retrieveData('fusion-pro-pos-mobile').then((data: any) => {
-        itemsData = data.itemsData;
-    })
+    try {
 
-    let {initData, licenseData, localSettingsData: {lastSynctime}, addonsData, clientsData, authData}: any = localredux;
+        let itemsData: any;
+        let licenseData: any
+        await retrieveData('fusion-pro-pos-mobile').then((data: any) => {
+            itemsData = data?.itemsData   || {};
+            licenseData = data?.licenseData || {};
+            appLog('itemsData',Object.keys(itemsData).length)
+        })
 
-    store.dispatch(setDialog({visible: true, hidecancel: true, width: 300, component: () => <SyncingInfo/>}))
 
-    const getData = async (queryString?: any) => {
+        let {initData, localSettingsData: {lastSynctime}, addonsData, clientsData, authData}: any = localredux;
 
-        if (!Boolean(lastSynctime)) {
+        store.dispatch(setDialog({visible: true, hidecancel: true, width: 300, component: () => <SyncingInfo/>}))
+
+        const getData = async (queryString?: any) => {
+
+            if (!Boolean(lastSynctime)) {
+                lastSynctime = 0
+            }
             lastSynctime = 0
-        }
-        queryString = {
-            ...queryString,
-            timestamp: lastSynctime
-        }
+            queryString = {
+                ...queryString,
+                timestamp: lastSynctime
+            }
 
-        await apiService({
-            method: METHOD.GET,
-            action: ACTIONS.SYNC_DATA,
-            queryString,
-            workspace: initData.workspace,
-            token: licenseData?.token,
-            hideLoader: true,
-            other: {url: posUrl},
-        }).then(async (response: any) => {
+            await apiService({
+                method: METHOD.GET,
+                action: ACTIONS.SYNC_DATA,
+                queryString,
+                workspace: initData.workspace,
+                token: licenseData?.token,
+                hideLoader: true,
+                other: {url: posUrl},
+            }).then(async (response: any) => {
 
-            const {status, data, info: {type, start, result}} = response;
+                const {status, data, info: {type, start, result}} = response;
 
-            if (status === STATUS.SUCCESS) {
-                if (result === 'setting') {
-                    initData = {
-                        ...initData,
-                        ...data
-                    }
-                } else if (result === 'item') {
-                    if (Boolean(data.result)) {
-                        let items = data.result.reduce((accumulator: any, value: any) => {
-                            return {...accumulator, [value.itemid]: value};
-                        }, {});
-                        itemsData = {
-                            ...itemsData,
-                            ...items
+                if (status === STATUS.SUCCESS) {
+                    if (result === 'setting') {
+                        initData = {
+                            ...initData,
+                            ...data
                         }
-                    }
-                } else if (result === 'addon') {
-                    if (Boolean(data.result)) {
-                        let addons = data.result.reduce((accumulator: any, value: any) => {
-                            return {...accumulator, [value.itemid]: value};
-                        }, {});
-                        addonsData = {
-                            ...addonsData,
-                            ...addons
+                    } else if (result === 'item') {
+                        if (Boolean(data.result)) {
+
+                            let items = data.result.reduce((accumulator: any, value: any) => {
+                                return {...accumulator, [value.itemid]: value};
+                            }, {});
+                            itemsData = {
+                                ...itemsData,
+                                ...items
+                            }
+                            appLog('itemsData',itemsData)
+
                         }
-                    }
-                } else if (result === 'customer') {
-                    if (Boolean(data.result)) {
-                        let clients = data.result.reduce((accumulator: any, value: any) => {
-                            return {...accumulator, [value.clientid]: value};
-                        }, {});
-
-                        clientsData = {
-                            ...clientsData,
-                            ...clients
-                        }
-                    }
-                }
-
-                if (type !== "finish") {
-                    await store.dispatch(setSyncDetail({type: result}))
-                    setTimeout(() => {
-                        getData({type, start});
-                    }, 100)
-                } else {
-
-                    retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
-
-                        const locationid = licenseData?.data?.location_id;
-
-                        const locations = initData?.location;
-
-                        data = {
-                            ...data,
-                            initData,
-                            itemsData: itemsData,
-                            addonsData: addonsData,
-                            clientsData: clientsData,
-                            localSettingsData: {
-                                currentLocation: locations[locationid],
-                                isRestaurant: (locations[locationid].industrytype === "foodservices"),
-                                lastSynctime: moment().unix()
+                    } else if (result === 'addon') {
+                        if (Boolean(data.result)) {
+                            let addons = data.result.reduce((accumulator: any, value: any) => {
+                                return {...accumulator, [value.itemid]: value};
+                            }, {});
+                            addonsData = {
+                                ...addonsData,
+                                ...addons
                             }
                         }
+                    } else if (result === 'customer') {
+                        if (Boolean(data.result)) {
+                            let clients = data.result.reduce((accumulator: any, value: any) => {
+                                return {...accumulator, [value.clientid]: value};
+                            }, {});
 
-                        storeData('fusion-pro-pos-mobile', data).then(async () => {
+                            clientsData = {
+                                ...clientsData,
+                                ...clients
+                            }
+                        }
+                    }
 
+                    if (type !== "finish") {
+                        await store.dispatch(setSyncDetail({type: result}))
+                        setTimeout(() => {
+                             getData({type, start});
+                        }, 100)
+                    } else {
 
-                            localredux.initData = data.initData;
-                            localredux.addonsData = data.addonsData;
-                            localredux.clientsData = data.clientsData;
-                            localredux.localSettingsData = data.localSettingsData;
-                            localredux.groupItemsData = groupBy(Object.values(itemsData), 'itemgroupid');
+                        await retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
 
-                        });
-                    })
+                            try {
 
+                                const locationid = licenseData?.data?.location_id;
+                                const locations = initData?.location;
+
+                                data = {
+                                    ...data,
+                                    itemsData,
+                                    initData,
+                                    addonsData,
+                                    clientsData,
+                                    localSettingsData: {
+                                        currentLocation: locations[locationid],
+                                        lastSynctime: moment().unix(),
+                                        isRestaurant: (locations[locationid]?.industrytype === "foodservices"),
+                                    }
+                                }
+
+                                await storeData('fusion-pro-pos-mobile', data).then(async () => {
+                                    localredux.initData = data.initData;
+                                    localredux.addonsData = data.addonsData;
+                                    localredux.clientsData = data.clientsData;
+                                    localredux.localSettingsData = data.localSettingsData;
+                                });
+
+                            } catch (e) {
+                                appLog('e', e)
+                            }
+                        })
+
+                    }
                 }
-            }
-            if (status === STATUS.ERROR || type === "finish") {
+                if (status === STATUS.ERROR || type === "finish") {
 
-                store.dispatch(setDialog({visible: false}))
-                store.dispatch(setAlert({visible: true, message: 'Sync Successful'}))
-            }
+                    store.dispatch(setDialog({visible: false}))
+                    store.dispatch(setAlert({visible: true, message: 'Sync Successful'}))
+                }
 
-        })
+            })
+        }
+
+        getData().then()
+
     }
-
-    getData().then()
+    catch (e) {
+        appLog('e',e)
+    }
 
 }
 
@@ -1049,13 +1062,18 @@ export const syncInvoice = () => {
 
 
 export const groupBy = (arr: any, property: any) => {
-    return arr.reduce(function (memo: any, x: any) {
-        if (!memo[x[property]]) {
-            memo[x[property]] = [];
-        }
-        memo[x[property]].push(x);
-        return memo;
-    }, {});
+    try {
+        return arr.reduce(function (memo: any, x: any) {
+            if (!memo[x[property]]) {
+                memo[x[property]] = [];
+            }
+            memo[x[property]].push(x);
+            return memo;
+        }, {});
+    }
+    catch (e) {
+        appLog('e',e)
+    }
 }
 
 export const selectItem = async (item: any) => {

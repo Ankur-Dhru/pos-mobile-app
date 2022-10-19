@@ -17,6 +17,7 @@ import {appLog, groupBy} from "../../libs/function";
 import store from "../../redux-store/store";
 import {setOrder, setOrdersData} from "../../redux-store/reducer/orders-data";
 import { setSettings } from "../../redux-store/reducer/local-settings-data";
+import {ProIcon} from "../../components";
 
 const md5 = require('md5');
 
@@ -24,7 +25,6 @@ const md5 = require('md5');
 const Index = (props: any) => {
 
     let {route: {params}, navigation}: any = props;
-    let {workspace}: any = localredux.initData;
 
     const dispatch = useDispatch()
 
@@ -58,21 +58,13 @@ const Index = (props: any) => {
                                     localredux.licenseData=licenseData;
                                     localredux.authData=authData;
                                     localredux.clientsData = clientsData;
-
+                                    localredux.localSettingsData = localSettingsData;
                                     localredux.addonsData = addonsData;
                                     localredux.itemsData = itemsData;
                                     localredux.groupItemsData = groupBy(Object.values(itemsData), 'itemgroupid');
 
                                     await dispatch(setOrdersData(orders));
-                                    /*await dispatch(setLicenseData(licenseData));
-                                    await dispatch(setItemsData(items));
-                                    await dispatch(setAddonsData(addons));
-                                    await dispatch(setclientsData(clients));
-                                    await dispatch(setRestaurant(isRestaurant));
-                                    await dispatch(setCurrentLocation(currentLocation));
-                                    await dispatch(setInitData(initData));
-                                    await dispatch(setAuthData(authData));
-                                    */
+
 
                                     await retrieveData('fusion-pro-pos-mobile-tableorder').then(async (tableorders: any) => {
                                         await dispatch(setTableOrdersData(tableorders));
@@ -101,29 +93,32 @@ const Index = (props: any) => {
     }, [enteredPin])
 
 
-    return <Container hideappbar={Boolean(params.onlyone)} >
+    return <Container hideappbar={true}  >
 
         <Card>
-
+            <View style={{position:'absolute',zIndex:99}}>
+                <TouchableOpacity  style={[styles.p_6]} onPress={()=>navigation.goBack()}>
+                    <ProIcon name={'chevron-left'}  />
+                </TouchableOpacity>
+            </View>
             <View style={[styles.center, styles.h_100, styles.middle]}>
 
                 <View style={{width:300}}>
 
-                    <View style={[styles.grid,styles.center,{marginBottom:5}]}>
+                    <View style={[styles.grid,styles.center,]}>
                         <Image
-                            style={[{width: 50, height: 50,margin:'auto'}]}
+                            style={[{width: 45, height: 45,margin:'auto',marginBottom:5}]}
                             source={require('../../assets/dhru-logo-22.png')}
                         />
                     </View>
 
                     <View>
-
                         <Paragraph style={[styles.paragraph,{textAlign:'center'}]}>{params.username}</Paragraph>
                     </View>
 
                 <ReactNativePinView
-                    inputSize={18}
-                    buttonSize={55}
+                    inputSize={15}
+
                     ref={pinView}
                     pinLength={5}
                     onValueChange={value => value.length === 5 && setEnteredPin(value)}

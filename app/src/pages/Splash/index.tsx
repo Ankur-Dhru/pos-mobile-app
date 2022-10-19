@@ -37,7 +37,6 @@ const Index = (props: any) => {
                 localredux.initData = initData;
                 localredux.localSettingsData = localSettingsData;
 
-
                 //await store.dispatch(setInitData(initData))
 
                 retrieveData('fusion-pro-pos-mobile-settings').then(async (settings: any) => {

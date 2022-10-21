@@ -1,10 +1,10 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 
 import {Image, TouchableOpacity, View} from "react-native";
 import Container from "../../components/Container";
 import ReactNativePinView from "react-native-pin-view"
 import {useDispatch} from "react-redux";
-import { retrieveData, syncData} from "../../libs/function";
+import {appLog, retrieveData, syncData} from "../../libs/function";
 
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
 import {Card, Paragraph, Text} from "react-native-paper";
@@ -13,11 +13,12 @@ import moment from "moment/moment";
 
 import {setTableOrdersData} from "../../redux-store/reducer/table-orders-data";
 import {localredux} from "../../libs/static";
-import {appLog, groupBy} from "../../libs/function";
-import store from "../../redux-store/store";
-import {setOrder, setOrdersData} from "../../redux-store/reducer/orders-data";
+import {groupBy} from "../../libs/function";
+import { setOrdersData} from "../../redux-store/reducer/orders-data";
 import { setSettings } from "../../redux-store/reducer/local-settings-data";
 import {ProIcon} from "../../components";
+import {readTable} from "../../libs/Sqlite/selectData";
+import {TABLE} from "../../libs/Sqlite/config";
 
 const md5 = require('md5');
 
@@ -46,7 +47,7 @@ const Index = (props: any) => {
                                 localSettingsData,
                                 clientsData,
                                 addonsData,
-                                itemsData,
+
                                 orders
                             } = data || {};
 
@@ -60,8 +61,11 @@ const Index = (props: any) => {
                                     localredux.clientsData = clientsData;
                                     localredux.localSettingsData = localSettingsData;
                                     localredux.addonsData = addonsData;
-                                    localredux.itemsData = itemsData;
-                                    localredux.groupItemsData = groupBy(Object.values(itemsData), 'itemgroupid');
+
+                                     //localredux.itemsData = await readTable(TABLE.ITEM,'3468866f-e582-4649-8d7f-b3aef30ce8a9').then()
+
+                                    //localredux.groupItemsData = groupBy(localredux.itemsData, 'itemgroupid');
+
 
                                     await dispatch(setOrdersData(orders));
 

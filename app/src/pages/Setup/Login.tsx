@@ -1,7 +1,7 @@
 import React from "react";
 
 
-import {Image, Text, View} from "react-native";
+import {Image, Linking, Text, TouchableOpacity, View} from "react-native";
 import {Card, Paragraph, Title} from "react-native-paper";
 import {styles} from "../../theme";
 import Container from "../../components/Container";
@@ -124,6 +124,7 @@ const Index = (props: any) => {
                                 </View>
 
 
+
                             </View>
 
                             <View>
@@ -132,6 +133,12 @@ const Index = (props: any) => {
                                             handleSubmit(values)
                                         }}> Login
                                 </Button>
+                            </View>
+
+                            <View style={[styles.middle, {marginBottom: 30}]}>
+                                <TouchableOpacity onPress={()=>{
+                                    Linking.openURL('https://account.dhru.com/checkout?pid=3d44bcb5-afbc-4153-af6a-aa3457ebe119&newuser=true')
+                                }}><Paragraph style={[styles.paragraph,styles.mt_5]}>New User? <Text style={[{color:styles.primary.color}]}> Create an account </Text> </Paragraph></TouchableOpacity>
                             </View>
 
 

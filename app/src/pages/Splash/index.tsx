@@ -1,7 +1,7 @@
-import React from "react";
-import {Image, Text, View} from "react-native";
+import React, {useCallback, useEffect} from "react";
+import {Image,  View} from "react-native";
 import {styles} from "../../theme";
-import {retrieveData} from "../../libs/function";
+import {appLog, retrieveData} from "../../libs/function";
 import Container from "../../components/Container";
 import moment from "moment";
 import {useDispatch} from "react-redux";
@@ -11,14 +11,31 @@ import {setTableOrdersData} from "../../redux-store/reducer/table-orders-data";
 import {hideLoader} from "../../redux-store/reducer/component";
 import {localredux} from "../../libs/static";
 import {setSettings} from "../../redux-store/reducer/local-settings-data";
-import store from "../../redux-store/store";
-import {setInitData} from "../../redux-store/reducer/init-data";
-import {appLog, groupBy} from "../../libs/function";
+
+import {getDBConnection} from "../../libs/Sqlite";
+import {CREATE_ITEM_TABLE} from "../../libs/Sqlite/config";
 
 const Index = (props: any) => {
 
     const {navigation} = props
     const dispatch = useDispatch()
+
+
+    const loadDataCallback = useCallback(async () => {
+        try {
+            const db = await getDBConnection();
+           await db.executeSql(CREATE_ITEM_TABLE);
+        } catch (error) {
+            appLog(error);
+        }
+    }, []);
+
+    useEffect(() => {
+        loadDataCallback().then(r => {});
+    }, [loadDataCallback]);
+
+
+
 
     //////// check license and set workspace and staffdata
     retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {

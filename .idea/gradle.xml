@@ -33,6 +33,7 @@
             <option value="$PROJECT_DIR$/app/node_modules/react-native-reanimated/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-safe-area-context/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-screens/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/react-native-sqlite-storage/platforms/android-native" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-svg/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-vector-icons/android" />
           </set>

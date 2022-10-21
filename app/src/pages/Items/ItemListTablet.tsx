@@ -9,6 +9,8 @@ import {styles} from "../../theme";
 import {appLog, isRestaurant, selectItem} from "../../libs/function";
 import {Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
+import {readTable} from "../../libs/Sqlite/selectData";
+import {TABLE} from "../../libs/Sqlite/config";
 
 
 const hasRestaurant = isRestaurant()
@@ -36,19 +38,23 @@ const Index = (props: any) => {
 
     const {selectedgroup} = props;
 
-    const {groupItemsData,itemsData}:any = localredux;
 
-    let [items,setItems] = useState(groupItemsData[selectedgroup]);
+    let [items,setItems] = useState([]);
 
     useEffect(() => {
-        setItems(groupItemsData[selectedgroup]);
+        readTable(TABLE.ITEM,selectedgroup).then((items)=>{
+            setItems(items);
+        });
     }, [selectedgroup])
+
+
 
     const renderItem = useCallback(({item, index}: any) => {
         return <Item item={item} index={index}  key={item.productid} />
     }, [selectedgroup]);
 
-    if(items?.length === 0) {
+
+    if(!Boolean(items?.length)) {
         return <></>
     }
 

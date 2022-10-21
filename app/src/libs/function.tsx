@@ -30,6 +30,8 @@ import {
 import {
     setSettings
 } from "../redux-store/reducer/local-settings-data";
+import {openDatabase} from 'react-native-sqlite-storage';
+
 
 let NumberFormat = require('react-number-format');
 const getSymbolFromCurrency = require('currency-symbol-map')
@@ -50,8 +52,14 @@ import ItemDetail from "../pages/Items/ItemDetail";
 import AddonActions from "../pages/Items/AddonActions";
 import {onPressNumber} from "../pages/Items/AddButton";
 import NetInfo from "@react-native-community/netinfo";
+import {getDBConnection} from "./Sqlite";
+import {insertItems, insertItemsAll, insertItemsOnebyOne} from "./Sqlite/insertData";
+import {CREATE_ITEM_TABLE, TABLE} from "./Sqlite/config";
+import {getData, readTable} from "./Sqlite/selectData";
 let base64 = require('base-64');
 let utf8 = require('utf8');
+
+
 
 export const isDebug = (process.env.NODE_ENV === "development");
 
@@ -470,25 +478,29 @@ export const syncData = async () => {
 
     try {
 
-        let itemsData: any;
         let licenseData: any
+        let itemsData:any;
+
+        let start = moment();
+
         await retrieveData('fusion-pro-pos-mobile').then((data: any) => {
-            itemsData = data?.itemsData   || {};
+            itemsData = data?.itemsData || {}
             licenseData = data?.licenseData || {};
-            appLog('itemsData',Object.keys(itemsData).length)
         })
+
 
 
         let {initData, localSettingsData: {lastSynctime}, addonsData, clientsData, authData}: any = localredux;
 
         store.dispatch(setDialog({visible: true, hidecancel: true, width: 300, component: () => <SyncingInfo/>}))
 
+
         const getData = async (queryString?: any) => {
 
             if (!Boolean(lastSynctime)) {
                 lastSynctime = 0
             }
-            lastSynctime = 0
+
             queryString = {
                 ...queryString,
                 timestamp: lastSynctime
@@ -515,15 +527,15 @@ export const syncData = async () => {
                     } else if (result === 'item') {
                         if (Boolean(data.result)) {
 
-                            let items = data.result.reduce((accumulator: any, value: any) => {
+                            await insertItemsOnebyOne(data.result).then(()=>{ });
+
+                            /*let items = data.result.reduce((accumulator: any, value: any) => {
                                 return {...accumulator, [value.itemid]: value};
                             }, {});
                             itemsData = {
                                 ...itemsData,
                                 ...items
-                            }
-                            appLog('itemsData',itemsData)
-
+                            }*/
                         }
                     } else if (result === 'addon') {
                         if (Boolean(data.result)) {
@@ -550,9 +562,9 @@ export const syncData = async () => {
 
                     if (type !== "finish") {
                         await store.dispatch(setSyncDetail({type: result}))
-                        setTimeout(() => {
-                             getData({type, start});
-                        }, 100)
+                        await getData({type, start});
+
+
                     } else {
 
                         await retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
@@ -564,7 +576,6 @@ export const syncData = async () => {
 
                                 data = {
                                     ...data,
-                                    itemsData,
                                     initData,
                                     addonsData,
                                     clientsData,
@@ -582,6 +593,9 @@ export const syncData = async () => {
                                     localredux.localSettingsData = data.localSettingsData;
                                 });
 
+                               // await db.close()
+                                appLog('Finish local storage')
+
                             } catch (e) {
                                 appLog('e', e)
                             }
@@ -590,7 +604,6 @@ export const syncData = async () => {
                     }
                 }
                 if (status === STATUS.ERROR || type === "finish") {
-
                     store.dispatch(setDialog({visible: false}))
                     store.dispatch(setAlert({visible: true, message: 'Sync Successful'}))
                 }
@@ -598,7 +611,16 @@ export const syncData = async () => {
             })
         }
 
-        getData().then()
+        await getData().then()
+
+
+        let end = moment();
+        var duration = moment.duration(end.diff(start));
+
+        if (isDevelopment) {
+            appLog('total time',duration.asMilliseconds())
+            store.dispatch(setAlert({visible: true, message: duration.asMilliseconds()}))
+        }
 
     }
     catch (e) {
@@ -1083,57 +1105,56 @@ export const selectItem = async (item: any) => {
 
         try{
 
-        const {addongroupid, addonid} = item?.addtags || {addongroupid: [], addonid: []}
+            const {addongroupid, addonid} = item?.addtags || {addongroupid: [], addonid: []}
 
-
-        item = {
-            ...item,
-            key: uuid()
-        }
-
-        let start = moment();
-
-
-        if (Boolean(addongroupid.length) || Boolean(addonid.length)) {
 
             item = {
                 ...item,
-                productqnt: item.productqnt || 0,
-                hasAddon: true
+                key: uuid()
             }
 
-            await store.dispatch(setItemDetail(item));
+            let start = moment();
 
-            if (!Boolean(item.productqnt)) {
-                await store.dispatch(setBottomSheet({
-                    visible: true,
-                    height: '80%',
-                    component: () => <ItemDetail/>
-                }))
+
+            if (Boolean(addongroupid.length) || Boolean(addonid.length)) {
+
+                item = {
+                    ...item,
+                    productqnt: item.productqnt || 0,
+                    hasAddon: true
+                }
+
+                await store.dispatch(setItemDetail(item));
+
+                if (!Boolean(item.productqnt)) {
+                    await store.dispatch(setBottomSheet({
+                        visible: true,
+                        height: '80%',
+                        component: () => <ItemDetail/>
+                    }))
+                } else {
+                    await store.dispatch(setBottomSheet({
+                        visible: true,
+                        height: '20%',
+                        component: () => <AddonActions product={item}/>
+                    }))
+                }
+
             } else {
-                await store.dispatch(setBottomSheet({
-                    visible: true,
-                    height: '20%',
-                    component: () => <AddonActions product={item}/>
-                }))
+                const itemRowData: any = setItemRowData(item);
+                item = {
+                    ...item,
+                    ...itemRowData,
+                }
+                await store.dispatch(setCartItems(item))
             }
 
-        } else {
-            const itemRowData: any = setItemRowData(item);
-            item = {
-                ...item,
-                ...itemRowData,
+            let end = moment();
+            var duration = moment.duration(end.diff(start));
+
+            if (isDevelopment) {
+                store.dispatch(setAlert({visible: true, message: duration.asMilliseconds()}))
             }
-            await store.dispatch(setCartItems(item))
-        }
-
-        let end = moment();
-        var duration = moment.duration(end.diff(start));
-
-        if (isDevelopment) {
-
-            store.dispatch(setAlert({visible: true, message: duration.asMilliseconds()}))
-        }
         }
         catch (e) {
           appLog('e',e)

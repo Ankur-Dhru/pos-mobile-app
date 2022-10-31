@@ -18,7 +18,8 @@ import { setOrdersData} from "../../redux-store/reducer/orders-data";
 import { setSettings } from "../../redux-store/reducer/local-settings-data";
 import {ProIcon} from "../../components";
 import {readTable} from "../../libs/Sqlite/selectData";
-import {TABLE} from "../../libs/Sqlite/config";
+import {CREATE_ITEM_INDEX, TABLE} from "../../libs/Sqlite/config";
+import {getDBConnection} from "../../libs/Sqlite";
 
 const md5 = require('md5');
 
@@ -39,6 +40,7 @@ const Index = (props: any) => {
             if(enteredPin.length === 5){
                 if (md5(enteredPin) === params.loginpin) {
                     dispatch(showLoader())
+
                    await retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
 
                             const {

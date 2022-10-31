@@ -29,11 +29,12 @@ export const CREATE_ITEM_TABLE = `create table if not exists ${TABLE.ITEM}
   pricealert        tinyint(1) default 0
 );`;
 
-export const CREATE_TEST = `create table if not exists tbltest
-(
-  itemid            int  not null primary key,
-  itemname          varchar(250)         null
-);`;
+
+export const CREATE_ITEM_INDEX_ITEMGROUPID = `create index index_itemgroupid on ${TABLE.ITEM} (itemgroupid);`;
+export const CREATE_ITEM_INDEX_ITEMNAME = `create index index_itemname on ${TABLE.ITEM} (itemname);`;
+export const CREATE_ITEM_INDEX_ITEMUNIQUE = `create index index_itemuniquecode on ${TABLE.ITEM} (uniqueproductcode);`;
+
+
 
 
 /*export const CREATE_DATA_TABLE = `create table if not exists  ${TABLE.DATA}

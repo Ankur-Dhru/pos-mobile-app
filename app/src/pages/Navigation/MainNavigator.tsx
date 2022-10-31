@@ -26,6 +26,15 @@ import {hideLoader, showLoader} from "../../redux-store/reducer/component";
 import apiService from "../../libs/api-service";
 import {setOrder} from "../../redux-store/reducer/orders-data";
 import {useDispatch} from "react-redux";
+import Register from "../Setup/Register";
+import SignupStep1 from "../Setup/SignupStep1";
+import SignupStep2 from "../Setup/SignupStep2";
+import Verification from "../Setup/Verification";
+import ResetPassword from "../Setup/ResetPassword";
+import AddWorkspace from "../SetupWorkspace/AddWorkspace";
+import OrganizationProfile from "../SetupWorkspace/OrganizationProfile";
+import BusinessDetails from "../SetupWorkspace/BusinessDetails";
+import CurrencyPreferences from "../SetupWorkspace/CurrencyPreferences";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -128,6 +137,24 @@ const SetupStackNavigator = () => {
         <Stack.Navigator initialRouteName={'Login'}>
             <Stack.Screen name="Login" component={Login}
                           options={{headerShown: false}}/>
+            <Stack.Screen name="Register" component={Register}
+                          options={{headerShown: false}}/>
+
+            <Stack.Screen name="Verification" component={Verification}
+                          options={{headerShown: false}}/>
+
+            <Stack.Screen name="AddWorkspace" component={AddWorkspace}
+                          options={{headerShown: false, headerTitle: 'AddWorkspace', headerLargeTitle: false}}/>
+
+            <Stack.Screen name="OrganizationProfile" component={OrganizationProfile}
+                          options={{headerShown: false, headerTitle: 'OrganizationProfile', headerLargeTitle: false}}/>
+
+            <Stack.Screen name="BusinessDetails" component={BusinessDetails}
+                          options={{headerShown: false, headerTitle: 'BusinessDetails', headerLargeTitle: false}}/>
+
+            <Stack.Screen name="CurrencyPreferences" component={CurrencyPreferences}
+                          options={{headerShown: false, headerTitle: 'CurrencyPreferences', headerLargeTitle: false}}/>
+
             <Stack.Screen name="Workspaces" component={Workspaces}
                           options={{headerShown: false, headerTitle: 'Workspaces', headerLargeTitle: false}}/>
 

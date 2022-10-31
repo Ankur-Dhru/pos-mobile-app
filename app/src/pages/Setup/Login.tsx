@@ -19,13 +19,15 @@ import {
 import InputBox from "../../components/InputBox";
 import Button from "../../components/Button";
 import apiService from "../../libs/api-service";
-import {isEmpty} from "../../libs/function";
+import {appLog, isEmpty} from "../../libs/function";
 
 const Index = (props: any) => {
 
     const {navigation}: any = props;
 
     const initdata: any = isDevelopment ? {
+        //email: 'ankur9090_103@dhrusoft.com',
+        //password: 'Dhrunet1@',
         email: 'dhru360@yahoo.com',
         password: 'dhru@9090',
     } : {
@@ -45,9 +47,16 @@ const Index = (props: any) => {
             body: values
         }).then((response: any) => {
 
+            const {email_verified,mobile_verified,whatsapp_verified,phone_number_verified} = response.data;
+
             if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
                 localredux.authData = {...response.data, token: response.token}
-                navigation.navigate('Workspaces');
+                if(!email_verified){
+                    navigation.replace('Verification',{userdetail: response.data});
+                }
+                else {
+                    navigation.navigate('Workspaces');
+                }
             }
         })
     }
@@ -135,10 +144,8 @@ const Index = (props: any) => {
                                 </Button>
                             </View>
 
-                            <View style={[styles.middle, {marginBottom: 30}]}>
-                                <TouchableOpacity onPress={()=>{
-                                    Linking.openURL('https://account.dhru.com/checkout?pid=3d44bcb5-afbc-4153-af6a-aa3457ebe119&newuser=true')
-                                }}><Paragraph style={[styles.paragraph,styles.mt_5]}>New User? <Text style={[{color:styles.primary.color}]}> Create an account </Text> </Paragraph></TouchableOpacity>
+                            <View style={[styles.middle,styles.mt_5, {marginBottom: 30}]}>
+                                <TouchableOpacity onPress={()=> navigation.navigate('Register') }><Paragraph style={[styles.paragraph,styles.mt_5]}>New User? <Text style={[{color:styles.primary.color}]}> Create an account </Text> </Paragraph></TouchableOpacity>
                             </View>
 
 

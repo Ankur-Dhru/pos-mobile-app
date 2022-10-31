@@ -1,5 +1,5 @@
 import {appLog, errorAlert, log} from "../function";
-import {ACTIONS, METHOD, STATUS} from "../static";
+import {ACTIONS, device, METHOD, STATUS} from "../static";
 import store from "../../redux-store/store";
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
 
@@ -33,8 +33,8 @@ const apiService = async (config: configData) => {
     // headers["x-workspace"] = config.workspace;
   }
 
-  if (Boolean(config.token)) {
-    headers["Authorization"] = 'Bearer ' + config.token;
+  if (Boolean(config.token || device.token)) {
+    headers["Authorization"] = 'Bearer ' + (config.token || device.token);
   }
 
   const requestOptions: any = {

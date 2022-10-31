@@ -9,12 +9,12 @@ import {connect} from "react-redux";
 
 const Index = ({syncDetail}: any) => {
 
-    const {type}:any = syncDetail;
+    const {type,rows}:any = syncDetail;
 
     return <View style={[styles.p_5]}>
         <View style={[styles.mb_5]}><ActivityIndicator/></View>
         <Text style={[styles.textCenter,styles.mb_2]}>Please Wait</Text>
-        <Text style={[styles.textCenter,styles.muted,]}>{type} syncing....</Text>
+        {Boolean(type) &&  <Text style={[styles.textCenter,styles.muted,]}>{rows?rows+' - ':''} {type}(s) syncing....</Text>}
     </View>
 }
 

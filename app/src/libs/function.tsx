@@ -1,9 +1,9 @@
 import store from "../redux-store/store";
 import moment from "moment";
 import {
-    changeCartItem,
     resetCart,
-    setCartData, setCartItems,
+    setCartData,
+    setCartItems,
     updateCartField,
     updateCartItems,
     updateCartKots
@@ -15,50 +15,44 @@ import {decode} from 'html-entities';
 import {hideLoader, setAlert, setBottomSheet, setDialog, showLoader} from "../redux-store/reducer/component";
 import apiService from "./api-service";
 import {
-    ACTIONS,
-    current, isDevelopment,
+    ACTIONS, adminUrl,
+    current,
+    isDevelopment,
     localredux,
     METHOD,
     posUrl,
     PRINTER,
     STATUS,
     taxTypes,
-    TICKET_STATUS, TICKETS_TYPE,
+    TICKET_STATUS,
+    TICKETS_TYPE,
     VOUCHER
 } from "./static";
 
-import {
-    setSettings
-} from "../redux-store/reducer/local-settings-data";
-import {openDatabase} from 'react-native-sqlite-storage';
-
-
-let NumberFormat = require('react-number-format');
-const getSymbolFromCurrency = require('currency-symbol-map')
+import {setSettings} from "../redux-store/reducer/local-settings-data";
 import React from "react";
 import {Alert, Text} from "react-native";
-import {setAddonsData} from "../redux-store/reducer/addons-data";
-import {setTableOrders, setTableOrdersData} from "../redux-store/reducer/table-orders-data";
+import {setTableOrdersData} from "../redux-store/reducer/table-orders-data";
 import {v4 as uuid} from "uuid";
 import SyncingInfo from "../pages/Pin/SyncingInfo";
 import {setSyncDetail} from "../redux-store/reducer/sync-data";
-import {setOrder, setOrdersData} from "../redux-store/reducer/orders-data";
+import {setOrder} from "../redux-store/reducer/orders-data";
 import {getProductData, itemTotalCalculation} from "./item-calculation";
 import EscPosPrinter, {getPrinterSeriesByName} from "react-native-esc-pos-printer";
 import CancelReason from "../pages/Cart/CancelReason";
-import {isArray} from "util";
 import {setItemDetail} from "../redux-store/reducer/item-detail";
 import ItemDetail from "../pages/Items/ItemDetail";
 import AddonActions from "../pages/Items/AddonActions";
 import {onPressNumber} from "../pages/Items/AddButton";
 import NetInfo from "@react-native-community/netinfo";
-import {getDBConnection} from "./Sqlite";
-import {insertItems, insertItemsAll, insertItemsOnebyOne} from "./Sqlite/insertData";
-import {CREATE_ITEM_TABLE, TABLE} from "./Sqlite/config";
-import {getData, readTable} from "./Sqlite/selectData";
+import {insertItemsAll, insertItemsOnebyOne} from "./Sqlite/insertData";
+
+
+let NumberFormat = require('react-number-format');
+const getSymbolFromCurrency = require('currency-symbol-map')
+
 let base64 = require('base-64');
 let utf8 = require('utf8');
-
 
 
 export const isDebug = (process.env.NODE_ENV === "development");
@@ -446,7 +440,7 @@ export const storeData = async (key: any, value: any) => {
         await AsyncStorage.setItem(key, JSON.stringify(value));
         return true
     } catch (error) {
-        appLog('error',error)
+        appLog('error', error)
         return false;
     }
 };
@@ -479,7 +473,7 @@ export const syncData = async () => {
     try {
 
         let licenseData: any
-        let itemsData:any;
+        let itemsData: any;
 
         let start = moment();
 
@@ -487,7 +481,6 @@ export const syncData = async () => {
             itemsData = data?.itemsData || {}
             licenseData = data?.licenseData || {};
         })
-
 
 
         let {initData, localSettingsData: {lastSynctime}, addonsData, clientsData, authData}: any = localredux;
@@ -527,7 +520,7 @@ export const syncData = async () => {
                     } else if (result === 'item') {
                         if (Boolean(data.result)) {
 
-                            await insertItemsOnebyOne(data.result).then(()=>{ });
+                            await insertItemsAll(data.result).then(() => { });
 
                             /*let items = data.result.reduce((accumulator: any, value: any) => {
                                 return {...accumulator, [value.itemid]: value};
@@ -561,10 +554,8 @@ export const syncData = async () => {
                     }
 
                     if (type !== "finish") {
-                        await store.dispatch(setSyncDetail({type: result}))
+                        await store.dispatch(setSyncDetail({type: result,rows:start}))
                         await getData({type, start});
-
-
                     } else {
 
                         await retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
@@ -593,7 +584,7 @@ export const syncData = async () => {
                                     localredux.localSettingsData = data.localSettingsData;
                                 });
 
-                               // await db.close()
+                                // await db.close()
                                 appLog('Finish local storage')
 
                             } catch (e) {
@@ -618,13 +609,12 @@ export const syncData = async () => {
         var duration = moment.duration(end.diff(start));
 
         if (isDevelopment) {
-            appLog('total time',duration.asMilliseconds())
+            appLog('total time', duration.asMilliseconds())
             store.dispatch(setAlert({visible: true, message: duration.asMilliseconds()}))
         }
 
-    }
-    catch (e) {
-        appLog('e',e)
+    } catch (e) {
+        appLog('e', e)
     }
 
 }
@@ -735,7 +725,7 @@ export const errorAlert = (message: any, title?: any) => {
     );
 }
 
-export const voucherTotal = (items: any,vouchertaxtype:any) => {
+export const voucherTotal = (items: any, vouchertaxtype: any) => {
     let vouchertotaldisplay = 0;
 
     let taxesList: any = localredux.initData.tax;
@@ -759,7 +749,7 @@ export const voucherTotal = (items: any,vouchertaxtype:any) => {
 
         vouchertotaldisplay += productratedisplay * productqnt;
 
-        if (!isEmpty(taxesList) && !isEmpty(taxesList[itemtaxgroupid]) && vouchertaxtype==='exclusive') {
+        if (!isEmpty(taxesList) && !isEmpty(taxesList[itemtaxgroupid]) && vouchertaxtype === 'exclusive') {
             vouchertotaldisplay += taxCalculation(taxesList[itemtaxgroupid], productratedisplay, productqnt)
         }
 
@@ -768,7 +758,7 @@ export const voucherTotal = (items: any,vouchertaxtype:any) => {
                 const pricingtype = pricing?.type;
                 const baseprice = pricing?.price?.default[0][pricingtype]?.baseprice || 0;
                 vouchertotaldisplay += baseprice * productqnt
-                if (!isEmpty(taxesList) && !isEmpty(taxesList[itemtaxgroupid])  && vouchertaxtype==='exclusive') {
+                if (!isEmpty(taxesList) && !isEmpty(taxesList[itemtaxgroupid]) && vouchertaxtype === 'exclusive') {
                     vouchertotaldisplay += taxCalculation(taxesList[itemtaxgroupid], baseprice, productqnt)
                 }
 
@@ -974,11 +964,11 @@ export const saveLocalOrder = async (order?: any) => {
         }
     }
 
-    if(order?.kots.length > 0){
-        order.kots = order?.kots.map((kot:any)=>{
+    if (order?.kots.length > 0) {
+        order.kots = order?.kots.map((kot: any) => {
             kot = {
                 ...kot,
-                orderid:order.orderid
+                orderid: order.orderid
             }
             return kot
         })
@@ -1016,7 +1006,7 @@ export const saveLocalOrder = async (order?: any) => {
 
 
 export const getTicketStatus = (statusid: any) => {
-    const  currentTicketType = localredux.initData?.tickets[TICKETS_TYPE.KOT];
+    const currentTicketType = localredux.initData?.tickets[TICKETS_TYPE.KOT];
     let status: any = {};
     if (!isEmpty(currentTicketType?.ticketstatuslist) && currentTicketType?.ticketstatuslist[statusid]) {
         status = {
@@ -1092,18 +1082,18 @@ export const groupBy = (arr: any, property: any) => {
             memo[x[property]].push(x);
             return memo;
         }, {});
-    }
-    catch (e) {
-        appLog('e',e)
+    } catch (e) {
+        appLog('e', e)
     }
 }
 
-export const selectItem = async (item: any) => {
+export const selectItem = async (product: any) => {
 
+    const item = JSON.parse(product.data);
 
     const setItemQnt = async (item: any) => {
 
-        try{
+        try {
 
             const {addongroupid, addonid} = item?.addtags || {addongroupid: [], addonid: []}
 
@@ -1155,9 +1145,8 @@ export const selectItem = async (item: any) => {
             if (isDevelopment) {
                 store.dispatch(setAlert({visible: true, message: duration.asMilliseconds()}))
             }
-        }
-        catch (e) {
-          appLog('e',e)
+        } catch (e) {
+            appLog('e', e)
         }
     }
 
@@ -1527,7 +1516,7 @@ export const generateKOT = async () => {
     let cartData = store.getState().cartData;
     const {currentLocation: {departments}} = localredux.localSettingsData;
 
-    const  currentTicketType = localredux.initData?.tickets[TICKETS_TYPE.KOT];
+    const currentTicketType = localredux.initData?.tickets[TICKETS_TYPE.KOT];
 
     const {adminid, username}: any = localredux.loginuserData;
     const today: any = store.getState().localSettings?.today;
@@ -1681,7 +1670,7 @@ export const generateKOT = async () => {
                                 ordertype: ordertype,
                             };
 
-                            appLog('newkot',newkot)
+                            appLog('newkot', newkot)
 
 
                             kots = [...kots, newkot];
@@ -1755,3 +1744,56 @@ export const arraySome = (arrayList: any[], key: string) => {
     }
     return arrayList?.some((k: string) => k === key)
 }
+
+
+export const getStateList = (country: any) => {
+    const {workspace}:any = localredux.initData;
+    const {token}:any = localredux.authData;
+
+    let queryString = {country};
+    return apiService({
+        method: METHOD.GET,
+        action: ACTIONS.GETSTATE,
+        queryString,
+        workspace:workspace,
+        token:token,
+        hideLoader: true,
+        other: {url: adminUrl},
+    })
+}
+
+
+export const selectWorkspace = async (workspace:any,navigation:any) => {
+
+    store.dispatch(showLoader())
+    const {token}:any = localredux.authData;
+
+    appLog(workspace.name,token)
+
+    await apiService({
+        method: METHOD.GET,
+        action: ACTIONS.INIT,
+        queryString: {stream: "pos"},
+        other: {url: adminUrl,workspace:true},
+        token: token,
+        workspace: workspace.name
+    }).then((response: any) => {
+        store.dispatch(hideLoader())
+
+        if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
+            localredux.initData = {...response.data, deviceName: response?.deviceName,workspace:workspace.name}
+            if(Boolean(localredux.initData?.general?.legalname) && Boolean(localredux.initData?.location) && Boolean(localredux.initData?.currency)){
+                navigation.navigate('Terminal');
+            }
+            else{
+                navigation.navigate('OrganizationProfile');
+            }
+        }
+    }).catch(() => {
+        store.dispatch(hideLoader())
+    })
+
+}
+
+
+

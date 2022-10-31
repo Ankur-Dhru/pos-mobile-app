@@ -13,7 +13,12 @@ import {localredux} from "../../libs/static";
 import {setSettings} from "../../redux-store/reducer/local-settings-data";
 
 import {getDBConnection} from "../../libs/Sqlite";
-import {CREATE_ITEM_TABLE} from "../../libs/Sqlite/config";
+import {
+
+    CREATE_ITEM_INDEX_ITEMGROUPID,
+    CREATE_ITEM_INDEX_ITEMNAME, CREATE_ITEM_INDEX_ITEMUNIQUE,
+    CREATE_ITEM_TABLE
+} from "../../libs/Sqlite/config";
 
 const Index = (props: any) => {
 
@@ -25,6 +30,9 @@ const Index = (props: any) => {
         try {
             const db = await getDBConnection();
            await db.executeSql(CREATE_ITEM_TABLE);
+           await db.executeSql(CREATE_ITEM_INDEX_ITEMGROUPID);
+            await db.executeSql(CREATE_ITEM_INDEX_ITEMNAME);
+            await db.executeSql(CREATE_ITEM_INDEX_ITEMUNIQUE);
         } catch (error) {
             appLog(error);
         }

@@ -4,35 +4,50 @@ import {getDBConnection} from "./index";
 
 
 
-export const insertItemsOnebyOne = async (  itemsdata?: any) => {
+export const insertItems = async (  itemsdata?: any,type:any = 'all') => {
     const db = await getDBConnection();
     const regx = /[^a-zA-Z0-9_. -]/g;
+
+    let insertQuery:any = [];
+
   if(itemsdata?.length > 0) {
 
       for (const data of itemsdata) {
           data.itemname = data?.itemname.replace(regx," ");
           data.groupname =  data?.groupname.replace(regx," ");
           let values = `(${data?.itemid}, "${data?.itemname}", "${data?.itemgroupid}", "${data?.uniqueproductcode}", '${JSON.stringify(data)}', "${data?.itemstatus}", ${data?.pricealert})`;
-          const insertQuery = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert") values ${values}`;
-          try {
-              await db.executeSql(insertQuery);
+
+          if(type === 'all'){
+              insertQuery.push(values);
           }
-          catch (e) {
-              appLog('ERROR',insertQuery)
-              appLog('e',e)
+          else{
+
+              insertQuery = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert") values ${values}`;
+              try {
+                  await db.executeSql(insertQuery);
+              }
+              catch (e) {
+                  appLog('ERROR',insertQuery)
+                  appLog('e',e)
+              }
           }
       }
 
+      if(type === 'all'){
+          const query = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert") values ${insertQuery.join(', ')}`;
+          const results = await db.executeSql(query);
+          appLog('results',results)
+      }
   }
   db.close().then()
 };
 
 
-export const insertItemsAll = async (itemsdata?: any) => {
+/*export const insertItemsAll = async (itemsdata?: any) => {
     const db = await getDBConnection();
     const regx = /[^a-zA-Z0-9_. -]/g;
     let insertQuery:any = [];
-    appLog('itemsdata.length',itemsdata.length)
+
     if(itemsdata.length > 0) {
         await itemsdata.map(async (data: any) => {
             data.itemname =  data?.itemname.replace(regx," ");
@@ -45,7 +60,7 @@ export const insertItemsAll = async (itemsdata?: any) => {
         appLog('results',results)
     }
     db.close().then()
-};
+};*/
 
 
 

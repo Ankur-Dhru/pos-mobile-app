@@ -1,17 +1,16 @@
 import React, {memo, useCallback, useEffect, useState} from "react";
 
-import {FlatList, View, TouchableOpacity, Text} from "react-native";
+import {FlatList, TouchableOpacity, View} from "react-native";
 
 import {connect} from "react-redux";
 
-import {localredux} from "../../libs/static";
 import {styles} from "../../theme";
-import {appLog, arraySome, clone, isRestaurant, selectItem, toCurrency} from "../../libs/function";
+import {isRestaurant, selectItem, toCurrency} from "../../libs/function";
 import {Divider, Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
-import Avatar from "../../components/Avatar";
-import AddButton, {onPressNumber} from "./AddButton";
-import store from "../../redux-store/store";
+import AddButton from "./AddButton";
+import {getItemsByWhere} from "../../libs/Sqlite/selectData";
+
 
 
 const hasRestaurant = isRestaurant()
@@ -23,13 +22,9 @@ const Item = memo(({item}: any) => {
     const hasKot = Boolean(item?.kotid);
     const {veg} = item;
 
-
     return (<TouchableOpacity onPress={() => {
         !Boolean(item?.productqnt) && selectItem(item)
-    }
-    }
-                              style={[styles.noshadow]}>
-
+    }} style={[styles.noshadow]}>
         <View
             style={[{backgroundColor: hasKot ? styles.yellow.color : ''}]}>
             <View>
@@ -81,28 +76,23 @@ const Index = (props: any) => {
 
     const {selectedgroup, invoiceitems} = props;
 
-    const {groupItemsData}: any = localredux
-
-
-    let [items, setItems] = useState(clone(groupItemsData[selectedgroup]));
+    let [items, setItems] = useState([]);
 
     useEffect(() => {
-        let finditems = clone(groupItemsData[selectedgroup]);
-
-        if (Boolean(items)) {
-
-            finditems = finditems?.map((i: any) => {
-                const find = invoiceitems.filter((ii: any) => {
-                    return i.itemid === ii.itemid;
+        getItemsByWhere( {itemgroupid:selectedgroup}).then((items) => {
+            if (Boolean(items)) {
+                items = items?.map((i: any) => {
+                    const find = invoiceitems.filter((ii: any) => {
+                        return +i.itemid === +ii.itemid;
+                    })
+                    if (Boolean(find) && Boolean(find[0])) {
+                        return find[0]
+                    }
+                    return i;
                 })
-                if (Boolean(find) && Boolean(find[0])) {
-                    return find[0]
-                }
-                return i;
-            })
-        }
-
-        setItems(finditems);
+            }
+            setItems(items);
+        });
 
     }, [selectedgroup, invoiceitems])
 

@@ -1,8 +1,8 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 
 
 import {Image, Linking, Text, TouchableOpacity, View} from "react-native";
-import {Card, Paragraph, Title} from "react-native-paper";
+import {Card, Paragraph, Title,TextInput as TI,} from "react-native-paper";
 import {styles} from "../../theme";
 import Container from "../../components/Container";
 import {Field, Form} from "react-final-form";
@@ -24,6 +24,8 @@ import {appLog, isEmpty} from "../../libs/function";
 const Index = (props: any) => {
 
     const {navigation}: any = props;
+
+    const [passwordVisible,setPasswordVisible]:any = useState(true)
 
     const initdata: any = isDevelopment ? {
         //email: 'ankur9090_103@dhrusoft.com',
@@ -120,9 +122,11 @@ const Index = (props: any) => {
                                                     onSubmitEditing={(e: any) => {
                                                         handleSubmit(values)
                                                     }}
+                                                    right={<TI.Icon name={passwordVisible ? "eye" : "eye-off"}
+                                                                    onPress={() =>  setPasswordVisible(!passwordVisible)}/>}
                                                     returnKeyType={'go'}
                                                     autoCapitalize='none'
-                                                    secureTextEntry={true}
+                                                    secureTextEntry={passwordVisible}
                                                     onChange={props.input.onChange}
                                                 />
                                             )}

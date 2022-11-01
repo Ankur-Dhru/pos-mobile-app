@@ -9,7 +9,7 @@ import {styles} from "../../theme";
 import {appLog, isRestaurant, selectItem} from "../../libs/function";
 import {Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
-import {readTable} from "../../libs/Sqlite/selectData";
+import {getItemsByWhere, readTable} from "../../libs/Sqlite/selectData";
 import {TABLE} from "../../libs/Sqlite/config";
 
 
@@ -42,7 +42,7 @@ const Index = (props: any) => {
     let [items,setItems] = useState([]);
 
     useEffect(() => {
-        readTable(TABLE.ITEM,selectedgroup).then((items)=>{
+        getItemsByWhere({itemgroupid:selectedgroup}).then((items)=>{
             setItems(items);
         });
     }, [selectedgroup])

@@ -45,7 +45,7 @@ import ItemDetail from "../pages/Items/ItemDetail";
 import AddonActions from "../pages/Items/AddonActions";
 import {onPressNumber} from "../pages/Items/AddButton";
 import NetInfo from "@react-native-community/netinfo";
-import {insertItemsAll, insertItemsOnebyOne} from "./Sqlite/insertData";
+import {insertItems} from "./Sqlite/insertData";
 
 
 let NumberFormat = require('react-number-format');
@@ -511,6 +511,7 @@ export const syncData = async () => {
 
                 const {status, data, info: {type, start, result}} = response;
 
+
                 if (status === STATUS.SUCCESS) {
                     if (result === 'setting') {
                         initData = {
@@ -519,16 +520,7 @@ export const syncData = async () => {
                         }
                     } else if (result === 'item') {
                         if (Boolean(data.result)) {
-
-                            await insertItemsAll(data.result).then(() => { });
-
-                            /*let items = data.result.reduce((accumulator: any, value: any) => {
-                                return {...accumulator, [value.itemid]: value};
-                            }, {});
-                            itemsData = {
-                                ...itemsData,
-                                ...items
-                            }*/
+                            await insertItems(data.result,'all').then(() => { });
                         }
                     } else if (result === 'addon') {
                         if (Boolean(data.result)) {
@@ -554,8 +546,11 @@ export const syncData = async () => {
                     }
 
                     if (type !== "finish") {
-                        await store.dispatch(setSyncDetail({type: result,rows:start}))
-                        await getData({type, start});
+                        await store.dispatch(setSyncDetail({type: result,rows:start,total:(Boolean(data?.extra) && Boolean(data?.extra?.total)) ? data.extra.total : 0}))
+                        setTimeout(async ()=>{
+                            await getData({type, start});
+                        },1000)
+
                     } else {
 
                         await retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {

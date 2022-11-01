@@ -5,11 +5,14 @@ import {Card, Divider, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
 import {SearchBox} from "../../components";
 
-import {appLog, filterArray, selectItem} from "../../libs/function";
+import {filterArray, selectItem} from "../../libs/function";
 
 import AddButton from "./AddButton";
 import {connect, useDispatch} from "react-redux";
 import {setModal} from "../../redux-store/reducer/component";
+import {readTable} from "../../libs/Sqlite/selectData";
+import {TABLE} from "../../libs/Sqlite/config";
+
 
 const Item = memo(({item}:any) => {
 
@@ -35,33 +38,31 @@ const Item = memo(({item}:any) => {
     return ((r1.item.productqnt === r2.item.productqnt) && (r1.item.itemid === r2.item.itemid));
 })
 
-const Index = ({invoiceitems}: any) => {
+const Index = ( ) => {
 
-    const {itemsData}: any = localredux
     let [items, setItems] = useState([]);
-    const [search, setSearch] = useState('');
+
+
+    useEffect(()=>{
+        if(localredux.itemsData.length === 0) {
+            getItems().then()
+        }
+    },[])
+
+    const getItems = async () => {
+        await readTable(TABLE.ITEM).then((items)=>{
+            localredux.itemsData = items
+        });
+    }
+
+    const {itemsData} = localredux
 
     const handleSearch = (search:any) => {
         if (Boolean(search) && search.length>3) {
-            let finditems = filterArray(Object.values(itemsData), ['itemname', 'uniqueproductcode'], search,false);
+            let finditems = filterArray(itemsData, ['itemname', 'uniqueproductcode'], search,false);
             setItems(finditems);
-           // setSearch(search)
         }
     }
-
-/*    useEffect(()=>{
-        let uitems:any = items?.map((i: any) => {
-
-            const find = invoiceitems?.filter((ii: any) => {
-                return i.itemid === ii.itemid;
-            })
-            if(Boolean(find) && Boolean(find[0])) {
-                return  find[0]
-            }
-            return i;
-        })
-        setItems(uitems);
-    },[invoiceitems,search])*/
 
     const renderitems = (i: any) => {
         return (

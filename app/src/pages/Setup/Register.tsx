@@ -1,16 +1,18 @@
 import React, {useEffect, useState} from "react";
 
-import {FlatList, ScrollView, TouchableOpacity, View} from "react-native";
+import {ScrollView, TouchableOpacity, View} from "react-native";
 import Container from "../../components/Container";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
-import {Paragraph, Text, Title} from "react-native-paper";
+import {Paragraph, Text, TextInput as TI, Title} from "react-native-paper";
 import {
     ACTIONS,
     composeValidators,
     countrylist,
-    device, isDevelopment,
+    device,
+    isDevelopment,
     isEmail,
+    isValidPassword,
     loginUrl,
     matchPassword,
     METHOD,
@@ -18,14 +20,15 @@ import {
     required,
     STATUS
 } from "../../libs/static";
-import InputBox from "../../components/InputBox";
 import Button from "../../components/Button";
-import {appLog, isEmpty, updateComponent} from "../../libs/function";
+import {appLog, isEmpty} from "../../libs/function";
 import InputField from "../../components/InputField";
 import apiService from "../../libs/api-service";
 import store from "../../redux-store/store";
 import {setAlert} from "../../redux-store/reducer/component";
 import PageLoader from "../../components/PageLoader";
+import KeyboardScroll from "../../components/KeyboardScroll";
+import KAccessoryView from "../../components/KAccessoryView";
 
 
 const Register = (props: any) => {
@@ -35,6 +38,9 @@ const Register = (props: any) => {
 
     const step1 = React.useRef<View>(null);
     const step2 = React.useRef<View>(null);
+
+    const [passwordVisible, setPasswordVisible]: any = useState(true)
+    const [cpasswordVisible, setCPasswordVisible]: any = useState(true)
 
     const [loaded, setLoaded] = useState(false)
     useEffect(() => {
@@ -46,14 +52,14 @@ const Register = (props: any) => {
         return unsubscribe;
     }, []);
     if (!loaded) {
-        return <PageLoader  />
+        return <PageLoader/>
     }
 
     const handleSubmit = async (values: any) => {
-        const country:any = countrylist.find((item:any)=>{
+        const country: any = countrylist.find((item: any) => {
             return item.code === values.country
         })
-        values = {...values,code:country.dial_code}
+        values = {...values, code: country.dial_code}
 
         await apiService({
             method: METHOD.POST,
@@ -62,27 +68,23 @@ const Register = (props: any) => {
             other: {url: loginUrl},
         }).then(async (response: any) => {
             if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
-                appLog('response',response)
+                appLog('response', response)
                 device.token = response.token;
                 device.global_token = response.global_token;
                 store.dispatch(setAlert({visible: true, message: 'Register Successful'}))
-                navigation.replace('Verification',{userdetail: {...values, ...response.data}});
+                navigation.replace('Verification', {userdetail: {...values, ...response.data}});
             }
         })
     }
 
-    const onValidate = (values: any) => {
-        let error: any = {};
-        return error;
-    }
 
-    const initialValues = isDevelopment ? {
+    const initialValues = !isDevelopment ? {
         "g-recaptcha-response": "g-recaptcha-response-gjgjh-kjkljkl-mjbkjhkj-bbkj",
         "mobile_number": "8866522619",
         "first_name": "ankur",
         "last_name": "patel",
         "company_name": "",
-        "country":'IN',
+        "country": 'IN',
         "address1": "4th Floor, Orange Pole, 80 feet road",
         "address2": "Near Siddhivinayak Temple",
         "city": "Anand",
@@ -99,7 +101,7 @@ const Register = (props: any) => {
         "first_name": "",
         "last_name": "",
         "company_name": "",
-        "country":'IN',
+        "country": 'IN',
         "address1": "",
         "address2": "",
         "city": "",
@@ -112,7 +114,7 @@ const Register = (props: any) => {
     }
 
 
-    return <Container  hideappbar={true}>
+    return <Container hideappbar={true}>
 
         <ScrollView>
 
@@ -122,285 +124,193 @@ const Register = (props: any) => {
 
                     <Title style={[styles.mt_5]}>Create an account </Title>
 
-
                     <Form
-                        initialValues={initialValues}
                         onSubmit={handleSubmit}
-                        validate={onValidate}
+                        initialValues={initialValues}
                         render={({handleSubmit, submitting, values, ...more}: any) => (
-                            <>
+                            <View>
+                                <KeyboardScroll>
 
-
-                                <View>
                                     <View>
-
-
                                         <View>
 
-                                        <View ref={step1} style={[styles.mt_3]}>
-
-                                            <View style={[styles.mb_5]}>
-                                                <Field name="email" validate={composeValidators(required,isEmail)}>
-                                                    {props => (
-                                                        <InputBox
-                                                            {...props}
-                                                            value={props.input.value}
-                                                            label={'Email Address'}
-                                                            onChange={props.input.onChange}
-                                                        />
-                                                    )}
-                                                </Field>
-                                            </View>
-
-                                            <View style={[styles.mb_5]}>
-                                                <Field name="password" validate={composeValidators(required)}>
-                                                    {props => (
-                                                        <InputBox
-                                                            {...props}
-                                                            value={props.input.value}
-                                                            label={'Password'}
-                                                            secureTextEntry={true}
-                                                            onChange={props.input.onChange}
-                                                        />
-                                                    )}
-                                                </Field>
-                                            </View>
-
-
-                                            <View style={[styles.mb_5]}>
-                                                <Field name="cpassword"
-                                                       validate={composeValidators(required)}>
-                                                    {props => (
-                                                        <InputBox
-                                                            {...props}
-                                                            value={props.input.value}
-                                                            label={'Confirm Password'}
-                                                            secureTextEntry={true}
-                                                            onChange={props.input.onChange}
-                                                        />
-                                                    )}
-                                                </Field>
-                                            </View>
-
-
-                                            {/*<View>
-                                                <Button  disable={more.invalid} secondbutton={more.invalid}
-                                                         onPress={() => {
-                                                             updateComponent(step2,'display','flex')
-                                                             updateComponent(step1,'display','none')
-
-                                                         }}> Next
-                                                </Button>
-                                            </View>
-
-                                            <View style={[styles.middle, {marginBottom: 30}]}>
-                                                <TouchableOpacity onPress={() => navigation.replace('Login')}><Paragraph
-                                                    style={[styles.paragraph, styles.mt_5]}>Already have an account? <Text
-                                                    style={[{color: styles.primary.color}]}> Sign In </Text>
-                                                </Paragraph></TouchableOpacity>
-                                            </View>*/}
-
-                                        </View>
-
-
-
-                                        <View ref={step2} >
-                                            <View style={[styles.mb_5]}>
-                                                <Field name="country">
+                                            <View>
+                                                <Field name="email" validate={composeValidators(required, isEmail)}>
                                                     {props => (
                                                         <InputField
+                                                            {...props}
+                                                            label={'Email Address'}
+                                                            inputtype={'textbox'}
+                                                            onChange={(value: any) => {
+                                                                props.input.onChange(value);
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Field>
+                                            </View>
+
+                                            <View>
+                                                <Field name="password"
+                                                       validate={composeValidators(required, isValidPassword)}>
+                                                    {props => (
+                                                        <InputField
+                                                            {...props}
+                                                            label={'Password'}
+                                                            inputtype={'textbox'}
+                                                            secureTextEntry={passwordVisible}
+                                                            right={<TI.Icon name={passwordVisible ? "eye" : "eye-off"}
+                                                                            onPress={() => setPasswordVisible(!passwordVisible)}/>}
+                                                            onChange={(value: any) => {
+                                                                props.input.onChange(value);
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Field>
+                                            </View>
+
+                                            <View>
+                                                <Field name="cpassword"
+                                                       validate={composeValidators(required, matchPassword(values.password))}>
+                                                    {props => (
+                                                        <InputField
+                                                            {...props}
+                                                            label={'Confirm Password'}
+                                                            inputtype={'textbox'}
+                                                            secureTextEntry={cpasswordVisible}
+                                                            right={<TI.Icon name={cpasswordVisible ? "eye" : "eye-off"}
+                                                                            onPress={() => setCPasswordVisible(!cpasswordVisible)}/>}
+                                                            onChange={(value: any) => {
+                                                                props.input.onChange(value);
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Field>
+                                            </View>
+
+
+                                            <View>
+                                                <Field name="country" validate={required}>
+                                                    {props => (
+                                                        <InputField
+                                                            {...props}
                                                             label={'Select Country'}
-                                                            mode={'flat'}
+                                                            selectedValue={props.input.value}
+                                                            selectedLabel={"Select Country"}
+                                                            displaytype={'pagelist'}
+                                                            inputtype={'dropdown'}
+                                                            showlabel={false}
+                                                            appbar={true}
+                                                            search={false}
+                                                            listtype={'other'}
                                                             list={countrylist.map((item) => {
                                                                 return {label: item.name, value: item.code}
                                                             })}
-                                                            value={props.input.value}
-                                                            selectedValue={props.input.value}
-                                                            displaytype={'pagelist'}
-                                                            inputtype={'dropdown'}
-                                                            listtype={'other'}
+                                                            onChange={(value: any) => {
+                                                                const country: any = countrylist.find((item: any) => {
+                                                                    return item.code === value
+                                                                })
+                                                                values.code = country.dial_code;
+                                                                props.input.onChange(value);
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Field>
+                                            </View>
+
+
+                                            <View>
+                                                <Field name="first_name" validate={required}>
+                                                    {props => (
+                                                        <InputField
+                                                            {...props}
+                                                            label={'First Name'}
+                                                            inputtype={'textbox'}
                                                             onChange={(value: any) => {
                                                                 props.input.onChange(value);
-                                                            }}>
-                                                        </InputField>
-                                                    )}
-                                                </Field>
-                                            </View>
-
-
-                                            <View style={[styles.grid]}>
-                                                <View style={[styles.mb_5,styles.w_auto]}>
-                                                    <Field name="first_name" validate={composeValidators(required)}>
-                                                        {props => (
-                                                            <InputBox
-                                                                {...props}
-                                                                value={props.input.value}
-                                                                label={'First Name'}
-                                                                onChange={props.input.onChange}
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                </View>
-
-
-                                                <View style={[styles.mb_5,styles.w_auto,styles.ml_2]}>
-                                                    <Field name="last_name" validate={composeValidators(required)}>
-                                                        {props => (
-                                                            <InputBox
-                                                                {...props}
-                                                                value={props.input.value}
-                                                                label={'Last Name'}
-                                                                onChange={props.input.onChange}
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                </View>
-                                            </View>
-
-                                            <View style={[styles.grid]}>
-                                                <View style={[styles.mb_5,styles.w_auto]}>
-                                                <Field name="mobile_number"
-                                                       validate={composeValidators(required, mustBeNumber)}>
-                                                    {props => (
-                                                        <InputBox
-                                                            {...props}
-                                                            value={props.input.value}
-                                                            keyboardType={'number-pad'}
-                                                            label={'Mobile'}
-                                                            onChange={props.input.onChange}
+                                                            }}
                                                         />
                                                     )}
                                                 </Field>
                                             </View>
 
-                                                {/*<View style={[styles.mb_5,styles.w_auto,styles.ml_2]}>
-                                                    <Field name="company_name">
-                                                        {props => (
-                                                            <InputBox
-                                                                {...props}
-                                                                value={props.input.value}
-                                                                label={'Company Name'}
-                                                                onChange={props.input.onChange}
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                </View>*/}
-                                            </View>
-
-                                            {/*<View style={[styles.mb_5]}>
-                                                <Field name="address1">
+                                            <View>
+                                                <Field name="last_name" validate={required}>
                                                     {props => (
-                                                        <InputBox
+                                                        <InputField
                                                             {...props}
-                                                            value={props.input.value}
-                                                            label={'Address 1'}
-                                                            onChange={props.input.onChange}
+                                                            label={'Last Name'}
+                                                            inputtype={'textbox'}
+                                                            onChange={(value: any) => {
+                                                                props.input.onChange(value);
+                                                            }}
                                                         />
                                                     )}
                                                 </Field>
                                             </View>
 
-                                            <View style={[styles.mb_5]}>
-                                                <Field name="address2">
-                                                    {props => (
-                                                        <InputBox
-                                                            {...props}
-                                                            value={props.input.value}
-                                                            label={'Address 2'}
-                                                            onChange={props.input.onChange}
-                                                        />
-                                                    )}
-                                                </Field>
-                                            </View>*/}
-
-                                            {/*<View style={[styles.grid]}>
-                                                <View style={[styles.mb_5,styles.w_auto]}>
-                                                    <Field name="city">
-                                                        {props => (
-                                                            <InputBox
+                                            <View style={[styles.mt_5]}>
+                                                <View>
+                                                    <Text
+                                                        style={[styles.text_xs, styles.muted, {marginBottom: -25}]}>Mobile</Text>
+                                                    <View style={[styles.grid, styles.middle, styles.justifyContent]}>
+                                                        <View>
+                                                            <InputField
                                                                 {...props}
-                                                                value={props.input.value}
-                                                                label={'City'}
-                                                                onChange={props.input.onChange}
+                                                                inputtype={'textbox'}
+                                                                editable={false}
+                                                                value={'+' + values.code}
+                                                                onChange={(value: any) => {
+
+                                                                }}
                                                             />
-                                                        )}
-                                                    </Field>
+                                                        </View>
+                                                        <Field name="mobile_number"
+                                                               validate={composeValidators(required, mustBeNumber)}>
+                                                            {props => (
+                                                                <View style={[styles.w_auto, styles.ml_2]}>
+                                                                    <InputField
+                                                                        {...props}
+                                                                        keyboardType={'number-pad'}
+                                                                        label={''}
+                                                                        inputtype={'textbox'}
+                                                                        onChange={(value: any) => {
+                                                                            props.input.onChange(value);
+                                                                        }}
+                                                                    />
+                                                                </View>
+                                                            )}
+                                                        </Field>
+                                                    </View>
                                                 </View>
-
-                                                <View style={[styles.mb_5,styles.w_auto,styles.ml_2]}>
-                                                    <Field name="postcode">
-                                                        {props => (
-                                                            <InputBox
-                                                                {...props}
-                                                                value={props.input.value}
-                                                                keyboardType={'number-pad'}
-                                                                label={'Pin Code'}
-                                                                onChange={props.input.onChange}
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                </View>
-                                            </View>*/}
-
-                                            {/*<View style={[styles.mb_5]}>
-                                                <Field name="state">
-                                                    {props => (
-                                                        <InputBox
-                                                            {...props}
-                                                            value={props.input.value}
-                                                            label={'State'}
-                                                            onChange={props.input.onChange}
-                                                        />
-                                                    )}
-                                                </Field>
-                                            </View>*/}
-
-
-                                            <View style={[styles.grid,styles.justifyContent,styles.mb_5]}>
-                                                {/*<View style={[styles.w_auto]}>
-                                                    <Button
-                                                        more={{backgroundColor:styles.accent.color}}
-                                                             onPress={() => {
-                                                                 updateComponent(step2,'display','none')
-                                                                 updateComponent(step1,'display','flex')
-                                                             }}> Previous
-                                                    </Button>
-                                                </View>*/}
-                                                <View style={[styles.w_auto,]}>
-                                                    <Button  disable={more.invalid} secondbutton={more.invalid}
-                                                             more={{backgroundColor:styles.primary.color}}
-                                                             onPress={() => {
-                                                                 handleSubmit(values)
-                                                             }}> Continue
-                                                    </Button>
-                                                </View>
-                                            </View>
-
-
-                                            <View style={[styles.middle, {marginBottom: 30}]}>
-                                                <TouchableOpacity onPress={() => navigation.replace('Login')}><Paragraph
-                                                    style={[styles.paragraph, styles.mt_5]}>Already have an account? <Text
-                                                    style={[{color: styles.primary.color}]}> Sign In </Text>
-                                                </Paragraph></TouchableOpacity>
                                             </View>
 
                                         </View>
-
-
-                                        </View>
-
-
                                     </View>
+
+
+                                </KeyboardScroll>
+
+                                <KAccessoryView>
+                                    <View style={[styles.mt_5]}>
+                                        <Button disable={more.invalid} secondbutton={more.invalid}
+
+                                                onPress={() => {
+                                                    handleSubmit(values)
+                                                }}> Continue
+                                        </Button>
+                                    </View>
+                                </KAccessoryView>
+
+
+                                <View style={[styles.middle, {marginBottom: 30}]}>
+                                    <TouchableOpacity onPress={() => navigation.replace('Login')}><Paragraph
+                                        style={[styles.paragraph, styles.mt_5]}>Already have an account? <Text
+                                        style={[{color: styles.primary.color}]}> Sign In </Text>
+                                    </Paragraph></TouchableOpacity>
                                 </View>
 
 
-
-
-
-
-
-
-                            </>
+                            </View>
                         )}
                     >
 

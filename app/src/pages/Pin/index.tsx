@@ -64,9 +64,7 @@ const Index = (props: any) => {
                                     localredux.localSettingsData = localSettingsData;
                                     localredux.addonsData = addonsData;
 
-                                     //localredux.itemsData = await readTable(TABLE.ITEM,'3468866f-e582-4649-8d7f-b3aef30ce8a9').then()
 
-                                    //localredux.groupItemsData = groupBy(localredux.itemsData, 'itemgroupid');
 
 
                                     await dispatch(setOrdersData(orders));

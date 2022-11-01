@@ -1,7 +1,7 @@
 import React from "react";
 import dataContainer from "../../hoc/dataContainer";
 
-import {View} from "react-native";
+import {ScrollView, View} from "react-native";
 import Container from "../../components/Container";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
@@ -30,7 +30,6 @@ import {
     storeData,
     syncData
 } from "../../libs/function";
-import {setLicenseData} from "../../redux-store/reducer/license-data";
 import InputField from "../../components/InputField";
 
 
@@ -146,8 +145,8 @@ const Terminal = (props: any) => {
 
 
     return <Container>
-
-        <Card style={[styles.center, styles.h_100, styles.middle]}>
+        <ScrollView>
+            <Card style={[styles.center, styles.h_100, styles.middle]}>
 
 
             <View style={{width: 360}}>
@@ -248,7 +247,7 @@ const Terminal = (props: any) => {
 
             </View>
         </Card>
-
+        </ScrollView>
     </Container>
 }
 

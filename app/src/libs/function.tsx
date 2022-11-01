@@ -549,7 +549,7 @@ export const syncData = async () => {
                         await store.dispatch(setSyncDetail({type: result,rows:start,total:(Boolean(data?.extra) && Boolean(data?.extra?.total)) ? data.extra.total : 0}))
                         setTimeout(async ()=>{
                             await getData({type, start});
-                        },1000)
+                        },2000)
 
                     } else {
 

@@ -78,7 +78,7 @@ const Register = (props: any) => {
     }
 
 
-    const initialValues = !isDevelopment ? {
+    const initialValues = isDevelopment ? {
         "g-recaptcha-response": "g-recaptcha-response-gjgjh-kjkljkl-mjbkjhkj-bbkj",
         "mobile_number": "8866522619",
         "first_name": "ankur",

@@ -1,19 +1,19 @@
 import React, {memo, useCallback, useEffect, useState} from "react";
 
-import {FlatList, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator, FlatList, TouchableOpacity, View} from "react-native";
 
 import {connect} from "react-redux";
 
 import {styles} from "../../theme";
-import {isRestaurant, selectItem, toCurrency} from "../../libs/function";
+import {appLog, isRestaurant, selectItem, toCurrency} from "../../libs/function";
 import {Divider, Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
 import AddButton from "./AddButton";
-import {getItemsByWhere} from "../../libs/Sqlite/selectData";
+import {getItemsByWhere, readTable} from "../../libs/Sqlite/selectData";
 
 
-
-const hasRestaurant = isRestaurant()
+const hasRestaurant = isRestaurant();
+let sGroup:any = '';
 
 const Item = memo(({item}: any) => {
 
@@ -75,13 +75,25 @@ const Item = memo(({item}: any) => {
 const Index = (props: any) => {
 
     const {selectedgroup, invoiceitems} = props;
+    let [start,setStart]:any = useState(0);
 
-    let [items, setItems] = useState([]);
+    const [loading,setLoading]:any = useState(false);
+
+    const [dataSource, setDataSource]:any = useState([]);
+
 
     useEffect(() => {
-        getItemsByWhere( {itemgroupid:selectedgroup}).then((items) => {
-            if (Boolean(items)) {
-                items = items?.map((i: any) => {
+
+        setLoading(true)
+
+        if(sGroup!==selectedgroup){
+            setDataSource([])
+            setStart(0)
+        }
+
+        getItemsByWhere({itemgroupid: selectedgroup,start:start}).then((newitems:any) => {
+            if (Boolean(newitems.length > 0)) {
+                newitems = newitems?.map((i: any) => {
                     const find = invoiceitems.filter((ii: any) => {
                         return +i.itemid === +ii.itemid;
                     })
@@ -90,31 +102,50 @@ const Index = (props: any) => {
                     }
                     return i;
                 })
+                setDataSource([...dataSource,...newitems]);
             }
-            setItems(items);
+            setLoading(false)
         });
 
-    }, [selectedgroup, invoiceitems])
+        sGroup = selectedgroup;
+
+    }, [selectedgroup, invoiceitems,start])
+
+
+
+    const onEndReached = () => {
+        setStart(++start)
+    }
 
 
     const renderItem = useCallback(({item, index}: any) => {
         return <Item item={item} index={index} key={item.productid}/>
     }, [selectedgroup]);
 
-    if (items?.length === 0) {
+    if (dataSource?.length === 0) {
         return <></>
     }
+
 
     return (
         <>
             <FlatList
-                data={items}
+                data={dataSource}
                 renderItem={renderItem}
                 getItemLayout={(data, index) => {
                     return {length: 100, offset: 100 * index, index};
                 }}
+                onEndReached={onEndReached}
+                onEndReachedThreshold={0.5}
+
                 ListFooterComponent={() => {
-                    return <View style={{height: 100}}></View>
+                    return <View style={{height: 100}}>
+                        {loading ? (
+                            <ActivityIndicator
+                                color="black"
+                                style={{margin: 15}} />
+                        ) : null}
+                    </View>
                 }}
                 ListEmptyComponent={() => {
                     return (<View style={[]}><Paragraph

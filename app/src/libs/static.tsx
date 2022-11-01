@@ -19,6 +19,7 @@ export enum ACTIONS {
     INVOICE = "invoice",
     VOUCHER = "voucher",
     ITEM = "item",
+    ITEMS = "items",
     LOGIN = "login",
     INIT = "init",
     TERMINAL = "terminal",
@@ -116,9 +117,65 @@ export const defalut_payment_term = [
 ]
 
 
+
+export const inventoryOption: any = {
+    specificidentification: {
+        name: "Specific Identification",
+        // info: "Used by organisations with specifically identifiable invitatory; cost can be directly attributed  and are specifically assigned to the specific unit sold",
+        info: "Specific identification required unique serial number, have a Auto generate by system or manual input",
+        disabled: false
+    },
+    fifo: {
+        name: "FIFO",
+        info: "The earliest purchase goods are removed and expensed first",
+        disabled: false
+    },
+    lifo: {
+        name: "LIFO",
+        info: "The latest purchased good are removed and expensed first",
+        disabled: true
+    },
+    weightedaverage: {
+        name: "Weighted Average",
+        info: "The total cost of goods available for sale divided by units available",
+        disabled: true
+    },
+};
+
+export const options_itc: any = [
+    assignOption("Eligible for ITC", "eligible"),
+    assignOption("Ineligible - As per Section 17(5)", "ineligible17"),
+    assignOption("Ineligible Others", "ineligibleothers"),
+    assignOption("Import of Goods", "goods"),
+    assignOption("Import of Service", "service"),
+]
+
+export const pricing: any = {
+    "type": "onetime",
+    "qntranges": [
+        {
+            "id": "0",
+            "start": 1,
+            "end": 10000000000,
+            "text": "1 - Infinite"
+        },
+    ],
+    "price": {
+        "default": [
+            {
+                "onetime": {
+                    "baseprice": 0
+                }
+            },
+        ],
+    },
+    "advancestructure": false,
+    "setup": false
+};
+
 export const isDevelopment = process.env.NODE_ENV === "development";
 
-const apiUrl = isDevelopment ? ".api.dhru.io" : ".api.dhru.com";
+const apiUrl = isDevelopment ? ".api.dhru.com" : ".api.dhru.com";
 export const posUrl: any = `${apiUrl}/pos/v1/`;
 export const adminUrl: any = `${apiUrl}/admin/v1/`;
 const mainUrl = "https://api.dhru.com";

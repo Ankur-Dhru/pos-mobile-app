@@ -13,13 +13,11 @@ import moment from "moment/moment";
 
 import {setTableOrdersData} from "../../redux-store/reducer/table-orders-data";
 import {localredux} from "../../libs/static";
-import {groupBy} from "../../libs/function";
+
 import { setOrdersData} from "../../redux-store/reducer/orders-data";
 import { setSettings } from "../../redux-store/reducer/local-settings-data";
 import {ProIcon} from "../../components";
-import {readTable} from "../../libs/Sqlite/selectData";
-import {CREATE_ITEM_INDEX, TABLE} from "../../libs/Sqlite/config";
-import {getDBConnection} from "../../libs/Sqlite";
+
 
 const md5 = require('md5');
 
@@ -36,6 +34,7 @@ const Index = (props: any) => {
 
 
     useEffect(() => {
+
         setTimeout(async ()=>{
             if(enteredPin.length === 5){
                 if (md5(enteredPin) === params.loginpin) {
@@ -118,6 +117,7 @@ const Index = (props: any) => {
 
                     <View>
                         <Paragraph style={[styles.paragraph,{textAlign:'center'}]}>{params.username}</Paragraph>
+                        {params.loginpin === 'b0baee9d279d34fa1dfd71aadb908c3f' &&  <Paragraph style={[styles.paragraph,{textAlign:'center'}]}>PIN : 11111</Paragraph>}
                     </View>
 
                 <ReactNativePinView

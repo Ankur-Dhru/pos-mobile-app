@@ -1,6 +1,6 @@
 import React, {memo, useCallback, useEffect, useState} from "react";
 
-import {FlatList, View, TouchableOpacity} from "react-native";
+import {FlatList, View, TouchableOpacity, ActivityIndicator} from "react-native";
 
 import {connect} from "react-redux";
 
@@ -10,10 +10,10 @@ import {appLog, isRestaurant, selectItem} from "../../libs/function";
 import {Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
 import {getItemsByWhere, readTable} from "../../libs/Sqlite/selectData";
-import {TABLE} from "../../libs/Sqlite/config";
 
 
 const hasRestaurant = isRestaurant()
+let sGroup:any = '';
 
 const Item = memo(({item}:any) => {
     const {veg} = item;
@@ -39,13 +39,26 @@ const Index = (props: any) => {
     const {selectedgroup} = props;
 
 
-    let [items,setItems] = useState([]);
+    let [start,setStart]:any = useState(0);
+
+    const [loading,setLoading]:any = useState(false);
+
+    const [dataSource, setDataSource]:any = useState([]);
 
     useEffect(() => {
-        getItemsByWhere({itemgroupid:selectedgroup}).then((items)=>{
-            setItems(items);
+        setLoading(true)
+        if(sGroup!==selectedgroup){
+            setDataSource([])
+            setStart(0)
+        }
+        getItemsByWhere({itemgroupid: selectedgroup,start:start}).then((newitems:any) => {
+            if (Boolean(newitems.length > 0)) {
+                setDataSource([...dataSource,...newitems]);
+            }
+            setLoading(false)
         });
-    }, [selectedgroup])
+        sGroup = selectedgroup;
+    }, [selectedgroup,start])
 
 
 
@@ -53,20 +66,34 @@ const Index = (props: any) => {
         return <Item item={item} index={index}  key={item.productid} />
     }, [selectedgroup]);
 
+    const onEndReached = () => {
+        setStart(++start)
+    }
 
-    if(!Boolean(items?.length)) {
+    if(!Boolean(dataSource?.length)) {
         return <></>
     }
 
     return (
         <>
             <FlatList
-                data={items}
+                data={dataSource}
                 renderItem={renderItem}
                 numColumns={3}
                 getItemLayout={(data, index) => {
                     return { length: 100, offset: 100 * index, index };
                 }}
+                ListFooterComponent={() => {
+                    return <View style={{height: 100}}>
+                        {loading ? (
+                            <ActivityIndicator
+                                color="black"
+                                style={{margin: 15}} />
+                        ) : null}
+                    </View>
+                }}
+                onEndReached={onEndReached}
+                onEndReachedThreshold={0.5}
                 ListEmptyComponent={()=>{
                     return (<View style={[]}><Paragraph style={[styles.paragraph,styles.p_6,styles.muted,{textAlign:'center'}]}>No any Items</Paragraph></View>)
                 }}

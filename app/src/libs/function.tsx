@@ -468,7 +468,7 @@ export const CheckConnectivity = () => {
     });
 };
 
-export const syncData = async () => {
+export const syncData = async (loader=true) => {
 
     try {
 
@@ -485,7 +485,8 @@ export const syncData = async () => {
 
         let {initData, localSettingsData: {lastSynctime}, addonsData, clientsData, authData}: any = localredux;
 
-        store.dispatch(setDialog({visible: true, hidecancel: true, width: 300, component: () => <SyncingInfo/>}))
+
+        loader && store.dispatch(setDialog({visible: true, hidecancel: true, width: 300, component: () => <SyncingInfo/>}))
 
 
         const getData = async (queryString?: any) => {
@@ -1154,6 +1155,7 @@ export const selectItem = async (product: any) => {
     } else {
         setItemQnt(item).then()
     }
+
 }
 
 export const testPrint = async (printer: any) => {

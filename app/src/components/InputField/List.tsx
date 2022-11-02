@@ -5,7 +5,7 @@ import {filterArray,assignOption, getType, log} from "../../libs/function";
 import {Divider, List, Paragraph, withTheme} from "react-native-paper";
 
 import {Button, ProIcon} from "../index";
-import {setBottomSheet, setModal, setPageSheet} from "../../redux-store/reducer/component";
+import {setBottomSheet,  setPageSheet} from "../../redux-store/reducer/component";
 import {styles as theme, styles} from "../../theme";
 
 import Avatar from "../Avatar";
@@ -53,13 +53,12 @@ class ListView extends Component<any> {
     }
 
     _select = (item: any) => {
-        const {onSelect, setBottomSheet, setModal, setPageSheet, multiselect, disabledCloseModal,modal}: any = this.props;
+        const {onSelect, setBottomSheet,  setPageSheet, multiselect, disabledCloseModal,modal}: any = this.props;
         onSelect(item);
         setBottomSheet({visible: false});
          if (!Boolean(disabledCloseModal)) {
             Keyboard.dismiss();
             setTimeout(() => {
-                modal.visible && setModal({visible: false});
                 setPageSheet({visible: false})
             }, 100)
         }
@@ -69,7 +68,7 @@ class ListView extends Component<any> {
 
         Keyboard.dismiss();
 
-        const {onSelect, setPageSheet, setModal,modal}: any = this.props;
+        const {onSelect, setPageSheet}: any = this.props;
 
         let selected = this.filterlist?.filter((item: any) => {
             return item.selected
@@ -80,7 +79,7 @@ class ListView extends Component<any> {
         onSelect({value: selected})
 
         setTimeout(() => {
-            modal.visible && setModal({visible: false});
+
             setPageSheet({visible: false})
         }, 100)
 
@@ -276,7 +275,7 @@ const mapStateToProps = (state: any) => ({
 const mapDispatchToProps = (dispatch: any) => ({
     setBottomSheet: (dialog: any) => dispatch(setBottomSheet(dialog)),
     setPageSheet: (dialog: any) => dispatch(setPageSheet(dialog)),
-    setModal: (dialog: any) => dispatch(setModal(dialog)),
+
 
 });
 export default connect(mapStateToProps, mapDispatchToProps)(withTheme(ListView));

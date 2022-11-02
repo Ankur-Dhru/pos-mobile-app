@@ -123,10 +123,7 @@ export const styles: any = StyleSheet.create({
     divider: {},
     hide: {display: 'none'},
     listitem: {paddingVertical: 5},
-
-
-
-
+    middleForm: {width:'100%',maxWidth:500},
     left: {justifyContent: 'flex-start'},
     center: {justifyContent: 'center'},
     right: {justifyContent: 'flex-end'},

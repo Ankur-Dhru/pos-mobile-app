@@ -124,7 +124,7 @@ class Index extends Component<any, any> {
         });
 
         const {workspace}:any = localredux.initData;
-        appLog('workspace',workspace)
+
         const {token}:any = localredux.authData;
 
         apiService({
@@ -448,10 +448,13 @@ class Index extends Component<any, any> {
                                         </View>
 
 
+
                                         <View>
                                             {
+
                                                 (Boolean(values.country) && Boolean(taxtypelist)) &&
                                                 taxtypelist.map(({name, types}: any, index: any) => {
+
                                                     return (
                                                         <>
 

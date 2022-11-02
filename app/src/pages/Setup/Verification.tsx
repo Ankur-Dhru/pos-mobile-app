@@ -125,6 +125,7 @@ class Index extends Component<any> {
                                                     keyboardType='numeric'
                                                     inputtype={'textbox'}
                                                     autoCapitalize='none'
+                                                    autoFocus={true}
                                                     onSubmitEditing={(e: any) => {
                                                         this.handleSubmit(props.values)
                                                     }}

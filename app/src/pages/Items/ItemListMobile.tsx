@@ -10,6 +10,7 @@ import {Divider, Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
 import AddButton from "./AddButton";
 import {getItemsByWhere, readTable} from "../../libs/Sqlite/selectData";
+import {AddItem} from "./ItemListTablet";
 
 
 const hasRestaurant = isRestaurant();
@@ -84,8 +85,6 @@ const Index = (props: any) => {
 
     useEffect(() => {
 
-        setLoading(true)
-
         if(sGroup!==selectedgroup){
             setDataSource([])
             setStart(0)
@@ -104,7 +103,7 @@ const Index = (props: any) => {
                 })
                 setDataSource([...dataSource,...newitems]);
             }
-            setLoading(false)
+            setLoading(true)
         });
 
         sGroup = selectedgroup;
@@ -122,10 +121,11 @@ const Index = (props: any) => {
         return <Item item={item} index={index} key={item.productid}/>
     }, [selectedgroup]);
 
-    if (dataSource?.length === 0) {
+
+
+    if(!loading){
         return <></>
     }
-
 
     return (
         <>
@@ -135,23 +135,15 @@ const Index = (props: any) => {
                 getItemLayout={(data, index) => {
                     return {length: 100, offset: 100 * index, index};
                 }}
-                onEndReached={onEndReached}
+                onMomentumScrollEnd={onEndReached}
                 onEndReachedThreshold={0.5}
 
                 ListFooterComponent={() => {
                     return <View style={{height: 100}}>
-                        {loading ? (
-                            <ActivityIndicator
-                                color="black"
-                                style={{margin: 15}} />
-                        ) : null}
+
                     </View>
                 }}
-                ListEmptyComponent={() => {
-                    return (<View style={[]}><Paragraph
-                        style={[styles.paragraph, styles.p_6, styles.muted, {textAlign: 'center'}]}>No any
-                        Items</Paragraph></View>)
-                }}
+                ListEmptyComponent={AddItem}
             />
         </>
     )

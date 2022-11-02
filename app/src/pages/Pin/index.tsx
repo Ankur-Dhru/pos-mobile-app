@@ -116,8 +116,7 @@ const Index = (props: any) => {
                     </View>
 
                     <View>
-                        <Paragraph style={[styles.paragraph,{textAlign:'center'}]}>{params.username}</Paragraph>
-                        {params.loginpin === 'b0baee9d279d34fa1dfd71aadb908c3f' &&  <Paragraph style={[styles.paragraph,{textAlign:'center'}]}>PIN : 11111</Paragraph>}
+                        <Paragraph style={[styles.paragraph,{textAlign:'center'}]}>{params.username} {params.loginpin === 'b0baee9d279d34fa1dfd71aadb908c3f' &&  <Text style={[styles.paragraph,styles.muted,{textAlign:'center'}]}>(PIN : 11111)</Text>}</Paragraph>
                     </View>
 
                 <ReactNativePinView

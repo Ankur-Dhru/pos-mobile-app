@@ -1,17 +1,18 @@
 import {localredux} from "../../libs/static";
 import React, {memo, useEffect, useState} from "react";
-import {FlatList, TouchableOpacity, View} from "react-native";
+import {FlatList, SafeAreaView, TouchableOpacity, View} from "react-native";
 import {Card, Divider, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
 import {SearchBox} from "../../components";
 
-import {filterArray, selectItem} from "../../libs/function";
+import {appLog, filterArray, selectItem} from "../../libs/function";
 
 import AddButton from "./AddButton";
 import {connect, useDispatch} from "react-redux";
 import {setModal} from "../../redux-store/reducer/component";
-import {readTable} from "../../libs/Sqlite/selectData";
+import {getItemsByWhere, readTable} from "../../libs/Sqlite/selectData";
 import {TABLE} from "../../libs/Sqlite/config";
+import {AddItem} from "./ItemListTablet";
 
 
 const Item = memo(({item}:any) => {
@@ -41,26 +42,17 @@ const Item = memo(({item}:any) => {
 const Index = ( ) => {
 
     let [items, setItems] = useState([]);
+    let [search,setSearch] = useState('');
+    const [loading,setLoading]:any = useState(false);
 
 
-    useEffect(()=>{
-        if(localredux.itemsData.length === 0) {
-            getItems().then()
-        }
-    },[])
-
-    const getItems = async () => {
-        await readTable(TABLE.ITEM).then((items)=>{
-            localredux.itemsData = items
-        });
-    }
-
-    const {itemsData} = localredux
-
-    const handleSearch = (search:any) => {
+    const handleSearch = async (search:any) => {
         if (Boolean(search) && search.length>3) {
-            let finditems = filterArray(itemsData, ['itemname', 'uniqueproductcode'], search,false);
-            setItems(finditems);
+            setSearch(search);
+            await getItemsByWhere({itemname:search,start:0}).then((items)=>{
+                setItems(items);
+                setLoading(true)
+            });
         }
     }
 
@@ -71,6 +63,8 @@ const Index = ( ) => {
     };
 
     return (
+
+        <SafeAreaView>
 
         <View style={[styles.h_100, styles.flex, styles.w_100, {flexDirection: 'column'}]}>
 
@@ -84,15 +78,16 @@ const Index = ( ) => {
 
             <Card style={[styles.h_100, styles.flex]}>
                 <Card.Content style={[styles.cardContent]}>
-                    <FlatList
+                    {loading &&  <FlatList
                         data={items}
                         renderItem={renderitems}
+                        ListEmptyComponent={<AddItem searchtext={search} />}
                         keyExtractor={item => item.itemid}
-                    />
+                    />}
                 </Card.Content>
             </Card>
         </View>
-
+        </SafeAreaView>
 
     )
 

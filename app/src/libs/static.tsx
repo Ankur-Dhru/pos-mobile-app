@@ -73,8 +73,9 @@ export enum TICKET_STATUS {
 }
 
 export enum PRODUCTCATEGORY {
-    DEFAULT = '5f2dd580-eae2-46a4-b136-bc5c3cb180c6'
-
+    DEFAULT = '5f2dd580-eae2-46a4-b136-bc5c3cb180c6',
+    TAXGROUPID = "9da54644-3581-45a3-ae2f-dbdc72a4af3a",
+    ITEMUNIT = "9c2ecc81-d201-4353-8fbc-7b9d61e0afb4"
 }
 
 
@@ -164,7 +165,7 @@ export const pricing: any = {
         "default": [
             {
                 "onetime": {
-                    "baseprice": 0
+                    "baseprice": '1'
                 }
             },
         ],

@@ -13,6 +13,7 @@ export const insertItems = async (  itemsdata?: any,type:any = 'all') => {
   if(itemsdata?.length > 0) {
 
       for (const data of itemsdata) {
+
           data.itemname = data?.itemname.replace(regx," ");
           data.groupname =  data?.groupname.replace(regx," ");
           let values = `(${data?.itemid}, "${data?.itemname}", "${data?.itemgroupid}", "${data?.uniqueproductcode}", '${JSON.stringify(data)}', "${data?.itemstatus}", ${data?.pricealert})`;
@@ -21,8 +22,8 @@ export const insertItems = async (  itemsdata?: any,type:any = 'all') => {
               insertQuery.push(values);
           }
           else{
-
               insertQuery = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert") values ${values}`;
+              appLog('insertQuery',insertQuery)
               try {
                   await db.executeSql(insertQuery);
               }

@@ -8,8 +8,11 @@ import {setSelected} from "../../redux-store/reducer/selected-data";
 import ProIcon from "../../components/ProIcon";
 import {useNavigation} from "@react-navigation/native";
 import {Menu, Paragraph} from "react-native-paper";
-import {setDialog} from "../../redux-store/reducer/component";
+import {setDialog, setModal} from "../../redux-store/reducer/component";
 import ReserveList from "./ReserveList";
+import store from "../../redux-store/store";
+import AddEditItem from "../Items/AddEditItem";
+import AddTable from "./AddTable";
 
 
 const OrderType = (props: any) => {
@@ -50,6 +53,15 @@ const Index = (props: any) => {
         }))
     }
 
+    const onClickAddTable = () => {
+        store.dispatch(setModal({
+            visible: true,
+            hidecancel: true,
+            width: 300,
+            component: () => <AddTable   />
+        }))
+    }
+
     return (
 
         <>
@@ -84,6 +96,7 @@ const Index = (props: any) => {
                         }} style={[styles.p_5]}>
                             <ProIcon name={'ellipsis-vertical'}/>
                         </TouchableOpacity>}>
+                        <Menu.Item onPress={onClickAddTable} title="Add Table"/>
                         {!shifttable && <Menu.Item onPress={() => {
                             setShifttable(true)
                         }} title="Shift Table"/>}

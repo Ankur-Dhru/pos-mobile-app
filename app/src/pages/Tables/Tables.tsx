@@ -1,7 +1,7 @@
 import {current, device, localredux} from "../../libs/static";
 import React, {memo, useCallback, useEffect, useState} from "react";
 import {isEmpty, saveTempLocalOrder, toCurrency} from "../../libs/function";
-import {FlatList, Text, TouchableOpacity, View} from "react-native";
+import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
 import {FAB, Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 
@@ -15,7 +15,7 @@ import moment from "moment";
 
 import OrderTypes from "./OrderTypes";
 import {setSelected} from "../../redux-store/reducer/selected-data";
-import store from "../../redux-store/store";
+
 
 const Index = (props: any) => {
 
@@ -27,6 +27,7 @@ const Index = (props: any) => {
 
 
     const dispatch = useDispatch();
+    const [refreshing,setRefreshing]:any = useState(false);
     const [floating, setFloating] = useState(false);
     const [shifttable, setShifttable] = useState(false);
     const [shiftingFromtable, setShiftingFromtable] = useState<any>();
@@ -34,6 +35,7 @@ const Index = (props: any) => {
 
 
     const getOriginalTablesData = () => {
+        const {currentLocation} = localredux.localSettingsData;
         let tables;
         tables = currentLocation?.tables?.map((t: any) => ({
             ...t,
@@ -63,6 +65,7 @@ const Index = (props: any) => {
 
 
     const getOrder = async () => {
+        setRefreshing(true)
         let newtables = getOriginalTablesData();
         let newothertables: any = [];
         Object.values(tableorders).map((table: any) => {
@@ -75,6 +78,7 @@ const Index = (props: any) => {
         });
         newtables = newtables.concat(newothertables);
         await setTables(newtables);
+        setRefreshing(false)
     }
 
 
@@ -222,6 +226,12 @@ const Index = (props: any) => {
                         }
                     })}
                     renderItem={renderItem}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={() => getOrder()}
+                        />
+                    }
                     numColumns={device.tablet ? 4 : 2}
                     getItemLayout={(data, index) => {
                         return {length: 100, offset: 100 * index, index};

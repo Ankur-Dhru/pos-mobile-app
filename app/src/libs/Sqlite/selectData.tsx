@@ -10,12 +10,27 @@ import {TABLE} from "./config";
 
 export const getItemsByWhere = async ({itemgroupid,itemname,start}:any) => {
     const db = await getDBConnection();
+
     try {
         let items:any=[];
         await db.transaction(function (txn) {
+
+            let where=' 1 = 1 ';
+
+            if(Boolean(itemgroupid)){
+              where += ` and itemgroupid = '${itemgroupid}' `;
+            }
+            if(Boolean(itemname)){
+                where += ` and (itemname LIKE '%${itemname}%' or uniqueproductcode = '${itemname}') `;
+            }
+
+           const query = `SELECT * FROM ${TABLE.ITEM} where  ${where} limit ${start*20},20`;
+
+            appLog('query',query)
+
             txn.executeSql(
-                `SELECT * FROM ${TABLE.ITEM} where  (itemgroupid = ?) or (itemname LIKE '%'&?&'%')   limit ?*20,20`,
-                [itemgroupid,itemname,start],
+                query,
+                [],
                 function (tx, res) {
 
                     for (let i = 0; i < res.rows.length; ++i)

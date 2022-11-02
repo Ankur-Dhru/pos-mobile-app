@@ -1,35 +1,62 @@
 import React, {memo, useCallback, useEffect, useState} from "react";
 
-import {FlatList, View, TouchableOpacity, ActivityIndicator} from "react-native";
+import {ActivityIndicator, FlatList, RefreshControl, TouchableOpacity, View} from "react-native";
 
 import {connect} from "react-redux";
-
-import {localredux} from "../../libs/static";
 import {styles} from "../../theme";
 import {appLog, isRestaurant, selectItem} from "../../libs/function";
 import {Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
-import {getItemsByWhere, readTable} from "../../libs/Sqlite/selectData";
+import {getItemsByWhere} from "../../libs/Sqlite/selectData";
+import Button from "../../components/Button";
+import {setModal} from "../../redux-store/reducer/component";
+import store from "../../redux-store/store";
+import AddEditItem from "./AddEditItem";
 
 
 const hasRestaurant = isRestaurant()
-let sGroup:any = '';
+let sGroup: any = '';
 
-const Item = memo(({item}:any) => {
+export const AddItem = (props:any) => {
+
+    return (
+        <View style={[]}>
+            <Paragraph style={[styles.paragraph, styles.p_6, styles.muted, {textAlign: 'center'}]}>No any
+                Items</Paragraph>
+            <View style={[styles.grid, styles.center]}>
+                <Button
+                    secondbutton={true}
+                    onPress={async () => {
+                        store.dispatch(setModal({
+                            visible: true,
+                            hidecancel: true,
+                            width: 300,
+                            component: () => <AddEditItem item={{}} searchtext={props.searchtext}  />
+                        }))
+                    }}> + Add New Item
+                </Button>
+            </View>
+        </View>
+    )
+}
+
+
+const Item = memo(({item}: any) => {
     const {veg} = item;
-    return (<TouchableOpacity onPress={() => selectItem(item)} style={[styles.flexGrow,styles.center,styles.middle, {
+    return (<TouchableOpacity onPress={() => selectItem(item)} style={[styles.flexGrow, styles.center, styles.middle, {
         width: 110,
         padding: 10,
         margin: 5,
         backgroundColor: styles.secondary.color,
         borderRadius: 5
     }]}>
-        <Paragraph  style={[styles.paragraph, styles.bold, styles.text_xs, {textAlign: 'center'}]}>{item.itemname}</Paragraph>
+        <Paragraph
+            style={[styles.paragraph, styles.bold, styles.text_xs, {textAlign: 'center'}]}>{item.itemname}</Paragraph>
         {hasRestaurant && <View style={[styles.absolute, {top: 3, right: 3}]}>
             <VegNonVeg type={veg}/>
         </View>}
     </TouchableOpacity>)
-},(r1, r2) => {
+}, (r1, r2) => {
     return (r1.item.itemid === r2.item.itemid);
 })
 
@@ -38,41 +65,53 @@ const Index = (props: any) => {
 
     const {selectedgroup} = props;
 
+    let [start, setStart]: any = useState(0);
+    const [loading, setLoading]: any = useState(false);
+    const [end, setEnd]: any = useState(false);
+    const [dataSource, setDataSource]: any = useState([]);
 
-    let [start,setStart]:any = useState(0);
+    const getItems = async (refresh=false) => {
+        if(!end) {
+            await getItemsByWhere({itemgroupid: selectedgroup, start: start}).then((newitems: any) => {
+                if (Boolean(newitems.length > 0)) {
+                    if (refresh) {
+                        setDataSource([...newitems]);
+                    } else {
+                        setDataSource([...dataSource, ...newitems]);
+                    }
+                } else {
+                    setEnd(true)
+                }
 
-    const [loading,setLoading]:any = useState(false);
-
-    const [dataSource, setDataSource]:any = useState([]);
+            });
+        }
+        setLoading(true)
+    }
 
     useEffect(() => {
-        setLoading(true)
-        if(sGroup!==selectedgroup){
+        if (sGroup !== selectedgroup) {
             setDataSource([])
             setStart(0)
         }
-        getItemsByWhere({itemgroupid: selectedgroup,start:start}).then((newitems:any) => {
-            if (Boolean(newitems.length > 0)) {
-                setDataSource([...dataSource,...newitems]);
-            }
-            setLoading(false)
-        });
+        getItems()
         sGroup = selectedgroup;
-    }, [selectedgroup,start])
+    }, [selectedgroup, start])
+
 
 
 
     const renderItem = useCallback(({item, index}: any) => {
-        return <Item item={item} index={index}  key={item.productid} />
+        return <Item item={item} index={index} key={item.productid}/>
     }, [selectedgroup]);
 
     const onEndReached = () => {
         setStart(++start)
     }
 
-    if(!Boolean(dataSource?.length)) {
+    if(!loading){
         return <></>
     }
+
 
     return (
         <>
@@ -81,22 +120,23 @@ const Index = (props: any) => {
                 renderItem={renderItem}
                 numColumns={3}
                 getItemLayout={(data, index) => {
-                    return { length: 100, offset: 100 * index, index };
+                    return {length: 100, offset: 100 * index, index};
                 }}
                 ListFooterComponent={() => {
                     return <View style={{height: 100}}>
-                        {loading ? (
-                            <ActivityIndicator
-                                color="black"
-                                style={{margin: 15}} />
-                        ) : null}
+
                     </View>
                 }}
-                onEndReached={onEndReached}
+                onMomentumScrollEnd={onEndReached}
+
                 onEndReachedThreshold={0.5}
-                ListEmptyComponent={()=>{
-                    return (<View style={[]}><Paragraph style={[styles.paragraph,styles.p_6,styles.muted,{textAlign:'center'}]}>No any Items</Paragraph></View>)
-                }}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={false}
+                        onRefresh={() => getItems(true)}
+                    />
+                }
+                ListEmptyComponent={<AddItem />}
                 keyExtractor={item => item.itemid}
             />
         </>

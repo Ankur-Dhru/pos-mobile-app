@@ -16,25 +16,24 @@ import Cart from "../Cart";
 import {appLog, CheckConnectivity, isEmpty, isRestaurant, retrieveData, storeData} from "../../libs/function";
 import DetailView from "../Cart/DetailView";
 import Payment from "../Cart/Payment";
-import Preview from "../Cart/Preview";
-import SearchItem from "../Items/SearchItem";
 import Report from "../Report";
-import PrinterSettings from "../PrinterSettings";
+
 import InputOpenSetting from "../InputOpenSetting";
 import DefaultInputValues from "../DefaultInputValues";
-import {hideLoader, showLoader} from "../../redux-store/reducer/component";
 import apiService from "../../libs/api-service";
 import {setOrder} from "../../redux-store/reducer/orders-data";
 import {useDispatch} from "react-redux";
 import Register from "../Setup/Register";
-import SignupStep1 from "../Setup/SignupStep1";
-import SignupStep2 from "../Setup/SignupStep2";
+
 import Verification from "../Setup/Verification";
-import ResetPassword from "../Setup/ResetPassword";
+
 import AddWorkspace from "../SetupWorkspace/AddWorkspace";
 import OrganizationProfile from "../SetupWorkspace/OrganizationProfile";
 import BusinessDetails from "../SetupWorkspace/BusinessDetails";
 import CurrencyPreferences from "../SetupWorkspace/CurrencyPreferences";
+
+import InvoicePrinter from "../PrinterSettings/InvoicePrinter";
+import KOTPrinter from "../PrinterSettings/KOTPrinter";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -207,32 +206,6 @@ const SalesReportNavigator = (props: any) => {
 };
 
 
-const PrinterNavigator = (props: any) => {
-    const {route: {params}}: any = props
-    return (
-        <Stack.Navigator initialRouteName={'PrinterSettings'}>
-            <Stack.Screen name={'PrinterSettings'} component={PrinterSettings} options={{headerShown: false}}/>
-        </Stack.Navigator>
-    );
-};
-
-const InputOpenNavigator = (props: any) => {
-    const {route: {params}}: any = props
-    return (
-        <Stack.Navigator initialRouteName={'InputOpenSetting'}>
-            <Stack.Screen name={'InputOpenSetting'} component={InputOpenSetting} options={{headerShown: false}}/>
-        </Stack.Navigator>
-    );
-};
-
-const InputValueNavigator = (props: any) => {
-    const {route: {params}}: any = props
-    return (
-        <Stack.Navigator initialRouteName={'DefaultInputValues'}>
-            <Stack.Screen name={'DefaultInputValues'} component={DefaultInputValues} options={{headerShown: false}}/>
-        </Stack.Navigator>
-    );
-};
 
 const DrawerStackNavigator = () => {
 
@@ -254,15 +227,14 @@ const DrawerStackNavigator = () => {
                 headerShown: false,
                 title: route?.params?.tablename || 'POS'
             })}/>
-            <Drawer.Screen name={'InputOpenNavigator'} component={InputOpenNavigator}
-                           options={({route}: any) => ({headerShown: false, title: 'Quick Quantity Unit'})}/>
-            <Drawer.Screen
-                name={'InputValueNavigator'}
-                component={InputValueNavigator}
-                options={({route}: any) => ({headerShown: false, title: 'Quick Quantity & Amount'})}
-            />
-            <Drawer.Screen name={'PrinterNavigator'} component={PrinterNavigator}
-                           options={({route}: any) => ({headerShown: false, title: 'Printer Settings'})}/>
+
+
+            <Drawer.Screen name={'InvoicePrinter'} component={InvoicePrinter} options={{headerShown: false}}/>
+            <Drawer.Screen name={'KOTPrinter'} component={KOTPrinter} options={{headerShown: false}}/>
+            <Drawer.Screen name={'InputOpenSetting'} component={InputOpenSetting} options={{headerShown: false}}/>
+            <Drawer.Screen name={'DefaultInputValues'} component={DefaultInputValues} options={{headerShown: false}}/>
+
+
         </Drawer.Navigator>
     );
 };

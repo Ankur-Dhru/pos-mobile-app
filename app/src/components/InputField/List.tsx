@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {FlatList, Keyboard, TouchableOpacity, View} from 'react-native';
 import {connect} from "react-redux";
-import {filterArray,assignOption, getType, log} from "../../libs/function";
+import {filterArray, assignOption, getType, log, appLog} from "../../libs/function";
 import {Divider, List, Paragraph, withTheme} from "react-native-paper";
 
 import {Button, ProIcon} from "../index";
@@ -188,13 +188,10 @@ class ListView extends Component<any> {
     _onAdd = () => {
         let {onAdd}: any = this.props;
 
-
-
         if (Boolean(this.searchText?.trim())) {
             this.originalList = [...this.originalList, assignOption(this.searchText, this.searchText,'','','','',true)];
             this.handleSearch(this.searchText);
             onAdd(this.searchText, (value: any) => {
-                log('_onAdd value',value)
                 this._select(value);
             });
             //this.confirm()
@@ -222,9 +219,6 @@ class ListView extends Component<any> {
 
             <View style={[styles.w_100, styles.h_100, {backgroundColor: colors.surface}]}>
 
-
-
-
                 <View style={[styles.w_100, styles.h_100]}>
                     <FlatList
                         scrollIndicatorInsets={{right: 1}}
@@ -240,10 +234,14 @@ class ListView extends Component<any> {
                                             handleSearch={this.handleSearch}/>
                                 </View>
 
-                                {Boolean(onAdd) && <View style={[{paddingRight: 15}]}>
+                                {Boolean(addItem) &&  <View>
+                                    {addItem}
+                                </View>}
+
+                                {Boolean(onAdd) && <View style={[{paddingRight: 5}]}>
                                     <Button compact={true} secondbutton={!Boolean(this.searchText)} disabled={!Boolean(this.searchText)} onPress={() => {
                                         this._onAdd()
-                                    }}>{'Add'}  </Button>
+                                    }}> {'Add'}  </Button>
                                 </View>}
 
                             </View> : <View></View>}

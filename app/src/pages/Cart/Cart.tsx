@@ -95,7 +95,7 @@ const Index = (props: any) => {
 
 
                     <Card  style={[styles.h_100, styles.w_auto, {minWidth: 120}]} >
-                        <GroupList groups={groups}/>
+                        <GroupList  />
                     </Card>
 
                     <Card style={[styles.flexGrow,styles.noshadow,styles.w_auto,{marginLeft: 5,marginRight:5,minWidth:'40%'}]}>

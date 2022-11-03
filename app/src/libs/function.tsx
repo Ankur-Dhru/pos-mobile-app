@@ -122,7 +122,7 @@ export const clone = (obj: any) => {
 
 export const getDefaultCurrency = () => {
     const {currency}: any = localredux.initData;
-    return Object.keys(currency).find((k) => currency[k].rate === "1") || {}
+    return Object.keys(currency).find((k) => currency[k]?.rate === "1") || {}
 }
 
 export const currencyRate = (currencyName: any) => {
@@ -483,7 +483,7 @@ export const syncData = async (loader=true) => {
         })
 
 
-        let {initData, localSettingsData: {lastSynctime}, addonsData, clientsData, authData}: any = localredux;
+        let {initData, localSettingsData: {lastSynctime}, addonsData, clientsData}: any = localredux;
 
 
         loader && store.dispatch(setDialog({visible: true, hidecancel: true, width: 300, component: () => <SyncingInfo/>}))
@@ -592,7 +592,7 @@ export const syncData = async (loader=true) => {
                 }
                 if (status === STATUS.ERROR || type === "finish") {
                     store.dispatch(setDialog({visible: false}))
-                    store.dispatch(setAlert({visible: true, message: 'Sync Successful'}))
+                    loader && store.dispatch(setAlert({visible: true, message: 'Sync Successful'}))
                 }
 
             })
@@ -1084,15 +1084,12 @@ export const groupBy = (arr: any, property: any) => {
 }
 
 export const selectItem = async (product: any) => {
-
     const item = JSON.parse(product.data);
-
     const setItemQnt = async (item: any) => {
 
         try {
 
             const {addongroupid, addonid} = item?.addtags || {addongroupid: [], addonid: []}
-
 
             item = {
                 ...item,
@@ -1127,6 +1124,7 @@ export const selectItem = async (product: any) => {
                 }
 
             } else {
+
                 const itemRowData: any = setItemRowData(item);
                 item = {
                     ...item,

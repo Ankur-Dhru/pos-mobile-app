@@ -24,9 +24,7 @@ export const getItemsByWhere = async ({itemgroupid,itemname,start}:any) => {
                 where += ` and (itemname LIKE '%${itemname}%' or uniqueproductcode = '${itemname}') `;
             }
 
-           const query = `SELECT * FROM ${TABLE.ITEM} where  ${where} limit ${start*20},20`;
-
-            appLog('query',query)
+           const query = `SELECT * FROM ${TABLE.ITEM} where  ${where}`; // limit ${start*20},20
 
             txn.executeSql(
                 query,

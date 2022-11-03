@@ -76,7 +76,6 @@ const Item = memo(({item}: any) => {
 const Index = (props: any) => {
 
     const {selectedgroup, invoiceitems} = props;
-    let [start,setStart]:any = useState(0);
 
     const [loading,setLoading]:any = useState(false);
 
@@ -85,12 +84,13 @@ const Index = (props: any) => {
 
     useEffect(() => {
 
-        if(sGroup!==selectedgroup){
+        /*if(sGroup!==selectedgroup){
             setDataSource([])
             setStart(0)
-        }
+            sGroup = selectedgroup;
+        }*/
 
-        getItemsByWhere({itemgroupid: selectedgroup,start:start}).then((newitems:any) => {
+        getItemsByWhere({itemgroupid: selectedgroup}).then((newitems:any) => {
             if (Boolean(newitems.length > 0)) {
                 newitems = newitems?.map((i: any) => {
                     const find = invoiceitems.filter((ii: any) => {
@@ -101,20 +101,20 @@ const Index = (props: any) => {
                     }
                     return i;
                 })
-                setDataSource([...dataSource,...newitems]);
+                setDataSource([...newitems]); //...dataSource,
             }
             setLoading(true)
         });
 
-        sGroup = selectedgroup;
-
-    }, [selectedgroup, invoiceitems,start])
 
 
+    }, [selectedgroup, invoiceitems])
 
-    const onEndReached = () => {
+
+
+    /*const onEndReached = () => {
         setStart(++start)
-    }
+    }*/
 
 
     const renderItem = useCallback(({item, index}: any) => {
@@ -135,13 +135,11 @@ const Index = (props: any) => {
                 getItemLayout={(data, index) => {
                     return {length: 100, offset: 100 * index, index};
                 }}
-                onMomentumScrollEnd={onEndReached}
-                onEndReachedThreshold={0.5}
+                /*onMomentumScrollEnd={onEndReached}
+                onEndReachedThreshold={0.5}*/
 
                 ListFooterComponent={() => {
-                    return <View style={{height: 100}}>
-
-                    </View>
+                    return <View style={{height: 100}}></View>
                 }}
                 ListEmptyComponent={AddItem}
             />

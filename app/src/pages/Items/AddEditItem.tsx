@@ -5,7 +5,15 @@ import {styles} from "../../theme";
 import {Button, Container, ProIcon} from "../../components";
 import {connect, useDispatch} from "react-redux";
 import {Card, Divider, Paragraph, TextInput as TI, Title, withTheme,} from "react-native-paper";
-import {appLog, assignOption, findObject, getCurrencySign, updateComponent} from "../../libs/function";
+import {
+    appLog,
+    assignOption,
+    findObject,
+    getCurrencySign,
+    isRestaurant,
+    selectItem,
+    updateComponent
+} from "../../libs/function";
 import {Field, Form} from "react-final-form";
 
 import {
@@ -15,7 +23,7 @@ import {
     METHOD,
     mustBeNumber,
     options_itc,
-    pricing, PRODUCTCATEGORY,
+    pricing, PRINTER, PRODUCTCATEGORY,
     required,
     STATUS
 } from "../../libs/static";
@@ -29,11 +37,12 @@ import KeyboardScroll from "../../components/KeyboardScroll";
 import KAccessoryView from '../../components/KAccessoryView';
 
 
-import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import apiService from "../../libs/api-service";
 import CheckBox from "../../components/CheckBox";
 import {insertItems} from "../../libs/Sqlite/insertData";
-import {setModal} from "../../redux-store/reducer/component";
+import {setBottomSheet, setDialog, setModal, setPageSheet} from "../../redux-store/reducer/component";
+import store from "../../redux-store/store";
+import AddEditCategory from "./AddEditCategory";
 
 
 
@@ -44,7 +53,7 @@ const Index = ({item,searchtext}: any) => {
 
     let initdata: any = {
         allowmultipleorders: "1",
-        defaultitc: "",
+        defaultitc: "eligible",
         inventoryaccount: 45,
         inventorytype: "fifo",
         inwardaccount: 63,
@@ -52,7 +61,7 @@ const Index = ({item,searchtext}: any) => {
         pricing: pricing,
         itemconfig: [],
         itemdepartmentid: '',
-        itemgroupid: PRODUCTCATEGORY.DEFAULT,
+        itemgroupid: store.getState()?.selectedData?.group?.value || PRODUCTCATEGORY.DEFAULT,
         itemhsncode: '',
         itemname: Boolean(searchtext) ? searchtext : '',
         itemstatus: "active",
@@ -74,9 +83,9 @@ const Index = ({item,searchtext}: any) => {
         sellingcost: '',
         mrp: '',
         shortinfo: "",
-        rate:'10',
+        rate:'',
         pricealert:0,
-        trackinventory: '1',
+        trackinventory: false,
         identificationtype: 'auto',
         warrantyperiod: "day",
         warrantytoclient: false,
@@ -95,9 +104,6 @@ const Index = ({item,searchtext}: any) => {
     let itemTypeConfig = itemtype[initdata.itemtype] && itemtype[initdata.itemtype].config;
 
     const advanceRef = React.createRef()
-    const scrollRef = React.createRef<KeyboardAwareScrollView>();
-
-
 
     const options_itemtypes = Object.keys(itemtype).filter((k: any) => { return k === 'product' || k === 'licensing' || k === "service" }).map((k) => assignOption(itemtype[k].description, k, '', '', (k === 'product' || k === 'licensing' || k === "service") ? false : true));
 
@@ -141,8 +147,10 @@ const Index = ({item,searchtext}: any) => {
             other: {url: adminUrl},
         }).then(async (result) => {
             if (result.status === STATUS.SUCCESS) {
-                await insertItems([{...values,...result.data,groupname:itemgroup[values.itemgroupid].itemgroupname}],'onebyone').then(() => {
+                const item = {...values,...result.data,groupname:itemgroup[values.itemgroupid].itemgroupname};
+                await insertItems([item],'onebyone').then(() => {
                     dispatch(setModal({visible:false}))
+                    selectItem({data:JSON.stringify(item)})
                 });
 
             }
@@ -155,7 +163,7 @@ const Index = ({item,searchtext}: any) => {
     }
 
 
-    let isRetailIndustry = true;
+    let isRetailIndustry = !isRestaurant();
     return (
         <View style={[styles.h_100,styles.middle]}>
 
@@ -165,11 +173,17 @@ const Index = ({item,searchtext}: any) => {
                 render={({handleSubmit, submitting, values, ...more}: any) => (
                     <View  style={[styles.h_100,styles.middleForm,]}>
                         <KeyboardScroll>
+
+                            <Title style={[styles.mt_5,{marginLeft:10}]}> Add Item </Title>
+
                             <View>
                                 <View>
                                     <View>
                                         <Card style={[styles.card]}>
                                             <Card.Content style={{paddingBottom: 0}}>
+
+
+
                                                 <Paragraph style={[styles.paragraph, styles.caption]}>
                                                     Basic
                                                 </Paragraph>
@@ -210,6 +224,48 @@ const Index = ({item,searchtext}: any) => {
 
 
                                                 <View>
+                                                    <Field name="itemgroupid">
+                                                        {props => (
+                                                            <><InputField
+                                                                label={'Category'}
+                                                                mode={'flat'}
+                                                                key={uuidv4()}
+                                                                list={option_itemgroups}
+                                                                value={props.input.value}
+                                                                selectedValue={props.input.value}
+                                                                displaytype={'pagelist'}
+                                                                inputtype={'dropdown'}
+                                                                listtype={'other'}
+                                                                /*onAdd={(text: any, callBack: any) => {
+                                                                    let item = assignOption(text, text);
+                                                                    appLog(item)
+                                                                    callBack(item);
+                                                                }}*/
+
+                                                                addItem={<TouchableOpacity onPress={async () => {
+                                                                    store.dispatch(setPageSheet({
+                                                                        visible: true,
+                                                                        hidecancel: true,
+                                                                        width: 300,
+                                                                        component: () => <AddEditCategory callback={(value:any)=>{
+                                                                            appLog('value',value.itemgroupid)
+                                                                            props.input.onChange(value.itemgroupid)
+                                                                        }} pagesheet={true} />
+                                                                    }))
+                                                                }}>
+                                                                    <Title
+                                                                    style={[styles.px_6]}><ProIcon
+                                                                    name={'plus'}/></Title></TouchableOpacity>}
+
+                                                                onChange={(value: any) => {
+                                                                    props.input.onChange(value);
+                                                                }}>
+                                                            </InputField></>
+                                                        )}
+                                                    </Field>
+                                                </View>
+
+                                                <View>
                                                     <Field name="itemname" validate={required}>
                                                         {props => (
                                                             <InputField
@@ -223,6 +279,8 @@ const Index = ({item,searchtext}: any) => {
                                                     </Field>
                                                 </View>
 
+
+
                                                 <Field name="otherlanguagename">
                                                     {props => (
                                                         <InputField
@@ -235,33 +293,72 @@ const Index = ({item,searchtext}: any) => {
                                                     )}
                                                 </Field>
 
-                                                <Field name="itemgroupid">
-                                                    {props => (
-                                                        <><InputField
-                                                            label={'Category'}
-                                                            mode={'flat'}
-                                                            key={uuidv4()}
-                                                            list={option_itemgroups}
-                                                            value={props.input.value}
-                                                            selectedValue={props.input.value}
-                                                            displaytype={'pagelist'}
-                                                            inputtype={'dropdown'}
-                                                            listtype={'other'}
-                                                            addItem={<TouchableOpacity
-                                                                onPress={() => addGroup()}><Title
-                                                                style={[styles.px_6]}><ProIcon
-                                                                name={'plus'}/></Title></TouchableOpacity>}
-                                                            onChange={(value: any) => {
-                                                                props.input.onChange(value);
-                                                            }}>
-                                                        </InputField></>
-                                                    )}
-                                                </Field>
+                                                <View>
+                                                    <Field name="uniqueproductcode">
+                                                        {props => (
+                                                            <InputField
+                                                                value={props.input.value}
+                                                                label={'SKU or Item Code'}
+                                                                inputtype={'textbox'}
+                                                                onChange={props.input.onChange}
+                                                            />
+                                                        )}
+                                                    </Field>
+                                                </View>
 
 
-                                                {onlyForIndia &&
+
+
+                                                <View>
+                                                    <Field name="pricing.price.default[0].onetime.baseprice"
+                                                           validate={composeValidators(required, mustBeNumber)}>
+                                                        {props => (
+                                                            <InputField
+                                                                {...props}
+                                                                value={props.input.value}
+                                                                label={'Selling Price  '}
+                                                                keyboardType='numeric'
+                                                                inputtype={'textbox'}
+                                                                left={<TI.Affix text={getCurrencySign()}/>}
+                                                                onChange={props.input.onChange}
+                                                            />
+                                                        )}
+                                                    </Field>
+
+                                                </View>
+
+
+
+                                                <View>
+                                                    <Field name="itemtaxgroupid" validate={required}>
+                                                        {props => (
+                                                            <>
+                                                                <InputField
+                                                                    {...props}
+                                                                    label={'Tax Rate'}
+                                                                    mode={'flat'}
+                                                                    list={option_taxes}
+                                                                    value={props.input.value}
+                                                                    selectedValue={props.input.value}
+                                                                    displaytype={'pagelist'}
+                                                                    inputtype={'dropdown'}
+                                                                    listtype={'other'}
+                                                                    onChange={(value: any) => {
+                                                                        props.input.onChange(value)
+                                                                    }}>
+                                                                </InputField>
+                                                            </>
+                                                        )}
+                                                    </Field>
+
+                                                </View>
+
+
+
+
+                                                {onlyForIndia && onlyForRegistered &&
                                                     <Field name="itemhsncode"
-                                                           validate={onlyForRegistered ? composeValidators(required, mustBeNumber) : undefined}>
+                                                           validate={composeValidators(required, mustBeNumber)}>
                                                         {props => (
                                                             <InputField
                                                                 {...props}
@@ -273,7 +370,6 @@ const Index = ({item,searchtext}: any) => {
                                                             />
                                                         )}
                                                     </Field>
-
                                                 }
 
                                                 {
@@ -367,231 +463,13 @@ const Index = ({item,searchtext}: any) => {
                                                     })
                                                 }
 
-
-                                                {onlyForIndia && isTypeProduct && isRetailIndustry &&
-                                                    <View>
-                                                        <Field name="mrp"
-                                                               validate={composeValidators(mustBeNumber)}>
-                                                            {props => (
-                                                                <InputField
-                                                                    {...props}
-                                                                    value={props.input.value}
-                                                                    label={'MRP'}
-                                                                    keyboardType='numeric'
-                                                                    inputtype={'textbox'}
-                                                                    left={<TI.Affix text={getCurrencySign()}/>}
-                                                                    onChange={props.input.onChange}
-                                                                />
-                                                            )}
-                                                        </Field>
-                                                    </View>}
-
-                                                <View>
-                                                    <Field name="pricing.price.default[0].onetime.baseprice"
-                                                           validate={composeValidators(required, mustBeNumber)}>
-                                                        {props => (
-                                                            <InputField
-                                                                {...props}
-                                                                value={props.input.value}
-                                                                label={'Selling Price  '}
-                                                                keyboardType='numeric'
-                                                                inputtype={'textbox'}
-                                                                left={<TI.Affix text={getCurrencySign()}/>}
-                                                                onChange={props.input.onChange}
-                                                            />
-                                                        )}
-                                                    </Field>
-
-                                                </View>
-
                                             </Card.Content>
                                         </Card>
 
-                                        {isTypeProduct && <View>
 
-
-                                            <Card style={[styles.card]}>
-                                                <Card.Content style={{paddingBottom: 0}}>
-
-                                                    <Paragraph style={[styles.paragraph, styles.caption]}>
-                                                        Unit
-                                                    </Paragraph>
-
-                                                    <Field name="itemunit" validate={required}>
-                                                        {props => (
-                                                            <InputField
-                                                                {...props}
-                                                                label={'Purchase Unit'}
-                                                                mode={'flat'}
-                                                                list={option_units}
-                                                                value={props.input.value}
-                                                                selectedValue={props.input.value}
-                                                                displaytype={'pagelist'}
-                                                                inputtype={'dropdown'}
-                                                                listtype={'other'}
-                                                                onChange={(value: any) => {
-                                                                    props.input.onChange(value);
-                                                                    initdata.itemunit = value;
-                                                                    if (Boolean(initdata.itemunit)) {
-                                                                        let unittype = unit[initdata.itemunit] && unit[initdata.itemunit].unittype;
-                                                                        option_salesunit = Object.values(unit)
-                                                                            .filter((a: any) => Boolean(a) && a.unittype === unittype)
-                                                                            .map((a: any) => assignOption(`${a.unitname} (${a.unitcode})`, a.unitid))
-                                                                    }
-                                                                }}>
-                                                            </InputField>
-                                                        )}
-                                                    </Field>
-
-                                                    <View>
-                                                        <Field name="salesunit" validate={required}>
-                                                            {props => (
-                                                                <>
-                                                                    <InputField
-                                                                        {...props}
-                                                                        label={'Sales Unit'}
-                                                                        mode={'flat'}
-                                                                        list={option_salesunit}
-                                                                        value={props.input.value}
-                                                                        selectedValue={props.input.value}
-                                                                        displaytype={'pagelist'}
-                                                                        inputtype={'dropdown'}
-                                                                        listtype={'other'}
-                                                                        onChange={(value: any) => {
-                                                                            props.input.onChange(value)
-                                                                        }}>
-                                                                    </InputField>
-                                                                </>
-
-                                                            )}
-                                                        </Field>
-                                                    </View>
-
-                                                </Card.Content>
-                                            </Card>
-
-                                        </View>}
-
-                                        <Card style={[styles.card]}>
-                                            <Card.Content style={{paddingBottom: 0}}>
-
-                                                <Paragraph style={[styles.paragraph, styles.caption]}>
-                                                    Tax Detail
-                                                </Paragraph>
-
-                                                <View>
-                                                    <Field name="itemtaxgroupid" validate={required}>
-                                                        {props => (
-                                                            <>
-                                                                <InputField
-                                                                    {...props}
-                                                                    label={'Tax Rate'}
-                                                                    mode={'flat'}
-                                                                    list={option_taxes}
-                                                                    value={props.input.value}
-                                                                    selectedValue={props.input.value}
-                                                                    displaytype={'pagelist'}
-                                                                    inputtype={'dropdown'}
-                                                                    listtype={'other'}
-                                                                    onChange={(value: any) => {
-                                                                        props.input.onChange(value)
-                                                                    }}>
-                                                                </InputField>
-                                                            </>
-                                                        )}
-                                                    </Field>
-
-                                                </View>
-
-
-                                                {onlyForIndia && onlyForRegistered && <View>
-                                                    <Field name="defaultitc"
-                                                           validate={onlyForRegistered ? required : undefined}>
-                                                        {props => (
-                                                            <>
-                                                                <InputField
-                                                                    {...props}
-                                                                    label={`Default ITC (Input Tax Credit) Selection`}
-                                                                    list={options_itc}
-                                                                    mode={'flat'}
-                                                                    value={props.input.value}
-                                                                    selectedValue={props.input.value}
-                                                                    displaytype={'pagelist'}
-                                                                    inputtype={'dropdown'}
-                                                                    listtype={'other'}
-                                                                    onChange={(value: any) => {
-                                                                        props.input.onChange(value)
-
-                                                                        scrollRef.current.scrollToPosition(0, 600, false);
-
-                                                                    }}>
-                                                                </InputField>
-                                                            </>
-                                                        )}
-                                                    </Field>
-                                                </View>}
-                                            </Card.Content>
-                                        </Card>
-
-                                        <Card style={[styles.card]}>
-                                            <Card.Content style={{paddingBottom: 0}}>
-
-                                                <Paragraph style={[styles.paragraph, styles.caption]}>
-                                                    Inword / Outward Account
-                                                </Paragraph>
-                                                <View>
-                                                    <Field name="outwardaccount">
-                                                        {props => (
-                                                            <InputField
-                                                                label={'Outward Account'}
-                                                                mode={'flat'}
-                                                                list={chartofaccount.filter((account: any) => {
-                                                                    return account.accounttype === 'income'
-                                                                }).map((t: any) => assignOption(t.accountname, t.accountid))}
-                                                                value={props.input.value}
-                                                                selectedValue={props.input.value}
-                                                                displaytype={'pagelist'}
-                                                                inputtype={'dropdown'}
-                                                                listtype={'other'}
-                                                                onChange={(value: any) => {
-                                                                    props.input.onChange(value)
-                                                                }}>
-                                                            </InputField>
-                                                        )}
-                                                    </Field>
-                                                </View>
-
-
-                                                <View>
-                                                    <Field name="inwardaccount">
-                                                        {props => (
-                                                            <InputField
-                                                                label={'Inward Account '}
-                                                                mode={'flat'}
-                                                                list={chartofaccount.filter((account: any) => {
-                                                                    return account.accounttype === 'expense'
-                                                                }).map((t: any) => assignOption(t.accountname, t.accountid))}
-                                                                value={props.input.value}
-                                                                selectedValue={props.input.value}
-                                                                displaytype={'pagelist'}
-                                                                inputtype={'dropdown'}
-                                                                listtype={'other'}
-                                                                onChange={(value: any) => {
-                                                                    props.input.onChange(value)
-                                                                }}>
-                                                            </InputField>
-                                                        )}
-                                                    </Field>
-                                                </View>
-                                            </Card.Content>
-                                        </Card>
 
                                         {isTypeProduct && <Card style={[styles.card]}>
                                             <Card.Content style={{paddingBottom: 0}}>
-
-                                                <Paragraph style={[styles.paragraph, styles.caption]}>
-                                                    Inventory
-                                                </Paragraph>
 
                                                 {<View style={[styles.fieldspace]}>
                                                     <Field name={'trackinventory'}>
@@ -611,7 +489,7 @@ const Index = ({item,searchtext}: any) => {
                                                 </View>}
 
 
-                                                {<>
+                                                {Boolean(values.trackinventory) &&  <>
 
                                                     {Boolean(values.trackinventory) && <View>
                                                         <Field name="inventorytype">
@@ -663,83 +541,6 @@ const Index = ({item,searchtext}: any) => {
                                                         </Field>
                                                     </View>}
 
-
-                                                    <View>
-                                                        <Field name="inventoryaccount">
-                                                            {props => (
-                                                                <InputField
-                                                                    label={'Inventory Account  '}
-                                                                    mode={'flat'}
-                                                                    list={chartofaccount.filter((account: any) => {
-                                                                        return account.accounttype === 'assets' && account.accountsubtype === 'Stock'
-                                                                    }).map((t: any) => assignOption(t.accountname, t.accountid))}
-                                                                    value={props.input.value}
-                                                                    selectedValue={props.input.value}
-                                                                    displaytype={'pagelist'}
-                                                                    inputtype={'dropdown'}
-                                                                    listtype={'other'}
-                                                                    onChange={(value: any) => {
-                                                                        props.input.onChange(value)
-                                                                    }}>
-                                                                </InputField>
-                                                            )}
-                                                        </Field>
-                                                    </View>
-
-                                                </>}
-                                            </Card.Content>
-                                        </Card>}
-
-                                        <Card style={[styles.card]}>
-                                            <Card.Content>
-
-
-                                                <TouchableOpacity
-                                                    style={[styles.grid, styles.middle, styles.justifyContent]}
-                                                    onPress={() => {
-                                                        isShow = !isShow;
-                                                        updateComponent(advanceRef, 'display', isShow ? 'flex' : 'none')
-                                                    }}>
-                                                    <Paragraph style={[styles.paragraph, styles.caption]}>
-                                                        Advance
-                                                    </Paragraph>
-                                                    <Paragraph>
-                                                        <ProIcon name={!isShow ? 'chevron-down' : 'chevron-up'}
-                                                                 action_type={'text'} size={16}/>
-                                                    </Paragraph>
-                                                </TouchableOpacity>
-
-                                                <View style={[{display: 'none'}]} ref={advanceRef}>
-
-                                                    <View>
-                                                        <Field name="uniqueproductcode">
-                                                            {props => (
-                                                                <InputField
-                                                                    value={props.input.value}
-                                                                    label={'SKU'}
-                                                                    inputtype={'textbox'}
-                                                                    onChange={props.input.onChange}
-                                                                />
-                                                            )}
-                                                        </Field>
-                                                    </View>
-
-                                                    {!isTypeService && <View>
-                                                        <Field name="purchasecost">
-                                                            {props => (
-                                                                <InputField
-                                                                    value={props.input.value}
-                                                                    label={'Cost Price'}
-                                                                    keyboardType='numeric'
-                                                                    inputtype={'textbox'}
-                                                                    left={<TI.Affix text={getCurrencySign()}/>}
-                                                                    onChange={props.input.onChange}
-                                                                />
-                                                            )}
-                                                        </Field>
-                                                    </View>}
-
-
                                                     {values.inventorytype === 'fifo' && <>
 
 
@@ -774,6 +575,246 @@ const Index = ({item,searchtext}: any) => {
                                                         </View>
 
                                                     </>}
+
+                                                    {<View>
+                                                        <Field name="inventoryaccount">
+                                                            {props => (
+                                                                <InputField
+                                                                    label={'Inventory Account  '}
+                                                                    mode={'flat'}
+                                                                    list={chartofaccount.filter((account: any) => {
+                                                                        return account.accounttype === 'assets' && account.accountsubtype === 'Stock'
+                                                                    }).map((t: any) => assignOption(t.accountname, t.accountid))}
+                                                                    value={props.input.value}
+                                                                    selectedValue={props.input.value}
+                                                                    displaytype={'pagelist'}
+                                                                    inputtype={'dropdown'}
+                                                                    listtype={'other'}
+                                                                    onChange={(value: any) => {
+                                                                        props.input.onChange(value)
+                                                                    }}>
+                                                                </InputField>
+                                                            )}
+                                                        </Field>
+                                                    </View>}
+
+                                                </>}
+                                            </Card.Content>
+                                        </Card>}
+
+                                        <Card style={[styles.card]}>
+                                            <Card.Content>
+
+
+                                                <TouchableOpacity
+                                                    style={[styles.grid, styles.middle, styles.justifyContent]}
+                                                    onPress={() => {
+                                                        isShow = !isShow;
+                                                        updateComponent(advanceRef, 'display', isShow ? 'flex' : 'none')
+                                                    }}>
+                                                    <Paragraph style={[styles.paragraph, styles.caption]}>
+                                                        Advance
+                                                    </Paragraph>
+                                                    <Paragraph>
+                                                        <ProIcon name={!isShow ? 'chevron-down' : 'chevron-up'}
+                                                                 action_type={'text'} size={16}/>
+                                                    </Paragraph>
+                                                </TouchableOpacity>
+
+                                                <View style={[{display: 'none'}]} ref={advanceRef}>
+
+
+
+
+                                                    <View>
+
+                                                        {onlyForIndia && isTypeProduct && isRetailIndustry &&
+                                                            <View>
+                                                                <Field name="mrp"
+                                                                       validate={composeValidators(mustBeNumber)}>
+                                                                    {props => (
+                                                                        <InputField
+                                                                            {...props}
+                                                                            value={props.input.value}
+                                                                            label={'MRP'}
+                                                                            keyboardType='numeric'
+                                                                            inputtype={'textbox'}
+                                                                            left={<TI.Affix text={getCurrencySign()}/>}
+                                                                            onChange={props.input.onChange}
+                                                                        />
+                                                                    )}
+                                                                </Field>
+                                                            </View>}
+
+
+                                                        {onlyForIndia && onlyForRegistered && <View>
+                                                            <Field name="defaultitc"
+                                                                   validate={onlyForRegistered ? required : undefined}>
+                                                                {props => (
+                                                                    <>
+                                                                        <InputField
+                                                                            {...props}
+                                                                            label={`Default ITC (Input Tax Credit) Selection`}
+                                                                            list={options_itc}
+                                                                            mode={'flat'}
+                                                                            value={props.input.value}
+                                                                            selectedValue={props.input.value}
+                                                                            displaytype={'pagelist'}
+                                                                            inputtype={'dropdown'}
+                                                                            listtype={'other'}
+                                                                            onChange={(value: any) => {
+                                                                                appLog('value',value)
+                                                                                props.input.onChange(value)
+                                                                            }}>
+                                                                        </InputField>
+                                                                    </>
+                                                                )}
+                                                            </Field>
+                                                        </View>}
+
+
+                                                        <View>
+                                                            <Field name="outwardaccount">
+                                                                {props => (
+                                                                    <InputField
+                                                                        label={'Outward Account'}
+                                                                        mode={'flat'}
+                                                                        list={chartofaccount.filter((account: any) => {
+                                                                            return account.accounttype === 'income'
+                                                                        }).map((t: any) => assignOption(t.accountname, t.accountid))}
+                                                                        value={props.input.value}
+                                                                        selectedValue={props.input.value}
+                                                                        displaytype={'pagelist'}
+                                                                        inputtype={'dropdown'}
+                                                                        listtype={'other'}
+                                                                        onChange={(value: any) => {
+                                                                            props.input.onChange(value)
+                                                                        }}>
+                                                                    </InputField>
+                                                                )}
+                                                            </Field>
+                                                        </View>
+
+
+                                                        <View>
+                                                            <Field name="inwardaccount">
+                                                                {props => (
+                                                                    <InputField
+                                                                        label={'Inward Account '}
+                                                                        mode={'flat'}
+                                                                        list={chartofaccount.filter((account: any) => {
+                                                                            return account.accounttype === 'expense'
+                                                                        }).map((t: any) => assignOption(t.accountname, t.accountid))}
+                                                                        value={props.input.value}
+                                                                        selectedValue={props.input.value}
+                                                                        displaytype={'pagelist'}
+                                                                        inputtype={'dropdown'}
+                                                                        listtype={'other'}
+                                                                        onChange={(value: any) => {
+                                                                            props.input.onChange(value)
+                                                                        }}>
+                                                                    </InputField>
+                                                                )}
+                                                            </Field>
+                                                        </View>
+
+                                                    </View>
+
+
+                                                    {isTypeProduct && <View>
+
+
+                                                        <View>
+                                                            <View>
+
+
+                                                                <Field name="itemunit" validate={required}>
+                                                                    {props => (
+                                                                        <InputField
+                                                                            {...props}
+                                                                            label={'Purchase Unit'}
+                                                                            mode={'flat'}
+                                                                            list={option_units}
+                                                                            value={props.input.value}
+                                                                            selectedValue={props.input.value}
+                                                                            displaytype={'pagelist'}
+                                                                            inputtype={'dropdown'}
+                                                                            listtype={'other'}
+                                                                            onChange={(value: any) => {
+                                                                                props.input.onChange(value);
+                                                                                initdata.itemunit = value;
+                                                                                if (Boolean(initdata.itemunit)) {
+                                                                                    let unittype = unit[initdata.itemunit] && unit[initdata.itemunit].unittype;
+                                                                                    option_salesunit = Object.values(unit)
+                                                                                        .filter((a: any) => Boolean(a) && a.unittype === unittype)
+                                                                                        .map((a: any) => assignOption(`${a.unitname} (${a.unitcode})`, a.unitid))
+                                                                                }
+                                                                            }}>
+                                                                        </InputField>
+                                                                    )}
+                                                                </Field>
+
+                                                                <View>
+                                                                    <Field name="salesunit" validate={required}>
+                                                                        {props => (
+                                                                            <>
+                                                                                <InputField
+                                                                                    {...props}
+                                                                                    label={'Sales Unit'}
+                                                                                    mode={'flat'}
+                                                                                    list={option_salesunit}
+                                                                                    value={props.input.value}
+                                                                                    selectedValue={props.input.value}
+                                                                                    displaytype={'pagelist'}
+                                                                                    inputtype={'dropdown'}
+                                                                                    listtype={'other'}
+                                                                                    onChange={(value: any) => {
+                                                                                        props.input.onChange(value)
+                                                                                    }}>
+                                                                                </InputField>
+                                                                            </>
+
+                                                                        )}
+                                                                    </Field>
+                                                                </View>
+
+                                                            </View>
+                                                        </View>
+
+                                                    </View>}
+
+                                                    {onlyForIndia && !onlyForRegistered &&
+                                                        <Field name="itemhsncode">
+                                                            {props => (
+                                                                <InputField
+                                                                    {...props}
+                                                                    value={props.input.value}
+                                                                    keyboardType='numeric'
+                                                                    label={`${isTypeService ? "SAC" : "HSN"} Code `}
+                                                                    onChange={props.input.onChange}
+                                                                    inputtype={'textbox'}
+                                                                />
+                                                            )}
+                                                        </Field>
+                                                    }
+
+                                                    {!isTypeService && <View>
+                                                        <Field name="purchasecost">
+                                                            {props => (
+                                                                <InputField
+                                                                    value={props.input.value}
+                                                                    label={'Cost Price'}
+                                                                    keyboardType='numeric'
+                                                                    inputtype={'textbox'}
+                                                                    left={<TI.Affix text={getCurrencySign()}/>}
+                                                                    onChange={props.input.onChange}
+                                                                />
+                                                            )}
+                                                        </Field>
+                                                    </View>}
+
+
+
 
                                                 </View>
 

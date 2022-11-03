@@ -64,30 +64,29 @@ const Index = ( ) => {
 
     return (
 
-        <SafeAreaView>
 
-        <View style={[styles.h_100, styles.flex, styles.w_100, {flexDirection: 'column'}]}>
 
-            <View style={[styles.grid, styles.middle]}>
+            <View style={[styles.h_100, styles.flex, styles.w_100, {flexDirection: 'column'}]}>
 
-                <View style={[styles.flexGrow]}>
-                    <SearchBox handleSearch={handleSearch} autoFocus={true} placeholder="Search Item"/>
+                <View style={[styles.grid, styles.middle]}>
+                    <View style={[styles.flexGrow]}>
+                        <SearchBox handleSearch={handleSearch} autoFocus={true} placeholder="Search Item"/>
+                    </View>
+
                 </View>
 
+                <Card style={[styles.h_100, styles.flex]}>
+                    <Card.Content style={[styles.cardContent]}>
+                        {loading &&  <FlatList
+                            data={items}
+                            renderItem={renderitems}
+                            ListEmptyComponent={<AddItem searchtext={search} />}
+                            keyExtractor={item => item.itemid}
+                        />}
+                    </Card.Content>
+                </Card>
             </View>
 
-            <Card style={[styles.h_100, styles.flex]}>
-                <Card.Content style={[styles.cardContent]}>
-                    {loading &&  <FlatList
-                        data={items}
-                        renderItem={renderitems}
-                        ListEmptyComponent={<AddItem searchtext={search} />}
-                        keyExtractor={item => item.itemid}
-                    />}
-                </Card.Content>
-            </Card>
-        </View>
-        </SafeAreaView>
 
     )
 

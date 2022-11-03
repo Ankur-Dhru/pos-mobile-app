@@ -65,37 +65,26 @@ const Index = (props: any) => {
 
     const {selectedgroup} = props;
 
-    let [start, setStart]: any = useState(0);
     const [loading, setLoading]: any = useState(false);
-    const [end, setEnd]: any = useState(false);
+
     const [dataSource, setDataSource]: any = useState([]);
 
     const getItems = async (refresh=false) => {
-        if(!end) {
-            await getItemsByWhere({itemgroupid: selectedgroup, start: start}).then((newitems: any) => {
-                if (Boolean(newitems.length > 0)) {
-                    if (refresh) {
-                        setDataSource([...newitems]);
-                    } else {
-                        setDataSource([...dataSource, ...newitems]);
-                    }
-                } else {
-                    setEnd(true)
-                }
-
-            });
-        }
+        await getItemsByWhere({itemgroupid: selectedgroup }).then((newitems: any) => {
+            setDataSource(newitems);
+        });
         setLoading(true)
     }
 
     useEffect(() => {
-        if (sGroup !== selectedgroup) {
+        /*if (sGroup !== selectedgroup) {
             setDataSource([])
             setStart(0)
         }
-        getItems()
-        sGroup = selectedgroup;
-    }, [selectedgroup, start])
+        sGroup = selectedgroup;*/
+        getItems().then()
+
+    }, [selectedgroup]) //start
 
 
 
@@ -105,7 +94,7 @@ const Index = (props: any) => {
     }, [selectedgroup]);
 
     const onEndReached = () => {
-        setStart(++start)
+       // setStart(++start)
     }
 
     if(!loading){
@@ -123,13 +112,10 @@ const Index = (props: any) => {
                     return {length: 100, offset: 100 * index, index};
                 }}
                 ListFooterComponent={() => {
-                    return <View style={{height: 100}}>
-
-                    </View>
+                    return <View style={{height: 10}}></View>
                 }}
-                onMomentumScrollEnd={onEndReached}
-
-                onEndReachedThreshold={0.5}
+                /*onMomentumScrollEnd={onEndReached}
+                onEndReachedThreshold={0.5}*/
                 refreshControl={
                     <RefreshControl
                         refreshing={false}

@@ -15,7 +15,7 @@ import {setModal} from "../../redux-store/reducer/component";
 import {v4 as uuid} from "uuid";
 
 
-const AddTable = (props: any) => {
+const AddTable = ({getOrder}: any) => {
 
     const {initData, authData, localSettingsData}: any = localredux;
     const dispatch = useDispatch()
@@ -35,6 +35,7 @@ const AddTable = (props: any) => {
         }).then((result) => {
             if (result.status === STATUS.SUCCESS && !isEmpty(result.data)) {
                 syncData(false)
+                getOrder()
                 dispatch(setModal({visible: false}))
             }
         });

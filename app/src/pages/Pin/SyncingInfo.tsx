@@ -15,14 +15,15 @@ const Index = ({syncDetail}: any) => {
 
     return <View style={[styles.p_3]}>
         <View style={[styles.mb_5]}><ActivityIndicator/></View>
-        <Text style={[styles.textCenter,styles.mb_2]}>Please wait approx 15 min...</Text>
+        <Text style={[styles.textCenter,styles.mb_2]}>Please wait</Text>
+        <Text style={[styles.textCenter,styles.mb_2,styles.muted,]}>It may take upto 15 min...</Text>
 
         {Boolean(type) &&  <Text style={[styles.textCenter,styles.text_xs,styles.muted,]}>{rows?rows+' - ':''} {type} synced</Text>}
 
 
-        <View style={[styles.bg_light,styles.mt_5,{borderRadius:5}]}>
+        {/*{type === 'item' && <View style={[styles.bg_light,styles.mt_5,{borderRadius:5}]}>
             <View style={[{backgroundColor:styles.accent.color,borderRadius:5,height:5,width:`${(rows*100)/total}%`}]}></View>
-        </View>
+        </View>}*/}
 
     </View>
 }

@@ -17,7 +17,7 @@ import {connect} from "react-redux";
 import {InputBox, ProIcon} from "../index";
 import DateTimePicker from './DateTimePicker';
 import moment from "moment";
-import {findObject, getType, isEmpty, log} from "../../libs/function";
+import {appLog, findObject, getType, isEmpty, log} from "../../libs/function";
 
 //import {PERMISSIONS, requestMultiple} from "react-native-permissions";
 import ToggleSwitch from "./Switch";
@@ -136,9 +136,9 @@ class Index extends React.Component<any, any> {
             message,
             validateWithError,
             descriptionStyle,
-            customRef
-        }: any = this.props;
+            customRef,
 
+        }: any = this.props;
 
         if (isEmpty(descriptionStyle)){
             descriptionStyle=[]
@@ -176,6 +176,8 @@ class Index extends React.Component<any, any> {
             onSelect={this.onSelect}
         >
         </List>
+
+
 
         let style: any = [];
         if (inputtype !== 'daterange' && !Boolean(removeSpace)) {

@@ -165,7 +165,7 @@ export const pricing: any = {
         "default": [
             {
                 "onetime": {
-                    "baseprice": '1'
+                    "baseprice": ''
                 }
             },
         ],

@@ -48,23 +48,22 @@ const Index = (props: any) => {
                                 localSettingsData,
                                 clientsData,
                                 addonsData,
-
                                 orders
                             } = data || {};
+
 
                             if (Boolean(data) && Boolean(licenseData)) {
                                 const {license: {expired_on, status}} = licenseData.data;
                                 const today = moment().format('YYYY-MM-DD');
                                 if (expired_on >= today && status === 'Active') {
 
+
+
                                     localredux.licenseData=licenseData;
-                                    localredux.authData=authData;
+                                    localredux.authData= {...params,...authData};
                                     localredux.clientsData = clientsData;
                                     localredux.localSettingsData = localSettingsData;
                                     localredux.addonsData = addonsData;
-
-
-
 
                                     await dispatch(setOrdersData(orders));
 
@@ -99,11 +98,14 @@ const Index = (props: any) => {
     return <Container hideappbar={true}  >
 
         <Card>
-            <View style={{position:'absolute',zIndex:99}}>
+
+            {!params.onlyone &&  <View style={{position:'absolute',zIndex:99}}>
                 <TouchableOpacity  style={[styles.p_6]} onPress={()=>navigation.goBack()}>
                     <ProIcon name={'chevron-left'}  />
                 </TouchableOpacity>
-            </View>
+            </View>}
+
+
             <View style={[styles.center, styles.h_100, styles.middle]}>
 
                 <View style={{width:300}}>
@@ -116,7 +118,8 @@ const Index = (props: any) => {
                     </View>
 
                     <View>
-                        <Paragraph style={[styles.paragraph,{textAlign:'center'}]}>{params.username} {params.loginpin === 'b0baee9d279d34fa1dfd71aadb908c3f' &&  <Text style={[styles.paragraph,styles.muted,{textAlign:'center'}]}>(PIN : 11111)</Text>}</Paragraph>
+                        <Paragraph style={[styles.paragraph,{textAlign:'center'}]}>{params.username} </Paragraph>
+                        <Paragraph style={[styles.paragraph,styles.text_sm,{textAlign:'center'}]}>{params.loginpin === 'b0baee9d279d34fa1dfd71aadb908c3f' &&  <Text style={[styles.paragraph,styles.muted,{textAlign:'center'}]}>Default PIN is 11111</Text>}</Paragraph>
                     </View>
 
                 <ReactNativePinView

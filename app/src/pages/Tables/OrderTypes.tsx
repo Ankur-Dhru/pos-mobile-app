@@ -16,7 +16,7 @@ import AddTable from "./AddTable";
 
 
 const OrderType = (props: any) => {
-    const {type, selected} = props;
+    const {type, selected,getOrder} = props;
 
     const dispatch = useDispatch()
 
@@ -34,7 +34,7 @@ const OrderType = (props: any) => {
 
 const Index = (props: any) => {
 
-    const {ordertype, shifttable, setShifttable} = props;
+    const {ordertype, shifttable, setShifttable,getOrder} = props;
     const navigation: any = useNavigation();
     const dispatch = useDispatch();
 
@@ -58,7 +58,7 @@ const Index = (props: any) => {
             visible: true,
             hidecancel: true,
             width: 300,
-            component: () => <AddTable   />
+            component: () => <AddTable getOrder={getOrder}  />
         }))
     }
 

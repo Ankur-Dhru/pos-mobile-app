@@ -74,7 +74,9 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
         title: "Quick Quantity & Amount",
     }}>
 
+        <View style={[styles.middle,styles.h_100]}>
 
+            <View style={[styles.middleForm]}>
         <View>
             <View style={[styles.grid, styles.justifyContent, styles.p_4]}>
                 <Button style={[styles.w_auto]} compact={true} onPress={() => {
@@ -90,8 +92,8 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
             </View>
         </View>
 
-        <View style={[styles.grid, styles.justifyContent, styles.p_4]}>
-            <View style={[styles.flexGrow, {width: "70%", marginRight: 12}]}>
+        <View style={[styles.grid,styles.justifyContent,styles.middle]}>
+            <View style={[styles.w_auto]}>
                 <InputField
                     value={inputValues}
                     label={selectedTab === 'num' ? 'Quantity' : 'Amount'}
@@ -102,7 +104,7 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
                     }}
                 />
             </View>
-            <View style={[styles.flexGrow, {width: "20%"}]}>
+            <View style={[styles.ml_2]}>
                 <Button onPress={onClickAddInputValues}>Add</Button>
             </View>
         </View>
@@ -111,6 +113,11 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
             renderItem={renderitem}
             initialNumToRender={5}
         />
+
+            </View>
+
+        </View>
+
     </Container>
 
 }

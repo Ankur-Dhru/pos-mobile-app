@@ -49,7 +49,7 @@ const Index = (props: any) => {
 
     useEffect(() => {
         getOrder().then()
-    }, [tableorders])
+    }, [tableorders,currentLocation.tables])
 
 
     const resetTables = async () => {
@@ -213,7 +213,7 @@ const Index = (props: any) => {
 
     return (
         <>
-            <OrderTypes shifttable={shifttable} setShifttable={(value: any) => shiftStart(value)}/>
+            <OrderTypes shifttable={shifttable} setShifttable={(value: any) => shiftStart(value)} getOrder={getOrder}/>
 
             <View style={[styles.px_4, styles.flex, styles.h_100]}>
 

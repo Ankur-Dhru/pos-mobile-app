@@ -5,13 +5,14 @@ import {ActivityIndicator, FlatList, RefreshControl, TouchableOpacity, View} fro
 import {connect} from "react-redux";
 import {styles} from "../../theme";
 import {appLog, isRestaurant, selectItem} from "../../libs/function";
-import {Paragraph} from "react-native-paper";
+import {List, Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 import Button from "../../components/Button";
 import {setModal} from "../../redux-store/reducer/component";
 import store from "../../redux-store/store";
 import AddEditItem from "./AddEditItem";
+import AddEditCategory from "./AddEditCategory";
 
 
 const hasRestaurant = isRestaurant()
@@ -70,9 +71,11 @@ const Index = (props: any) => {
     const [dataSource, setDataSource]: any = useState([]);
 
     const getItems = async (refresh=false) => {
-        await getItemsByWhere({itemgroupid: selectedgroup }).then((newitems: any) => {
-            setDataSource(newitems);
-        });
+        if(Boolean(selectedgroup)){
+            await getItemsByWhere({itemgroupid: selectedgroup}).then((newitems: any) => {
+                setDataSource(newitems);
+            });
+        }
         setLoading(true)
     }
 
@@ -112,7 +115,18 @@ const Index = (props: any) => {
                     return {length: 100, offset: 100 * index, index};
                 }}
                 ListFooterComponent={() => {
-                    return <View style={{height: 10}}></View>
+                    return dataSource.length !== 0 ? <View>
+                        <TouchableOpacity onPress={async () => {
+                            store.dispatch(setModal({
+                                visible: true,
+                                hidecancel: true,
+                                width: 300,
+                                component: () => <AddEditItem item={{}}  />
+                            }))
+                        }}>
+                            <Paragraph  style={[styles.paragraph, styles.p_6, styles.muted, {textAlign: 'center'}]}>+ Add Item</Paragraph>
+                        </TouchableOpacity>
+                    </View> : <></>
                 }}
                 /*onMomentumScrollEnd={onEndReached}
                 onEndReachedThreshold={0.5}*/
@@ -125,6 +139,7 @@ const Index = (props: any) => {
                 ListEmptyComponent={<AddItem />}
                 keyExtractor={item => item.itemid}
             />
+
         </>
     )
 }

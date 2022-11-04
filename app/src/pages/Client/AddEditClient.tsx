@@ -4,8 +4,16 @@ import {styles} from "../../theme";
 
 import {Button, Container} from "../../components";
 import {connect, useDispatch} from "react-redux";
-import {Card, Paragraph, Title, withTheme,} from "react-native-paper";
-import {appLog, assignOption, getStateList, objToArray, selectItem, syncData} from "../../libs/function";
+import {Appbar, Card, Paragraph, Title, withTheme,} from "react-native-paper";
+import {
+    appLog,
+    assignOption,
+    getDefaultCurrency,
+    getStateList,
+    objToArray,
+    selectItem,
+    syncData
+} from "../../libs/function";
 import {Field, Form} from "react-final-form";
 
 import {
@@ -14,7 +22,7 @@ import {
     defalut_payment_term,
     isEmail,
     localredux,
-    METHOD,
+    METHOD, minLength,
     PRODUCTCATEGORY,
     required,
     STATUS
@@ -26,19 +34,21 @@ import KeyboardScroll from "../../components/KeyboardScroll";
 import KAccessoryView from '../../components/KAccessoryView';
 import apiService from "../../libs/api-service";
 
-import {setModal} from "../../redux-store/reducer/component";
+import {hideLoader, setModal, setPageSheet, showLoader} from "../../redux-store/reducer/component";
 import ProIcon from "../../components/ProIcon";
 
 
-const Index = () => {
+const Index = ({callback}:any) => {
 
     const dispatch = useDispatch();
-
-    appLog('localredux.initData',localredux.initData.general)
+    const {workspace}:any = localredux.initData;
+    const {token}:any = localredux.authData;
 
     const {pricingtemplate, currency, paymentterms,general} = localredux.initData;
     const [moredetail,setMoredetail]:any = useState(true);
     const [loading,setLoading]:any = useState(false);
+    const [displayname,setDisplayname]:any = useState();
+
 
     let statelist:any = [];
     const taxtypelist: any = [];
@@ -54,7 +64,7 @@ const Index = () => {
         clientconfig: {pricingtemplate: 'default', taxregtype: ['c']},
         clienttype: 0,
         country: general.country,
-        /*currency: general.currency,*/
+        currency: getDefaultCurrency(),
         displayname:'',
         state: general.state
     }
@@ -67,48 +77,48 @@ const Index = () => {
 
     useEffect(()=>{
 
-        getState(initdata.country);
+        setTimeout(()=>{
+            getState(initdata.country);
 
-        apiService({
-            method: METHOD.GET,
-            action: ACTIONS.GETTAXREGISTRATIONTYPE,
-            queryString: {country: initdata.country}
-        }).then((result) => {
-            let taxtypelist = []
-            if (!initdata.clientid) {
-                initdata.clientconfig.taxregtype = []
-                initdata.clientconfig.taxid = []
-            }
-            if (result.data) {
-                taxtypelist = result.data;
+            apiService({
+                method: METHOD.GET,
+                action: ACTIONS.GETTAXREGISTRATIONTYPE,
+                workspace:workspace,
+                token:token,
+                other: {url: adminUrl},
+                queryString: {country: initdata.country}
+            }).then((result) => {
+                let taxtypelist = []
                 if (!initdata.clientid) {
-                    taxtypelist && taxtypelist.map(({types}: any, index: any) => {
-
-                        if (types) {
-                            let findConsumer = Object.keys(types).find((d: any) => d === "c");
-
-                            if (findConsumer) {
-                                initdata.clientconfig.taxregtype[index] = findConsumer;
-                            }
-                        }
-                    })
+                    initdata.clientconfig.taxregtype = []
+                    initdata.clientconfig.taxid = []
                 }
-            }
+                if (result.data) {
+                    taxtypelist = result.data;
+                    if (!initdata.clientid) {
+                        taxtypelist && taxtypelist.map(({types}: any, index: any) => {
 
-        })
+                            if (types) {
+                                let findConsumer = Object.keys(types).find((d: any) => d === "c");
 
-
+                                if (findConsumer) {
+                                    initdata.clientconfig.taxregtype[index] = findConsumer;
+                                }
+                            }
+                        })
+                    }
+                }
+            })
+        },1000)
 
     },[])
 
     const displayName = (field?: any, value?: any) => {
-
         let displaynames: any = [];
         if (field) {
             initdata[field] = value;
         }
-
-        //setState({displaynames: displaynames})
+        setDisplayname(displaynames)
     }
 
     const getState = (country: any) => {
@@ -140,36 +150,46 @@ const Index = () => {
 
     const  handleSubmit = async (values: any) => {
 
-        const {workspace}:any = localredux.initData;
-        const {token}:any = localredux.authData;
-
         await apiService({
-            method: METHOD.PUT,
-            action: ACTIONS.SETTINGS,
-            body: {settingid: 'itemgroup', settingdata: [{"key": values.itemgroupid, "value": values}]},
+            method: METHOD.POST,
+            action: ACTIONS.CLIENTS,
+            body: values,
             workspace:workspace,
             token:token,
             other: {url: adminUrl},
         }).then(async (result) => {
             if (result.status === STATUS.SUCCESS) {
-                syncData(false).then()
-                dispatch(setModal({visible:false}))
+                dispatch(showLoader());
+                try {
+                    const client = {...values, ...result.data,label:values.displayname,value:result.data.clientid};
+                    Boolean(callback) && await callback(client)
+                    await syncData(false).then()
+                    dispatch(setPageSheet({visible: false}))
+                    dispatch(hideLoader());
+                }
+                catch (e) {
+                    dispatch(hideLoader());
+                    appLog('e',e)
+                }
             }
         });
     }
 
     return (
-        <View style={[styles.h_100,styles.middle]}>
+        <View style={[styles.h_100]}>
 
             <Form
                 onSubmit={handleSubmit}
                 initialValues={initdata}
                 render={({handleSubmit, submitting, values, ...more}: any) => (
-                    <View  style={[styles.h_100,styles.middleForm,]}>
+                    <View  style={[styles.h_100]}>
+
+                        <Appbar.Header style={[styles.bg_white]}>
+                            <Appbar.BackAction    onPress={() => {dispatch(setPageSheet({visible:false}))} }/>
+                            <Appbar.Content  title={'Add Client'}   />
+                        </Appbar.Header>
 
                         <KeyboardScroll>
-
-                            <Title style={[styles.mt_5,{marginLeft:10}]}> Add Client </Title>
 
                             <View>
                                 <Card style={[styles.card]}>
@@ -237,7 +257,7 @@ const Index = () => {
                                         <View>
                                             <Field
                                                 name="phone"
-                                                /*validate={(value) => Boolean(value) ? minLength(10)(value) : undefined}*/>
+                                                validate={(value) => Boolean(value) ? minLength(10)(value) : undefined}>
                                                 {props => (
                                                     <InputField
                                                         {...props}
@@ -590,11 +610,22 @@ const Index = () => {
 
                         </KeyboardScroll>
 
+
+
                         <KAccessoryView>
-                            <View style={[styles.submitbutton]}>
-                                <Button disable={more.invalid} secondbutton={more.invalid} onPress={() => {
-                                    handleSubmit(values)
-                                }}>   Add  </Button>
+                            <View style={[styles.grid, styles.justifyContent,styles.p_5]}>
+                                <View style={[styles.w_auto]}>
+                                    <Button more={{backgroundColor: styles.light.color, color: 'black'}}
+                                            onPress={() => {
+                                                dispatch(setPageSheet({visible: false}))
+                                            }}> Cancel
+                                    </Button>
+                                </View>
+                                <View style={[styles.w_auto, styles.ml_2]}>
+                                    <Button disable={more.invalid} secondbutton={more.invalid} onPress={() => {
+                                        handleSubmit(values)
+                                    }}>   Add  </Button>
+                                </View>
                             </View>
                         </KAccessoryView>
 

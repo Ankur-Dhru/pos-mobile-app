@@ -37,7 +37,7 @@ export const insertItems = async (  itemsdata?: any,type:any = 'all') => {
       if(type === 'all'){
           const query = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert") values ${insertQuery.join(', ')}`;
           const results = await db.executeSql(query);
-          appLog('results',results)
+
       }
   }
   db.close().then()

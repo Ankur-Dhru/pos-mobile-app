@@ -7,6 +7,8 @@ import itemDetail from "./reducer/item-detail";
 import tableOrdersData from "./reducer/table-orders-data";
 import syncDetail from "./reducer/sync-data";
 import ordersData from "./reducer/orders-data";
+import groupList from "./reducer/group-list";
+import itemList from "./reducer/item-list";
 
 
 export default configureStore({
@@ -18,7 +20,9 @@ export default configureStore({
         component,
         selectedData,
         localSettings,
-        ordersData
+        ordersData,
+        groupList,
+        itemList,
     },
     middleware: getDefaultMiddleware => getDefaultMiddleware({
         serializableCheck: false

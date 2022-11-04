@@ -5,11 +5,14 @@ import {FlatList, RefreshControl, TouchableOpacity, View} from "react-native";
 import {connect, useDispatch} from "react-redux";
 
 import {styles} from "../../theme";
-import {Divider, List} from "react-native-paper";
+import {Divider, List, Paragraph} from "react-native-paper";
 
 import {setSelected} from "../../redux-store/reducer/selected-data";
 import {localredux} from "../../libs/static";
 import {appLog} from "../../libs/function";
+import store from "../../redux-store/store";
+import {setModal, setPageSheet} from "../../redux-store/reducer/component";
+import AddEditCategory from "./AddEditCategory";
 
 
 const GroupItem = (props:any) => {
@@ -36,18 +39,20 @@ const GroupItem = (props:any) => {
 
 const Index = (props: any) => {
 
-    const {itemgroup}:any = localredux.initData;
-    const {selectedgroup} = props;
-    const [refreshing,setRefreshing]:any = useState(false);
+    const {selectedgroup,grouplist} = props;
+
+    let groups: any = Object.values(grouplist).map((group: any) => {
+        return {label: group.itemgroupname, value: group.itemgroupid}
+    })
+
+   // const [refreshing,setRefreshing]:any = useState(false);
 
 
     const renderItem = useCallback(({item, index}: any) => <GroupItem selected={selectedgroup === item.value} item={item}/>, [selectedgroup]);
 
-    let groups: any = Object.values(itemgroup).map((group: any) => {
-        return {label: group.itemgroupname, value: group.itemgroupid}
-    })
 
-    return <View>
+
+    return <View style={[styles.h_100]}>
         <FlatList
             data={groups}
             renderItem={renderItem}
@@ -55,7 +60,7 @@ const Index = (props: any) => {
             getItemLayout={(data, index) => {
                 return { length: 50, offset: 50 * index, index };
             }}
-            refreshControl={
+            /*refreshControl={
                 <RefreshControl
                     refreshing={refreshing}
                     onRefresh={() => {
@@ -65,16 +70,31 @@ const Index = (props: any) => {
                         },1000)
                     }}
                 />
-            }
+            }*/
             initialNumToRender={5}
             maxToRenderPerBatch={10}
             keyExtractor={item => item.itemgroupid}
         />
+
+        <View>
+            <TouchableOpacity onPress={async () => {
+                store.dispatch(setPageSheet({
+                    visible: true,
+                    hidecancel: true,
+                    width: 300,
+                    component: () => <AddEditCategory  />
+                }))
+            }}>
+                <Paragraph  style={[styles.paragraph, styles.p_5, styles.muted, {textAlign: 'center'}]}>+ Add Group</Paragraph>
+            </TouchableOpacity>
+        </View>
+
     </View>
 }
 
 const mapStateToProps = (state: any) => ({
     selectedgroup: state.selectedData.group?.value,
+    grouplist:state.groupList
 })
 
 export default connect(mapStateToProps)(memo(Index));

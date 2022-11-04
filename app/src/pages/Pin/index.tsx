@@ -17,6 +17,7 @@ import {localredux} from "../../libs/static";
 import { setOrdersData} from "../../redux-store/reducer/orders-data";
 import { setSettings } from "../../redux-store/reducer/local-settings-data";
 import {ProIcon} from "../../components";
+import {setGroupList} from "../../redux-store/reducer/group-list";
 
 
 const md5 = require('md5');
@@ -64,6 +65,11 @@ const Index = (props: any) => {
                                     localredux.clientsData = clientsData;
                                     localredux.localSettingsData = localSettingsData;
                                     localredux.addonsData = addonsData;
+
+                                    const {itemgroup}:any = localredux.initData;
+                                    if(Boolean(itemgroup)) {
+                                        await dispatch(setGroupList(itemgroup))
+                                    }
 
                                     await dispatch(setOrdersData(orders));
 

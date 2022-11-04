@@ -61,15 +61,14 @@ export const cartData = createSlice({
     initialState: intialState,
     reducers: {
         setCartData: (state: any, action) => {
-            appLog('setCartData')
             return {...state, ...action.payload}
         },
         refreshCartData: (state: any, action) => {
-            appLog('refreshCartData')
+
             return {...intialState, ...action.payload}
         },
         setCartItems: (state: any, action) => {
-            appLog('setCartItems')
+
             let invoiceitems = [
                 ...state?.invoiceitems,
                 action.payload
@@ -82,7 +81,7 @@ export const cartData = createSlice({
         },
 
         changeCartItem: (state: any, action: any) => {
-            appLog('changeCartItem')
+
             const {itemIndex, item} = action.payload;
             state.invoiceitems[itemIndex] = clone({...state.invoiceitems[itemIndex], ...item});
             state.vouchertotaldisplay = voucherTotal(state.invoiceitems,state.vouchertaxtype),
@@ -90,7 +89,7 @@ export const cartData = createSlice({
             return state
         },
         updateCartItems: (state: any, action) => {
-            appLog('updateCartItems')
+
             return {
                 ...state,
                 invoiceitems: action.payload,
@@ -99,7 +98,7 @@ export const cartData = createSlice({
             }
         },
         updateCartField: (state: any, action) => {
-            appLog('updateCartField')
+
             return {
                 ...state,
                 ...action.payload,
@@ -107,7 +106,7 @@ export const cartData = createSlice({
             }
         },
         updateCartKots: (state: any, action) => {
-            appLog('updateCartKots')
+
             return {
                 ...state,
                 kots: clone(action.payload),
@@ -115,7 +114,7 @@ export const cartData = createSlice({
             }
         },
         updateCartKotField: (state: any, action) => {
-            appLog('updateCartKotField')
+
             return {
                 ...state,
                 kots: state.kots,
@@ -123,7 +122,7 @@ export const cartData = createSlice({
             }
         },
         deleteCartItem: (state: any) => {
-            appLog('deleteCartItem')
+
             const selectedindex = state?.selectedindex;
             state.invoiceitems.splice(selectedindex, 1);
             state.updatecart = true;
@@ -133,14 +132,14 @@ export const cartData = createSlice({
             return state
         },
         setUpdateCart: (state: any) => {
-            appLog('setUpdateCart')
+
             return {
                 ...state,
                 updatecart: !state.updatecart
             }
         },
         resetCart: () => {
-            appLog('reset cart')
+
             return clone(intialState);
         }
     },

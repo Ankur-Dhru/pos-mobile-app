@@ -4,7 +4,7 @@ import {styles} from "../../theme";
 
 import {Button, Container, ProIcon} from "../../components";
 import {connect, useDispatch} from "react-redux";
-import {Card, Divider, Paragraph, TextInput as TI, Title, withTheme,} from "react-native-paper";
+import {Appbar, Card, Divider, Paragraph, TextInput as TI, Title, withTheme,} from "react-native-paper";
 import {
     appLog,
     assignOption,
@@ -40,9 +40,18 @@ import KAccessoryView from '../../components/KAccessoryView';
 import apiService from "../../libs/api-service";
 import CheckBox from "../../components/CheckBox";
 import {insertItems} from "../../libs/Sqlite/insertData";
-import {setBottomSheet, setDialog, setModal, setPageSheet} from "../../redux-store/reducer/component";
+import {
+    hideLoader,
+    setBottomSheet,
+    setDialog,
+    setModal,
+    setPageSheet,
+    showLoader
+} from "../../redux-store/reducer/component";
 import store from "../../redux-store/store";
 import AddEditCategory from "./AddEditCategory";
+import ItemCategoryList from "./ItemCategoryList";
+import {setSelected} from "../../redux-store/reducer/selected-data";
 
 
 
@@ -109,7 +118,6 @@ const Index = ({item,searchtext}: any) => {
 
     const option_inventory = Object.keys(inventoryOption).filter((k: any) => { return k === 'specificidentification' || k === 'fifo' }).map((k) => assignOption(inventoryOption[k].name, k, '', '', inventoryOption[k].disabled));
 
-    const option_itemgroups = Object.keys(itemgroup).map((k) => assignOption(itemgroup[k].itemgroupname, k));
 
     const option_units = Object.keys(unit).map((k) => assignOption(`${unit[k].unitname} (${unit[k].unitcode})`, k));
 
@@ -147,34 +155,53 @@ const Index = ({item,searchtext}: any) => {
             other: {url: adminUrl},
         }).then(async (result) => {
             if (result.status === STATUS.SUCCESS) {
-                const item = {...values,...result.data,groupname:itemgroup[values.itemgroupid].itemgroupname};
-                await insertItems([item],'onebyone').then(() => {
-                    dispatch(setModal({visible:false}))
-                    selectItem({data:JSON.stringify(item)})
-                });
+                dispatch(showLoader())
+                const grouplist:any = store.getState()?.groupList || {}
+                try {
+                    const item = {...values, ...result.data, groupname: grouplist[values?.itemgroupid].itemgroupname};
+                    await insertItems([item], 'onebyone').then(async () => {
 
+
+                        await selectItem({data: JSON.stringify(item)});
+
+                        const selectedGroup = store.getState().selectedData.group?.value;
+                        await dispatch(setSelected({value:'',field:'group'}))
+                        setTimeout(async ()=>{
+                            await dispatch(setSelected({value:selectedGroup,field:'group'}))
+                            await dispatch(setModal({visible: false}))
+                            dispatch(hideLoader())
+                        },100)
+
+                    });
+                }
+                catch (e) {
+                    appLog('e',e)
+                }
             }
         });
     }
 
 
-    function addGroup() {
-
-    }
-
 
     let isRetailIndustry = !isRestaurant();
     return (
-        <View style={[styles.h_100,styles.middle]}>
+
+
+        <View style={[styles.h_100]}>
+
 
             <Form
                 onSubmit={handleSubmit}
                 initialValues={{...initdata}}
                 render={({handleSubmit, submitting, values, ...more}: any) => (
-                    <View  style={[styles.h_100,styles.middleForm,]}>
-                        <KeyboardScroll>
+                    <View  style={[styles.h_100]}>
 
-                            <Title style={[styles.mt_5,{marginLeft:10}]}> Add Item </Title>
+                        <Appbar.Header style={[styles.bg_white]}>
+                            <Appbar.BackAction    onPress={() => {dispatch(setPageSheet({visible:false}))} }/>
+                            <Appbar.Content  title={'Add Item'}   />
+                        </Appbar.Header>
+
+                        <KeyboardScroll>
 
                             <View>
                                 <View>
@@ -226,41 +253,7 @@ const Index = ({item,searchtext}: any) => {
                                                 <View>
                                                     <Field name="itemgroupid">
                                                         {props => (
-                                                            <><InputField
-                                                                label={'Category'}
-                                                                mode={'flat'}
-                                                                key={uuidv4()}
-                                                                list={option_itemgroups}
-                                                                value={props.input.value}
-                                                                selectedValue={props.input.value}
-                                                                displaytype={'pagelist'}
-                                                                inputtype={'dropdown'}
-                                                                listtype={'other'}
-                                                                /*onAdd={(text: any, callBack: any) => {
-                                                                    let item = assignOption(text, text);
-                                                                    appLog(item)
-                                                                    callBack(item);
-                                                                }}*/
-
-                                                                addItem={<TouchableOpacity onPress={async () => {
-                                                                    store.dispatch(setPageSheet({
-                                                                        visible: true,
-                                                                        hidecancel: true,
-                                                                        width: 300,
-                                                                        component: () => <AddEditCategory callback={(value:any)=>{
-                                                                            appLog('value',value.itemgroupid)
-                                                                            props.input.onChange(value.itemgroupid)
-                                                                        }} pagesheet={true} />
-                                                                    }))
-                                                                }}>
-                                                                    <Title
-                                                                    style={[styles.px_6]}><ProIcon
-                                                                    name={'plus'}/></Title></TouchableOpacity>}
-
-                                                                onChange={(value: any) => {
-                                                                    props.input.onChange(value);
-                                                                }}>
-                                                            </InputField></>
+                                                            <><ItemCategoryList  fieldprops={props}/></>
                                                         )}
                                                     </Field>
                                                 </View>
@@ -825,19 +818,32 @@ const Index = ({item,searchtext}: any) => {
                                 </View>
                             </View>
                         </KeyboardScroll>
+
+
                         <KAccessoryView>
-                            <View style={[styles.submitbutton]}>
-                                <Button disable={more.invalid} secondbutton={more.invalid} onPress={() => {
-                                    handleSubmit(values)
-                                }}>   {Boolean(initdata.itemid) ? 'Update' : 'Add'} </Button>
+                            <View style={[styles.grid, styles.justifyContent,styles.p_5]}>
+                                <View style={[styles.w_auto]}>
+                                    <Button more={{backgroundColor: styles.light.color, color: 'black'}}
+                                            onPress={() => {
+                                                dispatch(setModal({visible: false}))
+                                            }}> Cancel
+                                    </Button>
+                                </View>
+                                <View style={[styles.w_auto, styles.ml_2]}>
+                                    <Button disable={more.invalid} secondbutton={more.invalid} onPress={() => {
+                                        handleSubmit(values)
+                                    }}>  Add </Button>
+                                </View>
                             </View>
                         </KAccessoryView>
+
                     </View>
                 )}
             />
 
 
         </View>
+
     )
 
 }

@@ -4,7 +4,7 @@ import {styles} from "../../theme";
 
 import {Button, Container} from "../../components";
 import {connect, useDispatch} from "react-redux";
-import {Card, Title, withTheme,} from "react-native-paper";
+import {Appbar, Card, Title, withTheme,} from "react-native-paper";
 import {assignOption, objToArray, selectItem, syncData} from "../../libs/function";
 import {Field, Form} from "react-final-form";
 
@@ -17,9 +17,12 @@ import KAccessoryView from '../../components/KAccessoryView';
 import apiService from "../../libs/api-service";
 
 import {setBottomSheet, setModal, setPageSheet} from "../../redux-store/reducer/component";
+import {setGroup} from "../../redux-store/reducer/group-list";
+import {setSelected} from "../../redux-store/reducer/selected-data";
+import store from "../../redux-store/store";
 
 
-const Index = ({pagesheet,callback}:any) => {
+const Index = ({callback}:any) => {
 
     const dispatch = useDispatch();
 
@@ -48,14 +51,12 @@ const Index = ({pagesheet,callback}:any) => {
             other: {url: adminUrl},
         }).then(async (result) => {
             if (result.status === STATUS.SUCCESS) {
-                syncData(false).then()
-                if(!pagesheet){
-                    dispatch(setModal({visible:false}))
-                }
-                else {
-                    dispatch(setPageSheet({visible: false}))
-                }
-                await callback(values)
+                dispatch(setGroup(values))
+                dispatch(setPageSheet({visible: false}))
+
+                dispatch(setSelected({value:values.itemgroupid,field:'group'}))
+                await syncData(false).then()
+                Boolean(callback) && await callback(values)
             }
         });
     }
@@ -70,17 +71,22 @@ const Index = ({pagesheet,callback}:any) => {
 
 
     return (
-        <View style={[styles.h_100,styles.middle]}>
+        <View style={[styles.h_100]}>
 
             <Form
                 onSubmit={handleSubmit}
                 initialValues={{...initdata}}
                 render={({handleSubmit, submitting, values, ...more}: any) => (
-                    <View  style={[styles.h_100,styles.middleForm,]}>
+                    <View  style={[styles.h_100]}>
+
+                        <Appbar.Header style={[styles.bg_white]}>
+                            <Appbar.BackAction    onPress={() => {dispatch(setPageSheet({visible:false}))} }/>
+                            <Appbar.Content  title={'Add Item Category'}   />
+                        </Appbar.Header>
 
                         <KeyboardScroll>
 
-                            <Title style={[styles.mt_5,{marginLeft:10}]}> Add Item Category </Title>
+
                             <Card style={[styles.card]}>
 
                                 <Card.Content>
@@ -106,6 +112,7 @@ const Index = ({pagesheet,callback}:any) => {
                                                 <InputField
                                                     {...props}
                                                     value={props.input.value}
+                                                    autoFocus={true}
                                                     label={'Category Name'}
                                                     inputtype={'textbox'}
                                                     onChange={props.input.onChange}
@@ -141,11 +148,23 @@ const Index = ({pagesheet,callback}:any) => {
                         </KeyboardScroll>
 
                         <KAccessoryView>
-                            <View style={[styles.submitbutton]}>
-                                <Button disable={more.invalid} secondbutton={more.invalid} onPress={() => {
-                                    handleSubmit(values)
-                                }}>  Add  </Button>
+
+                            <View style={[styles.grid, styles.justifyContent,styles.p_5]}>
+                                <View style={[styles.w_auto]}>
+                                    <Button more={{backgroundColor: styles.light.color, color: 'black'}}
+                                            onPress={() => {
+                                                dispatch(setPageSheet({visible: false}))
+                                            }}> Cancel
+                                    </Button>
+                                </View>
+                                <View style={[styles.w_auto,styles.ml_2]}>
+                                    <Button disable={more.invalid} secondbutton={more.invalid} onPress={() => {
+                                        handleSubmit(values)
+                                    }}>  Add  </Button>
+                                </View>
                             </View>
+
+
                         </KAccessoryView>
                     </View>
                 )}

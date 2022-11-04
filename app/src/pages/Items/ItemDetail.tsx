@@ -21,11 +21,8 @@ const Index = ({itemDetail, index, inittags, sheetRef,edit, theme: {colors}}: an
 
     const dispatch = useDispatch()
     let product = itemDetail;
-
-
-
-    const {pricing, description, itemname, groupname,addtags,itemaddon,tags,notes,itemtags} = itemDetail;
-    let {productqnt} = itemDetail;
+ 
+    const {pricing, description, itemname, groupname} = itemDetail;
 
     const selectItem = async () => {
 

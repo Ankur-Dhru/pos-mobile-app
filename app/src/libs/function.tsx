@@ -550,7 +550,7 @@ export const syncData = async (loader=true) => {
                         await store.dispatch(setSyncDetail({type: result,rows:start,total:(Boolean(data?.extra) && Boolean(data?.extra?.total)) ? data.extra.total : 0}))
                         setTimeout(async ()=>{
                             await getData({type, start});
-                        },2000)
+                        },100)
 
                     } else {
 
@@ -580,8 +580,6 @@ export const syncData = async (loader=true) => {
                                     localredux.localSettingsData = data.localSettingsData;
                                 });
 
-                                // await db.close()
-                                appLog('Finish local storage')
 
                             } catch (e) {
                                 appLog('e', e)
@@ -672,11 +670,8 @@ export const toCurrency = (value: any, code?: any, decimal?: any) => {
     const {currency: cartCurrency}: any = store.getState().cartData;
     let currencylist = currency;
 
-
-    code = 'INR';
-
     if (!code) {
-        code = getDefaultCurrency().__key;
+        code = getDefaultCurrency();
         if (cartCurrency) {
             code = cartCurrency;
         }

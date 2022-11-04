@@ -2,10 +2,10 @@ import React, {Component} from 'react';
 import {FlatList, Keyboard, TouchableOpacity, View} from 'react-native';
 import {connect} from "react-redux";
 import {filterArray, assignOption, getType, log, appLog} from "../../libs/function";
-import {Divider, List, Paragraph, withTheme} from "react-native-paper";
+import {Appbar, Divider, List, Paragraph, withTheme} from "react-native-paper";
 
 import {Button, ProIcon} from "../index";
-import {setBottomSheet,  setPageSheet} from "../../redux-store/reducer/component";
+import {setBottomSheet, setModal, setPageSheet} from "../../redux-store/reducer/component";
 import {styles as theme, styles} from "../../theme";
 
 import Avatar from "../Avatar";
@@ -219,6 +219,28 @@ class ListView extends Component<any> {
 
             <View style={[styles.w_100, styles.h_100, {backgroundColor: colors.surface}]}>
 
+                <View>
+
+
+                    {!Boolean(displaytype === 'bottomlist') ?
+                        <>
+                        <Appbar.Header style={[styles.bg_white]}>
+                            {/*<Appbar.BackAction    onPress={() => {setPageSheet({visible:false})} }/>*/}
+                            <View style={[styles.w_auto]}>
+                                <Search autoFocus={false} placeholder={`Search...`}  handleSearch={this.handleSearch}/>
+                            </View>
+                            {Boolean(addItem) &&  <View>{addItem}</View>}
+
+                            {Boolean(onAdd) && <View style={[{paddingRight: 5}]}>
+                                <Button compact={true} secondbutton={!Boolean(this.searchText)} disabled={!Boolean(this.searchText)} onPress={() => {
+                                    this._onAdd()
+                                }}> {'Add'}  </Button>
+                            </View>}
+
+                        </Appbar.Header>
+                        </> : <View></View>}
+                </View>
+
                 <View style={[styles.w_100, styles.h_100]}>
                     <FlatList
                         scrollIndicatorInsets={{right: 1}}
@@ -226,25 +248,6 @@ class ListView extends Component<any> {
                         accessible={true}
                         keyboardDismissMode={'none'}
                         keyboardShouldPersistTaps={'always'}
-
-                        ListHeaderComponent={!Boolean(displaytype === 'bottomlist') ?
-                            <View style={[styles.grid, styles.middle]}>
-                                <View style={[styles.w_auto]}>
-                                    <Search autoFocus={false} placeholder={`Search...`}
-                                            handleSearch={this.handleSearch}/>
-                                </View>
-
-                                {Boolean(addItem) &&  <View>
-                                    {addItem}
-                                </View>}
-
-                                {Boolean(onAdd) && <View style={[{paddingRight: 5}]}>
-                                    <Button compact={true} secondbutton={!Boolean(this.searchText)} disabled={!Boolean(this.searchText)} onPress={() => {
-                                        this._onAdd()
-                                    }}> {'Add'}  </Button>
-                                </View>}
-
-                            </View> : <View></View>}
                         renderItem={this.renderList}
                         initialNumToRender={20}
                     />

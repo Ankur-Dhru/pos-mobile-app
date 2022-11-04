@@ -60,6 +60,7 @@ const Index = (props: any) => {
             width: 300,
             component: () => <AddTable getOrder={getOrder}  />
         }))
+        closeMenu();
     }
 
     return (

@@ -1,8 +1,9 @@
 import * as React from 'react';
 import {useEffect, useRef} from 'react';
 import {Card, Searchbar, withTheme} from 'react-native-paper';
-import {Platform} from "react-native";
+import {Platform, View} from "react-native";
 import {appLog} from "../../libs/function";
+import {styles} from "../../theme";
 
 
 const Search = (props: any) => {
@@ -36,7 +37,7 @@ const Search = (props: any) => {
     const {colors}: any = props.theme;
 
     return (
-        <Card>
+        <View>
             <Searchbar
                 ref={(ref)=> {
                     searchRf = ref
@@ -47,11 +48,11 @@ const Search = (props: any) => {
                 value={searchQuery}
                 useNativeDriver={true}
                 onSubmitEditing={() => props.handleSearch(searchQuery.trim())}
-                style={[{elevation: 0,  borderRadius: 5, backgroundColor: 'white'}]}
+                style={[styles.noshadow,{elevation: 0,  borderRadius: 5, backgroundColor: 'white'}]}
 
                 {...props}
             />
-        </Card>
+        </View>
     );
 };
 

@@ -4,7 +4,7 @@ import {styles} from "../../theme";
 import DetailView from "./DetailView";
 import GroupList from "../Items/GroupList";
 import {useDispatch} from "react-redux";
-import {Card, Paragraph,Text,Button as Btn} from "react-native-paper";
+import {Card, Paragraph, Text, Button as Btn, Title} from "react-native-paper";
 import Button from "../../components/Button";
 import InputField from "../../components/InputField";
 import CartTotal from "./CartTotal";
@@ -21,9 +21,11 @@ import ClientDetail from "../Client/ClientDetail";
 import {useNavigation} from "@react-navigation/native";
 import {cancelOrder, isRestaurant, saveTempLocalOrder} from "../../libs/function";
 import NumPad from "../Items/NumPad";
-import {hideLoader, setModal, showLoader} from "../../redux-store/reducer/component";
+import {hideLoader, setModal, setPageSheet, showLoader} from "../../redux-store/reducer/component";
 import ItemListMobile from "../Items/ItemListMobile";
 import ItemListTablet from "../Items/ItemListTablet";
+import store from "../../redux-store/store";
+import AddEditCategory from "../Items/AddEditCategory";
 
 
 const hasrestaurant = isRestaurant();
@@ -151,6 +153,7 @@ const Index = (props: any) => {
                                             <Paragraph  style={[styles.paragraph, styles.bold, {color: 'white'}]}> Categories</Paragraph>
                                         </View>
                                     </View>}
+
                                     list={groups}
                                     search={false}
                                     listtype={'staff'}

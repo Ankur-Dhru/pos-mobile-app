@@ -9,7 +9,7 @@ import {ACTIONS, APP_NAME, localredux, METHOD, posUrl, STATUS} from "../../libs/
 import apiService from "../../libs/api-service";
 import Button from "../../components/Button";
 import store from "../../redux-store/store";
-import {setModal} from "../../redux-store/reducer/component";
+import {setModal, setPageSheet} from "../../redux-store/reducer/component";
 import AddEditItem from "../Items/AddEditItem";
 import AddEditCategory from "../Items/AddEditCategory";
 import AddEditClient from "../Client/AddEditClient";
@@ -97,7 +97,7 @@ const Index = () => {
                         titleStyle={{marginLeft: 0, paddingLeft: 0}}
                         title={'+ Item Category'}
                         onPress={async () => {
-                            store.dispatch(setModal({
+                            store.dispatch(setPageSheet({
                                 visible: true,
                                 hidecancel: true,
                                 width: 300,
@@ -125,7 +125,7 @@ const Index = () => {
                         titleStyle={{marginLeft: 0, paddingLeft: 0}}
                         title={'+ Client'}
                         onPress={async () => {
-                            store.dispatch(setModal({
+                            store.dispatch(setPageSheet({
                                 visible: true,
                                 hidecancel: true,
                                 width: 300,

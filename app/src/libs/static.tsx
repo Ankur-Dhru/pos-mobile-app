@@ -31,6 +31,7 @@ export enum ACTIONS {
     LICENSE = "license",
     LOGINPIN = "loginpin",
     CLIENT = "client",
+    CLIENTS = "clients",
     PRINT = "print",
     LAST_ORDER = "order/lastorder",
     ORDER = "order",

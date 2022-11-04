@@ -4,15 +4,16 @@ import {SafeAreaView, View} from "react-native";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
 import KeyboardScroll from "../../components/KeyboardScroll";
-import {Title} from "react-native-paper";
+import {Appbar, Title} from "react-native-paper";
 import {ACTIONS, adminUrl, composeValidators, localredux, METHOD, required, STATUS} from "../../libs/static";
 import Button from "../../components/Button";
 import {useDispatch} from "react-redux";
 import apiService from "../../libs/api-service";
 import {isEmpty, syncData} from "../../libs/function";
 import InputField from "../../components/InputField";
-import {setModal} from "../../redux-store/reducer/component";
+import {setModal, setPageSheet} from "../../redux-store/reducer/component";
 import {v4 as uuid} from "uuid";
+import KAccessoryView from '../../components/KAccessoryView';
 
 
 const AddTable = ({getOrder}: any) => {
@@ -51,7 +52,7 @@ const AddTable = ({getOrder}: any) => {
     }
 
 
-    return <SafeAreaView><View style={[styles.h_100, styles.middle]}>
+    return  <View style={[styles.h_100]}>
 
 
         <Form
@@ -59,14 +60,17 @@ const AddTable = ({getOrder}: any) => {
             onSubmit={handleSubmit}
 
             render={({handleSubmit, submitting, values, ...more}: any) => (
-                <View style={[styles.h_100, styles.middleForm, {maxWidth: 360}]}>
+                <View  style={[styles.h_100]}>
+
+                    <Appbar.Header style={[styles.bg_white]}>
+                        <Appbar.BackAction    onPress={() => {dispatch(setModal({visible:false}))} }/>
+                        <Appbar.Content  title={'Add Table'}   />
+                    </Appbar.Header>
+
                     <KeyboardScroll>
 
-                        <Title style={[styles.mt_5]}>Add Table </Title>
-
-                        <View>
+                        <View style={[styles.p_6]}>
                             <View>
-
 
                                 <View style={[styles.mt_3]}>
                                     <View style={[styles.mb_5]}>
@@ -111,7 +115,11 @@ const AddTable = ({getOrder}: any) => {
                             </View>
                         </View>
 
-                        <View style={[styles.grid, styles.justifyContent]}>
+
+                    </KeyboardScroll>
+
+                    <KAccessoryView>
+                        <View style={[styles.grid, styles.justifyContent,styles.p_5]}>
                             <View style={[styles.w_auto]}>
                                 <Button more={{backgroundColor: styles.light.color, color: 'black'}}
                                         onPress={() => {
@@ -127,7 +135,7 @@ const AddTable = ({getOrder}: any) => {
                                 </Button>
                             </View>
                         </View>
-                    </KeyboardScroll>
+                    </KAccessoryView>
 
                 </View>
             )}
@@ -137,7 +145,7 @@ const AddTable = ({getOrder}: any) => {
 
 
     </View>
-    </SafeAreaView>
+
 }
 
 export default AddTable;

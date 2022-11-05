@@ -307,12 +307,14 @@ const ClientAndSource = (props: any) => {
         </ScrollView>
 
         <View style={[styles.grid, styles.justifyContent,styles.p_5]}>
-            <Button more={{backgroundColor: styles.light.color, color: 'black'}}
-                    onPress={() => {
-                        dispatch(setModal({visible: false,}));
-                    }}> Cancel </Button>
-
-             <Button onPress={() => {
+            <View style={[styles.w_auto]}>
+                <Button more={{backgroundColor: styles.light.color, color: 'black'}}
+                        onPress={() => {
+                            dispatch(setModal({visible: false,}));
+                        }}> Cancel </Button>
+            </View>
+            <View style={[styles.w_auto,styles.ml_2]}>
+                <Button onPress={() => {
 
             let clientDisplayName  = selectedClient?.displayname?.trim();
 
@@ -373,7 +375,7 @@ const ClientAndSource = (props: any) => {
                  errorAlert(message);
              }
         }}> {edit?'Update':'Next'} </Button>
-
+            </View>
         </View>
 
 

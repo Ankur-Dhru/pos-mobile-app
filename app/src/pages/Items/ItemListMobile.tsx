@@ -141,7 +141,11 @@ const Index = (props: any) => {
                 ListFooterComponent={() => {
                     return <View style={{height: 100}}></View>
                 }}
-                ListEmptyComponent={AddItem}
+                ListEmptyComponent={<>
+                    <Paragraph style={[styles.paragraph, styles.p_6, styles.muted, {textAlign: 'center'}]}> Start building your item library.</Paragraph>
+                    <Paragraph style={[styles.paragraph, styles.p_6,styles.text_xs,styles.muted, {textAlign: 'center'}]}> Tap Create Item to begin.</Paragraph>
+                    <AddItem />
+                </>}
             />
         </>
     )

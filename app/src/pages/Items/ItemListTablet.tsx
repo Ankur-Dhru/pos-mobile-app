@@ -22,8 +22,7 @@ export const AddItem = (props:any) => {
 
     return (
         <View style={[]}>
-            <Paragraph style={[styles.paragraph, styles.p_6, styles.muted, {textAlign: 'center'}]}>No any
-                Items</Paragraph>
+
             <View style={[styles.grid, styles.center]}>
                 <Button
                     secondbutton={true}
@@ -34,7 +33,7 @@ export const AddItem = (props:any) => {
                             width: 300,
                             component: () => <AddEditItem item={{}} searchtext={props.searchtext}  />
                         }))
-                    }}> + Add New Item
+                    }}> + Create Item
                 </Button>
             </View>
         </View>
@@ -136,7 +135,11 @@ const Index = (props: any) => {
                         onRefresh={() => getItems(true)}
                     />
                 }
-                ListEmptyComponent={<AddItem />}
+                ListEmptyComponent={<>
+                    <Paragraph style={[styles.paragraph, styles.p_6, styles.muted, {textAlign: 'center'}]}> Start building your item library.</Paragraph>
+                    <Paragraph style={[styles.paragraph, styles.p_6,styles.text_xs,styles.muted, {textAlign: 'center'}]}> Tap Create Item to begin.</Paragraph>
+                    <AddItem />
+                    </>}
                 keyExtractor={item => item.itemid}
             />
 

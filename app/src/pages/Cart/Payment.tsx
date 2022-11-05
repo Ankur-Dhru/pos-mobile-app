@@ -9,7 +9,7 @@ import {
     saveLocalOrder, toCurrency
 } from "../../libs/function";
 import {ScrollView, TouchableOpacity, View} from "react-native";
-import {Card, Paragraph, withTheme} from "react-native-paper";
+import {Card, Paragraph, TextInput, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {Button, Container} from "../../components";
@@ -71,6 +71,7 @@ const Index = ({vouchertotaldisplay, paidamount,payment, vouchercurrencyrate}: a
     })));
 
     useEffect(() => {
+
         const sum = paymentMethods.reduce((accumulator: any, object: any) => {
             return accumulator + +(object?.paymentAmount || 0);
         }, 0);
@@ -81,9 +82,10 @@ const Index = ({vouchertotaldisplay, paidamount,payment, vouchercurrencyrate}: a
         if (paidSelected) {
             paidSelected = !paymentMethods.some((pm: any) => Boolean(pm.paymentAmount))
         }
-
         setActivePayLater(paidSelected)
+
     }, [paymentMethods])
+
 
 
     const validatePayment = async (config?:any) => {
@@ -142,7 +144,6 @@ const Index = ({vouchertotaldisplay, paidamount,payment, vouchercurrencyrate}: a
             dispatch(showLoader())
 
             saveLocalOrder(clone(cartData)).then(() => {
-                appLog('7', cartData)
                 if (config?.print) {
                     printInvoice(cartData).then(() => {
                         navigation.replace('DrawerStackNavigator');
@@ -227,22 +228,24 @@ const Index = ({vouchertotaldisplay, paidamount,payment, vouchercurrencyrate}: a
 
             <View style={[styles.p_5]}>
 
-                <Card style={[styles.mb_5,{backgroundColor:activePayLater ? styles.secondary.color :'white'}]}
-                      onPress={() => {
+                <View style={[styles.mb_5,styles.border, {borderRadius:5,backgroundColor:activePayLater ? styles.secondary.color :'white'}]} >
+                    <TouchableOpacity  onPress={() => {
                         let newDA = paymentMethods.map((pm: any) => ({...pm, paymentAmount: 0}))
                         setPaymentMethods(newDA);
                         dispatch(setCartData({payment: [{paymentby: "Pay Later", paymentAmount: vouchertotaldisplay}]}));
-                    }}>
-                    <Card.Content>
-                        <View style={[styles.grid, styles.justifyContent, styles.px_6]}>
+                    }} style={[styles.p_6]}>
+                        <View style={[styles.grid, styles.justifyContent]}>
                             <View><Paragraph  style={[styles.paragraph,styles.bold]}>Pay later</Paragraph></View>
                         </View>
-                    </Card.Content>
-                </Card>
+                    </TouchableOpacity>
+                </View>
                 {
                     paymentMethods?.map((pm: any, key: any) => {
-                        return (<Card style={[styles.mb_5,{backgroundColor:Boolean(paymentMethods[key]?.paymentAmount) ? styles.secondary.color :'white'}]}
-                                      onPress={() => {
+                        return (<View style={[styles.mb_5,styles.border,{borderRadius:5,backgroundColor:Boolean(paymentMethods[key]?.paymentAmount) ? styles.secondary.color :'white'}]} >
+
+
+                                <View style={[styles.grid, styles.justifyContent,]}>
+                                    <TouchableOpacity onPress={() => {
                                         if (remainingAmount > 0) {
                                             paymentMethods[key] = {
                                                 ...pm,
@@ -255,51 +258,63 @@ const Index = ({vouchertotaldisplay, paidamount,payment, vouchercurrencyrate}: a
                                                 ...pm,
                                                 paymentAmount: vouchertotaldisplay
                                             }
-                                            setPaymentMethods(newData);
+                                            setPaymentMethods(clone(newData));
                                         }
-                                    }}>
-                            <Card.Content>
+                                    }} style={[styles.w_auto,styles.p_6]}>
 
-                                <View style={[styles.grid, styles.justifyContent,]}>
-                                    <View style={[ styles.px_6]}><Paragraph style={[styles.paragraph,styles.bold]}>{pm.label}</Paragraph></View>
-                                    {Boolean(paymentMethods[key]?.paymentAmount) &&  <>
-                                        <View style={{width:200}}>
-                                            <InputBox
-                                                value={pm?.paymentAmount+''}
-                                                label={'Amount'}
+                                    <View><Paragraph style={[styles.paragraph,styles.bold]}>{pm.label}</Paragraph></View>
+
+                                    </TouchableOpacity>
+
+                                    {<>
+                                        {Boolean(paymentMethods[key]?.paymentAmount) &&   <View style={{width:100}}>
+
+                                            <TextInput
+                                                label=""
+                                                placeholder={'Amount'}
+                                                mode={'outlined'}
+                                                style={{height:40}}
                                                 keyboardType='numeric'
-                                                onChange={(value: any) => {
-                                                    paymentMethods[key].paymentAmount = value;
-                                                    setPaymentMethods(paymentMethods);
-                                                }}
+                                                defaultValue={pm?.paymentAmount+''}
+                                                onChangeText={(value) => {
+                                                        paymentMethods[key].paymentAmount = value
+                                                        setPaymentMethods(clone(paymentMethods));
+                                                    }
+                                                }
                                             />
-                                        </View>
-                                        <View style={{width:200}}>
-                                            <InputBox
-                                                value={pm?.bankCharges ? pm?.bankCharges+'' : '0'}
-                                                label={'Bank Charges'}
+
+                                        </View>}
+                                        {Boolean(paymentMethods[key]?.paymentAmount) &&    <View style={{width:150,marginLeft:10}}>
+
+                                            <TextInput
+                                                label=""
+                                                placeholder={'Bank Charges'}
+                                                style={{height:40}}
+                                                mode={'outlined'}
                                                 keyboardType='numeric'
-                                                onChange={(value: any) => {
-                                                    paymentMethods[key].bankCharges = value;
-                                                    setPaymentMethods(paymentMethods);
-                                                }}
+                                                onChangeText={(value) => {
+                                                        paymentMethods[key].bankCharges = value
+                                                        setPaymentMethods(clone(paymentMethods));
+                                                    }
+                                                }
                                             />
-                                        </View>
-                                        <View>
-                                            <TouchableOpacity onPress={() => {
+
+                                        </View>}
+                                        {Boolean(paymentMethods[key]?.paymentAmount) &&   <View style={[styles.p_6]}>
+                                           <TouchableOpacity onPress={() => {
                                                 paymentMethods[key].paymentAmount = 0;
                                                 paymentMethods[key].bankCharges = 0;
-                                                setPaymentMethods(paymentMethods);
+                                                setPaymentMethods(clone(paymentMethods));
                                             }}>
                                                 <Paragraph style={[styles.paragraph,styles.red]}>X</Paragraph>
                                             </TouchableOpacity>
-                                        </View>
+                                        </View>}
                                     </>}
                                 </View>
 
-                            </Card.Content>
 
-                        </Card>)
+
+                        </View>)
                     })
                 }
 

@@ -86,13 +86,6 @@ const Index = (props: any) => {
 
         current.table = {'tablename': ordertype.label, ordertype: ordertype.value, invoiceitems: [], kots: []};
 
-        dispatch(setModal({
-            visible: true,
-            hidecancel: true,
-            width: '98%',
-            component: () => <ClientAndSource title={title} tabledetails={current.table} placeOrder={placeOrder}
-                                              navigation={navigation}/>
-        }))
 
 
         const placeOrder = async (config: any) => {
@@ -121,6 +114,19 @@ const Index = (props: any) => {
             } else {
                 navigation.navigate('CartStackNavigator', tabledetail);
             }
+        }
+
+        if(ordertype.value === 'qsr'){
+            placeOrder(current.table).then()
+        }
+        else{
+            dispatch(setModal({
+                visible: true,
+                hidecancel: true,
+                width: '98%',
+                component: () => <ClientAndSource title={title} tabledetails={current.table} placeOrder={placeOrder}
+                                                  navigation={navigation}/>
+            }))
         }
 
     }
@@ -274,7 +280,7 @@ const Index = (props: any) => {
                     },
                     {
                         icon: 'popcorn',
-                        label: 'QSR',
+                        label: 'QSR / Quick Bill',
                         onPress: () => setOrderSetting("QSR", {'label': 'QSR', value: 'qsr'}),
                     },
                     {

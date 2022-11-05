@@ -48,6 +48,7 @@ const Index = ({callback}:any) => {
     const [moredetail,setMoredetail]:any = useState(true);
     const [loading,setLoading]:any = useState(false);
     const [displayname,setDisplayname]:any = useState();
+   // const [country,setCountry]:any = useState(general.country);
 
 
     let statelist:any = [];
@@ -109,7 +110,8 @@ const Index = ({callback}:any) => {
                     }
                 }
             })
-        },1000)
+
+        })
 
     },[])
 

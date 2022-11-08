@@ -1,18 +1,19 @@
-import {localredux} from "../../libs/static";
-import React, {memo, useEffect, useState} from "react";
-import {FlatList, SafeAreaView, TouchableOpacity, View} from "react-native";
-import {Card, Divider, Paragraph} from "react-native-paper";
+import {device, localredux} from "../../libs/static";
+import React, {memo, useEffect, useRef, useState} from "react";
+import {FlatList, SafeAreaView, Text, TouchableOpacity, View} from "react-native";
+import {Appbar, Card, Divider, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
-import {SearchBox} from "../../components";
+import {Button, ProIcon, SearchBox} from "../../components";
 
 import {appLog, filterArray, selectItem} from "../../libs/function";
 
 import AddButton from "./AddButton";
 import {connect, useDispatch} from "react-redux";
-import {setModal} from "../../redux-store/reducer/component";
+import {closePage, setModal} from "../../redux-store/reducer/component";
 import {getItemsByWhere, readTable} from "../../libs/Sqlite/selectData";
-import {TABLE} from "../../libs/Sqlite/config";
+
 import {AddItem} from "./ItemListTablet";
+import Search from "../../components/SearchBox";
 
 
 const Item = memo(({item}:any) => {
@@ -21,7 +22,7 @@ const Item = memo(({item}:any) => {
 
     return (<TouchableOpacity onPress={() => {
         selectItem(item);
-        dispatch(setModal({visible:false}))
+        dispatch(closePage(device.lastmodal))
     }} style={[styles.noshadow]}>
         <View style={[styles.grid, styles.noWrap, styles.top,styles.p_4]}>
             <View style={[{width:'62%'}]}>
@@ -39,7 +40,12 @@ const Item = memo(({item}:any) => {
     return ((r1.item.productqnt === r2.item.productqnt) && (r1.item.itemid === r2.item.itemid));
 })
 
-const Index = ( ) => {
+const Index = ({navigation,pageKey}:any) => {
+
+
+    const dispatch = useDispatch();
+    const searchRf = useRef();
+
 
     let [items, setItems] = useState([]);
     let [search,setSearch] = useState('');
@@ -56,6 +62,11 @@ const Index = ( ) => {
         }
     }
 
+
+    useEffect(()=>{
+        device.search = search
+    },[search])
+
     const renderitems = (i: any) => {
         return (
             <Item item={i.item} index={i.index} search={true} key={i.item.key || i.item.productid}/>
@@ -63,16 +74,31 @@ const Index = ( ) => {
     };
 
     return (
-
-
-
+        <SafeAreaView style={[styles.h_100]}>
             <View style={[styles.h_100, styles.flex, styles.w_100, {flexDirection: 'column'}]}>
+
+                <Appbar.Header style={[styles.bg_white,styles.noshadow,styles.borderBottom,styles.justifyContent,]}>
+
+                    <View><TouchableOpacity onPress={()=>{dispatch(closePage(device.lastmodal))}} style={[styles.p_5]}><Paragraph><ProIcon name={'xmark'}/></Paragraph></TouchableOpacity></View>
+
+                    <View style={[styles.w_auto]}>
+                        <Paragraph style={[styles.paragraph,styles.bold,{textAlign:'center'}]}>{'Items'}</Paragraph>
+                    </View>
+
+                    <TouchableOpacity style={[styles.p_5]} onPress={async () => {
+                        await dispatch(closePage(device.lastmodal))
+                        navigation.navigate('AddEditItemNavigator2');
+                    }}>
+                        <Paragraph><ProIcon  name={'plus'}/></Paragraph></TouchableOpacity>
+
+                </Appbar.Header>
+
+
 
                 <View style={[styles.grid, styles.middle]}>
                     <View style={[styles.flexGrow]}>
-                        <SearchBox handleSearch={handleSearch} autoFocus={true} placeholder="Search Item"/>
+                        <SearchBox      handleSearch={handleSearch} autoFocus={true} placeholder="Search Item..."/>
                     </View>
-
                 </View>
 
                 <Card style={[styles.h_100, styles.flex]}>
@@ -80,13 +106,30 @@ const Index = ( ) => {
                         {loading &&  <FlatList
                             data={items}
                             renderItem={renderitems}
-                            ListEmptyComponent={<AddItem searchtext={search} />}
+                            ListEmptyComponent={Boolean(search) ? <View>
+                                <View  style={[styles.p_6]}>
+                                    <Text style={[styles.paragraph,styles.mb_2, styles.muted, {textAlign: 'center'}]}> No result found</Text>
+                                    <Text style={[styles.paragraph,  styles.text_xs,styles.muted, {textAlign: 'center'}]}> Tap to Create New Item.</Text>
+                                </View>
+                                <AddItem navigation={navigation}   />
+                            </View> : <View  style={[styles.p_6]}>
+                                <Text style={[styles.paragraph,styles.mb_2, styles.muted, {textAlign: 'center'}]}>Search Item from here</Text>
+                            </View> }
                             keyExtractor={item => item.itemid}
                         />}
                     </Card.Content>
                 </Card>
-            </View>
 
+                {/*<View style={[styles.submitbutton]}>
+                    <Button more={{backgroundColor: styles.light.color, color: 'black'}}
+                            onPress={() => {
+                                dispatch(closePage(device.lastmodal))
+                            }}> Cancel
+                    </Button>
+                </View>*/}
+
+            </View>
+        </SafeAreaView>
 
     )
 

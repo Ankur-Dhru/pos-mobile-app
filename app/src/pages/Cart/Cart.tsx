@@ -19,16 +19,17 @@ import SearchItem from "../Items/SearchItem";
 import GroupHeading from "../Items/GroupHeading";
 import ClientDetail from "../Client/ClientDetail";
 import {useNavigation} from "@react-navigation/native";
-import {cancelOrder, isRestaurant, saveTempLocalOrder} from "../../libs/function";
+import {appLog, cancelOrder, isRestaurant, saveTempLocalOrder} from "../../libs/function";
 import NumPad from "../Items/NumPad";
-import {hideLoader, setModal, setPageSheet, showLoader} from "../../redux-store/reducer/component";
+import {hideLoader, openPage, setModal, showLoader} from "../../redux-store/reducer/component";
 import ItemListMobile from "../Items/ItemListMobile";
 import ItemListTablet from "../Items/ItemListTablet";
 import store from "../../redux-store/store";
 import AddEditCategory from "../Items/AddEditCategory";
+import GroupListMobile from "../Items/GroupListMobile";
 
 
-const hasrestaurant = isRestaurant();
+
 
 const Index = (props: any) => {
 
@@ -39,7 +40,7 @@ const Index = (props: any) => {
 
     const [numpad,setNumpad] = useState(false)
 
-
+    const hasrestaurant = isRestaurant();
 
     const dispatch = useDispatch()
 
@@ -47,7 +48,6 @@ const Index = (props: any) => {
     let groups: any = Object.values(itemgroup).map((group: any) => {
         return {label: group.itemgroupname, value: group.itemgroupid}
     })
-
 
     return <>
 
@@ -72,7 +72,7 @@ const Index = (props: any) => {
                         </TouchableOpacity>
                     </Card> }
                     <Card style={[styles.noshadow,styles.flexGrow,styles.grid,styles.justifyContent,styles.px_4,styles.w_auto,{minWidth:'25%'}]}>
-                        <TouchableOpacity  onPress={() => dispatch(setModal({title: 'Search Items',visible:true,component: ()=><SearchItem  />}))}>
+                        <TouchableOpacity  onPress={() => dispatch(openPage({title: 'Search Items',visible:true,component: (props:any)=><SearchItem {...props} navigation={navigation} />}))}>
                             <View style={[styles.grid,styles.middle,{padding:11}]}>
                                 <Paragraph  style={[styles.paragraph]}> Search Item</Paragraph>
                             </View>
@@ -97,19 +97,19 @@ const Index = (props: any) => {
 
 
                     <Card  style={[styles.h_100, styles.w_auto, {minWidth: 120}]} >
-                        <GroupList  />
+                        <GroupList navigation={navigation} />
                     </Card>
 
                     <Card style={[styles.flexGrow,styles.noshadow,styles.w_auto,{marginLeft: 5,marginRight:5,minWidth:'40%'}]}>
 
                         {!numpad ?
-                            <ItemListTablet />:
+                            <ItemListTablet navigation={navigation}/>:
                             <NumPad/>
                         }
                     </Card>
 
                     <View style={[styles.w_auto, {minWidth: '40%'}]}>
-                        <DetailView style={{padding: 0}}/>
+                        <DetailView  style={{padding: 0}}/>
                     </View>
 
                 </View>
@@ -123,48 +123,19 @@ const Index = (props: any) => {
                         dispatch(showLoader());  saveTempLocalOrder().then(() => { navigation.goBack(); dispatch(hideLoader()); })
                     },
                     actions:()=>
-                        <Btn onPress={() => dispatch(setModal({title: 'Search Items',visible:true,component: ()=><SearchItem  />}))}>Search</Btn> }}>
+                        <TouchableOpacity style={[styles.p_5]} onPress={() => dispatch(openPage({title: 'Search Items',visible:true,component: (props:any)=><SearchItem {...props} navigation={navigation} />}))}>
+                            <ProIcon name={'magnifying-glass'} />
+                        </TouchableOpacity>}}>
 
                 <View style={[styles.h_100, styles.flex, {flexDirection: 'column',paddingTop:5}]}>
 
                     <GroupHeading />
 
                     <Card style={[styles.h_100, styles.flex]}>
-                        <ItemListMobile />
+                        <ItemListMobile navigation={navigation}/>
 
                         <View>
-
-                            <View style={[{marginTop: -55}]}>
-                                <InputField
-                                    removeSpace={true}
-                                    label={'Category'}
-                                    divider={true}
-                                    displaytype={'pagelist'}
-                                    inputtype={'dropdown'}
-                                    render={() => <View style={[styles.grid, styles.center, styles.mb_5]}>
-                                        <View
-                                            style={[styles.badge, styles.px_5,styles.py_5, styles.grid, styles.noWrap, styles.middle, {
-                                                backgroundColor: '#000',
-                                                borderRadius: 30,
-                                                paddingLeft: 20,
-                                                paddingRight: 20
-                                            }]}>
-                                            <Paragraph><ProIcon name={'bars-staggered'} type={"solid"} color={'white'}  size={'18'} action_type={'text'}/> </Paragraph>
-                                            <Paragraph  style={[styles.paragraph, styles.bold, {color: 'white'}]}> Categories</Paragraph>
-                                        </View>
-                                    </View>}
-
-                                    list={groups}
-                                    search={false}
-                                    listtype={'staff'}
-                                    selectedValue={''}
-                                    onChange={(value: any) => {
-                                        dispatch(setSelected({value:value,field:'group'}))
-                                    }}
-                                />
-                            </View>
-
-
+                             <GroupListMobile />
                         </View>
 
                         <CartTotal/>

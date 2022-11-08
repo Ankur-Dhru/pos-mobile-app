@@ -189,7 +189,7 @@ const Index = ({vouchertotaldisplay, paidamount,payment, vouchercurrencyrate}: a
             <View style={[styles.grid, styles.middle, styles.justifyContent, styles.px_6]}>
                 {Boolean(vouchertotaldisplay) && <View>
 
-                    <Paragraph style={[styles.paragraph, styles.mb_10, styles.green, {
+                    <Paragraph style={[styles.paragraph,   styles.green, {
                         textAlign: 'center',
                         fontSize: 15,
                         height: 40,
@@ -201,7 +201,7 @@ const Index = ({vouchertotaldisplay, paidamount,payment, vouchercurrencyrate}: a
 
                 {Boolean(paidamount) && <View>
 
-                    <Paragraph style={[styles.paragraph, styles.mb_10, styles.green, {
+                    <Paragraph style={[styles.paragraph,   styles.green, {
                         textAlign: 'center',
                         fontSize: 15,
                         height: 40,
@@ -213,13 +213,13 @@ const Index = ({vouchertotaldisplay, paidamount,payment, vouchercurrencyrate}: a
 
                 <View>
 
-                    <Paragraph style={[styles.paragraph, styles.mb_10, styles.red, {
+                    <Paragraph style={[styles.paragraph,   styles.red, {
                         textAlign: 'center',
                         fontSize: 15,
                         height: 40,
                         paddingTop: 20,
                         fontWeight: 'bold'
-                    }]}>{"Remaining Amount"} : {toCurrency(remainingAmount || '0')}</Paragraph>
+                    }]}>{"Remaining"} : {toCurrency(remainingAmount || '0')}</Paragraph>
                 </View>
 
 
@@ -284,7 +284,7 @@ const Index = ({vouchertotaldisplay, paidamount,payment, vouchercurrencyrate}: a
                                             />
 
                                         </View>}
-                                        {Boolean(paymentMethods[key]?.paymentAmount) &&    <View style={{width:150,marginLeft:10}}>
+                                        {Boolean(paymentMethods[key]?.paymentAmount) &&    <View style={{width:100,marginLeft:10}}>
 
                                             <TextInput
                                                 label=""
@@ -327,7 +327,7 @@ const Index = ({vouchertotaldisplay, paidamount,payment, vouchercurrencyrate}: a
         <View  >
 
 
-            {<View style={[styles.grid,styles.justifyContent,styles.p_6]}>
+            {<View style={[styles.grid,styles.justifyContent,styles.px_5]}>
                 <View style={[styles.w_auto]}>
                     <Button onPress={() => {
                         validatePayment()
@@ -339,7 +339,7 @@ const Index = ({vouchertotaldisplay, paidamount,payment, vouchercurrencyrate}: a
                         more={{backgroundColor: styles.yellow.color,color:'black' }}
                         onPress={() => {
                             validatePayment({print:true})
-                        }}> {`Generate Invoice & Print`} </Button>
+                        }}> {`Print & Generate Invoice`} </Button>
                 </View>
 
             </View>}

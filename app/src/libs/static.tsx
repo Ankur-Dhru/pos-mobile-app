@@ -1566,3 +1566,6 @@ export const dateformats: any = [{"label": "dd/MM/yyyy", "value": "dd/MM/yyyy"},
     "label": "MM.dd.yy",
     "value": "MM.dd.yy"
 }, {"label": "MM.dd.yyyy", "value": "MM.dd.yyyy"}]
+
+
+export const grecaptcharesponse:any = 'g-recaptcha-response-gjgjh-kjkljkl-mjbkjhkj-bbkj'

@@ -9,7 +9,7 @@ import {Button} from "../../components";
 class Index extends React.Component<any> {
 
     render(){
-        let {onPress,message,title,render}:any = this.props;
+        let {onPress,message,title,render,buttonTitle}:any = this.props;
         const Render:any = render;
 
         return (
@@ -31,7 +31,7 @@ class Index extends React.Component<any> {
                                 icon={() => <ProIcon name={'trash'} action_type={'text'} size={14} color={styles.red.color}/>}
                                 secondbutton={false}
                                 more={{borderColor: styles.red.color,borderWidth:1,borderStyle:'dashed',borderRadius:7}}
-                                labelStyle={[styles.capitalize, {color: styles.red.color}]}> Delete </Button>}
+                                labelStyle={[styles.capitalize, {color: styles.red.color}]}> {buttonTitle?buttonTitle:'Delete'} </Button>}
                         </View>
                     </ActionSheet>
                 </View>

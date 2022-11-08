@@ -4,12 +4,12 @@ import {Dimensions, Image, ScrollView, TouchableOpacity, View} from "react-nativ
 import {Card, List, Text, Paragraph, Divider} from "react-native-paper";
 import {styles} from "../../theme";
 import Avatar from "../../components/Avatar";
-import {useNavigation} from "@react-navigation/native";
+import {CommonActions, useNavigation} from "@react-navigation/native";
 import {ACTIONS, APP_NAME, localredux, METHOD, posUrl, STATUS} from "../../libs/static";
 import apiService from "../../libs/api-service";
 import Button from "../../components/Button";
 import store from "../../redux-store/store";
-import {setModal, setPageSheet} from "../../redux-store/reducer/component";
+import {openPage } from "../../redux-store/reducer/component";
 import AddEditItem from "../Items/AddEditItem";
 import AddEditCategory from "../Items/AddEditCategory";
 import AddEditClient from "../Client/AddEditClient";
@@ -25,50 +25,52 @@ const Index = () => {
     const isRes = isRestaurant();
 
     const logoutUser = () => {
-        navigation.navigate("PinStackNavigator");
+        navigation.dispatch(
+            CommonActions.reset({
+                index: 0,
+                routes: [
+                    {name: 'PinStackNavigator'},
+                ],
+            })
+        );
     }
 
 
     return <View style={[styles.h_100]}>
-        {/*<Card style={[styles.card]}>*/}
-        {/*    <Card.Content>*/}
-        {/*        <View style={[styles.grid, styles.middle, styles.noWrap]}>*/}
-        {/*            <Avatar label={APP_NAME} value={1} fontsize={15} lineheight={18}*/}
-        {/*                    size={40}/>*/}
-        {/*            <View style={[styles.ml_2]}>*/}
-        {/*                <Text style={[styles.paragraph, styles.text_md, {*/}
-        {/*                    lineHeight: 20,*/}
-        {/*                    fontSize: 18,*/}
-        {/*                    fontWeight:"bold"*/}
-        {/*                }]}>{APP_NAME}</Text>*/}
-        {/*            </View>*/}
-        {/*        </View>*/}
-        {/*    </Card.Content>*/}
-        {/*</Card>*/}
+
 
         <Card>
             <Card.Content>
 
-                <View style={[styles.grid, styles.middle, styles.noWrap]}>
+                <TouchableOpacity onPress={() => {
+                    try {
+                        navigation.navigate("ProfileSettingsNavigator");
+                    }
+                    catch (e) {
+                        appLog('e',e)
+                    }
+                }}>
+                    <View style={[styles.grid, styles.middle, styles.noWrap]}>
 
-                    <Image
-                        style={[{width: 50, height: 50}]}
-                        source={require('../../assets/dhru-logo-22.png')}
-                    />
+                        <Image
+                            style={[{width: 50, height: 50}]}
+                            source={require('../../assets/dhru-logo-22.png')}
+                        />
 
-                    <View style={[styles.ml_2]}>
-                        <View>
-                            <Paragraph style={[styles.paragraph, styles.bold, styles.text_lg]}>Dhru POS</Paragraph>
+                        <View style={[styles.ml_2]}>
+                            <View>
+                                <Paragraph style={[styles.paragraph, styles.bold, styles.text_lg]}>Dhru POS</Paragraph>
+                            </View>
+                            <Text style={[styles.paragraph, styles.text_md, {
+                                lineHeight: 20,
+                                fontSize: 16
+                            }]}>{firstname + ' ' + lastname}</Text>
+
+                            {/*{Boolean(email) &&
+                                <Text style={[styles.paragraph, styles.muted, styles.text_xs]}>{email}</Text>}*/}
                         </View>
-                        <Text style={[styles.paragraph, styles.text_md, {
-                            lineHeight: 20,
-                            fontSize: 16
-                        }]}>{firstname + ' ' + lastname}</Text>
-
-                        {/*{Boolean(email) &&
-                            <Text style={[styles.paragraph, styles.muted, styles.text_xs]}>{email}</Text>}*/}
                     </View>
-                </View>
+                </TouchableOpacity>
 
 
                 <View style={[styles.grid,styles.justifyContent,styles.mt_5]}>
@@ -97,12 +99,13 @@ const Index = () => {
                         titleStyle={{marginLeft: 0, paddingLeft: 0}}
                         title={'+ Item Category'}
                         onPress={async () => {
-                            store.dispatch(setPageSheet({
+                            navigation.navigate("AddEditCategory");
+                            /*store.dispatch(openPage({
                                 visible: true,
                                 hidecancel: true,
                                 width: 300,
-                                component: () => <AddEditCategory  />
-                            }))
+                                component: (props:any) => <AddEditCategory {...props} />
+                            }))*/
                         }}
                     />
 
@@ -111,12 +114,13 @@ const Index = () => {
                         titleStyle={{marginLeft: 0, paddingLeft: 0}}
                         title={'+ Item'}
                         onPress={async () => {
-                            store.dispatch(setModal({
+                            navigation.navigate("AddEditItemNavigator");
+                            /*store.dispatch(openPage({
                                 visible: true,
                                 hidecancel: true,
                                 width: 300,
-                                component: () => <AddEditItem item={{}} />
-                            }))
+                                component: (props:any) => <AddEditItem {...props} item={{}} />
+                            }))*/
                         }}
                     />
 
@@ -125,12 +129,13 @@ const Index = () => {
                         titleStyle={{marginLeft: 0, paddingLeft: 0}}
                         title={'+ Client'}
                         onPress={async () => {
-                            store.dispatch(setPageSheet({
+                            navigation.navigate("AddEditClient");
+                            /*store.dispatch(openPage({
                                 visible: true,
                                 hidecancel: true,
                                 width: 300,
-                                component: () => <AddEditClient  />
-                            }))
+                                component: (props:any) => <AddEditClient {...props}  />
+                            }))*/
                         }}
                     />
 

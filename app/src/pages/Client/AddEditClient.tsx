@@ -1,4 +1,4 @@
-import React, {Component, useEffect, useState} from 'react';
+import React, {Component, useEffect, useRef, useState} from 'react';
 import {Platform, TouchableOpacity, View} from 'react-native';
 import {styles} from "../../theme";
 
@@ -12,14 +12,14 @@ import {
     getStateList,
     objToArray,
     selectItem,
-    syncData
+    syncData, updateComponent
 } from "../../libs/function";
 import {Field, Form} from "react-final-form";
 
 import {
     ACTIONS,
     adminUrl, countrylist,
-    defalut_payment_term,
+    defalut_payment_term, device,
     isEmail,
     localredux,
     METHOD, minLength,
@@ -34,18 +34,20 @@ import KeyboardScroll from "../../components/KeyboardScroll";
 import KAccessoryView from '../../components/KAccessoryView';
 import apiService from "../../libs/api-service";
 
-import {hideLoader, setModal, setPageSheet, showLoader} from "../../redux-store/reducer/component";
+import {closePage, hideLoader, setModal, showLoader} from "../../redux-store/reducer/component";
 import ProIcon from "../../components/ProIcon";
+import {useNavigation} from "@react-navigation/native";
+import PageLoader from "../../components/PageLoader";
 
-
-const Index = ({callback}:any) => {
+let moredetail:any = false
+const Index = ({callback,pageKey}:any) => {
 
     const dispatch = useDispatch();
+    const navigation = useNavigation()
     const {workspace}:any = localredux.initData;
     const {token}:any = localredux.authData;
 
     const {pricingtemplate, currency, paymentterms,general} = localredux.initData;
-    const [moredetail,setMoredetail]:any = useState(true);
     const [loading,setLoading]:any = useState(false);
     const [displayname,setDisplayname]:any = useState();
    // const [country,setCountry]:any = useState(general.country);
@@ -54,6 +56,7 @@ const Index = ({callback}:any) => {
     let statelist:any = [];
     const taxtypelist: any = [];
     const refstate: any = '';
+    const moreDetailRef = React.useRef<View>(null);
 
     const initdata: any = {
         customertype: 'individual',
@@ -66,7 +69,7 @@ const Index = ({callback}:any) => {
         clienttype: 0,
         country: general.country,
         currency: getDefaultCurrency(),
-        displayname:'',
+        displayname:device.searchlist?device.searchlist:'',
         state: general.state
     }
 
@@ -166,7 +169,8 @@ const Index = ({callback}:any) => {
                     const client = {...values, ...result.data,label:values.displayname,value:result.data.clientid};
                     Boolean(callback) && await callback(client)
                     await syncData(false).then()
-                    dispatch(setPageSheet({visible: false}))
+                    navigation.goBack()
+                    //dispatch(closePage(pageKey))
                     dispatch(hideLoader());
                 }
                 catch (e) {
@@ -177,8 +181,22 @@ const Index = ({callback}:any) => {
         });
     }
 
+    const [loaded, setLoaded] = useState(false)
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            setTimeout(() => {
+                setLoaded(true)
+            })
+        });
+        return unsubscribe;
+    }, []);
+    if (!loaded) {
+        return <PageLoader  />
+    }
+
+
     return (
-        <View style={[styles.h_100]}>
+        <Container config={{title:'Add Client'}} >
 
             <Form
                 onSubmit={handleSubmit}
@@ -186,10 +204,12 @@ const Index = ({callback}:any) => {
                 render={({handleSubmit, submitting, values, ...more}: any) => (
                     <View  style={[styles.h_100]}>
 
-                        <Appbar.Header style={[styles.bg_white]}>
-                            <Appbar.BackAction    onPress={() => {dispatch(setPageSheet({visible:false}))} }/>
+                        {/*<Appbar.Header style={[styles.bg_white]}>
+                            <Appbar.BackAction    onPress={() => {
+                                dispatch(closePage(pageKey))
+                            } }/>
                             <Appbar.Content  title={'Add Client'}   />
-                        </Appbar.Header>
+                        </Appbar.Header>*/}
 
                         <KeyboardScroll>
 
@@ -284,7 +304,8 @@ const Index = ({callback}:any) => {
                                     <Card.Content>
                                         <View>
                                             <TouchableOpacity onPress={() => {
-                                                setMoredetail(!moredetail)
+                                                moredetail=!moredetail;
+                                                updateComponent(moreDetailRef, 'display', moredetail?'flex':'none')
                                             }} style={[styles.grid, styles.middle, styles.justifyContent]}>
                                                 <Paragraph style={[styles.paragraph, styles.caption]}>
                                                     More Detail
@@ -296,7 +317,7 @@ const Index = ({callback}:any) => {
                                             </TouchableOpacity>
                                         </View>
 
-                                        {moredetail && <View>
+                                        {<View ref={moreDetailRef} style={{display:'none'}}>
 
                                             <View>
                                                 <View>
@@ -616,14 +637,15 @@ const Index = ({callback}:any) => {
 
                         <KAccessoryView>
                             <View style={[styles.grid, styles.justifyContent,styles.p_5]}>
-                                <View style={[styles.w_auto]}>
+                                {/*<View style={[styles.w_auto]}>
                                     <Button more={{backgroundColor: styles.light.color, color: 'black'}}
                                             onPress={() => {
-                                                dispatch(setPageSheet({visible: false}))
+                                                navigation.goBack()
+                                               // dispatch(closePage(pageKey))
                                             }}> Cancel
                                     </Button>
-                                </View>
-                                <View style={[styles.w_auto, styles.ml_2]}>
+                                </View>*/}
+                                <View style={[styles.w_auto]}>
                                     <Button disable={more.invalid} secondbutton={more.invalid} onPress={() => {
                                         handleSubmit(values)
                                     }}>   Add  </Button>
@@ -638,7 +660,7 @@ const Index = ({callback}:any) => {
             </Form>
 
 
-        </View>
+        </Container>
 
     )
 

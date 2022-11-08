@@ -188,82 +188,91 @@ export const getProductData = (product: any,
                                recuringType?: string,
                                isInward?: boolean,
                                pricingType?: string) => {
+  let  returnObject: any = {};
+  try {
 
-  let {itemminqnt, pricing, purchasecost} = product;
-  const {qntranges, price, type} = pricing;
+    let {itemminqnt, pricing, purchasecost} = product;
+    const {qntranges, price, type} = pricing;
 
-  if (!pricingType) {
-    pricingType = "default";
-  }
-
-  let currency = "USD", defaultCurrency = getDefaultCurrency();
-  if (companyCurrency != null) {
-    currency = companyCurrency;
-  } else if (defaultCurrency != null) {
-    currency = defaultCurrency;
-  }
-
-  if (clientCurrency == null) {
-    clientCurrency = currency;
-  }
-
-
-  let quantity: number = 1,
-      qntRangeIndex = 0,
-      productratedisplay: number = 0,
-      returnObject: any = {};
-
-
-  if (qnt != null) {
-    quantity = qnt;
-  } else if (Boolean(itemminqnt)) {
-    quantity = parseFloat(itemminqnt);
-  }
-
-  if (type !== 'free' && recuringType == null && price[pricingType] && price[pricingType][0]) {
-    recuringType = Object.keys(price[pricingType][0])[0];
-  }
-
-
-  qntranges.forEach(({start, end}: any, index: any) => {
-    if (quantity >= parseFloat(start) && quantity < parseFloat(end)) {
-      qntRangeIndex = index;
-    }
-  });
-
-  returnObject.productrate = 0;
-  returnObject.productratedisplay = 0
-
-  if (recuringType) {
-
-    let rate = price[pricingType][0][recuringType].baseprice;
-
-    if (!Boolean(rate)) {
-      rate = 0
+    if (!pricingType) {
+      pricingType = "default";
     }
 
-    if (price[pricingType][qntRangeIndex][recuringType]["currency"] &&
-        price[pricingType][qntRangeIndex][recuringType]["currency"][currency] &&
-        price[pricingType][qntRangeIndex][recuringType]["currency"][currency].price) {
-      rate = price[pricingType][qntRangeIndex][recuringType]["currency"][currency].price;
+    let currency = "USD", defaultCurrency = getDefaultCurrency();
+    if (companyCurrency != null) {
+      currency = companyCurrency;
+    } else if (defaultCurrency != null) {
+      currency = defaultCurrency;
     }
 
-    returnObject.productrate = rate;
-    if (price[pricingType][qntRangeIndex][recuringType]["currency"] &&
-        price[pricingType][qntRangeIndex][recuringType]["currency"][clientCurrency]) {
-      productratedisplay = price[pricingType][qntRangeIndex][recuringType]["currency"][clientCurrency].price;
-    } else {
-      productratedisplay = currencyRate(clientCurrency) * returnObject.productrate;
+    if (clientCurrency == null) {
+      clientCurrency = currency;
     }
-    returnObject.productratedisplay = productratedisplay;
+
+
+    let quantity: number = 1,
+        qntRangeIndex = 0,
+        productratedisplay: number = 0;
+
+
+
+    if (qnt != null) {
+      quantity = qnt;
+    } else if (Boolean(itemminqnt)) {
+      quantity = parseFloat(itemminqnt);
+    }
+
+    if (type !== 'free' && recuringType == null && price[pricingType] && price[pricingType][0]) {
+      recuringType = Object.keys(price[pricingType][0])[0];
+    }
+
+
+
+    qntranges.forEach(({start, end}: any, index: any) => {
+      if (quantity >= parseFloat(start) && quantity < parseFloat(end)) {
+        qntRangeIndex = index;
+      }
+    });
+
+    returnObject.productrate = 0;
+    returnObject.productratedisplay = 0
+
+
+
+    if (recuringType) {
+
+      let rate = price[pricingType][0][recuringType].baseprice;
+
+      if (!Boolean(rate)) {
+        rate = 0
+      }
+
+      if (price[pricingType][qntRangeIndex][recuringType]["currency"] &&
+          price[pricingType][qntRangeIndex][recuringType]["currency"][currency] &&
+          price[pricingType][qntRangeIndex][recuringType]["currency"][currency].price) {
+        rate = price[pricingType][qntRangeIndex][recuringType]["currency"][currency].price;
+      }
+
+      returnObject.productrate = rate;
+      if (price[pricingType][qntRangeIndex][recuringType]["currency"] &&
+          price[pricingType][qntRangeIndex][recuringType]["currency"][clientCurrency]) {
+        productratedisplay = price[pricingType][qntRangeIndex][recuringType]["currency"][clientCurrency].price;
+      } else {
+        productratedisplay = currencyRate(clientCurrency) * returnObject.productrate;
+      }
+      returnObject.productratedisplay = productratedisplay;
+    }
+
+    if (isInward) {
+      if (!Boolean(purchasecost)) {
+        purchasecost = 0;
+      }
+      returnObject.productrate = purchasecost;
+      returnObject.productratedisplay = currencyRate(clientCurrency) * purchasecost;
+    }
   }
-
-  if (isInward) {
-    if (!Boolean(purchasecost)) {
-      purchasecost = 0;
-    }
-    returnObject.productrate = purchasecost;
-    returnObject.productratedisplay = currencyRate(clientCurrency) * purchasecost;
+  catch (e){
+    appLog('get produxct data',e)
   }
 
 

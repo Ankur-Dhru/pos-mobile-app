@@ -37,18 +37,18 @@ const Search = (props: any) => {
     const {colors}: any = props.theme;
 
     return (
-        <View>
+        <View style={[styles.px_5,styles.mb_3]}>
             <Searchbar
                 ref={(ref)=> {
                     searchRf = ref
                 }}
-                placeholder="Search"
+                placeholder={`Search ${props?.label}`}
                 onChangeText={onChangeSearch}
                 autoFocus={false}
                 value={searchQuery}
                 useNativeDriver={true}
                 onSubmitEditing={() => props.handleSearch(searchQuery.trim())}
-                style={[styles.noshadow,{elevation: 0,  borderRadius: 5, backgroundColor: 'white'}]}
+                style={[styles.noshadow,{elevation: 0,  borderRadius: 5, backgroundColor: '#eee'}]}
 
                 {...props}
             />

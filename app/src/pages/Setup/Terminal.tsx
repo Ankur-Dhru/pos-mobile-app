@@ -74,7 +74,10 @@ const Terminal = (props: any) => {
 
                 }
 
-                localredux.licenseData = licensedata;
+                localredux.licenseData = {
+                    ...localredux.licenseData,
+                    ...licensedata
+                }
 
                 saveLocalSettings("defaultInputValues", defaultInputValues).then()
                 saveLocalSettings("defaultInputAmounts", defaultInputAmounts).then()
@@ -83,7 +86,7 @@ const Terminal = (props: any) => {
                     initData,
                     authData,
                     localSettingsData,
-                    licenseData: licensedata,
+                    licenseData: localredux.licenseData,
                     theme,
                     itemsData: {},
                     addonsData: {},

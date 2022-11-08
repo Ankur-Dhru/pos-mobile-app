@@ -13,17 +13,23 @@ import ReserveList from "./ReserveList";
 import store from "../../redux-store/store";
 import AddEditItem from "../Items/AddEditItem";
 import AddTable from "./AddTable";
+import {appLog} from "../../libs/function";
 
 
 const OrderType = (props: any) => {
     const {type, selected,getOrder} = props;
-
+    const navigation: any = useNavigation();
     const dispatch = useDispatch()
 
 
     return <>
         <TouchableOpacity onPress={() => {
-            dispatch(setSelected({...type, field: 'ordertype'}))
+            if(type.value === 'qsr') {
+                navigation.navigate('CartStackNavigator', { tablename: type.label, ordertype: type.value, invoiceitems: [], kots: [] });
+            }
+            else{
+                dispatch(setSelected({...type, field: 'ordertype'}))
+            }
         }}>
             <Paragraph
                 style={[selected ? styles.muted : styles.primary, styles.bold, styles.text_sm, styles.p_6]}>{type.label}</Paragraph>

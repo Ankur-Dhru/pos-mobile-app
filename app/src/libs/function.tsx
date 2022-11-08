@@ -822,6 +822,8 @@ export const setItemRowData = (data: any) => {
             producttaxgroupid = itemtaxgroupid;
         }
 
+        const defaultCurrency:any = getDefaultCurrency()
+        appLog('defaultCurrency',defaultCurrency)
 
         let additem: any = {
             identificationtype,
@@ -847,7 +849,7 @@ export const setItemRowData = (data: any) => {
             notes,
             hasAddon,
             isDepartmentSelected,
-            ...getProductData(data, 'INR', 'INR', undefined, undefined, isInward, pricingTemplate)
+            ...getProductData(data, defaultCurrency, defaultCurrency, undefined, undefined, isInward, pricingTemplate)
         }
 
         additem.key = key;
@@ -1078,8 +1080,8 @@ export const groupBy = (arr: any, property: any) => {
     }
 }
 
-export const selectItem = async (product: any) => {
-    const item = JSON.parse(product.data);
+export const selectItem = async (item: any) => {
+
     const setItemQnt = async (item: any) => {
 
         try {

@@ -31,8 +31,9 @@ export const getItemsByWhere = async ({itemgroupid,itemname,start}:any) => {
                 [],
                 function (tx, res) {
 
-                    for (let i = 0; i < res.rows.length; ++i)
-                        items.push(res.rows.item(i))
+                    for (let i = 0; i < res.rows.length; ++i) {
+                        items.push(JSON.parse(res.rows.item(i).data))
+                    }
 
                 }
             );
@@ -54,10 +55,11 @@ export const readTable = async (tablename:any,{start}:any) => {
                 [start],
                 function (tx, res) {
 
-                    for (let i = 0; i < res.rows.length; ++i)
-                        items.push(res.rows.item(i))
+                    for (let i = 0; i < res.rows.length; ++i) {
+                        items.push(JSON.parse(res.rows.item(i).data))
+                    }
 
-                    appLog('item:', res.rows.length);
+
                 }
             );
         });

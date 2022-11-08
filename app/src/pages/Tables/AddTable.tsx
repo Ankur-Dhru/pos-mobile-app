@@ -11,7 +11,7 @@ import {useDispatch} from "react-redux";
 import apiService from "../../libs/api-service";
 import {isEmpty, syncData} from "../../libs/function";
 import InputField from "../../components/InputField";
-import {setModal, setPageSheet} from "../../redux-store/reducer/component";
+import {setModal} from "../../redux-store/reducer/component";
 import {v4 as uuid} from "uuid";
 import KAccessoryView from '../../components/KAccessoryView';
 

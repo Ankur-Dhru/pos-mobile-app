@@ -1,24 +1,24 @@
-import React, {memo, useEffect, useState} from "react";
-import {appLog, arraySome, assignOption, clone, isRestaurant, removeItem} from "../../libs/function";
-import {TouchableOpacity, View} from "react-native";
-import {Paragraph, Title, withTheme} from "react-native-paper";
+import React, {memo} from "react";
+import {TouchableOpacity} from "react-native";
+import {Paragraph, Title} from "react-native-paper";
 import {styles} from "../../theme";
 import {ProIcon} from "../../components";
 import {connect, useDispatch} from "react-redux";
-import {changeCartItem,} from "../../redux-store/reducer/cart-data";
-import {setBottomSheet, setDialog, setPageSheet} from "../../redux-store/reducer/component";
-import AddonActions from "./AddonActions";
+import {closePage, openPage, setModal} from "../../redux-store/reducer/component";
 import store from "../../redux-store/store";
-import KeyPad from "../../components/KeyPad";
 import {v4 as uuidv4} from "uuid";
 import AddEditCategory from "./AddEditCategory";
 import InputField from "../../components/InputField";
-import {localredux} from "../../libs/static";
+import {useNavigation} from "@react-navigation/native";
+import {appLog} from "../../libs/function";
+import {device} from "../../libs/static";
 
 
 const Index = (props: any) => {
 
-    const { grouplist,fieldprops }:any = props;
+    const {grouplist, fieldprops,pageKey}: any = props;
+    const navigation = useNavigation();
+    const dispatch = useDispatch()
 
     let groups: any = Object.values(grouplist).map((group: any) => {
         return {label: group.itemgroupname, value: group.itemgroupid}
@@ -35,20 +35,12 @@ const Index = (props: any) => {
                 selectedValue={fieldprops.input.value}
                 displaytype={'pagelist'}
                 inputtype={'dropdown'}
-                listtype={'other'}
-                addItem={<TouchableOpacity onPress={async () => {
-                    store.dispatch(setPageSheet({
-                        visible: true,
-                        hidecancel: true,
-                        width: 300,
-                        component: () => <AddEditCategory callback={(value:any)=>{
-                            fieldprops.input.onChange(value.itemgroupid)
-                        }}   />
-                    }))
+                listtype={'staff'}
+                addItem={<TouchableOpacity style={[styles.p_5]} onPress={async () => {
+                    await dispatch(closePage(device.lastmodal))
+                    navigation.navigate('AddEditCategory');
                 }}>
-                    <Title
-                        style={[styles.px_6]}><ProIcon
-                        name={'plus'}/></Title></TouchableOpacity>}
+                    <Paragraph><ProIcon  name={'plus'}/></Paragraph></TouchableOpacity>}
 
                 onChange={(value: any) => {
                     fieldprops.input.onChange(value);
@@ -61,7 +53,8 @@ const Index = (props: any) => {
 
 
 const mapStateToProps = (state: any) => ({
-    grouplist:state.groupList
+    grouplist: state.groupList,
+    selectedgroup: state.selectedData.group?.value
 })
 
 export default connect(mapStateToProps)(memo(Index));

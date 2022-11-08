@@ -9,7 +9,7 @@ import {
     ACTIONS,
     composeValidators,
     countrylist,
-    device,
+    device, grecaptcharesponse,
     isDevelopment,
     isEmail,
     isValidPassword,
@@ -79,7 +79,7 @@ const Register = (props: any) => {
 
 
     const initialValues = isDevelopment ? {
-        "g-recaptcha-response": "g-recaptcha-response-gjgjh-kjkljkl-mjbkjhkj-bbkj",
+        "g-recaptcha-response": grecaptcharesponse,
         "mobile_number": "8866522619",
         "first_name": "ankur",
         "last_name": "patel",
@@ -96,7 +96,7 @@ const Register = (props: any) => {
         "code": "91",
 
     } : {
-        "g-recaptcha-response": "g-recaptcha-response-gjgjh-kjkljkl-mjbkjhkj-bbkj",
+        "g-recaptcha-response": grecaptcharesponse,
         "mobile_number": "",
         "first_name": "",
         "last_name": "",

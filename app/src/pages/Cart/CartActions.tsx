@@ -64,7 +64,7 @@ const Index = ({
 
                     {hasRestaurant && <>
 
-                        <View style={[styles.w_auto]}>
+                        {/*<View style={[styles.w_auto]}>
                             <Button  disable={!Boolean(vouchertotaldisplay)}
                                      onPress={() =>  {
                                          if(Boolean(vouchertotaldisplay)){
@@ -78,7 +78,7 @@ const Index = ({
                                      }}
                                      more={{backgroundColor: styles.green.color,  }}
                             >Save </Button>
-                        </View>
+                        </View>*/}
 
                         <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}

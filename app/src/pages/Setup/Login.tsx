@@ -8,7 +8,7 @@ import Container from "../../components/Container";
 import {Field, Form} from "react-final-form";
 import {
     ACTIONS, APP_NAME,
-    composeValidators,
+    composeValidators, grecaptcharesponse,
     isDevelopment,
     isEmail, localredux,
     loginUrl,
@@ -40,7 +40,7 @@ const Index = (props: any) => {
 
         values = {
             ...values,
-            "g-recaptcha-response": "g-recaptcha-response-gjgjh-kjkljkl-mjbkjhkj-bbkj"
+            "g-recaptcha-response": grecaptcharesponse
         }
         await apiService({
             method: METHOD.POST,
@@ -52,6 +52,7 @@ const Index = (props: any) => {
             const {email_verified,mobile_verified,whatsapp_verified,phone_number_verified} = response.data;
 
             if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
+                localredux.licenseData = {...values,...response.data}
                 localredux.authData = {...response.data, token: response.token}
                 if(!email_verified){
                     navigation.replace('Verification',{userdetail: response.data});

@@ -418,9 +418,9 @@ export const styles: any = StyleSheet.create({
 
     border: {borderColor: '#f3f3f3', borderStyle: 'solid', borderWidth: 1},
     borderTop: {borderTopColor: '#f3f3f32d', borderTopWidth: 1},
-    borderBottom: {borderBottomColor: '#f3f3f32d', borderBottomWidth: 1},
-    borderLeft: {borderLeftColor: '#f3f3f32d', borderLeftWidth: 1},
-    borderRight: {borderRightColor: '#f3f3f32d', borderRightWidth: 1},
+    borderBottom: {borderBottomColor: '#f3f3f32d', borderBottomWidth: 1,borderStyle: 'solid',},
+    borderLeft: {borderLeftColor: '#f3f3f32d', borderLeftWidth: 1,borderStyle: 'solid',},
+    borderRight: {borderRightColor: '#f3f3f32d', borderRightWidth: 1,borderStyle: 'solid',},
     dottedBorder:{borderColor: '#980202', borderStyle: 'dashed', borderWidth: 1},
     light_paragraph: {
         lineHeight: 14,

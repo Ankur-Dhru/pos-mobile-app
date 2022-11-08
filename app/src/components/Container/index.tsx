@@ -23,8 +23,8 @@ const Index = ({children,surface,hideappbar,navigation,config,style,theme:{color
         <>
             {!hideappbar && <Appbar.Header style={[styles.bg_white]}>
                 {config?.drawer && <Appbar.Action  size={26} icon={()=> <ProIcon name={'bars'}  /> } onPress={()=> { navigation.openDrawer() } } />}
-                {!config?.hideback && <Appbar.BackAction    onPress={() => {navigation.goBack(); Boolean(config?.backAction) && config.backAction() }}/>}
-                <Appbar.Content  title={config?.title} subtitle={config?.subtitle} />
+                {!config?.hideback && <Appbar.Action  size={26} icon={()=> <ProIcon name={'chevron-left'}  /> }  onPress={() => {navigation.goBack(); Boolean(config?.backAction) && config.backAction() }} /> }
+                <Appbar.Content  title={config?.title} titleStyle={{fontWeight:'bold'}} subtitle={config?.subtitle} />
                 {Boolean(config?.actions) &&  <Actions/>}
             </Appbar.Header>}
 

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, useEffect, useState} from 'react';
 import {ScrollView, TouchableOpacity, View,} from 'react-native';
 import {styles} from "../../theme";
 
@@ -18,7 +18,7 @@ import {Field, Form} from "react-final-form";
 
 import {
     ACTIONS, adminUrl,
-    composeValidators,
+    composeValidators, device,
     inventoryOption, localredux,
     METHOD,
     mustBeNumber,
@@ -30,7 +30,7 @@ import {
 
 
 import InputField from '../../components/InputField';
-import {v4 as uuidv4} from "uuid";
+
 import KeyboardScroll from "../../components/KeyboardScroll";
 
 
@@ -41,24 +41,27 @@ import apiService from "../../libs/api-service";
 import CheckBox from "../../components/CheckBox";
 import {insertItems} from "../../libs/Sqlite/insertData";
 import {
+    closePage,
     hideLoader,
-    setBottomSheet,
-    setDialog,
-    setModal,
-    setPageSheet,
+
     showLoader
 } from "../../redux-store/reducer/component";
 import store from "../../redux-store/store";
-import AddEditCategory from "./AddEditCategory";
+
 import ItemCategoryList from "./ItemCategoryList";
 import {setSelected} from "../../redux-store/reducer/selected-data";
+import {useNavigation} from "@react-navigation/native";
+import PageLoader from "../../components/PageLoader";
 
 
+const Index = (props: any) => {
 
-const Index = ({item,searchtext}: any) => {
+    const {item,pageKey} = props;
+
 
     let isShow: any = false;
     const dispatch = useDispatch()
+    const navigation = useNavigation()
 
     let initdata: any = {
         allowmultipleorders: "1",
@@ -72,7 +75,7 @@ const Index = ({item,searchtext}: any) => {
         itemdepartmentid: '',
         itemgroupid: store.getState()?.selectedData?.group?.value || PRODUCTCATEGORY.DEFAULT,
         itemhsncode: '',
-        itemname: Boolean(searchtext) ? searchtext : '',
+        itemname: Boolean(device.search) ? device.search : '',
         itemstatus: "active",
         itemtaxgroupid: PRODUCTCATEGORY.TAXGROUPID,
         itemtype: "product",
@@ -168,8 +171,11 @@ const Index = ({item,searchtext}: any) => {
                         await dispatch(setSelected({value:'',field:'group'}))
                         setTimeout(async ()=>{
                             await dispatch(setSelected({value:selectedGroup,field:'group'}))
-                            await dispatch(setModal({visible: false}))
                             dispatch(hideLoader())
+
+                            navigation?.goBack()
+                            //await dispatch(closePage(pageKey))
+
                         },100)
 
                     });
@@ -178,16 +184,27 @@ const Index = ({item,searchtext}: any) => {
                     appLog('e',e)
                 }
             }
+            device.search = ''
         });
     }
 
-
+    const [loaded, setLoaded] = useState(false)
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            setTimeout(() => {
+                setLoaded(true)
+            })
+        });
+        return unsubscribe;
+    }, []);
+    if (!loaded) {
+        return <PageLoader  />
+    }
 
     let isRetailIndustry = !isRestaurant();
     return (
 
-
-        <View style={[styles.h_100]}>
+        <Container config={{title:'Add Item'}} >
 
 
             <Form
@@ -196,17 +213,17 @@ const Index = ({item,searchtext}: any) => {
                 render={({handleSubmit, submitting, values, ...more}: any) => (
                     <View  style={[styles.h_100]}>
 
-                        <Appbar.Header style={[styles.bg_white]}>
-                            <Appbar.BackAction    onPress={() => {dispatch(setPageSheet({visible:false}))} }/>
+                        {/*<Appbar.Header style={[styles.bg_white]}>
+                            <Appbar.BackAction    onPress={() => {dispatch(closePage(pageKey))} }/>
                             <Appbar.Content  title={'Add Item'}   />
-                        </Appbar.Header>
+                        </Appbar.Header>*/}
 
                         <KeyboardScroll>
 
                             <View>
                                 <View>
                                     <View>
-                                        <Card style={[styles.card]}>
+                                        <Card style={[styles.card,{borderRadius:0}]}>
                                             <Card.Content style={{paddingBottom: 0}}>
 
 
@@ -253,7 +270,7 @@ const Index = ({item,searchtext}: any) => {
                                                 <View>
                                                     <Field name="itemgroupid">
                                                         {props => (
-                                                            <><ItemCategoryList  fieldprops={props}/></>
+                                                            <><ItemCategoryList   fieldprops={props}/></>
                                                         )}
                                                     </Field>
                                                 </View>
@@ -822,14 +839,14 @@ const Index = ({item,searchtext}: any) => {
 
                         <KAccessoryView>
                             <View style={[styles.grid, styles.justifyContent,styles.p_5]}>
-                                <View style={[styles.w_auto]}>
+                                {/*<View style={[styles.w_auto]}>
                                     <Button more={{backgroundColor: styles.light.color, color: 'black'}}
                                             onPress={() => {
-                                                dispatch(setModal({visible: false}))
+                                                dispatch(closePage(pageKey))
                                             }}> Cancel
                                     </Button>
-                                </View>
-                                <View style={[styles.w_auto, styles.ml_2]}>
+                                </View>*/}
+                                <View style={[styles.w_auto]}>
                                     <Button disable={more.invalid} secondbutton={more.invalid} onPress={() => {
                                         handleSubmit(values)
                                     }}>  Add </Button>
@@ -841,8 +858,7 @@ const Index = ({item,searchtext}: any) => {
                 )}
             />
 
-
-        </View>
+        </Container>
 
     )
 

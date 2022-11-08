@@ -1,17 +1,18 @@
 import React, {Component} from 'react';
-import {FlatList, Keyboard, TouchableOpacity, View} from 'react-native';
+import {FlatList, Keyboard, Text, TouchableOpacity, View} from 'react-native';
 import {connect} from "react-redux";
 import {filterArray, assignOption, getType, log, appLog} from "../../libs/function";
 import {Appbar, Divider, List, Paragraph, withTheme} from "react-native-paper";
 
 import {Button, ProIcon} from "../index";
-import {setBottomSheet, setModal, setPageSheet} from "../../redux-store/reducer/component";
+import {closePage, openPage, setBottomSheet, setModal} from "../../redux-store/reducer/component";
 import {styles as theme, styles} from "../../theme";
 
 import Avatar from "../Avatar";
 
 import Search from "../SearchBox";
 
+import {device} from "../../libs/static";
 
 class ListView extends Component<any> {
 
@@ -53,13 +54,14 @@ class ListView extends Component<any> {
     }
 
     _select = (item: any) => {
-        const {onSelect, setBottomSheet,  setPageSheet, multiselect, disabledCloseModal,modal}: any = this.props;
+        const {onSelect, setBottomSheet,  closePage,pageKey, multiselect, disabledCloseModal,modal,setModal}: any = this.props;
         onSelect(item);
         setBottomSheet({visible: false});
          if (!Boolean(disabledCloseModal)) {
             Keyboard.dismiss();
             setTimeout(() => {
-                setPageSheet({visible: false})
+                //setModal({visible:false})
+                closePage(pageKey)
             }, 100)
         }
     }
@@ -68,7 +70,7 @@ class ListView extends Component<any> {
 
         Keyboard.dismiss();
 
-        const {onSelect, setPageSheet}: any = this.props;
+        const {onSelect, closePage,pageKey,setModal}: any = this.props;
 
         let selected = this.filterlist?.filter((item: any) => {
             return item.selected
@@ -79,8 +81,8 @@ class ListView extends Component<any> {
         onSelect({value: selected})
 
         setTimeout(() => {
-
-            setPageSheet({visible: false})
+            //setModal({visible:false})
+            closePage(pageKey)
         }, 100)
 
     }
@@ -93,7 +95,7 @@ class ListView extends Component<any> {
             displaytype,
             multiselect,
             listtype,
-
+            closePage
         }: any = this.props;
 
 
@@ -182,6 +184,7 @@ class ListView extends Component<any> {
         // let {list}: any = this.props;
         this.filterlist = filterArray(this.originalList, ['label'], search);
         this.searchText = search;
+        device.searchlist = search;
         this.forceUpdate();
     }
 
@@ -212,33 +215,44 @@ class ListView extends Component<any> {
             addItem,
             multiselect,
             displaytype,
-            onAdd
+            onAdd,
+            setModal,
+            pageKey,
+            closePage
         }: any = this.props;
 
         return (
 
-            <View style={[styles.w_100, styles.h_100, {backgroundColor: colors.surface}]}>
+            <View style={[styles.w_100, styles.h_100,  {backgroundColor: colors.surface}]}>
 
                 <View>
 
 
                     {!Boolean(displaytype === 'bottomlist') ?
-                        <>
-                        <Appbar.Header style={[styles.bg_white]}>
-                            {/*<Appbar.BackAction    onPress={() => {setPageSheet({visible:false})} }/>*/}
-                            <View style={[styles.w_auto]}>
-                                <Search autoFocus={false} placeholder={`Search...`}  handleSearch={this.handleSearch}/>
+                        <View style={[styles.borderBottom]}>
+                            <Appbar.Header style={[styles.bg_white,styles.noshadow,styles.borderBottom,styles.justifyContent,]}>
+
+                                 <View><TouchableOpacity onPress={()=>{closePage(pageKey)}} style={[styles.p_5]}><Paragraph><ProIcon name={'xmark'}/></Paragraph></TouchableOpacity></View>
+
+                                <View style={[styles.w_auto]}>
+                                     <Paragraph style={[styles.paragraph,styles.bold,{textAlign:'center'}]}>{label}</Paragraph>
+                                </View>
+                                <View  style={{width:60}}>{Boolean(addItem) &&  <View>{addItem}</View>}</View>
+
+                                {/* {Boolean(onAdd) && <View style={[{paddingRight: 5}]}>
+                                    <Button compact={true} secondbutton={!Boolean(this.searchText)} disabled={!Boolean(this.searchText)} onPress={() => {
+                                        this._onAdd()
+                                    }}> {'Add'}  </Button>
+                                </View>}*/}
+
+                            </Appbar.Header>
+
+                        <View>
+                            <View>
+                                <Search autoFocus={false} label={label} placeholder={`Search...`}  handleSearch={this.handleSearch}/>
                             </View>
-                            {Boolean(addItem) &&  <View>{addItem}</View>}
-
-                            {Boolean(onAdd) && <View style={[{paddingRight: 5}]}>
-                                <Button compact={true} secondbutton={!Boolean(this.searchText)} disabled={!Boolean(this.searchText)} onPress={() => {
-                                    this._onAdd()
-                                }}> {'Add'}  </Button>
-                            </View>}
-
-                        </Appbar.Header>
-                        </> : <View></View>}
+                        </View>
+                        </View> : <View></View>}
                 </View>
 
                 <View style={[styles.w_100, styles.h_100]}>
@@ -249,18 +263,37 @@ class ListView extends Component<any> {
                         keyboardDismissMode={'none'}
                         keyboardShouldPersistTaps={'always'}
                         renderItem={this.renderList}
+                        ListFooterComponent={() => {
+                            return  <View style={{height:150}}>
+
+                            </View>
+                        }}
+                        ListEmptyComponent={<View>
+                            <View  style={[styles.p_6]}>
+                                <Text style={[styles.paragraph,styles.mb_2, styles.muted, {textAlign: 'center'}]}> No result found</Text>
+                            </View>
+                        </View>}
                         initialNumToRender={20}
                     />
                 </View>
 
 
-                {multiselect && <View style={{marginTop: 'auto'}}>
-                    <View style={[styles.px_5, styles.mb_6]}>
-                        <Button onPress={() => {
+                <View style={[{marginTop: 'auto',backgroundColor:'white'},styles.p_6]}>
+                    <View>
+
+                        {/*<View>
+                            <Button more={{backgroundColor: styles.light.color, color: 'black'}}
+                                    onPress={() => {
+                                         closePage(pageKey)
+                                    }}> Cancel
+                            </Button>
+                        </View>*/}
+
+                        {multiselect && <View><Button onPress={() => {
                             this.confirm()
-                        }}> Confirm </Button>
+                        }}> Confirm </Button></View>}
                     </View>
-                </View>}
+                </View>
 
 
             </View>
@@ -270,14 +303,13 @@ class ListView extends Component<any> {
 
 
 const mapStateToProps = (state: any) => ({
-
     modal: state.component.modal
 })
 const mapDispatchToProps = (dispatch: any) => ({
     setBottomSheet: (dialog: any) => dispatch(setBottomSheet(dialog)),
-    setPageSheet: (dialog: any) => dispatch(setPageSheet(dialog)),
-
-
+    setModal: (dialog: any) => dispatch(setModal(dialog)),
+    openPage: (dialog: any) => dispatch(openPage(dialog)),
+    closePage: (dialog: any) => dispatch(closePage(dialog)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(withTheme(ListView));
 

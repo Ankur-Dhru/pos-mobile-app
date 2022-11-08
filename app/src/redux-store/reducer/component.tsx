@@ -1,5 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit'
-//import { uuid } from 'uuidv4';
+import {v4 as uuidv4} from "uuid";
+import {appLog} from "../../libs/function";
+import {device} from "../../libs/static";
 
 
 export const component = createSlice({
@@ -7,6 +9,7 @@ export const component = createSlice({
   initialState: {
     dialog: {visible:false,title:'',component: () => {return <></>}},
     modal: {visible:false,title:'',component: () => {return <></>}},
+    page: {visible:false,title:'',component: () => {return <></>}},
     bottomsheet: {visible:false,title:'',component: () => {return <></>}},
     pagesheet: {visible:false,title:'',component: () => {return <></>}},
     alert: {message:'', variant: 'success',visible:false},
@@ -63,10 +66,22 @@ export const component = createSlice({
       state.loading = action.payload
       return state
     },
+
+    openPage: (state: any, action) => {
+      device.lastmodal = uuidv4();
+      state.page[device.lastmodal] = action.payload
+      return state
+    },
+    closePage: (state: any, action) => {
+
+      state.page[action.payload].visible = false
+      return state
+    },
+
   },
 })
 
 // Action creators are generated for each case reducer function
-export const {openDialog, closeDialog, closedDialog,showLoader,hideLoader,setAlert,setDialog,setBottomSheet,setModal,setPageSheet,contentLoader} = component.actions
+export const {openDialog, closeDialog, closedDialog,showLoader,hideLoader,setAlert,setDialog,openPage,closePage,setBottomSheet,setModal,setPageSheet,contentLoader} = component.actions
 
 export default component.reducer

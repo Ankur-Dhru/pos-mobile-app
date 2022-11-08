@@ -1,27 +1,19 @@
 import * as React from 'react';
-import {Divider, Paragraph, Text, Title, withTheme} from 'react-native-paper';
+import {Divider, Paragraph, Text, withTheme} from 'react-native-paper';
 import {styles} from "../../theme";
-import {
-    Platform,
-    TextInput as TextInputReact,
-    TouchableHighlight,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View
-} from "react-native";
+import {Platform, TextInput as TextInputReact, TouchableOpacity, TouchableWithoutFeedback, View} from "react-native";
 
 
 import List from "./List";
-import {setBottomSheet, setModal, setPageSheet} from "../../redux-store/reducer/component";
+import {openPage, setBottomSheet, setModal} from "../../redux-store/reducer/component";
 import {connect} from "react-redux";
 import {InputBox, ProIcon} from "../index";
 import DateTimePicker from './DateTimePicker';
 import moment from "moment";
-import {appLog, findObject, getType, isEmpty, log} from "../../libs/function";
+import {appLog, chevronRight, findObject, getType, isEmpty} from "../../libs/function";
 
 //import {PERMISSIONS, requestMultiple} from "react-native-permissions";
 import ToggleSwitch from "./Switch";
-import {chevronRight} from "../../libs/function";
 import {localredux} from "../../libs/static";
 
 
@@ -33,7 +25,7 @@ class Index extends React.Component<any, any> {
         let findSelected;
         if (props.selectedValue) {
             const list = props.list;
-            let find = findObject(list, 'value', props.selectedValue,true);
+            let find = findObject(list, 'value', props.selectedValue, true);
             findSelected = Boolean(find) && find && find?.label
         }
 
@@ -89,8 +81,6 @@ class Index extends React.Component<any, any> {
     }
 
 
-
-
     render() {
         let {
             label,
@@ -110,7 +100,7 @@ class Index extends React.Component<any, any> {
             displaytype,
             editmode = true,
             setBottomSheet,
-            setModal,
+
             render,
             onChange,
             singleImage,
@@ -132,16 +122,18 @@ class Index extends React.Component<any, any> {
             moreStyle,
             doNotReplaceProtocol,
             removeSpace,
-            setPageSheet,
             message,
             validateWithError,
             descriptionStyle,
             customRef,
+            pageKey,
+            openPage,
+            setModal
 
         }: any = this.props;
 
-        if (isEmpty(descriptionStyle)){
-            descriptionStyle=[]
+        if (isEmpty(descriptionStyle)) {
+            descriptionStyle = []
         }
 
 
@@ -160,23 +152,26 @@ class Index extends React.Component<any, any> {
         }]
 
 
-        let listComponent = () => <List
-            label={label}
-            list={list}
-            appbar={appbar}
-            search={search}
-            listtype={listtype}
-            selected={selectedValue}
-            displaytype={displaytype}
-            multiselect={multiselect}
-            addItem={addItem}
-            disabledCloseModal={disabledCloseModal}
-            {...input}
-            {...this.props}
-            onSelect={this.onSelect}
-        >
-        </List>
+        let listComponent = (props: any) => {
 
+            return <List
+                label={label}
+                list={list}
+                appbar={appbar}
+                search={search}
+                listtype={listtype}
+                selected={selectedValue}
+                displaytype={displaytype}
+                multiselect={multiselect}
+                addItem={addItem}
+                disabledCloseModal={disabledCloseModal}
+                {...input}
+                {...props}
+                {...this.props}
+                onSelect={this.onSelect}
+            >
+            </List>
+        }
 
 
         let style: any = [];
@@ -225,12 +220,13 @@ class Index extends React.Component<any, any> {
                         <><TouchableWithoutFeedback
                             ref={customRef}
                             onPress={() => {
+
                                 editmode && (displaytype === 'bottomlist' ?
                                     setBottomSheet({
                                         visible: true,
                                         fullView: fullView,
                                         component: listComponent
-                                    }) : setPageSheet({
+                                    }) : openPage({
                                         visible: true,
                                         fullView: fullView,
                                         component: listComponent
@@ -359,14 +355,11 @@ class Index extends React.Component<any, any> {
                 }
 
 
-
                 {inputtype === 'switch' && <>
                     <Text style={labelstyle}>{label}</Text>
                     <ToggleSwitch value={value} onChange={onChange}/>
                 </>
                 }
-
-
 
 
                 {inputtype === 'datepicker' &&
@@ -412,8 +405,6 @@ class Index extends React.Component<any, any> {
                 }
 
 
-
-
                 {Boolean(description) &&
                     <Text style={[styles.paragraph, styles.mt_1, styles.text_xs]}><Text
                         style={[...descriptionStyle]}>{description} </Text></Text>}
@@ -427,14 +418,11 @@ class Index extends React.Component<any, any> {
     }
 }
 
-const mapStateToProps = (state: any) => ({
-
-})
+const mapStateToProps = (state: any) => ({})
 const mapDispatchToProps = (dispatch: any) => ({
     setBottomSheet: (dialog: any) => dispatch(setBottomSheet(dialog)),
-    setPageSheet: (dialog: any) => dispatch(setPageSheet(dialog)),
     setModal: (dialog: any) => dispatch(setModal(dialog)),
-
+    openPage: (dialog: any) => dispatch(openPage(dialog)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withTheme(Index));

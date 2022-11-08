@@ -17,18 +17,14 @@ const Index = ({vouchertotaldisplay, invoiceitems, theme: {colors}}: any) => {
         totalqnt += item.productqnt
     })
 
-
-
     if (!Boolean(totalqnt)) {
         return <></>
     }
 
-
-
     return (
-        <View style={[styles.p_4, styles.bg_white, styles.shadow]}>
+        <View style={[styles.p_4, styles.bg_white, styles.noshadow]}>
             <View>
-                <TouchableOpacity onPress={() => navigation.navigate('DetailView')}>
+                <TouchableOpacity onPress={() => navigation.navigate('DetailViewNavigator')}>
                     <View style={[styles.grid, styles.justifyContent, styles.p_5, {
                         backgroundColor: colors.primary,
                         borderRadius: 7

@@ -43,6 +43,7 @@ import Dialog from "./components/Dialog";
 import {appLog, isEmpty, retrieveData} from './libs/function';
 import {useEffect} from "react";
 import {showLoader} from "./redux-store/reducer/component";
+import Page from "./components/Page";
 
 
 configureFontAwesomePro();
@@ -139,16 +140,18 @@ const App = () => {
     return (
         <Provider store={store}>
             <PaperProvider theme={CombinedDefaultTheme}>
-                <StatusBar barStyle={isDarkMode ? 'light-content' : 'light-content'}
+                <StatusBar barStyle={isDarkMode ? 'dark-content' : 'dark-content'}
                            backgroundColor={CombinedDefaultTheme.colors.primary}/>
                 <NetworkStatus/>
                 <SafeAreaView style={backgroundStyle}>
                     <NavigationContainer>
                         <MainStackNavigator/>
                     </NavigationContainer>
-                    <BottomSheet/>
-                    <PageSheet/>
+
+                    {/*<PageSheet/>*/}
+                    <Page/>
                     <Modal/>
+                    <BottomSheet/>
                     <Dialog/>
                     <SnackBar/>
                     <ActivityIndicator/>

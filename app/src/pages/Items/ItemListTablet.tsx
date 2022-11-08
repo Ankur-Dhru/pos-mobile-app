@@ -1,24 +1,27 @@
 import React, {memo, useCallback, useEffect, useState} from "react";
 
-import {ActivityIndicator, FlatList, RefreshControl, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator, FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
 
-import {connect} from "react-redux";
+import {connect, useDispatch} from "react-redux";
 import {styles} from "../../theme";
 import {appLog, isRestaurant, selectItem} from "../../libs/function";
 import {List, Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 import Button from "../../components/Button";
-import {setModal} from "../../redux-store/reducer/component";
+import {closePage, openPage, setModal} from "../../redux-store/reducer/component";
 import store from "../../redux-store/store";
 import AddEditItem from "./AddEditItem";
-import AddEditCategory from "./AddEditCategory";
+import {useNavigation} from "@react-navigation/native";
+import {device} from "../../libs/static";
 
 
 const hasRestaurant = isRestaurant()
 let sGroup: any = '';
 
-export const AddItem = (props:any) => {
+export const AddItem = ({navigation}:any) => {
+
+    const dispatch = useDispatch()
 
     return (
         <View style={[]}>
@@ -27,12 +30,20 @@ export const AddItem = (props:any) => {
                 <Button
                     secondbutton={true}
                     onPress={async () => {
-                        store.dispatch(setModal({
+                        dispatch(closePage(device.lastmodal))
+                        if(device.tablet) {
+                            navigation.navigate("AddEditItem");
+                        }
+                        else{
+                            navigation.navigate("AddEditItemNavigator2");
+                        }
+
+                        /*store.dispatch(openPage({
                             visible: true,
                             hidecancel: true,
                             width: 300,
-                            component: () => <AddEditItem item={{}} searchtext={props.searchtext}  />
-                        }))
+                            component: (props:any) => <AddEditItem item={{}} {...props} searchtext={props.searchtext}  />
+                        }))*/
                     }}> + Create Item
                 </Button>
             </View>
@@ -63,7 +74,8 @@ const Item = memo(({item}: any) => {
 
 const Index = (props: any) => {
 
-    const {selectedgroup} = props;
+    const {selectedgroup,navigation} = props;
+
 
     const [loading, setLoading]: any = useState(false);
 
@@ -113,20 +125,16 @@ const Index = (props: any) => {
                 getItemLayout={(data, index) => {
                     return {length: 100, offset: 100 * index, index};
                 }}
-                ListFooterComponent={() => {
+                /*ListFooterComponent={() => {
                     return dataSource.length !== 0 ? <View>
                         <TouchableOpacity onPress={async () => {
-                            store.dispatch(setModal({
-                                visible: true,
-                                hidecancel: true,
-                                width: 300,
-                                component: () => <AddEditItem item={{}}  />
-                            }))
+                            navigation.navigate('AddEditItem')
+
                         }}>
                             <Paragraph  style={[styles.paragraph, styles.p_6, styles.muted, {textAlign: 'center'}]}>+ Add Item</Paragraph>
                         </TouchableOpacity>
                     </View> : <></>
-                }}
+                }}*/
                 /*onMomentumScrollEnd={onEndReached}
                 onEndReachedThreshold={0.5}*/
                 refreshControl={
@@ -135,11 +143,13 @@ const Index = (props: any) => {
                         onRefresh={() => getItems(true)}
                     />
                 }
-                ListEmptyComponent={<>
-                    <Paragraph style={[styles.paragraph, styles.p_6, styles.muted, {textAlign: 'center'}]}> Start building your item library.</Paragraph>
-                    <Paragraph style={[styles.paragraph, styles.p_6,styles.text_xs,styles.muted, {textAlign: 'center'}]}> Tap Create Item to begin.</Paragraph>
-                    <AddItem />
-                    </>}
+                ListEmptyComponent={<View>
+                    <View  style={[styles.p_6]}>
+                        <Text style={[styles.paragraph,styles.mb_2, styles.muted, {textAlign: 'center'}]}> Start building your item library.</Text>
+                        <Text style={[styles.paragraph,  styles.text_xs,styles.muted, {textAlign: 'center'}]}> Tap Create Item to begin.</Text>
+                    </View>
+                    <AddItem navigation={navigation} />
+                </View>}
                 keyExtractor={item => item.itemid}
             />
 

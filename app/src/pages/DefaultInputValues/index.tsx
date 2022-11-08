@@ -92,7 +92,7 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
             </View>
         </View>
 
-        <View style={[styles.grid,styles.justifyContent,styles.middle]}>
+        <View style={[styles.grid,styles.justifyContent,styles.middle,styles.px_5]}>
             <View style={[styles.w_auto]}>
                 <InputField
                     value={inputValues}
@@ -108,6 +108,7 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
                 <Button onPress={onClickAddInputValues}>Add</Button>
             </View>
         </View>
+
         <FlatList
             data={selectedTab === 'num' ? isEmpty(defaultInputValues) ? [] : defaultInputValues : isEmpty(defaultInputAmounts) ? [] : defaultInputAmounts}
             renderItem={renderitem}

@@ -34,6 +34,10 @@ import CurrencyPreferences from "../SetupWorkspace/CurrencyPreferences";
 
 import InvoicePrinter from "../PrinterSettings/InvoicePrinter";
 import KOTPrinter from "../PrinterSettings/KOTPrinter";
+import ProfileSettings from "../ProfileSettings";
+import AddEditClient from "../Client/AddEditClient";
+import AddEditItem from "../Items/AddEditItem";
+import AddEditCategory from "../Items/AddEditCategory";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -189,12 +193,23 @@ const TablesStackNavigator = (props: any) => {
 const CartStackNavigator = (props: any) => {
     const {route: {params}}: any = props
     return (
-        <Stack.Navigator initialRouteName={'Cart'}>
-            <Stack.Screen name={'Cart'} component={() => <Cart tabledetails={params}/>} options={{headerShown: false}}/>
+        <Stack.Navigator initialRouteName={'CartStackNavigator'}>
+            <Stack.Screen name={'CartStackNavigator'} component={() => <Cart tabledetails={params}/>} options={{headerShown: false}}/>
+            <Stack.Screen name={'AddEditItemNavigator2'} component={AddEditItemNavigator} options={{headerShown: false}}/>
+
         </Stack.Navigator>
     );
 };
 
+
+const DetailViewNavigator = () => {
+    return (
+        <Stack.Navigator initialRouteName={'DetailViewNavigator'}>
+            <Stack.Screen name={'DetailViewNavigator'} component={DetailView} options={{headerShown: false}}/>
+            <Stack.Screen name={'AddEditClient2'} component={AddEditClient} options={{headerShown: false}}/>
+        </Stack.Navigator>
+    );
+};
 
 const SalesReportNavigator = (props: any) => {
     const {route: {params}}: any = props
@@ -206,30 +221,46 @@ const SalesReportNavigator = (props: any) => {
 };
 
 
+const ProfileSettingsNavigator = () => {
+    return (
+        <Stack.Navigator initialRouteName={'ProfileSettings'}>
+            <Stack.Screen name={'ProfileSettings'} component={ProfileSettings} options={{headerShown: false}}/>
+        </Stack.Navigator>
+    );
+};
+
+const AddEditItemNavigator = () => {
+    return (
+        <Stack.Navigator initialRouteName={'AddEditItemNavigator'} >
+            <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem}   options={{headerShown: false}}/>
+            <Stack.Screen name={'AddEditCategory'} component={AddEditCategory} options={{headerShown: false}}/>
+        </Stack.Navigator>
+    );
+};
+
 
 const DrawerStackNavigator = () => {
 
     return (
-        <Drawer.Navigator drawerContent={(props) => <DrawerNavigatorContent {...props}/>}
-                          initialRouteName={isRestaurant() ? 'TablesStackNavigator' : 'CartStackNavigator'}
-                          screenOptions={{...screenOptions, headerShown: false}}>
-            {isRestaurant() && <Drawer.Screen name={'TablesStackNavigator'} component={TablesStackNavigator}
-                                              options={{headerShown: false, headerTitle: 'Tables'}}/>}
-            <Drawer.Screen name={'CartStackNavigator'} component={CartStackNavigator} options={({route}: any) => ({
-                headerShown: false,
-                title: route?.params?.tablename || 'POS'
-            })}/>
-            <Drawer.Screen name={'DetailView'} component={DetailView}
-                           options={{headerShown: false, headerTitle: 'Detail View'}}/>
-            <Drawer.Screen name={'Payment'} component={Payment}
-                           options={{headerShown: false, unmountOnBlur: true, headerTitle: 'Payment'}}/>
-            <Drawer.Screen name={'SalesReportNavigator'} component={SalesReportNavigator} options={({route}: any) => ({
-                headerShown: false,
-                title: route?.params?.tablename || 'POS'
-            })}/>
+        <Drawer.Navigator  drawerContent={(props) => <DrawerNavigatorContent {...props}/>} initialRouteName={isRestaurant() ? 'TablesStackNavigator' : 'CartStackNavigator'} screenOptions={{...screenOptions, headerShown: false}}>
+            {isRestaurant() && <Drawer.Screen name={'TablesStackNavigator'} component={TablesStackNavigator} options={{headerShown: false, headerTitle: 'Tables'}}/>}
+            <Drawer.Screen name={'CartStackNavigator'} component={CartStackNavigator} options={({route}: any) => ({ headerShown: false, title: route?.params?.tablename || 'POS' })}/>
+            <Drawer.Screen name={'DetailViewNavigator'} component={DetailViewNavigator} options={{headerShown: false, headerTitle: 'Detail View'}}/>
+            <Drawer.Screen name={'Payment'} component={Payment} options={{headerShown: false, unmountOnBlur: true, headerTitle: 'Payment'}}/>
+
+            <Drawer.Screen name={'ProfileSettingsNavigator'} component={ProfileSettingsNavigator} options={{headerShown: false,  headerTitle: 'Profile'}}/>
+
+            <Drawer.Screen name={'SalesReportNavigator'} component={SalesReportNavigator} options={({route}: any) => ({  headerShown: false,title: route?.params?.tablename || 'POS'})}/>
 
 
             <Drawer.Screen name={'InvoicePrinter'} component={InvoicePrinter} options={{headerShown: false}}/>
+
+            <Drawer.Screen name={'AddEditCategory'} component={AddEditCategory} options={{headerShown: false}}/>
+            <Drawer.Screen name={'AddEditClient'} component={AddEditClient} options={{headerShown: false}}/>
+            <Drawer.Screen name={'AddEditItem'} component={AddEditItem} options={{headerShown: false}}/>
+
+            <Drawer.Screen name={'AddEditItemNavigator'} component={AddEditItemNavigator} options={{headerShown: false}}/>
+
             <Drawer.Screen name={'KOTPrinter'} component={KOTPrinter} options={{headerShown: false}}/>
             <Drawer.Screen name={'InputOpenSetting'} component={InputOpenSetting} options={{headerShown: false}}/>
             <Drawer.Screen name={'DefaultInputValues'} component={DefaultInputValues} options={{headerShown: false}}/>

@@ -45,9 +45,9 @@ class Index extends React.Component<any> {
                 animationIn={'slideInRight'}
                 animationOut={'slideOutRight'}
                 useNativeDriverForBackdrop={true}
-                coverScreen={false}
-                backdropColor={'#000000'}
-                statusBarTranslucent={true}
+                coverScreen={true}
+                backdropColor={'#fff'}
+                statusBarTranslucent={false}
                 /*propagateSwipe={true}
                 swipeThreshold={500}
                 swipeDirection={'left'}*/

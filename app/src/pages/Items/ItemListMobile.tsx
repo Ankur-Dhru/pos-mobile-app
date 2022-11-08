@@ -1,6 +1,6 @@
 import React, {memo, useCallback, useEffect, useState} from "react";
 
-import {ActivityIndicator, FlatList, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator, FlatList, TouchableOpacity, View,Text} from "react-native";
 
 import {connect} from "react-redux";
 
@@ -11,15 +11,19 @@ import VegNonVeg from "./VegNonVeg";
 import AddButton from "./AddButton";
 import {getItemsByWhere, readTable} from "../../libs/Sqlite/selectData";
 import {AddItem} from "./ItemListTablet";
+import {openPage} from "../../redux-store/reducer/component";
+import {useNavigation} from "@react-navigation/native";
 
 
-const hasRestaurant = isRestaurant();
+
 let sGroup:any = '';
 
 const Item = memo(({item}: any) => {
+    //item = JSON.parse(item?.data);
 
     const pricingtype = item?.pricing?.type;
     const baseprice = item?.pricing?.price?.default[0][pricingtype]?.baseprice || 0;
+    const hasRestaurant = isRestaurant();
     const hasKot = Boolean(item?.kotid);
     const {veg} = item;
 
@@ -29,18 +33,19 @@ const Item = memo(({item}: any) => {
         <View
             style={[{backgroundColor: hasKot ? styles.yellow.color : ''}]}>
             <View>
-                <View style={[styles.grid, styles.top, styles.noWrap, styles.top, styles.p_4]}>
-                    {<View style={[styles.mr_2]}>
-                        {hasRestaurant && <View>
-                            <VegNonVeg type={veg}/>
-                        </View>}
-                    </View>}
-                    <View>
-                        <Paragraph style={[styles.paragraph, styles.bold, styles.text_xs]}>{item.itemname}</Paragraph>
+                <View style={[styles.grid, styles.top, styles.noWrap,styles.p_4,   styles.px_6]}>
 
-                        <Paragraph style={[styles.paragraph, styles.text_xs]}>
-                            {toCurrency(baseprice)}
-                        </Paragraph>
+                    <View>
+                        <Text style={[styles.paragraph,  styles.text_sm,styles.bold]}>{item.itemname}</Text>
+
+                        <View style={[styles.grid,styles.middle]}>
+                            {hasRestaurant && <View style={[styles.mr_1]}>
+                                <VegNonVeg type={veg}/>
+                            </View>}
+                            <Paragraph style={[styles.paragraph, styles.text_xs]}>
+                                {toCurrency(baseprice)}
+                            </Paragraph>
+                        </View>
                     </View>
 
                     {<View style={[styles.ml_auto]}>
@@ -77,6 +82,8 @@ const Index = (props: any) => {
 
     const {selectedgroup, invoiceitems} = props;
 
+    const navigation = useNavigation()
+
     const [loading,setLoading]:any = useState(false);
 
     const [dataSource, setDataSource]:any = useState([]);
@@ -102,6 +109,9 @@ const Index = (props: any) => {
                     return i;
                 })
                 setDataSource([...newitems]); //...dataSource,
+            }
+            else{
+                setDataSource([]);
             }
             setLoading(true)
         });
@@ -141,11 +151,13 @@ const Index = (props: any) => {
                 ListFooterComponent={() => {
                     return <View style={{height: 100}}></View>
                 }}
-                ListEmptyComponent={<>
-                    <Paragraph style={[styles.paragraph, styles.p_6, styles.muted, {textAlign: 'center'}]}> Start building your item library.</Paragraph>
-                    <Paragraph style={[styles.paragraph, styles.p_6,styles.text_xs,styles.muted, {textAlign: 'center'}]}> Tap Create Item to begin.</Paragraph>
-                    <AddItem />
-                </>}
+                ListEmptyComponent={<View>
+                    <View  style={[styles.p_6]}>
+                        <Text style={[styles.paragraph,styles.mb_2, styles.muted, {textAlign: 'center'}]}> Start building your item library.</Text>
+                        <Text style={[styles.paragraph,  styles.text_xs,styles.muted, {textAlign: 'center'}]}> Tap Create Item to begin.</Text>
+                    </View>
+                    <AddItem navigation={navigation} />
+                </View>}
             />
         </>
     )

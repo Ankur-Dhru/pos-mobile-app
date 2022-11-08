@@ -12,7 +12,7 @@ import {styles} from "../../theme";
 import moment from "moment/moment";
 
 import {setTableOrdersData} from "../../redux-store/reducer/table-orders-data";
-import {localredux} from "../../libs/static";
+import {device, localredux} from "../../libs/static";
 
 import { setOrdersData} from "../../redux-store/reducer/orders-data";
 import { setSettings } from "../../redux-store/reducer/local-settings-data";

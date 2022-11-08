@@ -1,6 +1,6 @@
 import {current, device, localredux} from "../../libs/static";
 import React, {memo, useCallback, useEffect, useState} from "react";
-import {isEmpty, saveTempLocalOrder, toCurrency} from "../../libs/function";
+import {appLog, isEmpty, saveTempLocalOrder, toCurrency} from "../../libs/function";
 import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
 import {FAB, Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
@@ -279,17 +279,17 @@ const Index = (props: any) => {
                         onPress: () => setOrderSetting("Takeaway", {'label': 'Takeaway', value: 'takeaway'}),
                     },
                     {
-                        icon: 'popcorn',
-                        label: 'QSR / Quick Bill',
-                        onPress: () => setOrderSetting("QSR", {'label': 'QSR', value: 'qsr'}),
-                    },
-                    {
                         icon: 'sack',
                         label: 'Advance Order',
                         onPress: () => setOrderSetting("Advanced Order", {
                             'label': 'Advance Order',
                             value: 'advanceorder'
                         }),
+                    },
+                    {
+                        icon: 'popcorn',
+                        label: '+ QSR / Quick Bill',
+                        onPress: () => setOrderSetting("+ QSR / Quick Bill", {'label': '+ QSR / Quick Bill', value: 'qsr'}),
                     },
                     {
                         icon: 'table',
@@ -302,7 +302,7 @@ const Index = (props: any) => {
                 ]}
                 onStateChange={() => {
                     if (ordertype.value === 'qsr') {
-                        setOrderSetting("QSR", {'label': 'QSR', value: 'qsr'})
+                        setOrderSetting("+ QSR / Quick Bill", {'label': '+ QSR / Quick Bill', value: 'qsr'})
                     } else if (ordertype.value === 'takeaway') {
                         setOrderSetting("Takeaway", {'label': 'Takeaway', value: 'takeaway'})
                     } else if (ordertype.value === 'advanceorder') {

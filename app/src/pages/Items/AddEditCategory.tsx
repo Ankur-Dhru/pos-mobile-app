@@ -1,14 +1,14 @@
-import React, {Component, useState} from 'react';
+import React, {Component, useEffect, useState} from 'react';
 import {Platform, View} from 'react-native';
 import {styles} from "../../theme";
 
 import {Button, Container} from "../../components";
 import {connect, useDispatch} from "react-redux";
 import {Appbar, Card, Title, withTheme,} from "react-native-paper";
-import {assignOption, objToArray, selectItem, syncData} from "../../libs/function";
+import {appLog, assignOption, objToArray, selectItem, syncData} from "../../libs/function";
 import {Field, Form} from "react-final-form";
 
-import {ACTIONS, adminUrl, localredux, METHOD, PRODUCTCATEGORY, required, STATUS} from "../../libs/static";
+import {ACTIONS, adminUrl, device, localredux, METHOD, PRODUCTCATEGORY, required, STATUS} from "../../libs/static";
 
 import InputField from '../../components/InputField';
 import {v4 as uuidv4} from "uuid";
@@ -16,22 +16,24 @@ import KeyboardScroll from "../../components/KeyboardScroll";
 import KAccessoryView from '../../components/KAccessoryView';
 import apiService from "../../libs/api-service";
 
-import {setBottomSheet, setModal, setPageSheet} from "../../redux-store/reducer/component";
+import {closePage,  } from "../../redux-store/reducer/component";
 import {setGroup} from "../../redux-store/reducer/group-list";
 import {setSelected} from "../../redux-store/reducer/selected-data";
 import store from "../../redux-store/store";
+import {useNavigation} from "@react-navigation/native";
+import PageLoader from "../../components/PageLoader";
 
 
-const Index = ({callback}:any) => {
+const Index = ({callback,pageKey}:any) => {
 
     const dispatch = useDispatch();
-
+    const navigation = useNavigation()
 
     const initdata: any = {
         itemgroupcolor: "#000000",
         itemgroupid: uuidv4(),
         itemgroupmid: "0",
-        itemgroupname: "",
+        itemgroupname:  device.searchlist?device.searchlist:'',
         itemgroupstatus: "1",
     }
 
@@ -52,26 +54,42 @@ const Index = ({callback}:any) => {
         }).then(async (result) => {
             if (result.status === STATUS.SUCCESS) {
                 dispatch(setGroup(values))
-                dispatch(setPageSheet({visible: false}))
-
+                //dispatch(closePage(pageKey))
                 dispatch(setSelected({value:values.itemgroupid,field:'group'}))
                 await syncData(false).then()
                 Boolean(callback) && await callback(values)
+                navigation.goBack()
             }
+            device.searchlist = ''
         });
     }
 
 
     const {itemgroup}:any = localredux.initData;
 
-    const option_itemgroups = Object.keys(itemgroup).filter((group:any)=>{
-        return group.itemgroupid !==  initdata.itemgroupid
-    }).map((group:any,key:any) => assignOption(group.itemgroupname, group.itemgroupid));
 
+    const option_itemgroups = Object.values(itemgroup).filter((group:any)=>{
+        return group.itemgroupid !==  initdata.itemgroupid
+    }).map((group:any) => {
+        return assignOption(group.itemgroupname, group.itemgroupid)
+    });
+
+    const [loaded, setLoaded] = useState(false)
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            setTimeout(() => {
+                setLoaded(true)
+            })
+        });
+        return unsubscribe;
+    }, []);
+    if (!loaded) {
+        return <PageLoader  />
+    }
 
 
     return (
-        <View style={[styles.h_100]}>
+        <Container config={{title:'Add Item Category'}} >
 
             <Form
                 onSubmit={handleSubmit}
@@ -79,10 +97,10 @@ const Index = ({callback}:any) => {
                 render={({handleSubmit, submitting, values, ...more}: any) => (
                     <View  style={[styles.h_100]}>
 
-                        <Appbar.Header style={[styles.bg_white]}>
-                            <Appbar.BackAction    onPress={() => {dispatch(setPageSheet({visible:false}))} }/>
+                        {/*<Appbar.Header style={[styles.bg_white]}>
+                            <Appbar.BackAction    onPress={() => {dispatch(closePage(pageKey))} }/>
                             <Appbar.Content  title={'Add Item Category'}   />
-                        </Appbar.Header>
+                        </Appbar.Header>*/}
 
                         <KeyboardScroll>
 
@@ -150,14 +168,14 @@ const Index = ({callback}:any) => {
                         <KAccessoryView>
 
                             <View style={[styles.grid, styles.justifyContent,styles.p_5]}>
-                                <View style={[styles.w_auto]}>
+                                {/*<View style={[styles.w_auto]}>
                                     <Button more={{backgroundColor: styles.light.color, color: 'black'}}
                                             onPress={() => {
-                                                dispatch(setPageSheet({visible: false}))
+                                                dispatch(closePage(pageKey))
                                             }}> Cancel
                                     </Button>
-                                </View>
-                                <View style={[styles.w_auto,styles.ml_2]}>
+                                </View>*/}
+                                <View style={[styles.w_auto]}>
                                     <Button disable={more.invalid} secondbutton={more.invalid} onPress={() => {
                                         handleSubmit(values)
                                     }}>  Add  </Button>
@@ -173,7 +191,7 @@ const Index = ({callback}:any) => {
             </Form>
 
 
-        </View>
+        </Container>
 
     )
 

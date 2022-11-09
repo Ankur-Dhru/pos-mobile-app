@@ -76,9 +76,9 @@ const Index = (props: any) => {
 
                 <View>
                     <TouchableOpacity onPress={() => {
-                        navigation.openDrawer()
+                        navigation.navigate('ProfileSettingsNavigator')
                     }} style={[styles.p_5]}>
-                        <ProIcon name={'bars'}/>
+                        <ProIcon name={'gear'}/>
                     </TouchableOpacity>
                 </View>
 

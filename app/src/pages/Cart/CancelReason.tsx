@@ -29,7 +29,7 @@ const Index = (props: any) => {
 
     const confirmCancelOrder = async ({cancelreason, cancelreasonid}: any) => {
         try{
-            navigation.replace('DrawerStackNavigator');
+            navigation.replace('ClientAreaStackNavigator');
             await store.dispatch(updateCartField({
                 cancelreason: cancelreason,
                 cancelreasonid: cancelreasonid,

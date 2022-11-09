@@ -9,7 +9,7 @@ import {connect, useDispatch} from "react-redux";
 import ProIcon from "../../components/ProIcon";
 import {refreshCartData} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
-import {hideLoader, setAlert, setModal, showLoader} from "../../redux-store/reducer/component";
+import {hideLoader, openPage, setAlert, setModal, showLoader} from "../../redux-store/reducer/component";
 import ClientAndSource from "../Cart/ClientAndSource";
 import moment from "moment";
 
@@ -120,13 +120,7 @@ const Index = (props: any) => {
             placeOrder(current.table).then()
         }
         else{
-            dispatch(setModal({
-                visible: true,
-                hidecancel: true,
-                width: '98%',
-                component: () => <ClientAndSource title={title} tabledetails={current.table} placeOrder={placeOrder}
-                                                  navigation={navigation}/>
-            }))
+            navigation.navigate('ClientAndSource', {title:title,tabledetails:current.table,'placeOrder':placeOrder});
         }
 
     }

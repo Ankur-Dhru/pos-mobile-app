@@ -119,11 +119,11 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
             saveLocalOrder(clone(cartData)).then(() => {
                 if(config?.print){
                     printInvoice(cartData).then(()=>{
-                        navigation.replace('DrawerStackNavigator');
+                        navigation.replace('ClientAreaStackNavigator');
                     });
                 }
                 else{
-                    navigation.replace('DrawerStackNavigator');
+                    navigation.replace('ClientAreaStackNavigator');
                 }
                 dispatch(setAlert({visible:true,message:'Order Save Successfully'}))
                 dispatch(hideLoader())
@@ -147,7 +147,7 @@ const Index = ({vouchertotaldisplay, paidamount, voucherid, vouchercurrencyrate}
         await saveLocalOrder(cartData).then(async () => {
             await printInvoice(cartData).then();
             dispatch(setAlert({visible:true,message:'Order Save Successfully'}))
-            navigation.replace('DrawerStackNavigator');
+            navigation.replace('ClientAreaStackNavigator');
             dispatch(hideLoader())
         })
     }

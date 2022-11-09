@@ -44,6 +44,7 @@ import {appLog, isEmpty, retrieveData} from './libs/function';
 import {useEffect} from "react";
 import {showLoader} from "./redux-store/reducer/component";
 import Page from "./components/Page";
+import {styles} from "./theme";
 
 
 configureFontAwesomePro();
@@ -64,11 +65,7 @@ const App = () => {
 
     // StatusBar.setHidden(true);
 
-    const backgroundStyle = {
-        backgroundColor: 'white',
-        height: '100%',
-        flex: 1
-    };
+
 
     const CombinedDefaultTheme = {
         ...PaperDefaultTheme,
@@ -143,7 +140,7 @@ const App = () => {
                 <StatusBar barStyle={isDarkMode ? 'dark-content' : 'dark-content'}
                            backgroundColor={CombinedDefaultTheme.colors.primary}/>
                 <NetworkStatus/>
-                <SafeAreaView style={backgroundStyle}>
+                <SafeAreaView style={[styles.h_100,styles.flex]}>
                     <NavigationContainer>
                         <MainStackNavigator/>
                     </NavigationContainer>

@@ -71,7 +71,7 @@ const Index = ({
                                              dispatch(showLoader())
                                              saveTempLocalOrder().then(() => {
 
-                                                 navigation.replace('DrawerStackNavigator');
+                                                 navigation.replace('ClientAreaStackNavigator');
                                                  dispatch(hideLoader())
                                              })
                                          }

@@ -281,19 +281,16 @@ class Index extends Component<any, any> {
         return (
             <Container>
 
-                <ScrollView>
-                    <View style={[styles.center, styles.h_100, styles.middle]}>
-
-                    <View style={{width: 360}}>
-
-                        <Title>Organization Profile </Title>
-
                 <Form
                     onSubmit={this.validate}
                     initialValues={this.initdata}
                     render={({handleSubmit, submitting, values, ...more}: any) => (
-                        <View>
+                        <>
+                        <View style={[styles.middle,]}>
+                            <View style={[styles.middleForm]}>
                             <KeyboardScroll>
+
+                                    <Title style={[styles.mt_5]}>Organization Profile </Title>
 
                                 <View>
 
@@ -514,25 +511,23 @@ class Index extends Component<any, any> {
                                     </View>
                                 </View>
 
-
                             </KeyboardScroll>
                             <KAccessoryView>
-                                <View >
+                                <View style={[styles.submitbutton]}>
                                     <Button disable={more.invalid} secondbutton={more.invalid} onPress={() => {
                                         handleSubmit(values)
                                     }}>{this.update ? "Save" : "Next"}</Button>
                                 </View>
                             </KAccessoryView>
+                            </View>
                         </View>
+                        </>
                     )}
                 >
 
                 </Form>
 
-                    </View>
 
-                </View>
-                </ScrollView>
             </Container>
         );
     }

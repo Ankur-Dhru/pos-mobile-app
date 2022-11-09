@@ -1,17 +1,17 @@
 import React, {Component} from 'react';
-import {Keyboard, View} from 'react-native';
+import {Keyboard, ScrollView, View} from 'react-native';
 import {styles} from "../../theme";
 
-import {Card, Paragraph, Title, withTheme} from "react-native-paper";
+import {Paragraph, Title, withTheme} from "react-native-paper";
 
 import {Button, Container, InputBox} from "../../components";
 import {Field, Form} from 'react-final-form';
 
 
-import KeyboardScroll from "../../components/KeyboardScroll";
 import {composeValidators, localredux, loginUrl, METHOD, required, startWithString, STATUS} from "../../libs/static";
 import apiService from "../../libs/api-service";
 import {appLog, selectWorkspace} from "../../libs/function";
+import KAccessoryView from "../../components/KAccessoryView";
 
 class AddWorkspace extends Component<any> {
 
@@ -43,11 +43,11 @@ class AddWorkspace extends Component<any> {
                     let workspacelogin = result?.data[0]?.workspace_login;
                     const params = queryStringToJSON(workspacelogin);
                     localredux.authData.token = params['t'];
-                    selectWorkspace({name:values.companyname}, navigation).then(r =>{})
+                    selectWorkspace({name: values.companyname}, navigation).then(r => {
+                    })
                 }
-            }
-            catch (e) {
-                appLog('e',e)
+            } catch (e) {
+                appLog('e', e)
             }
         });
     }
@@ -57,73 +57,70 @@ class AddWorkspace extends Component<any> {
 
         return (
             <Container>
+                <Form
+                    onSubmit={this.handleSubmit}
 
-                <Card style={[styles.center, styles.h_100, styles.middle]}>
+                    render={({handleSubmit, submitting, values, ...more}: any) => (
+
+                        <>
+
+                            <View style={[styles.middle,]}>
+                                <View style={[styles.middleForm]}>
+
+                                    <ScrollView>
 
 
-                    <View style={{width: 360}}>
-
-                        <Title style={[styles.mt_5]}>Add Workspace </Title>
-
-                        <Form
-                            onSubmit={this.handleSubmit}
-
-                            render={({handleSubmit, submitting, values, ...more}: any) => (
-
-                                <View>
-                                    <KeyboardScroll>
+                                        <Title style={[styles.mt_5]}>Add Workspace </Title>
 
                                         <View>
 
-                                            <View>
+                                            <Field name="companyname"
+                                                   validate={composeValidators(required, startWithString)}>
+                                                {props => (
+                                                    <InputBox
+                                                        {...props}
+                                                        value={props.input.value}
+                                                        label={'Workspace'}
+                                                        autoFocus={true}
+                                                        autoCapitalize='none'
+                                                        /*onSubmitEditing={(e:any) => {
+                                                            this.handleSubmit(values)
+                                                        }}
+                                                        returnKeyType={'go'}
+                                                        */
 
-                                                <Field name="companyname"
-                                                       validate={composeValidators(required, startWithString)}>
-                                                    {props => (
-                                                        <InputBox
-                                                            {...props}
-                                                            value={props.input.value}
-                                                            label={'Workspace'}
-                                                            autoFocus={true}
-                                                            autoCapitalize='none'
-                                                            /*onSubmitEditing={(e:any) => {
-                                                                this.handleSubmit(values)
-                                                            }}
-                                                            returnKeyType={'go'}
-                                                            */
+                                                        onChange={props.input.onChange}
+                                                    />
+                                                )}
+                                            </Field>
 
-                                                            onChange={props.input.onChange}
-                                                        />
-                                                    )}
-                                                </Field>
-
-                                                <Paragraph
-                                                    style={[styles.paragraph, styles.red, styles.text_xs, styles.py_2]}>Workspace
-                                                    name must start with an alphabet</Paragraph>
-
-                                            </View>
+                                            <Paragraph
+                                                style={[styles.paragraph, styles.red, styles.text_xs, styles.py_2]}>Workspace
+                                                name must start with an alphabet</Paragraph>
 
                                         </View>
 
-                                    </KeyboardScroll>
 
-                                    <View style={[styles.mt_5]}>
-                                        <Button disable={more.invalid} secondbutton={more.invalid} onPress={() => {
-                                            handleSubmit(values)
-                                        }}>Next</Button>
-                                    </View>
+                                    </ScrollView>
+
+                                    <KAccessoryView>
+                                        <View style={[styles.submitbutton]}>
+                                            <Button disable={more.invalid} secondbutton={more.invalid} onPress={() => {
+                                                handleSubmit(values)
+                                            }}>Next</Button>
+                                        </View>
+                                    </KAccessoryView>
 
                                 </View>
+                            </View>
 
-                            )}
-                        >
 
-                        </Form>
+                        </>
 
-                    </View>
+                    )}
+                >
 
-                </Card>
-
+                </Form>
             </Container>
 
         )

@@ -57,7 +57,7 @@ const Workspaces = (props: any) => {
       return <AddWorkspace/>
   }
 
-  return  <Container config={{title:'Workspaces'}}>
+  return  <Container>
 
             <Card style={[styles.h_100]}>
 

@@ -483,7 +483,7 @@ export const syncData = async (loader=true) => {
         })
 
 
-        let {initData, localSettingsData: {lastSynctime}, addonsData, clientsData}: any = localredux;
+        let {initData, localSettingsData: {lastSynctime,terminalname}, addonsData, clientsData}: any = localredux;
 
 
         loader && store.dispatch(setDialog({visible: true, hidecancel: true, width: 300, component: () => <SyncingInfo/>}))
@@ -550,7 +550,7 @@ export const syncData = async (loader=true) => {
                         await store.dispatch(setSyncDetail({type: result,rows:start,total:(Boolean(data?.extra) && Boolean(data?.extra?.total)) ? data.extra.total : 0}))
                         setTimeout(async ()=>{
                             await getData({type, start});
-                        },100)
+                        },300)
 
                     } else {
 
@@ -569,6 +569,7 @@ export const syncData = async (loader=true) => {
                                     localSettingsData: {
                                         currentLocation: locations[locationid],
                                         lastSynctime: moment().unix(),
+                                        terminalname:terminalname,
                                         isRestaurant: (locations[locationid]?.industrytype === "foodservices"),
                                     }
                                 }
@@ -1711,7 +1712,7 @@ export const cancelOrder = async (navigation: any) => {
 
         if (kots?.length === 0 || (kots?.length > 0 && invoiceitems?.length === 0)) {
             store.dispatch(resetCart())
-            navigation.replace('DrawerStackNavigator');
+            navigation.replace('ClientAreaStackNavigator');
             if (tableorderid) {
                 deleteTempLocalOrder(tableorderid).then(() => {
 
@@ -1759,8 +1760,6 @@ export const selectWorkspace = async (workspace:any,navigation:any) => {
 
     store.dispatch(showLoader())
     const {token}:any = localredux.authData;
-
-    appLog(workspace.name,token)
 
     await apiService({
         method: METHOD.GET,

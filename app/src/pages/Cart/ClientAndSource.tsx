@@ -1,7 +1,7 @@
-import {ScrollView, TouchableOpacity, View} from "react-native";
-import {Card, Paragraph} from "react-native-paper";
+import {SafeAreaView, ScrollView, TouchableOpacity, View} from "react-native";
+import {Card, Paragraph, Text, Title} from "react-native-paper";
 import {useDispatch} from "react-redux";
-import {hideLoader, setModal, showLoader} from "../../redux-store/reducer/component";
+import {closePage, hideLoader, setModal, showLoader} from "../../redux-store/reducer/component";
 import {styles} from "../../theme";
 import InputField from "../../components/InputField";
 import Button from "../../components/Button";
@@ -11,14 +11,19 @@ import {appLog, errorAlert, isEmpty, saveTempLocalOrder} from "../../libs/functi
 
 import moment from "moment";
 
-import CartActions from "./CartActions";
 import store from "../../redux-store/store";
+import KAccessoryView from "../../components/KAccessoryView"
+import KeyboardScroll from "../../components/KeyboardScroll";
+import {Container} from "../../components";
 
 
 const ClientAndSource = (props: any) => {
-    let {tabledetails, placeOrder, title,edit} = props;
+
+    const {navigation}:any = props
+    const params = props.route;
 
 
+    let {tabledetails, placeOrder, title,edit} = params.params
 
     let defaultClientData = {
         "clientid": "0",
@@ -42,7 +47,6 @@ const ClientAndSource = (props: any) => {
 
     if(edit){
         tabledetails = store.getState().cartData;
-
     }
 
     const dispatch = useDispatch();
@@ -55,7 +59,7 @@ const ClientAndSource = (props: any) => {
         date:  moment().format('YYYY-MM-DD'),
         time:  moment().format('YYYY-MM-DD HH:mm'),
         notes:  '',
-        ...tabledetails.advanceorder
+        ...tabledetails?.advanceorder
     })
 
     const onClientSearch = () => {
@@ -102,16 +106,26 @@ const ClientAndSource = (props: any) => {
 
     const {currentLocation} = localredux.localSettingsData;
 
-    return (<View style={[styles.h_100, styles.flex]}>
+    /*navigation.setOptions = {
+        headerCenter: () => <Title style={[styles.headertitle]}>{title}</Title>,
+    }*/
 
-        <View><Paragraph style={[styles.paragraph,styles.text_lg,styles.p_6]}>{title}</Paragraph></View>
+    return (<Container>
 
-        <ScrollView>
+        <SafeAreaView>
+        <View style={[styles.middle,]}>
+            <View style={[styles.middleForm]}>
 
-        <View style={[styles.grid, styles.justifyContent,styles.top, styles.h_100, styles.flex, styles.px_6]}>
+
+        <KeyboardScroll>
+
+            <Title style={[styles.mt_5]}>{title}  </Title>
+
+
+        <View style={[styles.grid, styles.justifyContent,styles.top, styles.h_100, styles.flex]}>
 
                 {hasLeft && <View style={[styles.noshadow,styles.w_auto,{
-                    minWidth:360,maxWidth:'100%',marginRight:20,marginBottom:20
+                    minWidth:360,maxWidth:'100%',
                 }]}>
                     <View>
                         {
@@ -126,7 +140,6 @@ const ClientAndSource = (props: any) => {
                                         })
                                     }
                                 </View>
-
 
 
                                 <InputField
@@ -304,16 +317,11 @@ const ClientAndSource = (props: any) => {
 
         </View>
 
-        </ScrollView>
+        </KeyboardScroll>
 
-        <View style={[styles.grid, styles.justifyContent,styles.p_5]}>
-            <View style={[styles.w_auto]}>
-                <Button more={{backgroundColor: styles.light.color, color: 'black'}}
-                        onPress={() => {
-                            dispatch(setModal({visible: false,}));
-                        }}> Cancel </Button>
-            </View>
-            <View style={[styles.w_auto,styles.ml_2]}>
+        <KAccessoryView>
+
+            <View style={[styles.submitbutton]}>
                 <Button onPress={() => {
 
             let clientDisplayName  = selectedClient?.displayname?.trim();
@@ -355,7 +363,7 @@ const ClientAndSource = (props: any) => {
                      placeOrder(pass)
                  }
 
-                 dispatch(setModal({visible: false}))
+                  navigation.goBack()
              }else {
                  let message = "";
                  if (isSource && !Boolean(ordersource)){
@@ -375,11 +383,16 @@ const ClientAndSource = (props: any) => {
                  errorAlert(message);
              }
         }}> {edit?'Update':'Next'} </Button>
+
+        </View>
+        </KAccessoryView>
+
             </View>
         </View>
 
+        </SafeAreaView>
 
-    </View>)
+    </Container>)
 
 
 }

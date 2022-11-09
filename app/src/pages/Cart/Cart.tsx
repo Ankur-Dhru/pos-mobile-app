@@ -34,7 +34,6 @@ import GroupListMobile from "../Items/GroupListMobile";
 const Index = (props: any) => {
 
 
-    const {itemgroup} = localredux.initData
     const {tabledetails} = props;
     const navigation = useNavigation()
 
@@ -45,9 +44,6 @@ const Index = (props: any) => {
     const dispatch = useDispatch()
 
 
-    let groups: any = Object.values(itemgroup).map((group: any) => {
-        return {label: group.itemgroupname, value: group.itemgroupid}
-    })
 
     return <>
 
@@ -122,10 +118,17 @@ const Index = (props: any) => {
                     backAction:()=> {
                         dispatch(showLoader());  saveTempLocalOrder().then(() => { navigation.goBack(); dispatch(hideLoader()); })
                     },
-                    actions:()=>
+
+                    actions:()=> <>
+                        <TouchableOpacity style={[styles.p_5]} onPress={() => navigation.navigate('AddEditItemNavigator') }>
+                            <ProIcon name={'magnifying-glass'} />
+                        </TouchableOpacity>
+                    </>
+
+                    /*actions:()=>
                         <TouchableOpacity style={[styles.p_5]} onPress={() => dispatch(openPage({title: 'Search Items',visible:true,component: (props:any)=><SearchItem {...props} navigation={navigation} />}))}>
                             <ProIcon name={'magnifying-glass'} />
-                        </TouchableOpacity>}}>
+                        </TouchableOpacity>*/}}>
 
                 <View style={[styles.h_100, styles.flex, {flexDirection: 'column',paddingTop:5}]}>
 

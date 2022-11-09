@@ -1,14 +1,14 @@
 import React, {useEffect, useState} from "react";
 
 
-import {Image, Linking, Text, TouchableOpacity, View} from "react-native";
+import {Image, Linking, ScrollView, Text, TouchableOpacity, View} from "react-native";
 import {Card, Paragraph, Title,TextInput as TI,} from "react-native-paper";
 import {styles} from "../../theme";
 import Container from "../../components/Container";
 import {Field, Form} from "react-final-form";
 import {
     ACTIONS, APP_NAME,
-    composeValidators, grecaptcharesponse,
+    composeValidators, device, grecaptcharesponse,
     isDevelopment,
     isEmail, localredux,
     loginUrl,
@@ -20,6 +20,9 @@ import InputBox from "../../components/InputBox";
 import Button from "../../components/Button";
 import apiService from "../../libs/api-service";
 import {appLog, isEmpty} from "../../libs/function";
+import KeyboardScroll from "../../components/KeyboardScroll";
+import KAccessoryView from "../../components/KAccessoryView";
+
 
 const Index = (props: any) => {
 
@@ -28,7 +31,7 @@ const Index = (props: any) => {
     const [passwordVisible,setPasswordVisible]:any = useState(true)
 
     const initdata: any = isDevelopment ? {
-        email: 'ankur9090_103@dhrusoft.com',
+        email: 'ankur9090_132@dhrusoft.com',
         password: 'Dhrunet1@',
         //email: 'dhru360@yahoo.com',
         //password: 'dhru@9090',
@@ -54,11 +57,12 @@ const Index = (props: any) => {
             if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
                 localredux.licenseData = {...values,...response.data}
                 localredux.authData = {...response.data, token: response.token}
+                device.token = response.token;
                 if(!email_verified){
                     navigation.replace('Verification',{userdetail: response.data});
                 }
                 else {
-                    navigation.navigate('Workspaces');
+                    navigation.replace('Workspaces');
                 }
             }
         })
@@ -67,108 +71,95 @@ const Index = (props: any) => {
     return  <Container  hideappbar={true}>
 
 
+        <Form
+            onSubmit={handleSubmit}
+            style={[styles.middle]}
+            initialValues={initdata}
+            render={({handleSubmit, submitting, values, ...more}: any) => (
+                <>
+                <View style={[styles.middle,]}>
+                    <View style={[styles.middleForm]}>
 
-        <Card>
+                    <ScrollView>
 
+                        <View style={[styles.px_6]}>
+                            <View style={[styles.middle, {marginBottom: 30,marginTop:30}]}>
+                                <Image
+                                    style={[{width: 70, height: 70}]}
+                                    source={require('../../assets/dhru-logo-22.png')}
+                                />
+                                <Title style={[styles.mt_5]}>Login with email </Title>
+                                <Text style={[styles.muted]}>account.dhru.com</Text>
+                            </View>
 
-
-            <View style={[styles.center, styles.h_100, styles.middle]}>
-
-
-
-                <View style={{width:350}}>
-                <Form
-                    onSubmit={handleSubmit}
-
-                    initialValues={initdata}
-                    render={({handleSubmit, submitting, values, ...more}: any) => (
-
-
-                        <View>
-
-                            <View>
-
-                                <View style={[styles.middle, {marginBottom: 30}]}>
-                                    <Image
-                                        style={[{width: 70, height: 70}]}
-                                        source={require('../../assets/dhru-logo-22.png')}
-                                    />
-                                    <Title style={[styles.mt_5]}>Login with email </Title>
-                                    <Text style={[styles.muted]}>account.dhru.com</Text>
+                            <View style={[styles.py_5]}>
+                                <View style={[styles.mb_5]}>
+                                    <Field name="email" validate={composeValidators(required, isEmail)}>
+                                        {props => (
+                                            <InputBox
+                                                {...props}
+                                                value={props.input.value}
+                                                label={'Email'}
+                                                autoFocus={false}
+                                                autoCapitalize='none'
+                                                keyboardType='email-address'
+                                                onChange={props.input.onChange}
+                                            />
+                                        )}
+                                    </Field>
                                 </View>
 
-                                <View style={[styles.py_5]}>
-                                    <View style={[styles.mb_5]}>
-                                        <Field name="email" validate={composeValidators(required, isEmail)}>
-                                            {props => (
-                                                <InputBox
-                                                    {...props}
-                                                    value={props.input.value}
-                                                    label={'Email'}
-                                                    autoFocus={false}
-                                                    autoCapitalize='none'
-                                                    keyboardType='email-address'
-                                                    onChange={props.input.onChange}
-                                                />
-                                            )}
-                                        </Field>
-                                    </View>
-
-                                    <View>
-                                        <Field name="password" validate={required}>
-                                            {props => (
-                                                <InputBox
-                                                    value={props.input.value}
-                                                    label={'Password'}
-                                                    onSubmitEditing={(e: any) => {
-                                                        handleSubmit(values)
-                                                    }}
-                                                    right={<TI.Icon name={passwordVisible ? "eye" : "eye-off"}
-                                                                    onPress={() =>  setPasswordVisible(!passwordVisible)}/>}
-                                                    returnKeyType={'go'}
-                                                    autoCapitalize='none'
-                                                    secureTextEntry={passwordVisible}
-                                                    onChange={props.input.onChange}
-                                                />
-                                            )}
-                                        </Field>
-                                    </View>
-
-
+                                <View>
+                                    <Field name="password" validate={required}>
+                                        {props => (
+                                            <InputBox
+                                                value={props.input.value}
+                                                label={'Password'}
+                                                onSubmitEditing={(e: any) => {
+                                                    handleSubmit(values)
+                                                }}
+                                                right={<TI.Icon name={passwordVisible ? "eye" : "eye-off"}
+                                                                onPress={() =>  setPasswordVisible(!passwordVisible)}/>}
+                                                returnKeyType={'go'}
+                                                autoCapitalize='none'
+                                                secureTextEntry={passwordVisible}
+                                                onChange={props.input.onChange}
+                                            />
+                                        )}
+                                    </Field>
                                 </View>
-
 
 
                             </View>
 
-                            <View>
-                                <Button disable={more.invalid} secondbutton={more.invalid}
-                                        onPress={() => {
-                                            handleSubmit(values)
-                                        }}> Login
-                                </Button>
-                            </View>
-
-                            <View style={[styles.middle,styles.mt_5, {marginBottom: 30}]}>
+                            <View style={[styles.middle,styles.mt_5, {marginBottom: 20}]}>
                                 <TouchableOpacity onPress={()=> navigation.navigate('Register') }><Paragraph style={[styles.paragraph,styles.mt_5]}>New User? <Text style={[{color:styles.primary.color}]}> Create an account </Text> </Paragraph></TouchableOpacity>
                             </View>
-
-
                         </View>
 
-                    )}
-                >
+                    </ScrollView>
 
-                </Form>
+                    <KAccessoryView>
+                        <View style={[styles.submitbutton]}>
+                            <Button disable={more.invalid} secondbutton={more.invalid}
+                                    onPress={() => {
+                                        handleSubmit(values)
+                                    }}> Login
+                            </Button>
+                        </View>
+
+                    </KAccessoryView>
+
+                    </View>
+
                 </View>
 
-            </View>
+                </>
 
+            )}
+        >
 
-
-        </Card>
-
-
+        </Form>
 
     </Container>
 

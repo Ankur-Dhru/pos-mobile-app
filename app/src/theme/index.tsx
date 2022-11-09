@@ -123,7 +123,7 @@ export const styles: any = StyleSheet.create({
     divider: {},
     hide: {display: 'none'},
     listitem: {paddingVertical: 5},
-    middleForm: {width:'100%',maxWidth:500},
+    middleForm: {width:'100%',maxWidth:500,height:'100%',paddingLeft: hp('1.5%'), paddingRight: hp('1.5%')},
     left: {justifyContent: 'flex-start'},
     center: {justifyContent: 'center'},
     right: {justifyContent: 'flex-end'},
@@ -455,7 +455,9 @@ export const styles: any = StyleSheet.create({
         bottom: 0
     },
     submitbutton: {
-        margin:10
+        margin:10,
+        marginBottom:0,
+        width:'100%'
     },
 
     shadow: {

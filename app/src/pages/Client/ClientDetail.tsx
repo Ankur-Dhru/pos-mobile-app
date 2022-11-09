@@ -40,6 +40,10 @@ const Index = ({cartData}: any) => {
         setClient({label: cartData?.clientname, value: cartData?.clientid})
     }, [])
 
+
+
+
+
     return <Card style={[styles.noshadow]}>
 
         <View style={[styles.px_5]}>
@@ -60,7 +64,7 @@ const Index = ({cartData}: any) => {
 
             <InputField
                 removeSpace={true}
-                label={'Category'}
+                label={'Clients'}
                 divider={true}
 
                 displaytype={'pagelist'}
@@ -77,12 +81,7 @@ const Index = ({cartData}: any) => {
                 })}
                 addItem={<TouchableOpacity onPress={async () => {
                     dispatch(closePage(device.lastmodal))
-                    if(device.tablet) {
-                        navigation.navigate('AddEditClient');
-                    }
-                    else{
-                        navigation.navigate('AddEditClient2');
-                    }
+                    navigation.navigate('AddEditClient');
 
                 }}>
                     <Paragraph><ProIcon

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {FlatList, TouchableOpacity, View} from "react-native";
 import {Divider, Paragraph, Text} from "react-native-paper"
-import {arraySome, clone, isEmpty, saveLocalSettings, updateComponent} from "../../libs/function";
+import {clone, isEmpty, saveLocalSettings} from "../../libs/function";
 import Container from "../../components/Container";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
@@ -70,50 +70,48 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
     const qntRef = React.useRef<View>(null);
     const amtRef = React.useRef<View>(null);
 
-    return <Container config={{
-        title: "Quick Quantity & Amount",
-    }}>
+    return <Container>
 
-        <View style={[styles.middle,styles.h_100]}>
+        <View style={[styles.middle]}>
 
             <View style={[styles.middleForm]}>
-        <View>
-            <View style={[styles.grid, styles.justifyContent, styles.p_4]}>
-                <Button style={[styles.w_auto]} compact={true} onPress={() => {
-                    setSelectedTab("num")
+                <View>
+                    <View style={[styles.grid, styles.justifyContent,styles.mt_5]}>
+                        <Button style={[styles.w_auto]} compact={true} onPress={() => {
+                            setSelectedTab("num")
 
 
-                }} secondbutton={true}><Text style={{color: 'black'}}>Quick Quantity</Text></Button>
-                <Button style={[styles.ml_2, styles.w_auto]} compact={true} onPress={() => {
-                    setSelectedTab("amt")
+                        }} secondbutton={true}><Text style={{color: 'black'}}>Quick Quantity</Text></Button>
+                        <Button style={[styles.ml_2, styles.w_auto]} compact={true} onPress={() => {
+                            setSelectedTab("amt")
 
 
-                }} secondbutton={true}><Text style={{color: 'black'}}>Quick Amount</Text></Button>
-            </View>
-        </View>
+                        }} secondbutton={true}><Text style={{color: 'black'}}>Quick Amount</Text></Button>
+                    </View>
+                </View>
 
-        <View style={[styles.grid,styles.justifyContent,styles.middle,styles.px_5]}>
-            <View style={[styles.w_auto]}>
-                <InputField
-                    value={inputValues}
-                    label={selectedTab === 'num' ? 'Quantity' : 'Amount'}
-                    inputtype={'textbox'}
-                    keyboardType='numeric'
-                    onChange={(value: any) => {
-                        setInputValues(value)
-                    }}
+                <View style={[styles.grid, styles.justifyContent, styles.middle, styles.px_5]}>
+                    <View style={[styles.w_auto]}>
+                        <InputField
+                            value={inputValues}
+                            label={selectedTab === 'num' ? 'Quantity' : 'Amount'}
+                            inputtype={'textbox'}
+                            keyboardType='numeric'
+                            onChange={(value: any) => {
+                                setInputValues(value)
+                            }}
+                        />
+                    </View>
+                    <View style={[styles.ml_2]}>
+                        <Button compact={true} onPress={onClickAddInputValues}>Add</Button>
+                    </View>
+                </View>
+
+                <FlatList
+                    data={selectedTab === 'num' ? isEmpty(defaultInputValues) ? [] : defaultInputValues : isEmpty(defaultInputAmounts) ? [] : defaultInputAmounts}
+                    renderItem={renderitem}
+                    initialNumToRender={5}
                 />
-            </View>
-            <View style={[styles.ml_2]}>
-                <Button onPress={onClickAddInputValues}>Add</Button>
-            </View>
-        </View>
-
-        <FlatList
-            data={selectedTab === 'num' ? isEmpty(defaultInputValues) ? [] : defaultInputValues : isEmpty(defaultInputAmounts) ? [] : defaultInputAmounts}
-            renderItem={renderitem}
-            initialNumToRender={5}
-        />
 
             </View>
 

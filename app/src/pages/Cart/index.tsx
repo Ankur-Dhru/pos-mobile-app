@@ -3,22 +3,20 @@ import {appLog, isRestaurant, retrieveData, saveTempLocalOrder, voucherData} fro
 import Cart from "./Cart";
 import {localredux, PRODUCTCATEGORY, VOUCHER} from "../../libs/static";
 import {useDispatch} from "react-redux";
-import {withTheme} from "react-native-paper";
+import {Title, withTheme} from "react-native-paper";
 import {setSelected} from "../../redux-store/reducer/selected-data";
 import {refreshCartData} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
-import {Container} from "../../components";
-import {hideLoader, setDialog, showLoader} from "../../redux-store/reducer/component";
-import store from "../../redux-store/store";
-import KeyPad from "../../components/KeyPad";
-import ClientAndSource from "./ClientAndSource";
 
-const Index = ({tabledetails}: any) => {
+import {styles} from "../../theme";
+
+const Index = (props: any) => {
+
+    const tabledetails:any = props?.route?.params;
 
     const mainproductgroupid = localredux.localSettingsData?.currentLocation?.mainproductgroupid || PRODUCTCATEGORY.DEFAULT
 
-    const hasrestaurant = isRestaurant();
     const dispatch = useDispatch();
     const navigation = useNavigation()
 
@@ -42,6 +40,10 @@ const Index = ({tabledetails}: any) => {
     if (!loaded) {
         return <PageLoader page={'cart'}/>
     }
+
+    navigation.setOptions({
+        headerCenter: () => <Title style={[styles.headertitle]}>{'asdfasdf'}</Title>,
+    })
 
     return <Cart tabledetails={tabledetails}/>
 }

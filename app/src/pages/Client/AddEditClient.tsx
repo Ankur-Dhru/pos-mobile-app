@@ -1,5 +1,5 @@
 import React, {Component, useEffect, useRef, useState} from 'react';
-import {Platform, TouchableOpacity, View} from 'react-native';
+import {Platform, SafeAreaView, TouchableOpacity, View} from 'react-native';
 import {styles} from "../../theme";
 
 import {Button, Container} from "../../components";
@@ -196,26 +196,20 @@ const Index = ({callback,pageKey}:any) => {
 
 
     return (
-        <Container config={{title:'Add Client'}} >
-
+        <Container >
+            <SafeAreaView>
             <Form
                 onSubmit={handleSubmit}
                 initialValues={initdata}
                 render={({handleSubmit, submitting, values, ...more}: any) => (
-                    <View  style={[styles.h_100]}>
-
-                        {/*<Appbar.Header style={[styles.bg_white]}>
-                            <Appbar.BackAction    onPress={() => {
-                                dispatch(closePage(pageKey))
-                            } }/>
-                            <Appbar.Content  title={'Add Client'}   />
-                        </Appbar.Header>*/}
+                    <View  style={[styles.middle]}>
+                        <View  style={[styles.middleForm]}>
 
                         <KeyboardScroll>
 
                             <View>
-                                <Card style={[styles.card]}>
-                                    <Card.Content>
+                                <View>
+                                    <View>
 
                                         <View>
                                             <Field name="customertype">
@@ -295,13 +289,13 @@ const Index = ({callback,pageKey}:any) => {
                                             </Field>
                                         </View>
 
-                                    </Card.Content>
+                                    </View>
 
-                                </Card>
+                                </View>
 
 
-                                <Card style={[styles.card]}>
-                                    <Card.Content>
+                                <View>
+                                    <View>
                                         <View>
                                             <TouchableOpacity onPress={() => {
                                                 moredetail=!moredetail;
@@ -624,9 +618,9 @@ const Index = ({callback,pageKey}:any) => {
 
                                         </View>}
 
-                                    </Card.Content>
+                                    </View>
 
-                                </Card>
+                                </View>
 
 
                             </View>
@@ -636,29 +630,21 @@ const Index = ({callback,pageKey}:any) => {
 
 
                         <KAccessoryView>
-                            <View style={[styles.grid, styles.justifyContent,styles.p_5]}>
-                                {/*<View style={[styles.w_auto]}>
-                                    <Button more={{backgroundColor: styles.light.color, color: 'black'}}
-                                            onPress={() => {
-                                                navigation.goBack()
-                                               // dispatch(closePage(pageKey))
-                                            }}> Cancel
-                                    </Button>
-                                </View>*/}
-                                <View style={[styles.w_auto]}>
-                                    <Button disable={more.invalid} secondbutton={more.invalid} onPress={() => {
-                                        handleSubmit(values)
-                                    }}>   Add  </Button>
-                                </View>
+                            <View style={[styles.submitbutton]}>
+                                <Button disable={more.invalid} secondbutton={more.invalid} onPress={() => {
+                                    handleSubmit(values)
+                                }}>   Add  </Button>
                             </View>
                         </KAccessoryView>
+
+                        </View>
 
                     </View>
                 )}
             >
 
             </Form>
-
+            </SafeAreaView>
 
         </Container>
 

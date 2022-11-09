@@ -30,13 +30,8 @@ export const AddItem = ({navigation}:any) => {
                 <Button
                     secondbutton={true}
                     onPress={async () => {
-                        dispatch(closePage(device.lastmodal))
-                        if(device.tablet) {
-                            navigation.navigate("AddEditItem");
-                        }
-                        else{
-                            navigation.navigate("AddEditItemNavigator2");
-                        }
+                        //dispatch(closePage(device.lastmodal))
+                        navigation.navigate("AddEditItemNavigator");
 
                         /*store.dispatch(openPage({
                             visible: true,

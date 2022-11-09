@@ -14,8 +14,8 @@ export const insertItems = async (  itemsdata?: any,type:any = 'all') => {
 
       for (const data of itemsdata) {
 
-          data.itemname = data?.itemname.replace(regx," ");
-          data.groupname =  data?.groupname.replace(regx," ");
+          data.itemname = data?.itemname?.replace(regx," ");
+          data.groupname =  data?.groupname?.replace(regx," ");
           let values = `(${data?.itemid}, "${data?.itemname}", "${data?.itemgroupid}", "${data?.uniqueproductcode}", '${JSON.stringify(data)}', "${data?.itemstatus}", ${data?.pricealert})`;
 
           if(type === 'all'){

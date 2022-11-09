@@ -31,7 +31,7 @@ import {
     syncData
 } from "../../libs/function";
 import InputField from "../../components/InputField";
-
+import KAccessoryView from "../../components/KAccessoryView"
 
 const Terminal = (props: any) => {
 
@@ -71,7 +71,7 @@ const Terminal = (props: any) => {
                 const localSettingsData = {
                     currentLocation: locations[values?.locationid],
                     isRestaurant: isRestaurant,
-
+                    terminalname:values.terminalname
                 }
 
                 localredux.licenseData = {
@@ -106,7 +106,7 @@ const Terminal = (props: any) => {
     const onValidate = (values: any) => {
         let error: any = {};
         if (!Boolean(values?.terminalname)) {
-            error.terminalname = "Please Location Name!";
+            error.terminalname = "Please Terminal Name!";
         }
         if (!Boolean(values?.timezone)) {
             error.timezone = "Please Select Timezone!";
@@ -148,15 +148,6 @@ const Terminal = (props: any) => {
 
 
     return <Container>
-        <ScrollView>
-            <Card style={[styles.center, styles.h_100, styles.middle]}>
-
-
-            <View style={{width: 360}}>
-
-                <Title style={[styles.mt_5]}>Terminal <Text
-                    style={[styles.muted, styles.text_sm]}>({initData.workspace})</Text></Title>
-
 
                 <Form
                     initialValues={initialValues}
@@ -165,11 +156,11 @@ const Terminal = (props: any) => {
                     render={({handleSubmit, submitting, values, ...more}: any) => (
                         <>
 
-                            <View>
-                                <View>
-
-
-                                    <View style={[styles.mt_3]}>
+                        <View style={[styles.middle,]}>
+                            <View style={[styles.middleForm]}>
+                            <ScrollView>
+                                <Title style={[styles.mt_5]}>Terminal <Text style={[styles.muted, styles.text_sm]}>({initData.workspace})</Text></Title>
+                                <View style={[styles.mt_3]}>
                                         <View style={[styles.mb_5]}>
                                             <Field name="terminalname" validate={composeValidators(required)}>
                                                 {props => (
@@ -227,30 +218,29 @@ const Terminal = (props: any) => {
 
 
                                     </View>
+                            </ScrollView>
 
-
+                            <KAccessoryView>
+                                <View style={[styles.submitbutton]}>
+                                    <Button disable={more.invalid} secondbutton={more.invalid}
+                                            onPress={() => {
+                                                handleSubmit(values)
+                                            }}> Finish
+                                    </Button>
                                 </View>
-                            </View>
+                            </KAccessoryView>
 
-                            <View>
-                                <Button disable={more.invalid} secondbutton={more.invalid}
-                                        onPress={() => {
-                                            handleSubmit(values)
-                                        }}> Finish
-                                </Button>
                             </View>
-
+                        </View>
 
                         </>
                     )}
                 >
 
-                </Form>
+         </Form>
 
 
-            </View>
-        </Card>
-        </ScrollView>
+
     </Container>
 }
 

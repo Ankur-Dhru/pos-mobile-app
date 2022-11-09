@@ -90,7 +90,8 @@ const Index = (props: any) => {
                             await dispatch(hideLoader())
                         })
                     localredux.loginuserData=params;
-                   await navigation.replace('DrawerStackNavigator');
+                    //await navigation.replace('ClientAreaStackNavigator');
+                    await navigation.replace('ClientAreaStackNavigator');
 
                 } else {
                     dispatch(setAlert({visible: true, message: 'Wrong Pin'}));

@@ -1,6 +1,6 @@
 import React from "react";
 
-import {ScrollView, View} from "react-native";
+import {SafeAreaView, ScrollView, View} from "react-native";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
 import {Title} from "react-native-paper";
@@ -8,12 +8,20 @@ import {PRINTER} from "../../libs/static";
 import InputBox from "../../components/InputBox";
 import Button from "../../components/Button";
 import {connect, useDispatch} from "react-redux";
-import {saveLocalSettings, testPrint} from "../../libs/function";
+import {appLog, saveLocalSettings, testPrint} from "../../libs/function";
 import InputField from "../../components/InputField";
 import {setModal} from "../../redux-store/reducer/component";
+import {Container} from "../../components";
 
 
-const Index = ({type, printers}: any) => {
+const Index = (props: any) => {
+
+
+
+    const {route,printers}:any = props;
+    const {type} = route?.params || {}
+
+
 
     const dispatch = useDispatch()
 
@@ -57,16 +65,17 @@ const Index = ({type, printers}: any) => {
     }
 
 
-    return <View style={[styles.middle, styles.h_100]}>
-
+    return <Container>
+        <SafeAreaView>
         <Form
             initialValues={initialValues}
             onSubmit={handleSubmit}
             validate={onValidate}
             render={({handleSubmit, submitting, values, ...more}: any) => (
-                <View style={[styles.middleForm, styles.h_100]}>
+                <View style={[styles.middle]}>
+                    <View style={[styles.middleForm]}>
                     <ScrollView>
-                        <View style={[styles.p_6]}>
+                        <View>
 
                             <Title style={[styles.mt_5]}>{type.departmentid === PRINTER.INVOICE?'Invoice':'KOT'} Printer </Title>
 
@@ -237,9 +246,8 @@ const Index = ({type, printers}: any) => {
                             </View>
                         </View>
                     </ScrollView>
-                    <View style={[styles.grid, styles.justifyContent, styles.p_6]}>
-                        <View style={[styles.w_auto]}><Button secondbutton={true}
-                                                              onPress={() => dispatch(setModal({visible: false}))}>Cancel</Button></View>
+                    <View style={[styles.grid, styles.justifyContent]}>
+
                         <View style={[styles.w_auto, styles.px_4]}><Button disable={more.invalid}
                                                                            secondbutton={more.invalid}
                                                                            secondbutton={true} onPress={() => {
@@ -249,14 +257,15 @@ const Index = ({type, printers}: any) => {
                             handleSubmit(values)
                         }}>Save</Button></View>
                     </View>
+                    </View>
                 </View>
             )}
         >
 
         </Form>
+        </SafeAreaView>
 
-
-    </View>
+    </Container>
 }
 
 const mapStateToProps = (state: any) => ({

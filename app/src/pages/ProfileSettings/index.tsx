@@ -96,7 +96,7 @@ const Index = (props: any) => {
                         <View style={[styles.grid, styles.middle, styles.noWrap, styles.w_auto]}>
                             <ProIcon name={'user'} type={'light'} size={18}/>
                             <Paragraph
-                                style={[styles.paragraph, styles.ml_2]}>{'Logout'}</Paragraph>
+                                style={[styles.paragraph, styles.ml_2]}>{'Reset Terminal'}</Paragraph>
                         </View>
                         {
                             <View style={[styles.ml_auto]}>

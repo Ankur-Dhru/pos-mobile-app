@@ -1,22 +1,18 @@
 import React, {Component} from "react";
-import {Keyboard, View} from "react-native";
+import {ScrollView, TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
 import {Button, Container} from "../../components";
 import {Paragraph, Text, Title, withTheme} from "react-native-paper";
-
-
-import {TouchableOpacity} from "react-native";
 import {Field, Form} from "react-final-form";
 
 import InputField from "../../components/InputField";
 import apiService from "../../libs/api-service";
-import {localredux, loginUrl, METHOD, STATUS} from "../../libs/static";
+import {loginUrl, METHOD, STATUS} from "../../libs/static";
 import {appLog} from "../../libs/function";
 import {setAlert, setDialog} from "../../redux-store/reducer/component";
 import store from "../../redux-store/store";
-import CancelReason from "../Cart/CancelReason";
 import ChangeEmail from "./ChangeEmail";
-
+import KAccessoryView from "../../components/KAccessoryView"
 
 class Index extends Component<any> {
 
@@ -66,7 +62,7 @@ class Index extends Component<any> {
         });
     }
 
-    updateEmail = (email:any) => {
+    updateEmail = (email: any) => {
         this.initdata.email = email;
         this.forceUpdate()
     }
@@ -80,87 +76,90 @@ class Index extends Component<any> {
         return (
             <Container>
 
-                <View style={[styles.center, styles.h_100, styles.middle]}>
+                <Form
+                    onSubmit={this.handleSubmit}
+                    initialValues={{code: ''}}>
+                    {props => (
+                        <>
 
-                    <View style={{width: 360}}>
+                            <View style={[styles.middle]}>
+                                <View style={[styles.middleForm]}>
 
-                        <Title>Verify Email </Title>
+                                    <ScrollView>
 
-                        <Form
-                            onSubmit={this.handleSubmit}
-                            initialValues={{code: ''}}>
-                            {props => (
-                                <>
-                                    <View>
-                                        <Paragraph style={[styles.paragraph]}>Your Registered Email </Paragraph>
-                                        <View style={[styles.grid, styles.middle]}>
-                                            <Paragraph>
-                                                {this.initdata.email} -
-                                            </Paragraph>
+
+                                        <Title style={[styles.mt_5]}>Verify Email </Title>
+
+                                        <View>
+                                            <Paragraph style={[styles.paragraph]}>Your Registered Email </Paragraph>
+                                            <View style={[styles.grid, styles.middle]}>
+                                                <Paragraph>
+                                                    {this.initdata.email} -
+                                                </Paragraph>
+                                                <TouchableOpacity onPress={() => {
+                                                    appLog('change  emial')
+                                                    store.dispatch(setDialog({
+                                                        visible: true,
+                                                        hidecancel: true,
+                                                        width: 360,
+                                                        component: () => <ChangeEmail updateEmail={this.updateEmail}/>
+                                                    }))
+                                                }}>
+                                                    <Text style={[{color: colors.accent}]}> Change Email </Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+
+
+                                        <View>
+                                            <Field name="code">
+                                                {props => (
+                                                    <InputField
+                                                        value={props.input.value}
+                                                        label={'Code'}
+
+                                                        keyboardType='numeric'
+                                                        inputtype={'textbox'}
+                                                        autoCapitalize='none'
+                                                        autoFocus={true}
+                                                        onSubmitEditing={(e: any) => {
+                                                            this.handleSubmit(props.values)
+                                                        }}
+                                                        returnKeyType={'go'}
+                                                        onChange={props.input.onChange}
+                                                    />
+                                                )}
+                                            </Field>
+                                        </View>
+
+
+                                        <View style={[styles.py_5, styles.middle, {marginBottom: 10, marginTop: 10}]}>
                                             <TouchableOpacity onPress={() => {
-                                                appLog('change  emial')
-                                                store.dispatch(setDialog({
-                                                    visible: true,
-                                                    hidecancel: true,
-                                                    width:360,
-                                                    component: () => <ChangeEmail updateEmail={this.updateEmail} />
-                                                }))
+                                                this.resendCode()
                                             }}>
-                                                <Text style={[{color: colors.accent}]}> Change Email </Text>
+                                                <Paragraph style={[{color: colors.accent}]}> Resend Code</Paragraph>
                                             </TouchableOpacity>
                                         </View>
-                                    </View>
 
 
+                                    </ScrollView>
 
-
-
-                                    <View>
-                                        <Field name="code">
-                                            {props => (
-                                                <InputField
-                                                    value={props.input.value}
-                                                    label={'Code'}
-
-                                                    keyboardType='numeric'
-                                                    inputtype={'textbox'}
-                                                    autoCapitalize='none'
-                                                    autoFocus={true}
-                                                    onSubmitEditing={(e: any) => {
+                                    <KAccessoryView>
+                                        <View style={[styles.submitbutton]}>
+                                            <Button disabled={props.submitting || props.pristine}
+                                                    onPress={() => {
                                                         this.handleSubmit(props.values)
-                                                    }}
-                                                    returnKeyType={'go'}
-                                                    onChange={props.input.onChange}
-                                                />
-                                            )}
-                                        </Field>
-                                    </View>
+                                                    }}> Verify </Button>
 
+                                        </View>
+                                    </KAccessoryView>
 
-                                    <View style={[styles.py_5, styles.middle,{marginBottom:10,marginTop:10}]}>
-                                        <TouchableOpacity onPress={() => {
-                                            this.resendCode()
-                                        }}>
-                                            <Paragraph style={[{color: colors.accent}]}> Resend Code</Paragraph>
-                                        </TouchableOpacity>
-                                    </View>
+                                </View></View>
 
+                        </>
+                    )}
+                </Form>
 
-                                    <View style={{marginBottom:80}}>
-                                        <Button disabled={props.submitting || props.pristine}
-                                                onPress={() => {
-                                                    this.handleSubmit(props.values)
-                                                }}> Verify </Button>
-
-                                    </View>
-
-                                </>
-                            )}
-                        </Form>
-
-                    </View>
-
-                </View>
 
             </Container>
         );

@@ -30,15 +30,7 @@ export const AddItem = ({navigation}:any) => {
                 <Button
                     secondbutton={true}
                     onPress={async () => {
-                        //dispatch(closePage(device.lastmodal))
                         navigation.navigate("AddEditItemNavigator");
-
-                        /*store.dispatch(openPage({
-                            visible: true,
-                            hidecancel: true,
-                            width: 300,
-                            component: (props:any) => <AddEditItem item={{}} {...props} searchtext={props.searchtext}  />
-                        }))*/
                     }}> + Create Item
                 </Button>
             </View>

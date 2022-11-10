@@ -10,16 +10,18 @@ import {connect} from "react-redux";
 import {InputBox, ProIcon} from "../index";
 import DateTimePicker from './DateTimePicker';
 import moment from "moment";
-import {appLog, chevronRight, findObject, getType, isEmpty} from "../../libs/function";
+import {chevronRight, findObject, getType, isEmpty} from "../../libs/function";
 
 //import {PERMISSIONS, requestMultiple} from "react-native-permissions";
 import ToggleSwitch from "./Switch";
-import {localredux} from "../../libs/static";
+import {device, localredux} from "../../libs/static";
 
 
 class Index extends React.Component<any, any> {
 
+
     constructor(props: any) {
+
         super(props);
 
         let findSelected;
@@ -85,7 +87,6 @@ class Index extends React.Component<any, any> {
         let {
             label,
             list,
-            navigation,
             listtype,
             showlabel = true,
             search = false,
@@ -182,6 +183,8 @@ class Index extends React.Component<any, any> {
             style = [...style, ...moreStyle]
         }
 
+        const {navigation} = device;
+
 
         return (
             <View style={style}>
@@ -221,16 +224,17 @@ class Index extends React.Component<any, any> {
                             ref={customRef}
                             onPress={() => {
 
-                                editmode && (displaytype === 'bottomlist' ?
-                                    setBottomSheet({
-                                        visible: true,
-                                        fullView: fullView,
-                                        component: listComponent
-                                    }) : openPage({
-                                        visible: true,
-                                        fullView: fullView,
-                                        component: listComponent
-                                    }))
+                                navigation.navigate('DropDownList', {
+                                    selected: selectedValue,
+                                    list,
+                                    multiselect,
+                                    listtype,
+                                    onSelect: this.onSelect,
+                                    label,
+                                    addItem,
+                                    displaytype,
+                                })
+
                             }}><View>
                             {Boolean(render) ?
                                 <Render/> : <View>

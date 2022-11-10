@@ -106,9 +106,9 @@ const ClientAndSource = (props: any) => {
 
     const {currentLocation} = localredux.localSettingsData;
 
-    /*navigation.setOptions = {
-        headerCenter: () => <Title style={[styles.headertitle]}>{title}</Title>,
-    }*/
+    navigation.setOptions = {
+        headerTitle:title,
+    }
 
     return (<Container>
 
@@ -119,10 +119,8 @@ const ClientAndSource = (props: any) => {
 
         <KeyboardScroll>
 
-            <Title style={[styles.mt_5]}>{title}  </Title>
 
-
-        <View style={[styles.grid, styles.justifyContent,styles.top, styles.h_100, styles.flex]}>
+        <View style={[styles.grid, styles.justifyContent,styles.top,styles.px_6, styles.h_100, styles.flex]}>
 
                 {hasLeft && <View style={[styles.noshadow,styles.w_auto,{
                     minWidth:360,maxWidth:'100%',

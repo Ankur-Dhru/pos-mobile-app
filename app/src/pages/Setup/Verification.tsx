@@ -87,8 +87,9 @@ class Index extends Component<any> {
 
                                     <ScrollView>
 
+                                        <View style={[styles.px_6]}>
 
-                                        <Title style={[styles.mt_5]}>Verify Email </Title>
+                                        <Title>Verify Email </Title>
 
                                         <View>
                                             <Paragraph style={[styles.paragraph]}>Your Registered Email </Paragraph>
@@ -141,6 +142,7 @@ class Index extends Component<any> {
                                             </TouchableOpacity>
                                         </View>
 
+                                        </View>
 
                                     </ScrollView>
 

@@ -2,7 +2,6 @@ import * as React from 'react';
 import {
     Appearance, Dimensions,
     LogBox,
-    SafeAreaView,
     ScrollView,
     StatusBar,
     StyleSheet,
@@ -13,6 +12,7 @@ import {
 
 import {Provider} from "react-redux";
 import store from "./redux-store/store";
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 
 import ActivityIndicator from "./components/ActivityIndicator";
@@ -137,13 +137,16 @@ const App = () => {
     return (
         <Provider store={store}>
             <PaperProvider theme={CombinedDefaultTheme}>
+                <SafeAreaProvider>
                 <StatusBar barStyle={isDarkMode ? 'dark-content' : 'dark-content'}
                            backgroundColor={CombinedDefaultTheme.colors.primary}/>
                 <NetworkStatus/>
-                <SafeAreaView style={[styles.h_100,styles.flex]}>
-                    <NavigationContainer>
-                        <MainStackNavigator/>
-                    </NavigationContainer>
+                <SafeAreaView  style={[styles.h_100]}  edges={['top', 'left', 'right','bottom']}>
+
+                        <NavigationContainer>
+                            <MainStackNavigator/>
+                        </NavigationContainer>
+
 
                     {/*<PageSheet/>*/}
                     <Page/>
@@ -153,6 +156,7 @@ const App = () => {
                     <SnackBar/>
                     <ActivityIndicator/>
                 </SafeAreaView>
+                </SafeAreaProvider>
             </PaperProvider>
         </Provider>
     );

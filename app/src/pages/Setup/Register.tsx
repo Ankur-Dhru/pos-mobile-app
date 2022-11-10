@@ -124,8 +124,8 @@ const Register = (props: any) => {
                     <View style={[styles.middleForm]}>
                         <KeyboardScroll>
 
-                            <View>
-                                <Title style={[styles.mt_5]}>Create an account </Title>
+                            <View style={[styles.px_6]}>
+                                <Title>Create an account </Title>
                                 <View>
 
                                     <View>
@@ -218,6 +218,7 @@ const Register = (props: any) => {
                                                 <InputField
                                                     {...props}
                                                     label={'First Name'}
+
                                                     inputtype={'textbox'}
                                                     onChange={(value: any) => {
                                                         props.input.onChange(value);

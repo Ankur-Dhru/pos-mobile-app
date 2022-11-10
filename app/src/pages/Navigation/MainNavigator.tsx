@@ -6,7 +6,7 @@ import Terminal from "../Setup/Terminal";
 import Workspaces from "../Setup/Workspaces";
 import Login from "../Setup/Login";
 import Pin from "../Pin";
-import {ACTIONS, localredux, METHOD, posUrl, screenOptionStyle, STATUS} from "../../libs/static";
+import {ACTIONS, device, localredux, METHOD, posUrl, screenOptionStyle, STATUS} from "../../libs/static";
 
 import Splash from "../Splash";
 import {createDrawerNavigator} from "@react-navigation/drawer";
@@ -38,11 +38,13 @@ import ProfileSettings from "../ProfileSettings";
 import AddEditClient from "../Client/AddEditClient";
 import AddEditItem from "../Items/AddEditItem";
 import AddEditCategory from "../Items/AddEditCategory";
-import DropDownList from "../Items/DropDownList";
+import DropDownList from "../General/DropDownList";
 import General from "../General";
 import ClientAndSource from "../Cart/ClientAndSource";
 
 import PrinterSettings from "../PrinterSettings/Setting";
+import {useNavigation} from "@react-navigation/native";
+import SearchItem from "../Items/SearchItem";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -126,7 +128,8 @@ const MainStackNavigator = () => {
 
             <Stack.Screen name="ClientAreaStackNavigator" component={ClientAreaStackNavigator}/>
 
-            {/*<Stack.Screen name={'ClientAreaStackNavigator'} component={ClientAreaStackNavigator}/>*/}
+            <Stack.Screen name={'ProfileSettingsNavigator'} component={ProfileSettingsNavigator}   options={{headerShown:false,presentation:'modal',headerTitle:'Settings'}}  />
+
 
         </Stack.Navigator>
     );
@@ -171,6 +174,8 @@ const SetupStackNavigator = () => {
             <Stack.Screen name="Terminal" component={Terminal}
                           options={{headerShown: false, headerTitle: '', headerLargeTitle: false}}/>
 
+            <Stack.Screen name={'DropDownList'} component={DropDownList}   options={{headerTitle:'Select'}}   />
+
         </Stack.Navigator>
     );
 };
@@ -191,19 +196,31 @@ const PinStackNavigator = () => {
 const ClientAreaStackNavigator = (props:any) => {
     const {route: {params}}: any = props;
     return (
-        <Stack.Navigator initialRouteName={'ClientAreaStackNavigator'} >
-            <Stack.Screen name={'ClientAreaStackNavigator'}  component={Tables} options={{headerShown: false}}/>
-            <Stack.Screen name={'CartStackNavigator'} {...params}  component={Cart} options={({route}: any) => ({title: route.params.tablename})}   />
+        <Stack.Navigator  initialRouteName={isRestaurant() ? 'ClientAreaStackNavigator' : 'CartStackNavigator'} screenOptions={screenOptions}>
+            {isRestaurant() &&  <Stack.Screen name={'ClientAreaStackNavigator'}  component={Tables} options={{headerShown: false}}/>}
+            <Stack.Screen name={'CartStackNavigator'} {...params}  component={Cart} options={({route}: any) => ({headerShown:!device.tablet, title: route?.params?.tablename})}   />
+
+
+
+            <Stack.Screen name={'SearchItem'}   component={SearchItem} options={{headerTitle:'Search Item'}}   />
             <Stack.Screen name={'DetailViewNavigator'} component={DetailView}  options={{headerTitle:'Detail view'}}  />
 
+            <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem}  options={{headerTitle:'Add Item'}}/>
+            <Stack.Screen name={'AddEditCategory'} component={AddEditCategory}  options={{headerTitle:'Add Category'}} />
+            <Stack.Screen name={'AddEditClient'} component={AddEditClient}  options={{headerTitle:'Add Client'}}  />
 
             <Stack.Screen name={'ClientAndSource'} {...params}   component={ClientAndSource}  options={{headerTitle:'Order Source'}}  />
-            <Stack.Screen name={'ProfileSettingsNavigator'} component={ProfileSettingsNavigator}   options={{headerShown:true,presentation:'modal',headerTitle:'Settings'}}  />
-            <Stack.Screen name={'DropDownList'} component={DropDownList}   options={{presentation:'modal',headerTitle:'Select'}}  />
-            <Drawer.Screen name={'Payment'} component={Payment} options={{headerTitle: 'Payment'}}/>
+
+
+            <Stack.Screen name={'Payment'} component={Payment} options={{headerTitle: 'Payment'}}/>
 
 
             <Stack.Screen name={'SalesReportNavigator'}  component={Report} options={{title: 'Sales Report'}}   />
+
+            <Stack.Screen name={'DropDownList'} component={DropDownList}   options={{headerTitle:'Select'}}  />
+
+
+
 
 
         </Stack.Navigator>
@@ -217,15 +234,18 @@ const ProfileSettingsNavigator = (props:any) => {
     return (
         <Stack.Navigator initialRouteName={'ProfileSettingsNavigator'} >
             <Stack.Screen name={'ProfileSettingsNavigator'}  component={General} options={{headerShown: false}}/>
+
             <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem}  options={{headerTitle:'Add Item'}}/>
             <Stack.Screen name={'AddEditCategory'} component={AddEditCategory}  options={{headerTitle:'Add Category'}} />
             <Stack.Screen name={'AddEditClient'} component={AddEditClient}  options={{headerTitle:'Add Client'}}  />
+
+
             <Stack.Screen name={'KOTPrinter'} component={KOTPrinter} options={{title: 'KOT Printer'}}/>
             <Stack.Screen name={'InvoicePrinter'} component={InvoicePrinter} options={{title: 'Invoice Printer'}}/>
             <Stack.Screen name={'InputOpenSetting'} component={InputOpenSetting} options={{title: 'Quick Quantity Unit'}}/>
             <Stack.Screen name={'DefaultInputValues'} component={DefaultInputValues} options={{title: 'Quick Quantity & Amount'}}/>
-
             <Stack.Screen name={'PrinterSettings'} component={PrinterSettings} options={{title: ''}}/>
+            <Stack.Screen name={'DropDownList'} component={DropDownList}   options={{headerTitle:'Select'}}  />
         </Stack.Navigator>
     );
 };

@@ -68,7 +68,7 @@ const Index = (props: any) => {
         })
     }
 
-    return  <Container  hideappbar={true}>
+    return  <Container>
 
 
         <Form
@@ -78,7 +78,7 @@ const Index = (props: any) => {
             render={({handleSubmit, submitting, values, ...more}: any) => (
                 <>
                 <View style={[styles.middle,]}>
-                    <View style={[styles.middleForm]}>
+                    <View style={[styles.middleForm,{maxWidth:380,}]}>
 
                     <ScrollView>
 

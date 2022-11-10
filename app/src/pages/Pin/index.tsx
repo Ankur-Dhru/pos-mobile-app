@@ -90,7 +90,7 @@ const Index = (props: any) => {
                             await dispatch(hideLoader())
                         })
                     localredux.loginuserData=params;
-                    //await navigation.replace('ClientAreaStackNavigator');
+
                     await navigation.replace('ClientAreaStackNavigator');
 
                 } else {
@@ -101,17 +101,12 @@ const Index = (props: any) => {
         },200)
     }, [enteredPin])
 
+    navigation.setOptions({headerShown:!params.onlyone})
+
 
     return <Container hideappbar={true}  >
 
         <Card>
-
-            {!params.onlyone &&  <View style={{position:'absolute',zIndex:99}}>
-                <TouchableOpacity  style={[styles.p_6]} onPress={()=>navigation.goBack()}>
-                    <ProIcon name={'chevron-left'}  />
-                </TouchableOpacity>
-            </View>}
-
 
             <View style={[styles.center, styles.h_100, styles.middle]}>
 

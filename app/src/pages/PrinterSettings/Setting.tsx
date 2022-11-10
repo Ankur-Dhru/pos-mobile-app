@@ -12,6 +12,7 @@ import {appLog, saveLocalSettings, testPrint} from "../../libs/function";
 import InputField from "../../components/InputField";
 import {setModal} from "../../redux-store/reducer/component";
 import {Container} from "../../components";
+import KeyboardScroll from "../../components/KeyboardScroll";
 
 
 const Index = (props: any) => {
@@ -74,8 +75,8 @@ const Index = (props: any) => {
             render={({handleSubmit, submitting, values, ...more}: any) => (
                 <View style={[styles.middle]}>
                     <View style={[styles.middleForm]}>
-                    <ScrollView>
-                        <View>
+                    <KeyboardScroll>
+                        <View style={[styles.px_6]}>
 
                             <Title style={[styles.mt_5]}>{type.departmentid === PRINTER.INVOICE?'Invoice':'KOT'} Printer </Title>
 
@@ -243,20 +244,18 @@ const Index = (props: any) => {
                                     </View>}
 
 
+                                <Button disable={more.invalid}
+
+                                        secondbutton={true} onPress={() => {
+                                    testPrint(values)
+                                }}>Test Print</Button>
+
                             </View>
                         </View>
-                    </ScrollView>
-                    <View style={[styles.grid, styles.justifyContent]}>
-
-                        <View style={[styles.w_auto, styles.px_4]}><Button disable={more.invalid}
-                                                                           secondbutton={more.invalid}
-                                                                           secondbutton={true} onPress={() => {
-                            testPrint(values)
-                        }}>Test Print</Button></View>
-                        <View style={[styles.w_auto]}><Button disable={more.invalid} onPress={() => {
+                    </KeyboardScroll>
+                        <View style={[styles.submitbutton]}><Button disable={more.invalid} onPress={() => {
                             handleSubmit(values)
                         }}>Save</Button></View>
-                    </View>
                     </View>
                 </View>
             )}

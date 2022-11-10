@@ -1,28 +1,26 @@
-import React, {memo} from "react";
+import React, {memo, useState} from "react";
 import {TouchableOpacity} from "react-native";
-import {Paragraph, Title} from "react-native-paper";
-import {styles} from "../../theme";
+import {Paragraph} from "react-native-paper";
 import {ProIcon} from "../../components";
-import {connect, useDispatch} from "react-redux";
-import {closePage, openPage, setModal} from "../../redux-store/reducer/component";
-import store from "../../redux-store/store";
-import {v4 as uuidv4} from "uuid";
+import {connect} from "react-redux";
 import AddEditCategory from "./AddEditCategory";
 import InputField from "../../components/InputField";
-import {useNavigation} from "@react-navigation/native";
 import {appLog} from "../../libs/function";
-import {device} from "../../libs/static";
-
+import {v4 as uuidv4} from "uuid";
 
 const Index = (props: any) => {
 
-    const {grouplist, fieldprops,pageKey}: any = props;
-    const navigation = useNavigation();
-    const dispatch = useDispatch()
+    const {grouplist, fieldprops, navigation}: any = props;
+    const [selected,setSelected] = useState(fieldprops.input.value)
 
     let groups: any = Object.values(grouplist).map((group: any) => {
         return {label: group.itemgroupname, value: group.itemgroupid}
     })
+
+    const callBack = (value:any) => {
+        fieldprops.input.value = value.itemgroupid
+        setSelected(value.itemgroupid)
+    }
 
     return (
         <>
@@ -31,18 +29,18 @@ const Index = (props: any) => {
                 mode={'flat'}
                 key={uuidv4()}
                 list={groups}
-                value={fieldprops.input.value}
-                selectedValue={fieldprops.input.value}
+                value={selected}
+                selectedValue={selected}
                 displaytype={'pagelist'}
                 inputtype={'dropdown'}
-                listtype={'staff'}
-                addItem={<TouchableOpacity style={[styles.p_5]} onPress={async () => {
-                    await dispatch(closePage(device.lastmodal))
-                    navigation.navigate('AddEditCategory');
+                listtype={'other'}
+                addItem={<TouchableOpacity onPress={async () => {
+                    navigation.navigate('AddEditCategory',{callback: callBack });
                 }}>
-                    <Paragraph><ProIcon  name={'plus'}/></Paragraph></TouchableOpacity>}
+                    <Paragraph><ProIcon name={'plus'}/></Paragraph></TouchableOpacity>}
 
                 onChange={(value: any) => {
+                    setSelected(value)
                     fieldprops.input.onChange(value);
                 }}>
             </InputField>

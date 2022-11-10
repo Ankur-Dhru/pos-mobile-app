@@ -69,8 +69,9 @@ class AddWorkspace extends Component<any> {
 
                                     <ScrollView>
 
+                                        <View style={[styles.px_6]}>
 
-                                        <Title style={[styles.mt_5]}>Add Workspace </Title>
+                                        <Title>Add Workspace </Title>
 
                                         <View>
 
@@ -100,6 +101,7 @@ class AddWorkspace extends Component<any> {
 
                                         </View>
 
+                                        </View>
 
                                     </ScrollView>
 

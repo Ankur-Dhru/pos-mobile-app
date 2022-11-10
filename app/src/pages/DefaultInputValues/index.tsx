@@ -74,7 +74,7 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
 
         <View style={[styles.middle]}>
 
-            <View style={[styles.middleForm]}>
+            <View style={[styles.middleForm,styles.px_6]}>
                 <View>
                     <View style={[styles.grid, styles.justifyContent,styles.mt_5]}>
                         <Button style={[styles.w_auto]} compact={true} onPress={() => {

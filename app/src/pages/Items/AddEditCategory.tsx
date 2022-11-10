@@ -4,7 +4,7 @@ import {styles} from "../../theme";
 
 import {Button, Container} from "../../components";
 import {useDispatch} from "react-redux";
-import {assignOption, syncData} from "../../libs/function";
+import {appLog, assignOption, syncData} from "../../libs/function";
 import {Field, Form} from "react-final-form";
 
 import {ACTIONS, adminUrl, device, localredux, METHOD, required, STATUS} from "../../libs/static";
@@ -19,7 +19,9 @@ import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
 
 
-const Index = ({callback, pageKey}: any) => {
+const Index = (props: any) => {
+
+    const callback = props?.route?.params?.callback;
 
     const dispatch = useDispatch();
     const navigation = useNavigation()
@@ -28,7 +30,7 @@ const Index = ({callback, pageKey}: any) => {
         itemgroupcolor: "#000000",
         itemgroupid: uuidv4(),
         itemgroupmid: "0",
-        itemgroupname: device.searchlist ? device.searchlist : '',
+        itemgroupname: '',
         itemgroupstatus: "1",
     }
 
@@ -48,10 +50,14 @@ const Index = ({callback, pageKey}: any) => {
         }).then(async (result) => {
             if (result.status === STATUS.SUCCESS) {
                 dispatch(setGroup(values))
-                //dispatch(closePage(pageKey))
+
                 dispatch(setSelected({value: values.itemgroupid, field: 'group'}))
                 await syncData(false).then()
-                Boolean(callback) && await callback(values)
+
+                if(Boolean(callback)){
+                    await callback(values)
+                    navigation.goBack()
+                }
                 navigation.goBack()
             }
             device.searchlist = ''
@@ -92,7 +98,7 @@ const Index = ({callback, pageKey}: any) => {
                     <View style={[styles.middle]}>
                         <View style={[styles.middleForm]}>
                             <ScrollView>
-                                <View>
+                                <View style={[styles.px_6]}>
 
                                     <View>
                                         <View>

@@ -14,13 +14,13 @@ import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {Button, Container} from "../../components";
 import {Field, Form} from "react-final-form";
-import {useNavigation} from "@react-navigation/native";
+import {CommonActions, useNavigation} from "@react-navigation/native";
 import {localredux} from "../../libs/static";
 import store from "../../redux-store/store";
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
 import InputField from "../../components/InputField";
 import ProIcon from "../../components/ProIcon";
-import {setCartData} from "../../redux-store/reducer/cart-data";
+import {resetCart, setCartData} from "../../redux-store/reducer/cart-data";
 import InputBox from "../../components/InputBox";
 
 
@@ -144,13 +144,29 @@ const Index = ({vouchertotaldisplay, paidamount,payment, vouchercurrencyrate}: a
             dispatch(showLoader())
 
             saveLocalOrder(clone(cartData)).then(() => {
+
                 if (config?.print) {
                     printInvoice(cartData).then(() => {
-                        navigation.replace('ClientAreaStackNavigator');
+                        navigation.dispatch(
+                            CommonActions.reset({
+                                index: 0,
+                                routes: [
+                                    {name: 'ClientAreaStackNavigator'},
+                                ],
+                            })
+                        );
                     });
                 } else {
-                    navigation.replace('ClientAreaStackNavigator');
+                    navigation.dispatch(
+                        CommonActions.reset({
+                            index: 0,
+                            routes: [
+                                {name: 'ClientAreaStackNavigator'},
+                            ],
+                        })
+                    );
                 }
+
                 dispatch(setAlert({visible: true, message: 'Order Save Successfully'}))
                 dispatch(hideLoader())
             })
@@ -162,6 +178,8 @@ const Index = ({vouchertotaldisplay, paidamount,payment, vouchercurrencyrate}: a
         }
 
     }
+
+
 
     /*const skipPayment = async () => {
         let cartData:any = store.getState().cartData;
@@ -241,7 +259,7 @@ const Index = ({vouchertotaldisplay, paidamount,payment, vouchercurrencyrate}: a
                 </View>
                 {
                     paymentMethods?.map((pm: any, key: any) => {
-                        return (<View style={[styles.mb_5,styles.border,{borderRadius:5,backgroundColor:Boolean(paymentMethods[key]?.paymentAmount) ? styles.secondary.color :'white'}]} >
+                        return (<View  key={key} style={[styles.mb_5,styles.border,{borderRadius:5,backgroundColor:Boolean(paymentMethods[key]?.paymentAmount) ? styles.secondary.color :'white'}]} >
 
 
                                 <View style={[styles.grid, styles.justifyContent,]}>

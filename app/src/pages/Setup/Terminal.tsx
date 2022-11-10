@@ -1,15 +1,14 @@
 import React from "react";
-import dataContainer from "../../hoc/dataContainer";
 
 import {ScrollView, View} from "react-native";
 import Container from "../../components/Container";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
-import KeyboardScroll from "../../components/KeyboardScroll";
-import {Card, Paragraph, Title, Text} from "react-native-paper";
+import {Text, Title} from "react-native-paper";
 import {
     ACTIONS,
-    composeValidators, defaultInputAmounts,
+    composeValidators,
+    defaultInputAmounts,
     defaultInputValues,
     localredux,
     METHOD,
@@ -21,15 +20,7 @@ import InputBox from "../../components/InputBox";
 import Button from "../../components/Button";
 import {useDispatch} from "react-redux";
 import apiService from "../../libs/api-service";
-import {
-    appLog,
-    findObject,
-    isEmpty,
-    saveLocalSettings,
-    selectItemObject,
-    storeData,
-    syncData
-} from "../../libs/function";
+import {findObject, isEmpty, saveLocalSettings, selectItemObject, storeData, syncData} from "../../libs/function";
 import InputField from "../../components/InputField";
 import KAccessoryView from "../../components/KAccessoryView"
 
@@ -71,7 +62,7 @@ const Terminal = (props: any) => {
                 const localSettingsData = {
                     currentLocation: locations[values?.locationid],
                     isRestaurant: isRestaurant,
-                    terminalname:values.terminalname
+                    terminalname: values.terminalname
                 }
 
                 localredux.licenseData = {
@@ -149,18 +140,23 @@ const Terminal = (props: any) => {
 
     return <Container>
 
-                <Form
-                    initialValues={initialValues}
-                    onSubmit={handleSubmit}
-                    validate={onValidate}
-                    render={({handleSubmit, submitting, values, ...more}: any) => (
-                        <>
+        <Form
+            initialValues={initialValues}
+            onSubmit={handleSubmit}
+            validate={onValidate}
+            render={({handleSubmit, submitting, values, ...more}: any) => (
+                <>
 
-                        <View style={[styles.middle,]}>
-                            <View style={[styles.middleForm]}>
+                    <View style={[styles.middle,]}>
+                        <View style={[styles.middleForm]}>
+
+
                             <ScrollView>
-                                <Title style={[styles.mt_5]}>Terminal <Text style={[styles.muted, styles.text_sm]}>({initData.workspace})</Text></Title>
-                                <View style={[styles.mt_3]}>
+
+                                <View style={[styles.px_6]}>
+                                    <Title style={[styles.mt_5]}>Terminal <Text
+                                        style={[styles.muted, styles.text_sm]}>({initData.workspace})</Text></Title>
+                                    <View style={[styles.mt_3]}>
                                         <View style={[styles.mb_5]}>
                                             <Field name="terminalname" validate={composeValidators(required)}>
                                                 {props => (
@@ -216,9 +212,10 @@ const Terminal = (props: any) => {
                                             </Field>
                                         </View>
 
-
                                     </View>
+                                </View>
                             </ScrollView>
+
 
                             <KAccessoryView>
                                 <View style={[styles.submitbutton]}>
@@ -230,15 +227,14 @@ const Terminal = (props: any) => {
                                 </View>
                             </KAccessoryView>
 
-                            </View>
                         </View>
+                    </View>
 
-                        </>
-                    )}
-                >
+                </>
+            )}
+        >
 
-         </Form>
-
+        </Form>
 
 
     </Container>

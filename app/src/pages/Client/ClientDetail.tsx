@@ -48,19 +48,7 @@ const Index = ({cartData}: any) => {
 
         <View style={[styles.px_5]}>
 
-            {/*<TouchableOpacity onPress={()=>{
-                navigation.navigate('ClientList', {
-                    handleClient: selectClient,
-                })
-            }}>
-                <View style={[styles.grid, styles.justifyContent,{paddingTop:8,paddingBottom:8}]}>
-                    <View style={[styles.grid, styles.justifyContent,styles.noWrap]}>
-                        <Avatar label={client.label} value={client.value} fontsize={12}  size={30}/>
-                        <View style={[styles.ml_2]}><Paragraph style={[styles.paragraph,styles.bold]}> {client.label}</Paragraph></View>
-                    </View>
-                    <View><Text>{chevronRight}</Text></View>
-                </View>
-            </TouchableOpacity>*/}
+
 
             <InputField
                 removeSpace={true}
@@ -80,14 +68,12 @@ const Index = ({cartData}: any) => {
                     return {...client, label: client.displayname, value: client.clientid}
                 })}
                 addItem={<TouchableOpacity onPress={async () => {
-                    dispatch(closePage(device.lastmodal))
-                    navigation.navigate('AddEditClient');
-
+                    navigation.navigate('AddEditClient',{callback:selectClient});
                 }}>
                     <Paragraph><ProIcon
                         name={'plus'}  /></Paragraph></TouchableOpacity>}
                 search={false}
-                listtype={'staff'}
+                listtype={'other'}
                 onChange={(value: any, client: any) => {
                     selectClient(client).then()
                 }}

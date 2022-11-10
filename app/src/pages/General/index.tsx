@@ -47,10 +47,12 @@ const Index = () => {
     }
 
     const resetTerminal = async () => {
-        await storeData('fusion-pro-pos-mobile', []).then(async () => {
-            navigatToSetup()
-        });
-
+        await storeData('fusion-pro-pos-mobile', []).then(async () => {});
+        await storeData('fusion-pro-pos-mobile-tableorder',{}).then(async () => {});
+        await storeData('fusion-pro-pos-mobile-settings',{}).then(async () => {});
+        await storeData('fusion-pro-pos-mobile-vouchernos',{}).then(async () => {});
+        await storeData('fusion-pro-pos-mobile-kotno',{}).then(async () => {});
+        navigatToSetup()
     }
 
     const closeAccount = async () => {
@@ -94,6 +96,8 @@ const Index = () => {
             <View style={[styles.middle]}>
 
                 <View style={[styles.middleForm]}>
+
+                    <View style={[styles.px_4]}>
 
                     <View style={[styles.mt_5,styles.mb_5]}>
                         <View>
@@ -269,6 +273,7 @@ const Index = () => {
                         </View>
                     </View>
 
+                    </View>
                 </View>
             </View>
 

@@ -169,17 +169,14 @@ const Index = (props: any) => {
                     await insertItems([item], 'onebyone').then(async () => {
 
 
-                        await selectItem({data: JSON.stringify(item)});
+                        await selectItem(item);
 
                         const selectedGroup = store.getState().selectedData.group?.value;
                         await dispatch(setSelected({value: '', field: 'group'}))
                         setTimeout(async () => {
                             await dispatch(setSelected({value: selectedGroup, field: 'group'}))
                             dispatch(hideLoader())
-
                             navigation?.goBack()
-                            //await dispatch(closePage(pageKey))
-
                         }, 100)
 
                     });
@@ -216,18 +213,13 @@ const Index = (props: any) => {
                 render={({handleSubmit, submitting, values, ...more}: any) => (
                     <>
 
-                        {/*<Appbar.Header style={[styles.bg_white]}>
-                            <Appbar.BackAction    onPress={() => {dispatch(closePage(pageKey))} }/>
-                            <Appbar.Content  title={'Add Item'}   />
-                        </Appbar.Header>*/}
-
                         <View style={[styles.middle,]}>
                             <View style={[styles.middleForm]}>
 
                                 <KeyboardScroll>
 
 
-                                    <View>
+                                    <View style={[styles.px_6]}>
                                         <View>
                                             <View>
                                                 <View>
@@ -262,10 +254,7 @@ const Index = (props: any) => {
                                                                             }
                                                                         }
                                                                         itemTypeConfig = itemtype[value] && itemtype[value].config;
-
-
                                                                     }}
-                                                                    navigation={navigation}
                                                                 >
                                                                 </InputField>
                                                             )}
@@ -276,7 +265,7 @@ const Index = (props: any) => {
                                                     <View>
                                                         <Field name="itemgroupid">
                                                             {props => (
-                                                                <><ItemCategoryList fieldprops={props}/></>
+                                                                <><ItemCategoryList navigation={navigation} fieldprops={props}/></>
                                                             )}
                                                         </Field>
                                                     </View>

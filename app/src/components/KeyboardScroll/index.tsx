@@ -11,7 +11,7 @@ export default class KeyboardScroll extends React.Component<any> {
         const {children, scrollRef, scrollEnabled, onScroll}: any = this.props;
         return (
             <ScrollView>
-                <KeyboardAwareScrollView ref={scrollRef} onScroll={onScroll}>
+                <KeyboardAwareScrollView ref={scrollRef} scrollsToTop={true} onScroll={onScroll}>
                         <View>{children}</View>
                 </KeyboardAwareScrollView>
             </ScrollView>

@@ -87,6 +87,7 @@ class Index extends Component<any> {
                                 <View style={[styles.middleForm]}>
                                     <KeyboardScroll>
 
+                                        <View style={[styles.px_6]}>
 
                                         <Title style={[styles.mt_5]}>Currency Preferences </Title>
 
@@ -127,7 +128,7 @@ class Index extends Component<any> {
 
                                         </View>
 
-
+                                        </View>
                                     </KeyboardScroll>
 
                                     <KAccessoryView>

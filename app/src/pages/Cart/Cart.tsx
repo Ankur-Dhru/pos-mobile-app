@@ -44,12 +44,9 @@ const Index = (props: any) => {
     const dispatch = useDispatch()
 
 
-
     return <>
 
         <View style={[styles.h_100, styles.flex, device.tablet?styles.p_4:styles.bg_white]}>
-
-
 
         {
             device.tablet ? <>
@@ -113,22 +110,7 @@ const Index = (props: any) => {
                 <CartActions/>
 
 
-            </> : <Container
-                config={{title:tabledetails?.tablename || 'Retail Order',hideback:!hasrestaurant,drawer:!hasrestaurant,
-                    backAction:()=> {
-                        dispatch(showLoader());  saveTempLocalOrder().then(() => { navigation.goBack(); dispatch(hideLoader()); })
-                    },
-
-                    actions:()=> <>
-                        <TouchableOpacity style={[styles.p_5]} onPress={() => navigation.navigate('AddEditItemNavigator') }>
-                            <ProIcon name={'magnifying-glass'} />
-                        </TouchableOpacity>
-                    </>
-
-                    /*actions:()=>
-                        <TouchableOpacity style={[styles.p_5]} onPress={() => dispatch(openPage({title: 'Search Items',visible:true,component: (props:any)=><SearchItem {...props} navigation={navigation} />}))}>
-                            <ProIcon name={'magnifying-glass'} />
-                        </TouchableOpacity>*/}}>
+            </> : <Container>
 
                 <View style={[styles.h_100, styles.flex, {flexDirection: 'column',paddingTop:5}]}>
 

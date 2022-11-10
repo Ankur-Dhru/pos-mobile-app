@@ -1,5 +1,7 @@
-import {Dimensions, Platform, StyleSheet} from 'react-native';
+import {Dimensions, FlatList, Platform, StyleSheet, View} from 'react-native';
 import {heightPercentageToDP as hp, widthPercentageToDP as wp,} from 'react-native-responsive-screen';
+import {Paragraph} from "react-native-paper";
+import React from "react";
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -123,7 +125,7 @@ export const styles: any = StyleSheet.create({
     divider: {},
     hide: {display: 'none'},
     listitem: {paddingVertical: 5},
-    middleForm: {width:'100%',maxWidth:500,height:'100%',paddingLeft: hp('1.5%'), paddingRight: hp('1.5%')},
+    middleForm: {width:'100%',height:'100%'},
     left: {justifyContent: 'flex-start'},
     center: {justifyContent: 'center'},
     right: {justifyContent: 'flex-end'},
@@ -455,8 +457,7 @@ export const styles: any = StyleSheet.create({
         bottom: 0
     },
     submitbutton: {
-        margin:10,
-        marginBottom:0,
+        paddingLeft: hp('1.5%'), paddingRight: hp('1.5%'),
         width:'100%'
     },
 

@@ -184,9 +184,9 @@ const mainUrl = "https://api.dhru.com";
 export const loginUrl: any = `${mainUrl}/client/api/v1/`;
 
 export const screenOptionStyle: any = {
-    headerShown: false,
+
     headerTitleAlign: 'center',
-    /*headerShown: false,
+
     animation: false,
     headerTitleAlign: 'center',
     headerLargeTitle: false,
@@ -194,7 +194,7 @@ export const screenOptionStyle: any = {
     disableBackButtonMenu: false,
     backButtonInCustomView: false,
     headerBackTitleVisible: false,
-    headerHideBackButton: false,
+    headerHideBackButton: true,
     headerTintColor: 'black',
     stackAnimation: 'slide_from_right',
     stackPresentation: 'push',
@@ -208,7 +208,7 @@ export const screenOptionStyle: any = {
       shadowOpacity: 0,
       elevation: 0,
     },
-    backTitleStyle: {},*/
+    backTitleStyle: {},
 };
 
 
@@ -267,7 +267,7 @@ export const composeValidators = (...validators: any) => (value: any) =>
     validators.reduce((error: any, validator: any) => error || validator(value), undefined)
 
 
-export const device: any = {tablet: true,db:'',token:'',global_token:''}
+export const device: any = {tablet: true,db:'',token:'',global_token:'',navigation:''}
 
 export const defaultclient: any = {clientid: 1, clientname: 'Walkin'}
 

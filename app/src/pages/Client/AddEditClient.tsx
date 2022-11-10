@@ -1,5 +1,5 @@
 import React, {Component, useEffect, useRef, useState} from 'react';
-import {Platform, SafeAreaView, TouchableOpacity, View} from 'react-native';
+import {Platform, SafeAreaView, ScrollView, TouchableOpacity, View} from 'react-native';
 import {styles} from "../../theme";
 
 import {Button, Container} from "../../components";
@@ -40,12 +40,14 @@ import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
 
 let moredetail:any = false
-const Index = ({callback,pageKey}:any) => {
+const Index = (props:any) => {
 
     const dispatch = useDispatch();
     const navigation = useNavigation()
     const {workspace}:any = localredux.initData;
     const {token}:any = localredux.authData;
+
+    const callback = props?.route?.params?.callback;
 
     const {pricingtemplate, currency, paymentterms,general} = localredux.initData;
     const [loading,setLoading]:any = useState(false);
@@ -167,10 +169,15 @@ const Index = ({callback,pageKey}:any) => {
                 dispatch(showLoader());
                 try {
                     const client = {...values, ...result.data,label:values.displayname,value:result.data.clientid};
-                    Boolean(callback) && await callback(client)
+
                     await syncData(false).then()
+
+                    if(Boolean(callback)){
+                        await callback(client)
+                        navigation.goBack()
+                    }
+
                     navigation.goBack()
-                    //dispatch(closePage(pageKey))
                     dispatch(hideLoader());
                 }
                 catch (e) {
@@ -205,9 +212,9 @@ const Index = ({callback,pageKey}:any) => {
                     <View  style={[styles.middle]}>
                         <View  style={[styles.middleForm]}>
 
-                        <KeyboardScroll>
+                        <ScrollView>
 
-                            <View>
+                            <View style={[styles.px_6]}>
                                 <View>
                                     <View>
 
@@ -625,7 +632,7 @@ const Index = ({callback,pageKey}:any) => {
 
                             </View>
 
-                        </KeyboardScroll>
+                        </ScrollView>
 
 
 

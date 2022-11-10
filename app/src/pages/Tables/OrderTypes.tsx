@@ -77,7 +77,7 @@ const Index = (props: any) => {
                 <View>
                     <TouchableOpacity onPress={() => {
                         navigation.navigate('ProfileSettingsNavigator')
-                    }} style={[styles.p_5]}>
+                    }} >
                         <ProIcon name={'gear'}/>
                     </TouchableOpacity>
                 </View>

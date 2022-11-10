@@ -10,6 +10,7 @@ import KAccessoryView from "../../components/KAccessoryView"
 import apiService from "../../libs/api-service";
 import {ACTIONS, adminUrl, localredux, METHOD, required, STATUS} from "../../libs/static";
 import {assignOption} from "../../libs/function";
+import KeyboardScroll from "../../components/KeyboardScroll";
 
 
 class Index extends Component<any> {
@@ -100,12 +101,13 @@ class Index extends Component<any> {
                         <>
                             <View style={[styles.middle,]}>
                                 <View style={[styles.middleForm]}>
-                                    <ScrollView>
+                                    <KeyboardScroll>
 
 
-                                        <Title style={[styles.mt_5]}>Business Details </Title>
+                                        <View style={[styles.px_6]}>
+                                        <Title>Business Details </Title>
 
-                                        <View>
+
 
                                             {
                                                 this.alreadySetup && <View>
@@ -283,7 +285,7 @@ class Index extends Component<any> {
                                         </View>
 
 
-                                    </ScrollView>
+                                    </KeyboardScroll>
 
                                     <KAccessoryView>
                                         <View style={[styles.submitbutton]}>

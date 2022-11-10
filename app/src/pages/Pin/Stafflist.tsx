@@ -25,7 +25,7 @@ const Index = (props: any) => {
     }
 
 
-    return <Container config={{title:'Staff',hideback:true}}>
+    return <Container>
 
                 <Card style={[styles.h_100]}>
 

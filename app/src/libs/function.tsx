@@ -873,7 +873,7 @@ export const saveTempLocalOrder = async (order?: any) => {
     try {
 
         if (!Boolean(order)) {
-            order = store.getState().cartData
+            order = await store.getState().cartData
         }
 
         order = await itemTotalCalculation(clone(order), undefined, undefined, undefined, undefined, 2, 2, false, false);
@@ -919,8 +919,9 @@ export const deleteTempLocalOrder = async (tableorderid: any) => {
 
     delete tableorders[tableorderid];
 
-    await storeData('fusion-pro-pos-mobile-tableorder', clone(tableorders)).then(async () => {
-        await store.dispatch(setTableOrdersData(clone(tableorders)));
+    await storeData('fusion-pro-pos-mobile-tableorder', tableorders).then(async () => {
+        await store.dispatch(setTableOrdersData(tableorders));
+        await store.dispatch(resetCart())
     });
 
 }
@@ -990,6 +991,7 @@ export const saveLocalOrder = async (order?: any) => {
         }
 
         await deleteTempLocalOrder(order.tableorderid).then(async () => {
+
             await storeData('fusion-pro-pos-mobile', data).then(async () => {
                 store.dispatch(setOrder(order))
             });

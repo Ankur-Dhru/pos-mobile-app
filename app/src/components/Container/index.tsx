@@ -1,14 +1,15 @@
 import * as React from 'react';
 import {Surface, withTheme} from 'react-native-paper';
 import {styles} from "../../theme";
-
+import {SafeAreaView} from "react-native-safe-area-context";
+//import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
 const Index = ({children,surface,hideappbar,navigation,config,style,theme:{colors}}:any) => {
 
 
     const Actions = config?.actions;
-
+    //const insets = useSafeAreaInsets();
 
 
     return (
@@ -26,12 +27,11 @@ const Index = ({children,surface,hideappbar,navigation,config,style,theme:{color
                 </View>
             </View>*/}
 
-
-                <Surface style={[styles.coverScreen,{backgroundColor:'#fff'}]}>
+            <Surface style={[styles.coverScreen,{backgroundColor:'#fff'}]}>
 
                     {children}
 
-                </Surface>
+            </Surface>
 
         </>
     );

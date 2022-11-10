@@ -1,19 +1,22 @@
 import React, {useEffect, useState} from "react";
-import {appLog, isRestaurant, retrieveData, saveTempLocalOrder, voucherData} from "../../libs/function";
+import {errorAlert, isRestaurant, saveTempLocalOrder, voucherData} from "../../libs/function";
 import Cart from "./Cart";
-import {localredux, PRODUCTCATEGORY, VOUCHER} from "../../libs/static";
+import {device, localredux, PRODUCTCATEGORY, VOUCHER} from "../../libs/static";
 import {useDispatch} from "react-redux";
-import {Title, withTheme} from "react-native-paper";
+import {withTheme} from "react-native-paper";
 import {setSelected} from "../../redux-store/reducer/selected-data";
 import {refreshCartData} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
-
+import {TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
+import ProIcon from "../../components/ProIcon";
+import {openPage} from "../../redux-store/reducer/component";
+import SearchItem from "../Items/SearchItem";
 
 const Index = (props: any) => {
 
-    const tabledetails:any = props?.route?.params;
+    const tabledetails: any = props?.route?.params;
 
     const mainproductgroupid = localredux.localSettingsData?.currentLocation?.mainproductgroupid || PRODUCTCATEGORY.DEFAULT
 
@@ -27,6 +30,18 @@ const Index = (props: any) => {
         dispatch(setSelected({value: mainproductgroupid, field: 'group'}))
 
     }, [])
+
+
+    React.useEffect(
+        () =>
+            navigation.addListener('beforeRemove', (e) => {
+                e.preventDefault();
+                saveTempLocalOrder().then(() => {})
+                navigation.dispatch(e.data.action)
+            }),
+        [navigation]
+    );
+
 
     const [loaded, setLoaded] = useState(false)
     useEffect(() => {
@@ -42,8 +57,34 @@ const Index = (props: any) => {
     }
 
     navigation.setOptions({
-        headerCenter: () => <Title style={[styles.headertitle]}>{'asdfasdf'}</Title>,
+        headerTitle: tabledetails?.tablename || 'Retail Order',
+
     })
+
+    if(!isRestaurant()){
+        navigation.setOptions({
+            headerLeft:()=> <View>
+                <TouchableOpacity onPress={() => {
+                    navigation.navigate('ProfileSettingsNavigator')
+                }}>
+                    <ProIcon name={'gear'}/>
+                </TouchableOpacity>
+            </View>
+        })
+    }
+
+    if(!device.tablet){
+        navigation.setOptions({
+            headerRight:()=> <View>
+                <TouchableOpacity
+                    onPress={() => {
+                        navigation.navigate('SearchItem')
+                    }}>
+                    <ProIcon name={'magnifying-glass'} />
+                </TouchableOpacity>
+            </View>
+        })
+    }
 
     return <Cart tabledetails={tabledetails}/>
 }

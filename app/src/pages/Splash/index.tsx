@@ -9,7 +9,7 @@ import {useDispatch} from "react-redux";
 import {Card} from "react-native-paper";
 import {setTableOrdersData} from "../../redux-store/reducer/table-orders-data";
 import {hideLoader} from "../../redux-store/reducer/component";
-import {localredux} from "../../libs/static";
+import {device, localredux} from "../../libs/static";
 import {setSettings} from "../../redux-store/reducer/local-settings-data";
 
 import {getDBConnection} from "../../libs/Sqlite";
@@ -23,7 +23,9 @@ import {
 const Index = (props: any) => {
 
     const {navigation} = props
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
+
+    device.navigation = navigation;
 
 
     const loadDataCallback = useCallback(async () => {

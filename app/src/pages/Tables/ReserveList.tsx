@@ -38,7 +38,8 @@ const ReserveList = (props: any) => {
                 </TouchableOpacity>
             }}
             initialNumToRender={5}
-
+            keyboardDismissMode={'on-drag'}
+            keyboardShouldPersistTaps={'always'}
             ListEmptyComponent={() => {
                 return (<View style={[]}><Paragraph
                     style={[styles.paragraph, styles.p_6, styles.muted, {textAlign: 'center'}]}>No any

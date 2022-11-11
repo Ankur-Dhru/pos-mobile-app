@@ -91,7 +91,7 @@ const Index = (props: any) => {
                     }}>
                         <List.Item title={item.label}
                                    titleStyle={{textTransform: 'capitalize'}}
-                                   left={() => <Avatar label={item.label} size={30} value={item.value}/>}
+                                   left={() => <Avatar label={item.label}   value={item.value}/>}
                                    right={() => +item.value === +selected &&
                                        <View style={{marginTop: 10}}><ProIcon action_type={'text'}  name={'check'}/></View>}
                         />
@@ -184,7 +184,6 @@ const Index = (props: any) => {
 
         <Container>
 
-            <SafeAreaView>
 
 
                 <View>
@@ -200,7 +199,7 @@ const Index = (props: any) => {
                         scrollIndicatorInsets={{right: 1}}
                         data={filterlist}
                         accessible={true}
-                        keyboardDismissMode={'none'}
+                        keyboardDismissMode={'on-drag'}
                         keyboardShouldPersistTaps={'always'}
                         renderItem={renderList}
                         ListFooterComponent={() => {
@@ -227,7 +226,6 @@ const Index = (props: any) => {
                     </View>
                 </KAccessoryView>
 
-            </SafeAreaView>
 
         </Container>
     );

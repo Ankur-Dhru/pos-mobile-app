@@ -9,7 +9,7 @@ const Avatar = (props:any) => {
 
         const viewStyle = [imageContainer];
         if (roundedImage)
-            viewStyle.push({borderRadius: Math.round(width + height) / 2});
+            viewStyle.push({borderRadius: 20});
         return (
             <View style={viewStyle}>
                 <Image style={image} source={img} />
@@ -23,7 +23,7 @@ const Avatar = (props:any) => {
 
         const viewStyle = [placeholderContainer];
         if (roundedPlaceholder)
-            viewStyle.push({borderRadius: Math.round(width + height) / 2});
+            viewStyle.push({borderRadius: 20});
 
         return (
             <View style={viewStyle}>

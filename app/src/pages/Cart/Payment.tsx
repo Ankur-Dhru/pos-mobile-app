@@ -143,10 +143,10 @@ const Index = ({vouchertotaldisplay, paidamount,payment, vouchercurrencyrate}: a
             ////////// SAVE FINAL DATA //////////
             dispatch(showLoader())
 
-            saveLocalOrder(clone(cartData)).then(() => {
+            saveLocalOrder(clone(cartData)).then(async () => {
 
                 if (config?.print) {
-                    printInvoice(cartData).then(() => {
+                   await printInvoice(cartData).then(() => {
                         navigation.dispatch(
                             CommonActions.reset({
                                 index: 0,

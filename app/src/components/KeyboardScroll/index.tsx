@@ -10,12 +10,16 @@ export default class KeyboardScroll extends React.Component<any> {
     render() {
         const {children, scrollRef, scrollEnabled, onScroll}: any = this.props;
         return (
-            <ScrollView>
-                <KeyboardAwareScrollView ref={scrollRef} scrollsToTop={true} onScroll={onScroll}>
-                        <View>{children}</View>
-                </KeyboardAwareScrollView>
-            </ScrollView>
-
+        <ScrollView contentInsetAdjustmentBehavior="automatic"  keyboardDismissMode={'on-drag'} scrollEnabled={true} >
+            <View>{children}</View>
+        </ScrollView>
         );
     }
 }
+
+/*
+<ScrollView>
+    <KeyboardAwareScrollView  ref={scrollRef} scrollsToTop={true} onScroll={onScroll}>
+        <View>{children}</View>
+    </KeyboardAwareScrollView>
+</ScrollView>*/

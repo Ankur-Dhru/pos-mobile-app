@@ -35,6 +35,8 @@ const Index = (props: any) => {
         <FlatList
             data={Object.values(tableorders)}
             renderItem={renderitem}
+            keyboardDismissMode={'on-drag'}
+            keyboardShouldPersistTaps={'always'}
             initialNumToRender={5}
         />
     </View>

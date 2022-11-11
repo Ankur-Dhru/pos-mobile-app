@@ -8,26 +8,27 @@ import {setSelected} from "../../redux-store/reducer/selected-data";
 import ProIcon from "../../components/ProIcon";
 import {useNavigation} from "@react-navigation/native";
 import {Menu, Paragraph} from "react-native-paper";
-import {setDialog, setModal} from "../../redux-store/reducer/component";
+import {setDialog} from "../../redux-store/reducer/component";
 import ReserveList from "./ReserveList";
-import store from "../../redux-store/store";
-import AddEditItem from "../Items/AddEditItem";
 import AddTable from "./AddTable";
-import {appLog} from "../../libs/function";
 
 
 const OrderType = (props: any) => {
-    const {type, selected,getOrder} = props;
+    const {type, selected, getOrder} = props;
     const navigation: any = useNavigation();
     const dispatch = useDispatch()
 
 
     return <>
         <TouchableOpacity onPress={() => {
-            if(type.value === 'qsr') {
-                navigation.navigate('CartStackNavigator', { tablename: type.label, ordertype: type.value, invoiceitems: [], kots: [] });
-            }
-            else{
+            if (type.value === 'qsr') {
+                navigation.navigate('CartStackNavigator', {
+                    tablename: type.label,
+                    ordertype: type.value,
+                    invoiceitems: [],
+                    kots: []
+                });
+            } else {
                 dispatch(setSelected({...type, field: 'ordertype'}))
             }
         }}>
@@ -40,7 +41,7 @@ const OrderType = (props: any) => {
 
 const Index = (props: any) => {
 
-    const {ordertype, shifttable, setShifttable,getOrder} = props;
+    const {ordertype, shifttable, setShifttable, getOrder} = props;
     const navigation: any = useNavigation();
     const dispatch = useDispatch();
 
@@ -60,12 +61,7 @@ const Index = (props: any) => {
     }
 
     const onClickAddTable = () => {
-        store.dispatch(setModal({
-            visible: true,
-            hidecancel: true,
-            width: 300,
-            component: () => <AddTable getOrder={getOrder}  />
-        }))
+        navigation.navigate('AddTable', {getOrder: getOrder})
         closeMenu();
     }
 
@@ -77,7 +73,7 @@ const Index = (props: any) => {
                 <View>
                     <TouchableOpacity onPress={() => {
                         navigation.navigate('ProfileSettingsNavigator')
-                    }} >
+                    }}>
                         <ProIcon name={'gear'}/>
                     </TouchableOpacity>
                 </View>

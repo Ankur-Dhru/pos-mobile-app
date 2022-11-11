@@ -94,21 +94,7 @@ const Terminal = (props: any) => {
         })
     }
 
-    const onValidate = (values: any) => {
-        let error: any = {};
-        if (!Boolean(values?.terminalname)) {
-            error.terminalname = "Please Terminal Name!";
-        }
-        if (!Boolean(values?.timezone)) {
-            error.timezone = "Please Select Timezone!";
-        }
 
-        if (!Boolean(values?.locationid)) {
-            error.locationid = "Please Select Location!";
-        }
-
-        return error;
-    }
 
     let defaultTimeZone = {};
     let locationid = '';
@@ -143,7 +129,7 @@ const Terminal = (props: any) => {
         <Form
             initialValues={initialValues}
             onSubmit={handleSubmit}
-            validate={onValidate}
+
             render={({handleSubmit, submitting, values, ...more}: any) => (
                 <>
 
@@ -160,10 +146,11 @@ const Terminal = (props: any) => {
                                         <View style={[styles.mb_5]}>
                                             <Field name="terminalname" validate={composeValidators(required)}>
                                                 {props => (
-                                                    <InputBox
+                                                    <InputField
                                                         {...props}
                                                         value={props.input.value}
                                                         label={'Terminal Name'}
+                                                        inputtype={'textbox'}
                                                         autoFocus={true}
                                                         onChange={props.input.onChange}
                                                     />

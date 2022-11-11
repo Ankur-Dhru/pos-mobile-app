@@ -9,8 +9,7 @@ import ProIcon from "../../components/ProIcon";
 import {setCartData} from "../../redux-store/reducer/cart-data";
 import {device, localredux} from "../../libs/static";
 import Avatar from "../../components/Avatar";
-import store from "../../redux-store/store";
-import {closePage, openPage, setModal} from "../../redux-store/reducer/component";
+
 
 import AddEditClient from "./AddEditClient";
 import {useNavigation} from "@react-navigation/native";

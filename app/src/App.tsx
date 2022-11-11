@@ -1,24 +1,12 @@
 import * as React from 'react';
-import {
-    Appearance, Dimensions,
-    LogBox,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    useColorScheme,
-    View,
-} from 'react-native';
+import {Appearance, Dimensions, LogBox, SafeAreaView, StatusBar, useColorScheme,} from 'react-native';
 
 import {Provider} from "react-redux";
 import store from "./redux-store/store";
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 
 import ActivityIndicator from "./components/ActivityIndicator";
 import BottomSheet from "./components/BottomSheet";
-import PageSheet from "./components/PageSheet";
-import NetworkStatus from "./components/NetworkStatus"
 import Modal from "./components/Modal";
 import 'react-native-get-random-values';
 
@@ -28,7 +16,6 @@ import {
     NavigationContainer,
 } from '@react-navigation/native';
 import {
-    Appbar,
     DarkTheme as PaperDarkTheme,
     DefaultTheme as PaperDefaultTheme,
     Provider as PaperProvider,
@@ -36,14 +23,12 @@ import {
 
 
 import {configureFontAwesomePro} from "react-native-fontawesome-pro";
-import {MainStackNavigator} from "./pages/Navigation/MainNavigator";
+import {MainStackNavigator} from "./pages/General/MainNavigator";
 import SnackBar from "./components/SnackBar";
 import {device} from "./libs/static";
 import Dialog from "./components/Dialog";
-import {appLog, isEmpty, retrieveData} from './libs/function';
-import {useEffect} from "react";
-import {showLoader} from "./redux-store/reducer/component";
 import Page from "./components/Page";
+import NetworkStatus from "./components/NetworkStatus";
 import {styles} from "./theme";
 
 
@@ -64,7 +49,6 @@ const App = () => {
     const isDarkMode = useColorScheme() === 'dark';
 
     // StatusBar.setHidden(true);
-
 
 
     const CombinedDefaultTheme = {
@@ -131,33 +115,29 @@ const App = () => {
     let themeis: any = (theme === 'light' ? CombinedDefaultTheme : CombinedDarkTheme);
 
 
-
-
-
     return (
         <Provider store={store}>
-            <PaperProvider theme={CombinedDefaultTheme}>
-                <SafeAreaProvider>
-                <StatusBar barStyle={isDarkMode ? 'dark-content' : 'dark-content'}
-                           backgroundColor={CombinedDefaultTheme.colors.primary}/>
-                <NetworkStatus/>
-                <SafeAreaView  style={[styles.h_100]}  edges={['top', 'left', 'right','bottom']}>
+            <SafeAreaView style={[styles.h_100]}>
+                <PaperProvider theme={CombinedDefaultTheme}>
 
-                        <NavigationContainer>
-                            <MainStackNavigator/>
-                        </NavigationContainer>
+                    <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+                               backgroundColor={isDarkMode ? 'black' : 'white'}/>
+                    <NetworkStatus/>
+                    <NavigationContainer>
 
+                        <MainStackNavigator/>
 
-                    {/*<PageSheet/>*/}
+                    </NavigationContainer>
+
                     <Page/>
                     <Modal/>
                     <BottomSheet/>
                     <Dialog/>
                     <SnackBar/>
                     <ActivityIndicator/>
-                </SafeAreaView>
-                </SafeAreaProvider>
-            </PaperProvider>
+
+                </PaperProvider>
+            </SafeAreaView>
         </Provider>
     );
 };

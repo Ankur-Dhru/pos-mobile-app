@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {errorAlert, isRestaurant, saveTempLocalOrder, voucherData} from "../../libs/function";
+import {isRestaurant, saveTempLocalOrder, voucherData} from "../../libs/function";
 import Cart from "./Cart";
 import {device, localredux, PRODUCTCATEGORY, VOUCHER} from "../../libs/static";
 import {useDispatch} from "react-redux";
@@ -9,9 +9,7 @@ import {refreshCartData} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
 import {TouchableOpacity, View} from "react-native";
-import {styles} from "../../theme";
 import ProIcon from "../../components/ProIcon";
-import {openPage} from "../../redux-store/reducer/component";
 import SearchItem from "../Items/SearchItem";
 
 const Index = (props: any) => {
@@ -35,9 +33,12 @@ const Index = (props: any) => {
     React.useEffect(
         () =>
             navigation.addListener('beforeRemove', (e) => {
-                e.preventDefault();
-                saveTempLocalOrder().then(() => {})
-                navigation.dispatch(e.data.action)
+                if (e.data?.action?.type === 'POP') {
+                    e.preventDefault();
+                    saveTempLocalOrder().then(() => {
+                    })
+                    navigation.dispatch(e.data.action)
+                }
             }),
         [navigation]
     );
@@ -61,9 +62,9 @@ const Index = (props: any) => {
 
     })
 
-    if(!isRestaurant()){
+    if (!isRestaurant()) {
         navigation.setOptions({
-            headerLeft:()=> <View>
+            headerLeft: () => <View>
                 <TouchableOpacity onPress={() => {
                     navigation.navigate('ProfileSettingsNavigator')
                 }}>
@@ -73,14 +74,14 @@ const Index = (props: any) => {
         })
     }
 
-    if(!device.tablet){
+    if (!device.tablet) {
         navigation.setOptions({
-            headerRight:()=> <View>
+            headerRight: () => <View>
                 <TouchableOpacity
                     onPress={() => {
                         navigation.navigate('SearchItem')
                     }}>
-                    <ProIcon name={'magnifying-glass'} />
+                    <ProIcon name={'magnifying-glass'}/>
                 </TouchableOpacity>
             </View>
         })

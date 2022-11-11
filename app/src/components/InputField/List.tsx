@@ -5,7 +5,7 @@ import {filterArray, assignOption, getType, log, appLog} from "../../libs/functi
 import {Appbar, Divider, List, Paragraph, withTheme} from "react-native-paper";
 
 import {Button, ProIcon} from "../index";
-import {closePage, openPage, setBottomSheet, setModal} from "../../redux-store/reducer/component";
+import { setBottomSheet} from "../../redux-store/reducer/component";
 import {styles as theme, styles} from "../../theme";
 
 import Avatar from "../Avatar";
@@ -54,13 +54,12 @@ class ListView extends Component<any> {
     }
 
     _select = (item: any) => {
-        const {onSelect, setBottomSheet,  closePage,pageKey, multiselect, disabledCloseModal,modal,setModal}: any = this.props;
+        const {onSelect, setBottomSheet,  closePage,pageKey, disabledCloseModal}: any = this.props;
         onSelect(item);
         setBottomSheet({visible: false});
          if (!Boolean(disabledCloseModal)) {
             Keyboard.dismiss();
             setTimeout(() => {
-                //setModal({visible:false})
                 closePage(pageKey)
             }, 100)
         }
@@ -70,7 +69,7 @@ class ListView extends Component<any> {
 
         Keyboard.dismiss();
 
-        const {onSelect, closePage,pageKey,setModal}: any = this.props;
+        const {onSelect, closePage,pageKey}: any = this.props;
 
         let selected = this.filterlist?.filter((item: any) => {
             return item.selected
@@ -81,7 +80,6 @@ class ListView extends Component<any> {
         onSelect({value: selected})
 
         setTimeout(() => {
-            //setModal({visible:false})
             closePage(pageKey)
         }, 100)
 
@@ -89,13 +87,9 @@ class ListView extends Component<any> {
 
     renderList = ({item}: any) => {
         const {
-            onSelect,
-            setBottomSheet,
             selected,
-            displaytype,
             multiselect,
             listtype,
-            closePage
         }: any = this.props;
 
 
@@ -208,15 +202,9 @@ class ListView extends Component<any> {
         const {
             theme: {colors},
             label,
-            showlabel,
-            search,
-            appbar,
-            navigation,
             addItem,
             multiselect,
             displaytype,
-            onAdd,
-            setModal,
             pageKey,
             closePage
         }: any = this.props;
@@ -260,7 +248,7 @@ class ListView extends Component<any> {
                         scrollIndicatorInsets={{right: 1}}
                         data={this.filterlist}
                         accessible={true}
-                        keyboardDismissMode={'none'}
+                        keyboardDismissMode={'on-drag'}
                         keyboardShouldPersistTaps={'always'}
                         renderItem={this.renderList}
                         ListFooterComponent={() => {
@@ -280,15 +268,6 @@ class ListView extends Component<any> {
 
                 <View style={[{marginTop: 'auto',backgroundColor:'white'},styles.p_6]}>
                     <View>
-
-                        {/*<View>
-                            <Button more={{backgroundColor: styles.light.color, color: 'black'}}
-                                    onPress={() => {
-                                         closePage(pageKey)
-                                    }}> Cancel
-                            </Button>
-                        </View>*/}
-
                         {multiselect && <View><Button onPress={() => {
                             this.confirm()
                         }}> Confirm </Button></View>}
@@ -307,9 +286,7 @@ const mapStateToProps = (state: any) => ({
 })
 const mapDispatchToProps = (dispatch: any) => ({
     setBottomSheet: (dialog: any) => dispatch(setBottomSheet(dialog)),
-    setModal: (dialog: any) => dispatch(setModal(dialog)),
-    openPage: (dialog: any) => dispatch(openPage(dialog)),
-    closePage: (dialog: any) => dispatch(closePage(dialog)),
+
 });
 export default connect(mapStateToProps, mapDispatchToProps)(withTheme(ListView));
 

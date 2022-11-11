@@ -72,6 +72,8 @@ const Index = (props: any) => {
                 <>
                     <FlatList
                         data={kots}
+                        keyboardDismissMode={'on-drag'}
+                        keyboardShouldPersistTaps={'always'}
                         ref={kotListRef}
                         getItemLayout={(data, index) => {
                             return { length: 200, offset: 200 * index, index };
@@ -84,6 +86,8 @@ const Index = (props: any) => {
                     <FlatList
                         data={invoiceitems}
                         ref={cartListRef}
+                        keyboardDismissMode={'on-drag'}
+                        keyboardShouldPersistTaps={'always'}
                         getItemLayout={(data, index) => {
                             return { length: 80, offset: 80 * index, index };
                         }}

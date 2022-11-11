@@ -104,6 +104,8 @@ const Index = ({ordersData}: any) => {
     }}>
         <FlatList
             data={Object.values(data).reverse()}
+            keyboardDismissMode={'on-drag'}
+            keyboardShouldPersistTaps={'always'}
             renderItem={renderItem}
         />
     </Container>

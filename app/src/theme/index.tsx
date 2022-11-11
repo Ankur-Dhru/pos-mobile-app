@@ -457,7 +457,7 @@ export const styles: any = StyleSheet.create({
         bottom: 0
     },
     submitbutton: {
-        paddingLeft: hp('1.5%'), paddingRight: hp('1.5%'),
+        /*paddingLeft: hp('1.5%'), paddingRight: hp('1.5%'),*/
         width:'100%'
     },
 

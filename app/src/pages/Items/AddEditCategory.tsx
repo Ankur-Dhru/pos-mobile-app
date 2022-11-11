@@ -90,7 +90,7 @@ const Index = (props: any) => {
 
     return (
         <Container>
-            <SafeAreaView>
+
             <Form
                 onSubmit={handleSubmit}
                 initialValues={{...initdata}}
@@ -159,7 +159,6 @@ const Index = (props: any) => {
 
             </Form>
 
-            </SafeAreaView>
         </Container>
 
     )

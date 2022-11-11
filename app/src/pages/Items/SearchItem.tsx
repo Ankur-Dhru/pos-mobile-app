@@ -43,18 +43,25 @@ const Index = ({navigation}: any) => {
 
     let [items, setItems] = useState([]);
     let [search, setSearch] = useState('');
-    const [loading, setLoading]: any = useState(false);
+    const [loading, setLoading]: any = useState(true);
 
 
-    const handleSearch = async (search: any) => {
-        if (Boolean(search) && search.length > 3) {
+    const handleSearch = async (search?: any) => {
+        setLoading(false)
+        if (Boolean(search)) {
             setSearch(search);
             await getItemsByWhere({itemname: search, start: 0}).then((items) => {
                 setItems(items);
                 setLoading(true)
             });
         }
+        else{
+            setSearch('');
+            setItems([]);
+            setLoading(true)
+        }
     }
+
 
 
     useEffect(() => {
@@ -72,15 +79,18 @@ const Index = ({navigation}: any) => {
             <View style={[styles.h_100, styles.flex, styles.w_100, {flexDirection: 'column'}]}>
 
                 <View style={[{marginTop: 10}]}>
-                    <SearchBox handleSearch={handleSearch} autoFocus={true} placeholder="Search Item..."/>
+                    <SearchBox handleSearch={handleSearch} autoFocus={true}  placeholder="Search Item..."/>
                 </View>
 
                 <Card style={[styles.h_100, styles.flex]}>
                     <Card.Content style={[styles.cardContent]}>
+
                         {loading && <FlatList
                             data={items}
+                            keyboardDismissMode={'on-drag'}
+                            keyboardShouldPersistTaps={'always'}
                             renderItem={renderitems}
-                            ListEmptyComponent={Boolean(search) ? <View>
+                            ListEmptyComponent={Boolean(search.length > 0) ? <View>
                                 <View style={[styles.p_6]}>
                                     <Text
                                         style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> No

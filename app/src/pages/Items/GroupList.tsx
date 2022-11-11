@@ -5,13 +5,9 @@ import {FlatList, TouchableOpacity, View} from "react-native";
 import {connect, useDispatch} from "react-redux";
 
 import {styles} from "../../theme";
-import {Divider, List, Paragraph} from "react-native-paper";
+import {Divider, List} from "react-native-paper";
 
 import {setSelected} from "../../redux-store/reducer/selected-data";
-import store from "../../redux-store/store";
-import {openPage} from "../../redux-store/reducer/component";
-import AddEditCategory from "./AddEditCategory";
-import {useNavigation} from "@react-navigation/native";
 
 
 const GroupItem = (props: any) => {
@@ -38,7 +34,7 @@ const GroupItem = (props: any) => {
 
 const Index = (props: any) => {
 
-    const {selectedgroup, grouplist,navigation} = props;
+    const {selectedgroup, grouplist, navigation} = props;
 
     let groups: any = Object.values(grouplist).map((group: any) => {
         return {label: group.itemgroupname, value: group.itemgroupid}
@@ -51,8 +47,10 @@ const Index = (props: any) => {
     return <View style={[styles.h_100]}>
         <FlatList
             data={groups}
+
             renderItem={renderItem}
-            keyboardShouldPersistTaps={'handled'}
+            keyboardDismissMode={'on-drag'}
+            keyboardShouldPersistTaps={'always'}
             getItemLayout={(data, index) => {
                 return {length: 50, offset: 50 * index, index};
             }}

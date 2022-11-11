@@ -63,6 +63,7 @@ const Index = (props: any) => {
     const navigation = useNavigation()
 
     let initdata: any = {
+        veg:'veg',
         allowmultipleorders: "1",
         defaultitc: "eligible",
         inventoryaccount: 45,
@@ -71,7 +72,7 @@ const Index = (props: any) => {
         isaddon: 0,
         pricing: pricing,
         itemconfig: [],
-        itemdepartmentid: '',
+        itemdepartmentid: PRODUCTCATEGORY.DEPARTMENT,
         itemgroupid: store.getState()?.selectedData?.group?.value || PRODUCTCATEGORY.DEFAULT,
         itemhsncode: '',
         itemname: Boolean(device.search) ? device.search : '',
@@ -205,7 +206,6 @@ const Index = (props: any) => {
     return (
 
         <Container>
-            <SafeAreaView>
 
             <Form
                 onSubmit={handleSubmit}
@@ -227,6 +227,42 @@ const Index = (props: any) => {
                                                     <Paragraph style={[styles.paragraph, styles.caption, styles.mt_5]}>
                                                         Basic
                                                     </Paragraph>
+
+
+                                                    {!isRetailIndustry &&
+                                                        <View>
+                                                            <Field name="veg" >
+                                                                {props => (
+                                                                    <>
+                                                                        <InputField
+                                                                            {...props}
+                                                                            label={'Diet'}
+                                                                            mode={'flat'}
+                                                                            list={[{
+                                                                                label: 'Veg',
+                                                                                value: 'veg'
+                                                                            }, {
+                                                                                label: 'Non-Veg',
+                                                                                value: 'nonveg'
+                                                                            }, {
+                                                                                label: 'Contain Egg',
+                                                                                value: 'egg'
+                                                                            }]}
+                                                                            value={props.input.value}
+                                                                            selectedValue={props.input.value}
+                                                                            displaytype={'pagelist'}
+                                                                            inputtype={'dropdown'}
+                                                                            listtype={'other'}
+                                                                            onChange={(value: any) => {
+                                                                                props.input.onChange(value)
+                                                                            }}>
+                                                                        </InputField>
+                                                                    </>
+                                                                )}
+                                                            </Field>
+
+                                                        </View>
+                                                    }
 
                                                     <View>
                                                         <Field name="itemtype">
@@ -836,7 +872,7 @@ const Index = (props: any) => {
                     </>
                 )}
             />
-            </SafeAreaView>
+
         </Container>
 
     )

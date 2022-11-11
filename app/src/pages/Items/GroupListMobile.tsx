@@ -10,28 +10,10 @@ import {Divider, List, Paragraph} from "react-native-paper";
 import {setSelected} from "../../redux-store/reducer/selected-data";
 import InputField from "../../components/InputField";
 import {ProIcon} from "../../components";
+import {appLog} from "../../libs/function";
 
 
-const GroupItem = (props: any) => {
-    const {item, selected} = props;
 
-    const dispatch = useDispatch()
-
-
-    const selectGroup = (group: any) => {
-        dispatch(setSelected({value: group.value, field: 'group'}))
-    }
-
-    return <TouchableOpacity onPress={() => selectGroup(item)}
-                             style={[selected ? styles.bg_accent : '', {borderRadius: 5}]}>
-        <List.Item
-            title={item.label}
-            titleNumberOfLines={3}
-            titleStyle={[styles.text_sm, {color: selected ? 'white' : 'black'}]}
-        />
-        <Divider/>
-    </TouchableOpacity>
-}
 
 
 const Index = (props: any) => {
@@ -68,6 +50,7 @@ const Index = (props: any) => {
             list={groups}
             search={false}
             listtype={'other'}
+            modal={true}
             selectedValue={''}
             onChange={(value: any) => {
                 dispatch(setSelected({value: value, field: 'group'}))

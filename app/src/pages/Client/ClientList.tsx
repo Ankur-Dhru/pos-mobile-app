@@ -344,7 +344,8 @@ class ProfileView extends Component<any> {
     ListClient = (list: any) => {
         return (
             <FlatList
-                keyboardShouldPersistTaps={'handled'}
+                keyboardDismissMode={'on-drag'}
+                keyboardShouldPersistTaps={'always'}
                 data={list}
                 renderItem={this.renderClients}
                 ListEmptyComponent={<View style={[styles.middle]}><Image

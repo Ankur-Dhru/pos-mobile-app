@@ -1,22 +1,20 @@
 import React, {memo, useCallback, useEffect, useState} from "react";
 
-import {ActivityIndicator, FlatList, TouchableOpacity, View,Text} from "react-native";
+import {FlatList, Text, TouchableOpacity, View} from "react-native";
 
 import {connect} from "react-redux";
 
 import {styles} from "../../theme";
-import {appLog, isRestaurant, selectItem, toCurrency} from "../../libs/function";
+import {isRestaurant, selectItem, toCurrency} from "../../libs/function";
 import {Divider, Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
 import AddButton from "./AddButton";
-import {getItemsByWhere, readTable} from "../../libs/Sqlite/selectData";
+import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 import {AddItem} from "./ItemListTablet";
-import {openPage} from "../../redux-store/reducer/component";
 import {useNavigation} from "@react-navigation/native";
 
 
-
-let sGroup:any = '';
+let sGroup: any = '';
 
 const Item = memo(({item}: any) => {
     //item = JSON.parse(item?.data);
@@ -30,15 +28,14 @@ const Item = memo(({item}: any) => {
     return (<TouchableOpacity onPress={() => {
         !Boolean(item?.productqnt) && selectItem(item)
     }} style={[styles.noshadow]}>
-        <View
-            style={[{backgroundColor: hasKot ? styles.yellow.color : ''}]}>
+        <View>
             <View>
-                <View style={[styles.grid, styles.top, styles.noWrap,styles.p_4,   styles.px_6]}>
+                <View style={[styles.grid, styles.top, styles.noWrap, styles.p_4, styles.px_6]}>
 
-                    <View>
-                        <Text style={[styles.paragraph,  styles.text_sm,styles.bold]}>{item.itemname}</Text>
+                    <View style={[styles.w_auto,]}>
+                        <Text style={[styles.paragraph, styles.text_sm, styles.bold]}>{item.itemname}</Text>
 
-                        <View style={[styles.grid,styles.middle]}>
+                        <View style={[styles.grid, styles.middle]}>
                             {hasRestaurant && <View style={[styles.mr_1]}>
                                 <VegNonVeg type={veg}/>
                             </View>}
@@ -84,9 +81,9 @@ const Index = (props: any) => {
 
     const navigation = useNavigation()
 
-    const [loading,setLoading]:any = useState(false);
+    const [loading, setLoading]: any = useState(false);
 
-    const [dataSource, setDataSource]:any = useState([]);
+    const [dataSource, setDataSource]: any = useState([]);
 
 
     useEffect(() => {
@@ -97,7 +94,7 @@ const Index = (props: any) => {
             sGroup = selectedgroup;
         }*/
 
-        getItemsByWhere({itemgroupid: selectedgroup}).then((newitems:any) => {
+        getItemsByWhere({itemgroupid: selectedgroup}).then((newitems: any) => {
             if (Boolean(newitems.length > 0)) {
                 newitems = newitems?.map((i: any) => {
                     const find = invoiceitems.filter((ii: any) => {
@@ -109,17 +106,14 @@ const Index = (props: any) => {
                     return i;
                 })
                 setDataSource([...newitems]); //...dataSource,
-            }
-            else{
+            } else {
                 setDataSource([]);
             }
             setLoading(true)
         });
 
 
-
     }, [selectedgroup, invoiceitems])
-
 
 
     /*const onEndReached = () => {
@@ -132,8 +126,7 @@ const Index = (props: any) => {
     }, [selectedgroup]);
 
 
-
-    if(!loading){
+    if (!loading) {
         return <></>
     }
 
@@ -141,6 +134,8 @@ const Index = (props: any) => {
         <>
             <FlatList
                 data={dataSource}
+                keyboardDismissMode={'on-drag'}
+                keyboardShouldPersistTaps={'always'}
                 renderItem={renderItem}
                 getItemLayout={(data, index) => {
                     return {length: 100, offset: 100 * index, index};
@@ -152,11 +147,13 @@ const Index = (props: any) => {
                     return <View style={{height: 100}}></View>
                 }}
                 ListEmptyComponent={<View>
-                    <View  style={[styles.p_6]}>
-                        <Text style={[styles.paragraph,styles.mb_2, styles.muted, {textAlign: 'center'}]}> Start building your item library.</Text>
-                        <Text style={[styles.paragraph,  styles.text_xs,styles.muted, {textAlign: 'center'}]}> Tap Create Item to begin.</Text>
+                    <View style={[styles.p_6]}>
+                        <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> Start
+                            building your item library.</Text>
+                        <Text style={[styles.paragraph, styles.text_xs, styles.muted, {textAlign: 'center'}]}> Tap
+                            Create Item to begin.</Text>
                     </View>
-                    <AddItem navigation={navigation} />
+                    <AddItem navigation={navigation}/>
                 </View>}
             />
         </>

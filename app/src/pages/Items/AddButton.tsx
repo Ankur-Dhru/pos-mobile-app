@@ -57,23 +57,6 @@ const Index = (props: any) => {
             })
         })
 
-        // store.dispatch(setDialog({
-        //     visible: true,
-        //     title: "Amount",
-        //     hidecancel: true,
-        //     width: 380,
-        //     component: () => <KeyPad
-        //         defaultValue={item?.productqnt}
-        //         onPressCancel={() => {
-        //             dispatch(setDialog({visible: false}))
-        //         }}
-        //         onPressOK={(productqnt: any) => {
-        //             updateItem({...item, productqnt: +productqnt}, "update").then(() => {
-        //                 dispatch(setDialog({visible: false}))
-        //             })
-        //         }}
-        //     />
-        // }))
     }
 
     return (

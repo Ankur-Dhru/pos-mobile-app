@@ -812,7 +812,7 @@ export const setItemRowData = (data: any) => {
             pricing.price &&
             pricing.price.default &&
             pricing.price.default[0] &&
-            pricing.price.default.length > 0) {
+            pricing.price.default?.length > 0) {
             recurring = Object.keys(pricing.price.default[0])[0];
         }
         if (Boolean(salesunit)) {
@@ -915,6 +915,7 @@ export const saveTempLocalOrder = async (order?: any) => {
 
 export const deleteTempLocalOrder = async (tableorderid: any) => {
 
+
     let tableorders: any = clone(store.getState().tableOrdersData) || {}
 
     delete tableorders[tableorderid];
@@ -993,7 +994,7 @@ export const saveLocalOrder = async (order?: any) => {
         await deleteTempLocalOrder(order.tableorderid).then(async () => {
 
             await storeData('fusion-pro-pos-mobile', data).then(async () => {
-                store.dispatch(setOrder(order))
+                await store.dispatch(setOrder(order))
             });
         })
     })
@@ -1099,7 +1100,7 @@ export const selectItem = async (item: any) => {
             let start = moment();
 
 
-            if (Boolean(addongroupid.length) || Boolean(addonid.length)) {
+            if (Boolean(addongroupid?.length) || Boolean(addonid?.length)) {
 
                 item = {
                     ...item,
@@ -1504,205 +1505,7 @@ export const printKOT = async (kot?: any) => {
 
 }
 
-export const generateKOT = async () => {
 
-    let kotid: any = '';
-    store.dispatch(showLoader())
-    let cartData = store.getState().cartData;
-    const {currentLocation: {departments}} = localredux.localSettingsData;
-
-    const currentTicketType = localredux.initData?.tickets[TICKETS_TYPE.KOT];
-
-    const {adminid, username}: any = localredux.loginuserData;
-    const today: any = store.getState().localSettings?.today;
-
-    try {
-        await retrieveData('fusion-pro-pos-mobile-kotno').then(async (kotno: any) => {
-
-            if (!Boolean(kotno) && (today !== moment().format('YYYY-MM-DD'))) {
-                kotno = 0;
-            }
-            kotid = kotno;
-            if (isEmpty(departments)) {
-                errorAlert(`No Kitchen Department`);
-            } else {
-
-                let {
-                    invoiceitems,
-                    tableorderid,
-                    tableid,
-                    tablename,
-                    ordertype,
-                    kots,
-                    commonkotnote,
-                } = cartData;
-
-
-                let itemForKot: any = [], newkot = {};
-                let printkot: any = [];
-                if (ordertype !== "tableorder") {
-                    tablename = ordertype
-                    if (tableorderid) {
-                        tablename += ` #${tableorderid}`
-                    }
-                }
-
-
-                if (invoiceitems) {
-
-                    itemForKot = invoiceitems.filter((itemL1: any) => {
-                        return Boolean(itemL1.itemdepartmentid) && !Boolean(itemL1?.kotid)
-                    });
-
-
-                    if (itemForKot.length > 0) {
-
-                        let kitchens: any = [];
-
-
-                        itemForKot.forEach((item: any) => {
-
-                            const kitchenid = item?.itemdepartmentid;
-
-                            let find = kitchens.find((k: any) => k === kitchenid);
-                            if (!Boolean(find)) {
-                                kitchens = [
-                                    ...kitchens,
-                                    kitchenid
-                                ]
-                            }
-                        });
-
-
-                        const openTicketStatus = getTicketStatus(TICKET_STATUS.DONE);
-
-                        kitchens.forEach((k: any) => {
-                            kotid++;
-                            storeData('fusion-pro-pos-mobile-kotno', kotid).then(() => {
-                            });
-                            let kotitems: any = [];
-
-                            itemForKot.forEach((itemL1: any, index: any) => {
-
-                                if (itemL1?.itemdepartmentid === k) {
-
-                                    if (!Boolean(itemL1?.kotid)) {
-                                        itemL1 = {
-                                            ...itemL1,
-                                            kotid: kotid,
-                                            can_not_change: true
-                                        }
-                                    }
-
-                                    let {
-                                        product_qnt,
-                                        productratedisplay,
-                                        notes,
-                                        productqnt,
-                                        ref_id,
-                                        groupname,
-                                        itemunit,
-                                        itemid,
-                                        itemname,
-                                        itemaddon,
-                                        itemtags
-                                    } = itemL1;
-
-                                    const kot = {
-                                        "productid": itemid,
-                                        "productrate": productratedisplay,
-                                        "productratedisplay": productratedisplay,
-                                        "productqnt": productqnt,
-                                        "productqntunitid": itemunit,
-                                        "related": 0,
-                                        "item_ref_id": "",
-                                        "staffid": adminid,
-                                        "productdisplayname": itemname,
-                                        "itemgroupname": groupname,
-                                        "instruction": notes || '',
-                                        itemaddon: itemaddon?.map((item: any) => {
-                                            return `${item.productqnt} X ${item.itemname}`
-                                        }),
-                                        itemtags: itemtags?.map((itemtag: any) => {
-                                            return itemtag?.taglist?.map((tag: any) => {
-                                                if (tag.selected) {
-                                                    return `${itemtag.taggroupname} : ${tag.name}`
-                                                }
-                                            })
-                                        }).join(' '),
-                                        ref_id,
-                                        key: itemL1.key,
-                                    };
-
-                                    kotitems = [...kotitems, clone(kot)];
-
-                                    itemForKot[index] = itemL1;
-                                }
-
-                            });
-
-                            const department = findObject(departments, 'departmentid', k, true)
-
-                            newkot = {
-                                tickettypeid: currentTicketType?.tickettypeid,
-                                ticketnumberprefix: currentTicketType?.ticketnumberprefix,
-                                ticketstatus: openTicketStatus?.statusid,
-                                ticketstatusname: "Close",
-                                ticketitems: kotitems,
-                                ticketdate: moment().format("YYYY-MM-DD"),
-                                tickettime: moment().format("hh:mm A"),
-                                datetime: moment().unix(),
-                                kotid,
-                                tableid,
-                                counter: 1,
-                                commonkotnote: commonkotnote,
-                                status: "pending",
-                                table: tablename,
-                                departmentid: k,
-                                departmentname: department?.name,
-                                staffid: adminid,
-                                staffname: username,
-                                ordertype: ordertype,
-                            };
-
-                            appLog('newkot', newkot)
-
-
-                            kots = [...kots, newkot];
-
-                            printkot.push(newkot);
-
-                            printKOT(newkot)
-
-
-                        });
-
-                        const updateditems = invoiceitems.map((item: any) => {
-
-                            const find = findObject(itemForKot, 'key', item.key, true);
-                            if (Boolean(find)) {
-                                item = {
-                                    ...item,
-                                    kotid: find.kotid,
-                                }
-                            }
-                            return item
-                        })
-
-                        await store.dispatch(updateCartKots(kots))
-                        await store.dispatch(updateCartItems(updateditems))
-
-                        await store.dispatch(hideLoader())
-
-                    }
-                }
-            }
-        });
-    } catch (e) {
-        appLog('e', e)
-    }
-
-}
 
 export const cancelOrder = async (navigation: any) => {
 

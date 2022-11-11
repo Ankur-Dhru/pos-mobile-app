@@ -10,7 +10,6 @@ import {ACTIONS, device, localredux, METHOD, posUrl, screenOptionStyle, STATUS} 
 
 import Splash from "../Splash";
 import {createDrawerNavigator} from "@react-navigation/drawer";
-import DrawerNavigatorContent from ".//DrawerNavigatorContent"
 import Tables from "../Tables";
 import Cart from "../Cart";
 import {appLog, CheckConnectivity, isEmpty, isRestaurant, retrieveData, storeData} from "../../libs/function";
@@ -34,22 +33,21 @@ import CurrencyPreferences from "../SetupWorkspace/CurrencyPreferences";
 
 import InvoicePrinter from "../PrinterSettings/InvoicePrinter";
 import KOTPrinter from "../PrinterSettings/KOTPrinter";
-import ProfileSettings from "../ProfileSettings";
 import AddEditClient from "../Client/AddEditClient";
 import AddEditItem from "../Items/AddEditItem";
 import AddEditCategory from "../Items/AddEditCategory";
-import DropDownList from "../General/DropDownList";
-import General from "../General";
+import DropDownList from "./DropDownList";
+import General from "./ProfileSettings";
 import ClientAndSource from "../Cart/ClientAndSource";
 
 import PrinterSettings from "../PrinterSettings/Setting";
-import {useNavigation} from "@react-navigation/native";
 import SearchItem from "../Items/SearchItem";
+import AddTable from "../Tables/AddTable";
 
 const screenOptions = {...screenOptionStyle};
 
 
-const Drawer = createDrawerNavigator();
+//const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
 
 
@@ -147,7 +145,7 @@ const SplashStackNavigator = () => {
 
 const SetupStackNavigator = () => {
     return (
-        <Stack.Navigator initialRouteName={'Login'}>
+        <Stack.Navigator initialRouteName={'Login'} screenOptions={screenOptions}>
             <Stack.Screen name="Login" component={Login}
                           options={{headerShown: false}}/>
             <Stack.Screen name="Register" component={Register}
@@ -208,6 +206,7 @@ const ClientAreaStackNavigator = (props:any) => {
             <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem}  options={{headerTitle:'Add Item'}}/>
             <Stack.Screen name={'AddEditCategory'} component={AddEditCategory}  options={{headerTitle:'Add Category'}} />
             <Stack.Screen name={'AddEditClient'} component={AddEditClient}  options={{headerTitle:'Add Client'}}  />
+            <Stack.Screen name={'AddTable'} component={AddTable}  options={{headerTitle:'Add Table'}}  />
 
             <Stack.Screen name={'ClientAndSource'} {...params}   component={ClientAndSource}  options={{headerTitle:'Order Source'}}  />
 
@@ -217,7 +216,7 @@ const ClientAreaStackNavigator = (props:any) => {
 
             <Stack.Screen name={'SalesReportNavigator'}  component={Report} options={{title: 'Sales Report'}}   />
 
-            <Stack.Screen name={'DropDownList'} component={DropDownList}   options={{headerTitle:'Select'}}  />
+            <Stack.Screen name={'DropDownList'} component={DropDownList}  options={({route}: any) => ({presentation:route?.params?.presentation,  title: 'select'})}   />
 
 
 
@@ -232,7 +231,7 @@ const ClientAreaStackNavigator = (props:any) => {
 const ProfileSettingsNavigator = (props:any) => {
 
     return (
-        <Stack.Navigator initialRouteName={'ProfileSettingsNavigator'} >
+        <Stack.Navigator initialRouteName={'ProfileSettingsNavigator'}  screenOptions={screenOptions}>
             <Stack.Screen name={'ProfileSettingsNavigator'}  component={General} options={{headerShown: false}}/>
 
             <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem}  options={{headerTitle:'Add Item'}}/>

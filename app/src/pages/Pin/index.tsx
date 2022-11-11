@@ -67,6 +67,7 @@ const Index = (props: any) => {
                                     localredux.addonsData = addonsData;
 
                                     const {itemgroup}:any = localredux.initData;
+
                                     if(Boolean(itemgroup)) {
                                         await dispatch(setGroupList(itemgroup))
                                     }
@@ -119,10 +120,10 @@ const Index = (props: any) => {
                         />
                     </View>
 
-                    <View>
+                    {params.onlyone && <View>
                         <Paragraph style={[styles.paragraph,{textAlign:'center'}]}>{params.username} </Paragraph>
                         <Paragraph style={[styles.paragraph,styles.text_sm,{textAlign:'center'}]}>{params.loginpin === 'b0baee9d279d34fa1dfd71aadb908c3f' &&  <Text style={[styles.paragraph,styles.muted,{textAlign:'center'}]}>Default PIN is 11111</Text>}</Paragraph>
-                    </View>
+                    </View>}
 
                 <ReactNativePinView
                     inputSize={15}

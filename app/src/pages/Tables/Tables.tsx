@@ -9,7 +9,7 @@ import {connect, useDispatch} from "react-redux";
 import ProIcon from "../../components/ProIcon";
 import {refreshCartData} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
-import {hideLoader, openPage, setAlert, setModal, showLoader} from "../../redux-store/reducer/component";
+import {hideLoader,  setAlert,  showLoader} from "../../redux-store/reducer/component";
 import ClientAndSource from "../Cart/ClientAndSource";
 import moment from "moment";
 
@@ -226,6 +226,8 @@ const Index = (props: any) => {
                         }
                     })}
                     renderItem={renderItem}
+                    keyboardDismissMode={'on-drag'}
+                    keyboardShouldPersistTaps={'always'}
                     refreshControl={
                         <RefreshControl
                             refreshing={refreshing}

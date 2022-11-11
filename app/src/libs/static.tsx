@@ -76,7 +76,8 @@ export enum TICKET_STATUS {
 export enum PRODUCTCATEGORY {
     DEFAULT = '5f2dd580-eae2-46a4-b136-bc5c3cb180c6',
     TAXGROUPID = "9da54644-3581-45a3-ae2f-dbdc72a4af3a",
-    ITEMUNIT = "9c2ecc81-d201-4353-8fbc-7b9d61e0afb4"
+    ITEMUNIT = "9c2ecc81-d201-4353-8fbc-7b9d61e0afb4",
+    DEPARTMENT="b8035c22-0b89-408e-b7b2-969d750bd84f",
 }
 
 
@@ -184,10 +185,6 @@ const mainUrl = "https://api.dhru.com";
 export const loginUrl: any = `${mainUrl}/client/api/v1/`;
 
 export const screenOptionStyle: any = {
-
-    headerTitleAlign: 'center',
-
-    animation: false,
     headerTitleAlign: 'center',
     headerLargeTitle: false,
     fullScreenSwipeEnabled: false,
@@ -195,20 +192,16 @@ export const screenOptionStyle: any = {
     backButtonInCustomView: false,
     headerBackTitleVisible: false,
     headerHideBackButton: true,
-    headerTintColor: 'black',
     stackAnimation: 'slide_from_right',
     stackPresentation: 'push',
     screenOrientation: 'portrait',
-    autoCapitalize: 'sentences',
     headerTopInsetEnabled: false,
     headerHideShadow: true,
     headerLargeTitleHideShadow: true,
-    headerLargeTitleStyle: {},
     headerStyle: {
       shadowOpacity: 0,
       elevation: 0,
     },
-    backTitleStyle: {},
 };
 
 

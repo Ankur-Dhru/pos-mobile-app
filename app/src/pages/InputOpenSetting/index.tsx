@@ -67,6 +67,8 @@ const Index = ({defaultAmountOpen}: any) => {
         <FlatList
             data={objToArray(units)?.filter((u: any) => Boolean(u?.data?.isdecimal))}
             renderItem={renderitem}
+            keyboardDismissMode={'on-drag'}
+            keyboardShouldPersistTaps={'always'}
             initialNumToRender={5}
         />
     </Container>

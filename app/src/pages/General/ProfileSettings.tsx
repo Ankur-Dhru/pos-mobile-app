@@ -13,7 +13,7 @@ import DeleteButton from "../../components/Button/DeleteButton";
 import {Container} from "../../components";
 
 
-const Index = () => {
+const ProfileSettings = () => {
 
     const {avatar_url, companyname, email: aemail, firstname, lastname} = localredux.authData;
     const {password, email} = localredux.licenseData
@@ -50,8 +50,8 @@ const Index = () => {
         await storeData('fusion-pro-pos-mobile', []).then(async () => {});
         await storeData('fusion-pro-pos-mobile-tableorder',{}).then(async () => {});
         await storeData('fusion-pro-pos-mobile-settings',{}).then(async () => {});
-        await storeData('fusion-pro-pos-mobile-vouchernos',{}).then(async () => {});
-        await storeData('fusion-pro-pos-mobile-kotno',{}).then(async () => {});
+        await storeData('fusion-pro-pos-mobile-vouchernos',0).then(async () => {});
+        await storeData('fusion-pro-pos-mobile-kotno',0).then(async () => {});
         navigatToSetup()
     }
 
@@ -284,6 +284,6 @@ const Index = () => {
 }
 
 
-export default Index;
+export default ProfileSettings;
 
 

@@ -5,7 +5,7 @@ import {Platform, TextInput as TextInputReact, TouchableOpacity, TouchableWithou
 
 
 import List from "./List";
-import {openPage, setBottomSheet, setModal} from "../../redux-store/reducer/component";
+import {setBottomSheet} from "../../redux-store/reducer/component";
 import {connect} from "react-redux";
 import {InputBox, ProIcon} from "../index";
 import DateTimePicker from './DateTimePicker';
@@ -127,9 +127,7 @@ class Index extends React.Component<any, any> {
             validateWithError,
             descriptionStyle,
             customRef,
-            pageKey,
-            openPage,
-            setModal
+            modal,
 
         }: any = this.props;
 
@@ -224,7 +222,7 @@ class Index extends React.Component<any, any> {
                             ref={customRef}
                             onPress={() => {
 
-                                navigation.navigate('DropDownList', {
+                                let config = {
                                     selected: selectedValue,
                                     list,
                                     multiselect,
@@ -233,7 +231,14 @@ class Index extends React.Component<any, any> {
                                     label,
                                     addItem,
                                     displaytype,
-                                })
+                                }
+                                if(Boolean(modal)){
+                                    config = {
+                                        ...config,
+                                        presentation:'modal'
+                                    }
+                                }
+                                navigation.navigate('DropDownList', config)
 
                             }}><View>
                             {Boolean(render) ?
@@ -425,8 +430,7 @@ class Index extends React.Component<any, any> {
 const mapStateToProps = (state: any) => ({})
 const mapDispatchToProps = (dispatch: any) => ({
     setBottomSheet: (dialog: any) => dispatch(setBottomSheet(dialog)),
-    setModal: (dialog: any) => dispatch(setModal(dialog)),
-    openPage: (dialog: any) => dispatch(openPage(dialog)),
+
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(withTheme(Index));

@@ -144,6 +144,8 @@ const Index = (props: any) => {
 
                     <FlatList
                         data={objToArray(reasonlist)}
+                        keyboardDismissMode={'on-drag'}
+                        keyboardShouldPersistTaps={'always'}
                         renderItem={renderitem}
                         initialNumToRender={5}
                     />

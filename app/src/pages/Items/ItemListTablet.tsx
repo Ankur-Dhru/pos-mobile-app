@@ -1,25 +1,20 @@
 import React, {memo, useCallback, useEffect, useState} from "react";
 
-import {ActivityIndicator, FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
+import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
 
 import {connect, useDispatch} from "react-redux";
 import {styles} from "../../theme";
-import {appLog, isRestaurant, selectItem} from "../../libs/function";
-import {List, Paragraph} from "react-native-paper";
+import {isRestaurant, selectItem} from "../../libs/function";
+import {Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 import Button from "../../components/Button";
-import {closePage, openPage, setModal} from "../../redux-store/reducer/component";
-import store from "../../redux-store/store";
-import AddEditItem from "./AddEditItem";
-import {useNavigation} from "@react-navigation/native";
-import {device} from "../../libs/static";
 
 
 const hasRestaurant = isRestaurant()
 let sGroup: any = '';
 
-export const AddItem = ({navigation}:any) => {
+export const AddItem = ({navigation}: any) => {
 
     const dispatch = useDispatch()
 
@@ -61,15 +56,15 @@ const Item = memo(({item}: any) => {
 
 const Index = (props: any) => {
 
-    const {selectedgroup,navigation} = props;
+    const {selectedgroup, navigation} = props;
 
 
     const [loading, setLoading]: any = useState(false);
 
     const [dataSource, setDataSource]: any = useState([]);
 
-    const getItems = async (refresh=false) => {
-        if(Boolean(selectedgroup)){
+    const getItems = async (refresh = false) => {
+        if (Boolean(selectedgroup)) {
             await getItemsByWhere({itemgroupid: selectedgroup}).then((newitems: any) => {
                 setDataSource(newitems);
             });
@@ -88,17 +83,15 @@ const Index = (props: any) => {
     }, [selectedgroup]) //start
 
 
-
-
     const renderItem = useCallback(({item, index}: any) => {
         return <Item item={item} index={index} key={item.productid}/>
     }, [selectedgroup]);
 
     const onEndReached = () => {
-       // setStart(++start)
+        // setStart(++start)
     }
 
-    if(!loading){
+    if (!loading) {
         return <></>
     }
 
@@ -108,6 +101,8 @@ const Index = (props: any) => {
             <FlatList
                 data={dataSource}
                 renderItem={renderItem}
+                keyboardDismissMode={'on-drag'}
+                keyboardShouldPersistTaps={'always'}
                 numColumns={3}
                 getItemLayout={(data, index) => {
                     return {length: 100, offset: 100 * index, index};
@@ -131,11 +126,13 @@ const Index = (props: any) => {
                     />
                 }
                 ListEmptyComponent={<View>
-                    <View  style={[styles.p_6]}>
-                        <Text style={[styles.paragraph,styles.mb_2, styles.muted, {textAlign: 'center'}]}> Start building your item library.</Text>
-                        <Text style={[styles.paragraph,  styles.text_xs,styles.muted, {textAlign: 'center'}]}> Tap Create Item to begin.</Text>
+                    <View style={[styles.p_6]}>
+                        <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> Start
+                            building your item library.</Text>
+                        <Text style={[styles.paragraph, styles.text_xs, styles.muted, {textAlign: 'center'}]}> Tap
+                            Create Item to begin.</Text>
                     </View>
-                    <AddItem navigation={navigation} />
+                    <AddItem navigation={navigation}/>
                 </View>}
                 keyExtractor={item => item.itemid}
             />

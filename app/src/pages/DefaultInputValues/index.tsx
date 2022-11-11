@@ -110,6 +110,8 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
                 <FlatList
                     data={selectedTab === 'num' ? isEmpty(defaultInputValues) ? [] : defaultInputValues : isEmpty(defaultInputAmounts) ? [] : defaultInputAmounts}
                     renderItem={renderitem}
+                    keyboardDismissMode={'on-drag'}
+                    keyboardShouldPersistTaps={'always'}
                     initialNumToRender={5}
                 />
 

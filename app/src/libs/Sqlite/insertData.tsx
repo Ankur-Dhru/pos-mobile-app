@@ -1,5 +1,5 @@
 
-import {appLog,  errorAlert} from "../function";
+import {appLog} from "../function";
 import {getDBConnection} from "./index";
 
 
@@ -36,6 +36,7 @@ export const insertItems = async (  itemsdata?: any,type:any = 'all') => {
 
       if(type === 'all'){
           const query = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert") values ${insertQuery.join(', ')}`;
+          appLog('query',query)
           const results = await db.executeSql(query);
 
       }

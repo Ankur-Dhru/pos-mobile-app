@@ -22,6 +22,8 @@ const Index = (props: any) => {
     const closeMenu = () => setVisible(false);
 
 
+
+
     navigation.setOptions({
         headerRight:()=>{
             return <View>

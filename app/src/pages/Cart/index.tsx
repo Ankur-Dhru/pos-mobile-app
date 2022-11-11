@@ -24,7 +24,12 @@ const Index = (props: any) => {
 
     useEffect(() => {
         const voucherDataJson: any = voucherData(VOUCHER.INVOICE, false);
-        dispatch(refreshCartData({...tabledetails, ...voucherDataJson}))
+        dispatch(refreshCartData({...tabledetails, ...voucherDataJson}));
+
+        if(tabledetails.printcounter){
+            navigation.navigate('DetailViewNavigator')
+        }
+
         dispatch(setSelected({value: mainproductgroupid, field: 'group'}))
 
     }, [])
@@ -86,6 +91,8 @@ const Index = (props: any) => {
             </View>
         })
     }
+
+
 
     return <Cart tabledetails={tabledetails}/>
 }

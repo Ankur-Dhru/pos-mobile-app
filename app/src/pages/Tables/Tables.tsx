@@ -186,6 +186,7 @@ const Index = (props: any) => {
                                 <View style={[styles.mt_3]}>
                                     <Text
                                         style={[styles.paragraph, styles.text_lg, styles.bold, {color: 'black'}]}>{toCurrency(item.vouchertotaldisplay)}</Text>
+                                    {item.printcounter && <Text style={[styles.mt_5]}><ProIcon name={'print'} action_type={'text'}/></Text>}
                                 </View>
                             </>}
 

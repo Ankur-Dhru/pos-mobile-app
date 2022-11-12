@@ -10,7 +10,7 @@ import Button from "../../components/Button";
 import AddEditCategory from "../Items/AddEditCategory";
 import AddEditClient from "../Client/AddEditClient";
 import DeleteButton from "../../components/Button/DeleteButton";
-import {Container} from "../../components";
+import {Container, ProIcon} from "../../components";
 
 
 const ProfileSettings = () => {
@@ -231,13 +231,23 @@ const ProfileSettings = () => {
                             <Divider/>
 
 
-                            <View style={[styles.mt_5, styles.grid]}>
+                            <View style={[styles.mt_5]}>
 
-                                <View style={[styles.ml_1]}>
+                                <View style={[styles.mb_5]}>
                                     <DeleteButton
                                         title={'Reset Terminal'}
                                         buttonTitle={'Reset Terminal'}
                                         message={`Are you sure want to reset Terminal?`}
+                                        render={()=>{
+                                            return (
+                                                <Button
+                                                    compact={true}
+                                                    mode={'text'}
+                                                    secondbutton={false}
+                                                    more={{borderColor: styles.red.color,borderWidth:1,borderStyle:'dashed',borderRadius:7}}
+                                                    labelStyle={[styles.capitalize, {color: styles.red.color}]}> Reset Terminal </Button>
+                                            )
+                                        }}
                                         onPress={(index: any) => {
                                             if (index === 0) {
                                                 resetTerminal()
@@ -246,7 +256,7 @@ const ProfileSettings = () => {
                                     />
                                 </View>
 
-                                <View style={[styles.ml_1]}>
+                                <View style={[styles.mb_5]}>
                                     <DeleteButton
                                         title={'Close & Delete Account'}
                                         buttonTitle={'Close & Delete Account'}

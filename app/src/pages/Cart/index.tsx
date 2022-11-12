@@ -11,6 +11,7 @@ import PageLoader from "../../components/PageLoader";
 import {TouchableOpacity, View} from "react-native";
 import ProIcon from "../../components/ProIcon";
 import SearchItem from "../Items/SearchItem";
+import store from "../../redux-store/store";
 
 const Index = (props: any) => {
 
@@ -26,7 +27,7 @@ const Index = (props: any) => {
         const voucherDataJson: any = voucherData(VOUCHER.INVOICE, false);
         dispatch(refreshCartData({...tabledetails, ...voucherDataJson}));
 
-        if(tabledetails.printcounter){
+        if(tabledetails?.printcounter){
             navigation.navigate('DetailViewNavigator')
         }
 
@@ -40,8 +41,10 @@ const Index = (props: any) => {
             navigation.addListener('beforeRemove', (e) => {
                 if (e.data?.action?.type === 'POP') {
                     e.preventDefault();
-                    saveTempLocalOrder().then(() => {
-                    })
+                    const {ordertype}: any = store.getState().cartData;
+                    if(ordertype !== 'qsr') {
+                        saveTempLocalOrder().then(() => {})
+                    }
                     navigation.dispatch(e.data.action)
                 }
             }),
@@ -70,10 +73,10 @@ const Index = (props: any) => {
     if (!isRestaurant()) {
         navigation.setOptions({
             headerLeft: () => <View>
-                <TouchableOpacity onPress={() => {
+                <TouchableOpacity style={[{paddingLeft:10}]} onPress={() => {
                     navigation.navigate('ProfileSettingsNavigator')
                 }}>
-                    <ProIcon name={'gear'}/>
+                    <ProIcon name={'bars'}/>
                 </TouchableOpacity>
             </View>
         })

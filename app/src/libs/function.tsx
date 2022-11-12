@@ -1521,7 +1521,7 @@ export const generateKOT = async () => {
                                         itemtags
                                     } = itemL1;
 
-                                    const kot = {
+                                    const kot:any = {
                                         "productid": itemid,
                                         "productrate": productratedisplay,
                                         "productratedisplay": productratedisplay,
@@ -1546,6 +1546,29 @@ export const generateKOT = async () => {
                                         ref_id,
                                         key: itemL1.key,
                                     };
+
+                                    if (itemaddon) {
+                                        kot.addons = itemaddon
+                                            .map(({
+                                                      productid,
+                                                      productrate,
+                                                      productratedisplay,
+                                                      productqntunitid,
+
+                                                      productdisplayname,
+                                                      productqnt
+                                                  }: any) => {
+
+                                                return {
+                                                    productid,
+                                                    productrate,
+                                                    productdisplayname,
+                                                    productratedisplay,
+                                                    productqntunitid,
+                                                    productqnt
+                                                }
+                                            })
+                                    }
 
                                     kotitems = [...kotitems, clone(kot)];
 
@@ -1805,3 +1828,27 @@ export const selectWorkspace = async (workspace:any,navigation:any) => {
 
 
 
+
+
+
+
+
+
+
+/*
+Permissions.getPermissionStatus('localNetwork').then((r) => {
+    if (r === 'authorized') {
+        // Do something
+    } else if (r === 'undetermined') {
+        Permissions.requestPermission('localNetwork').then((response) => {
+            if (response === 'authorized') {
+                // Do something
+            }
+            if (response === 'denied') {
+                // Notify user about Local Network permission denied, advice user to turn on permission
+            }
+        });
+    } else {
+        // Notify user about Local Network permission denied, advice user to turn on permission
+    }
+});*/

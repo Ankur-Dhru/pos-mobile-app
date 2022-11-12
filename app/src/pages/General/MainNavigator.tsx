@@ -43,6 +43,7 @@ import ClientAndSource from "../Cart/ClientAndSource";
 import PrinterSettings from "../PrinterSettings/Setting";
 import SearchItem from "../Items/SearchItem";
 import AddTable from "../Tables/AddTable";
+import sample from "../sample";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -127,6 +128,9 @@ const MainStackNavigator = () => {
             <Stack.Screen name="ClientAreaStackNavigator" component={ClientAreaStackNavigator}/>
 
             <Stack.Screen name={'ProfileSettingsNavigator'} component={ProfileSettingsNavigator}   options={{headerShown:false,presentation:'modal',headerTitle:'Settings'}}  />
+
+
+            {/*<Stack.Screen name="Sample" component={sample}/>*/}
 
 
         </Stack.Navigator>

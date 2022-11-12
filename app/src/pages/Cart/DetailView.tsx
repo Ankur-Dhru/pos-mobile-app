@@ -13,6 +13,8 @@ import {TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
 import ProIcon from "../../components/ProIcon";
 import {cancelOrder} from "../../libs/function";
+import Button from "../../components/Button";
+import DeleteButton from "../../components/Button/DeleteButton";
 
 const Index = (props: any) => {
 
@@ -36,7 +38,23 @@ const Index = (props: any) => {
                     }} >
                         <ProIcon name={'ellipsis-vertical'}/>
                     </TouchableOpacity>}>
-                    <Menu.Item onPress={() => cancelOrder(navigation).then()} title="Cancel Order"/>
+
+                    <DeleteButton
+                        title={'Cancel Order'}
+                        message={`Are you sure want to Cancel Order?`}
+                        render={()=>{
+                            return (
+                                <Menu.Item  title="Cancel Order"/>
+                            )
+                        }}
+                        onPress={(index: any) => {
+                            if (index === 0) {
+                                cancelOrder(navigation).then(r => {})
+                            }
+                        }}
+                    />
+
+
 
                 </Menu>
             </View>

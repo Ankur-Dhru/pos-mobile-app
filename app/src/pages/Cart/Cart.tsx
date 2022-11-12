@@ -58,9 +58,9 @@ const Index = (props: any) => {
                                     style={[styles.paragraph, styles.bold]}> {tabledetails?.tablename} </Paragraph>
                             </View>
                         </Card></View> : <Card style={[styles.noshadow, {marginRight: 5}]}>
-                            <TouchableOpacity onPress={() => navigation.navigate('ProfileSettingsNavigator')}
-                                              style={[styles.px_6, {padding: 11}]}>
-                                <ProIcon name={'gear'} action_type={'text'}/>
+                            <TouchableOpacity  onPress={() => navigation.navigate('ProfileSettingsNavigator')}
+                                              style={[styles.px_6]}>
+                                <ProIcon name={'bars'} action_type={'text'}/>
                             </TouchableOpacity>
                         </Card>}
                         <Card

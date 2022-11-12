@@ -76,6 +76,9 @@ const Index = (props: any) => {
                 screen = 'PinStackNavigator';
             }
         }
+
+        //screen = 'Sample';
+
         dispatch(hideLoader())
         navigation.replace(screen)
     })

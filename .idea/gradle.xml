@@ -30,7 +30,6 @@
             <option value="$PROJECT_DIR$/app/node_modules/react-native-gesture-handler/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-get-random-values/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-gradle-plugin" />
-            <option value="$PROJECT_DIR$/app/node_modules/react-native-permissions/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-reanimated/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-safe-area-context/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-screens/android" />

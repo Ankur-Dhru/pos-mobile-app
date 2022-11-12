@@ -199,9 +199,10 @@ export const screenOptionStyle: any = {
     headerHideShadow: true,
     headerLargeTitleHideShadow: true,
     headerStyle: {
-      shadowOpacity: 0,
-      elevation: 0,
+      /*shadowOpacity: 0,
+      elevation: 0,*/
     },
+
 };
 
 
@@ -1562,3 +1563,7 @@ export const dateformats: any = [{"label": "dd/MM/yyyy", "value": "dd/MM/yyyy"},
 
 
 export const grecaptcharesponse:any = 'g-recaptcha-response-gjgjh-kjkljkl-mjbkjhkj-bbkj'
+
+export const supportedPrinterList = [
+    'TM-T20','TM-m10','TM-T20II','TM-m30','TM-T20III','TM-m30II','TM-T20IIIL','TM-m30II-H','TM-T20X','TM-m30II-S','TM-T60','TM-m30II-SL','TM-T70','TM-m30II-NT','TM-T70II','TM-m50','TM-T81II','TM-H6000V','TM-T81III','TM-L90','TM-T82','TM-L100','TM-T82II','EU-m30','TM-T82IIIL','TM-T20II-i','TM-T82III','TM-T70-i','TM-T82X','TM-T82II-i','TM-T83III','TM-T83II-i','TM-T88V','TM-T88V-i','TM-T88VI','TM-U220-i','TM-T88VII','TM-T88VI-iHUB','TM-T90II','TM-T70II-DT','TM-T100','TM-T88V-DT','TM-P20','TM-H6000IV-DT','TM-P20II','TM-T70II-DT2','TM-P60','TM-T88VI-DT2','TM-P60II','DM-D110','TM-P80','DM-D30','TM-P80II','DM-D210','TM-U220A/B/D','DM-D70','TM-U330'
+]

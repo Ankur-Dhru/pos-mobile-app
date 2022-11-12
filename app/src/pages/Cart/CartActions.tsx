@@ -11,6 +11,8 @@ import {hideLoader, setBottomSheet, showLoader} from "../../redux-store/reducer/
 import HoldOrders from "./HoldOrders";
 import {device} from "../../libs/static";
 
+
+
 const Index = ({
                    tableorders,
                    ordertype,
@@ -156,7 +158,7 @@ const Index = ({
 const mapStateToProps = (state: any) => {
     return {
         vouchertotaldisplay: state.cartData.vouchertotaldisplay,
-        printcounter: state.cartData.printcounter,
+        printcounter: state.cartData?.printcounter,
         ordertype: state.cartData.ordertype,
     }
 }

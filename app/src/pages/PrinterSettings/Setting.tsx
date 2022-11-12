@@ -4,7 +4,7 @@ import {SafeAreaView, View} from "react-native";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
 import {Title} from "react-native-paper";
-import {composeValidators, PRINTER, required} from "../../libs/static";
+import {composeValidators, PRINTER, required, supportedPrinterList} from "../../libs/static";
 import Button from "../../components/Button";
 import {connect} from "react-redux";
 import {saveLocalSettings, testPrint} from "../../libs/function";
@@ -45,7 +45,7 @@ const Index = (props: any) => {
 
 
     return <Container>
-
+            <SafeAreaView>
             <Form
                 initialValues={initialValues}
                 onSubmit={handleSubmit}
@@ -126,7 +126,9 @@ const Index = (props: any) => {
                                                         <InputField
                                                             label={'Printer Name'}
                                                             mode={'flat'}
-                                                            list={[{label: 'TM-T82', value: 'TM-T82'}]}
+                                                            list={supportedPrinterList.map((item:any)=>{
+                                                                return {label:item,value:item}
+                                                            })}
                                                             value={props.input.value}
                                                             selectedValue={props.input.value}
                                                             displaytype={'pagelist'}
@@ -250,7 +252,7 @@ const Index = (props: any) => {
 
             </Form>
 
-
+            </SafeAreaView>
     </Container>
 }
 

@@ -13,7 +13,7 @@ class Index extends React.Component<any> {
         const Render:any = render;
 
         return (
-            <View style={[styles.mb_5,styles.grid,styles.center, styles.mt_5]}>
+            <View>
                 <View>
                     <ActionSheet
                         title={title}

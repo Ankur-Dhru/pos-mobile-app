@@ -1,20 +1,21 @@
 import React, {memo, useEffect} from "react";
-import {clone, toCurrency, updateComponent} from "../../libs/function";
+import {appLog, clone, isRestaurant, toCurrency, updateComponent} from "../../libs/function";
 import {View} from "react-native";
 import {Card, Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {itemTotalCalculation} from "../../libs/item-calculation";
-import {setCartData, setUpdateCart} from "../../redux-store/reducer/cart-data";
+import {setCartData, setUpdateCart, updateCartField} from "../../redux-store/reducer/cart-data";
 import {ProIcon} from "../../components";
 import CartSummaryMore from "./CartSummaryMore";
 import {contentLoader} from "../../redux-store/reducer/component";
 import store from "../../redux-store/store";
 import moment from "moment";
 import ClientAndSource from "./ClientAndSource";
+import InputBox from "../../components/InputBox";
 
 
-const Index = ({vouchertotaldisplay, advanceorder, navigation}: any) => {
+const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: any) => {
 
     const dispatch = useDispatch()
     const moreSummaryRef: any = React.useRef();
@@ -44,6 +45,18 @@ const Index = ({vouchertotaldisplay, advanceorder, navigation}: any) => {
 
 
     return (<>
+
+        {isRestaurant() &&
+            <View style={[styles.px_5]}>
+                <InputBox
+                    defaultValue={commonkotnote}
+                    label={'Common KOT Notes'}
+                    onChange={(value:any)=>{
+                        dispatch(updateCartField({commonkotnote:value}))
+                    }}
+                />
+            </View>}
+
         {Boolean(advanceorder?.date) &&
             <Card style={[styles.dottedBorder, styles.noshadow, styles.p_5, styles.m_3, {borderRadius: 5}]}
                   onPress={() => {
@@ -75,6 +88,7 @@ const Index = ({vouchertotaldisplay, advanceorder, navigation}: any) => {
 
 const mapStateToProps = (state: any) => ({
     advanceorder: state.cartData?.advanceorder,
+    commonkotnote:state.cartData?.commonkotnote,
     vouchertotaldisplay: parseInt(state.cartData.vouchertotaldisplay),
 })
 

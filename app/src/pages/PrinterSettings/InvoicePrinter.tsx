@@ -30,7 +30,7 @@ const InvoicePrinter = ({printers}: any) => {
         <List.Section>
             <List.Item
                 title="Invoice"
-                description={Boolean(printers[PRINTER.INVOICE]?.ip) && printers[PRINTER.INVOICE]?.ip}
+                description={Boolean(printers[PRINTER.INVOICE]?.host) && printers[PRINTER.INVOICE]?.host}
                 onPress={() => {
                     setPrinter({name: 'Invoice', departmentid: PRINTER.INVOICE})
                 }}

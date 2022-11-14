@@ -1,5 +1,5 @@
 import {getType} from "@reduxjs/toolkit";
-import {assignOption, getCurrencyData, getDateWithFormat, isEmpty} from "./function";
+import {assignOption} from "./function";
 
 
 export enum STATUS {
@@ -23,9 +23,9 @@ export enum ACTIONS {
     LOGIN = "login",
     INIT = "init",
     TERMINAL = "terminal",
-    SETTINGS="settings",
-    GETTAXREGISTRATIONTYPE="gettaxregtype",
-    GETSTATE="getstate",
+    SETTINGS = "settings",
+    GETTAXREGISTRATIONTYPE = "gettaxregtype",
+    GETSTATE = "getstate",
     REGISTER = "register",
     SYNC_DATA = "syncdata",
     LICENSE = "license",
@@ -62,7 +62,7 @@ export enum VOUCHER {
     RECEIPT = "be0e9672-a46e-4e91-a2bf-815530b22b43",
 }
 
-export  enum TICKETS_TYPE {
+export enum TICKETS_TYPE {
     KOT = "2ecf3967-4083-4070-9912-d0fbcd3cf25e"
 }
 
@@ -77,7 +77,7 @@ export enum PRODUCTCATEGORY {
     DEFAULT = '5f2dd580-eae2-46a4-b136-bc5c3cb180c6',
     TAXGROUPID = "9da54644-3581-45a3-ae2f-dbdc72a4af3a",
     ITEMUNIT = "9c2ecc81-d201-4353-8fbc-7b9d61e0afb4",
-    DEPARTMENT="b8035c22-0b89-408e-b7b2-969d750bd84f",
+    DEPARTMENT = "b8035c22-0b89-408e-b7b2-969d750bd84f",
 }
 
 
@@ -118,7 +118,6 @@ export const defalut_payment_term = [
     assignOption("Due end of next month", "nextendmonth", false),
     assignOption("Due on Receipt", "date", true),
 ]
-
 
 
 export const inventoryOption: any = {
@@ -199,8 +198,8 @@ export const screenOptionStyle: any = {
     headerHideShadow: true,
     headerLargeTitleHideShadow: true,
     headerStyle: {
-      /*shadowOpacity: 0,
-      elevation: 0,*/
+        /*shadowOpacity: 0,
+        elevation: 0,*/
     },
 
 };
@@ -261,17 +260,17 @@ export const composeValidators = (...validators: any) => (value: any) =>
     validators.reduce((error: any, validator: any) => error || validator(value), undefined)
 
 
-export const device: any = {tablet: true,db:'',token:'',global_token:'',navigation:''}
+export const device: any = {tablet: true, db: '', token: '', global_token: '', navigation: ''}
 
 export const defaultclient: any = {clientid: 1, clientname: 'Walkin'}
 
 export const ordertypes: any = [
     {label: 'All', value: 'all'},
-    {label: 'Tables',value: 'tableorder'},
+    {label: 'Tables', value: 'tableorder'},
     {label: 'Home Delivery', value: 'homedelivery'},
     {label: 'Takeaway', value: 'takeaway'},
-    {label: 'Advance Order',value: 'advanceorder'},
-    {label: '+ QSR / Quick Bill',value: 'qsr'},
+    {label: 'Advance Order', value: 'advanceorder'},
+    {label: '+ QSR / Quick Bill', value: 'qsr'},
 ];
 
 
@@ -1531,7 +1530,6 @@ export const countrylist = [
 ]
 
 
-
 export const months: any = [
     {value: "1", label: "01 - January"},
     {value: "2", label: "02 - February"},
@@ -1562,8 +1560,137 @@ export const dateformats: any = [{"label": "dd/MM/yyyy", "value": "dd/MM/yyyy"},
 }, {"label": "MM.dd.yyyy", "value": "MM.dd.yyyy"}]
 
 
-export const grecaptcharesponse:any = 'g-recaptcha-response-gjgjh-kjkljkl-mjbkjhkj-bbkj'
+export const grecaptcharesponse: any = 'g-recaptcha-response-gjgjh-kjkljkl-mjbkjhkj-bbkj'
 
 export const supportedPrinterList = [
-    'TM-T20','TM-m10','TM-T20II','TM-m30','TM-T20III','TM-m30II','TM-T20IIIL','TM-m30II-H','TM-T20X','TM-m30II-S','TM-T60','TM-m30II-SL','TM-T70','TM-m30II-NT','TM-T70II','TM-m50','TM-T81II','TM-H6000V','TM-T81III','TM-L90','TM-T82','TM-L100','TM-T82II','EU-m30','TM-T82IIIL','TM-T20II-i','TM-T82III','TM-T70-i','TM-T82X','TM-T82II-i','TM-T83III','TM-T83II-i','TM-T88V','TM-T88V-i','TM-T88VI','TM-U220-i','TM-T88VII','TM-T88VI-iHUB','TM-T90II','TM-T70II-DT','TM-T100','TM-T88V-DT','TM-P20','TM-H6000IV-DT','TM-P20II','TM-T70II-DT2','TM-P60','TM-T88VI-DT2','TM-P60II','DM-D110','TM-P80','DM-D30','TM-P80II','DM-D210','TM-U220A/B/D','DM-D70','TM-U330'
+    'TM-T20', 'TM-m10', 'TM-T20II', 'TM-m30', 'TM-T20III', 'TM-m30II', 'TM-T20IIIL', 'TM-m30II-H', 'TM-T20X', 'TM-m30II-S', 'TM-T60', 'TM-m30II-SL', 'TM-T70', 'TM-m30II-NT', 'TM-T70II', 'TM-m50', 'TM-T81II', 'TM-H6000V', 'TM-T81III', 'TM-L90', 'TM-T82', 'TM-L100', 'TM-T82II', 'EU-m30', 'TM-T82IIIL', 'TM-T20II-i', 'TM-T82III', 'TM-T70-i', 'TM-T82X', 'TM-T82II-i', 'TM-T83III', 'TM-T83II-i', 'TM-T88V', 'TM-T88V-i', 'TM-T88VI', 'TM-U220-i', 'TM-T88VII', 'TM-T88VI-iHUB', 'TM-T90II', 'TM-T70II-DT', 'TM-T100', 'TM-T88V-DT', 'TM-P20', 'TM-H6000IV-DT', 'TM-P20II', 'TM-T70II-DT2', 'TM-P60', 'TM-T88VI-DT2', 'TM-P60II', 'DM-D110', 'TM-P80', 'DM-D30', 'TM-P80II', 'DM-D210', 'TM-U220A/B/D', 'DM-D70', 'TM-U330'
 ]
+
+
+export const defaultInvoiceTemplate = `<align mode="center">
+        <bold>
+            <text size="1:1">{{{legalname}}}
+</text>
+        </bold>
+        <line-feed/>
+        <text size="1:0">{{{locationname}}}
+</text>
+        <text>{{{street1}}}
+</text>
+        <text>{{{street2}}}
+</text>
+        <text>{{{city}}}-{{{pin}}}
+</text>
+        <text>Tel.: {{{mobile}}}
+</text>
+    </align>
+  <line-feed/>
+    <align mode="right">
+    <text>{{{invoicetype}}}
+</text>
+        <bold>
+            <text size="1:0">NO:{{terminalname}}-{{invoice_display_number}}
+</text>
+        </bold>
+        <text>Date : {{{date}}}
+</text>
+    </align>
+    <text>{{{city}}}
+</text>
+    <text>{{{state}}}
+</text>{{#tablename}}
+{{{line}}}
+<text>Table : {{{tablename}}}
+</text>{{/tablename}}
+ {{{line}}}
+ <text>Client : {{{clientname}}}
+</text>
+    {{{line}}}
+    <text>{{{head}}}
+</text>
+    {{{line}}}
+    {{#items}}
+    <text>{{{.}}}
+</text>
+    {{/items}}
+    {{{line}}}
+    <text>{{{counter}}}
+</text>
+{{#vouchertotaldiscountamountdisplay}}
+    <text>{{{discount}}}
+</text>
+{{/vouchertotaldiscountamountdisplay}}
+    <text>{{{totaltax}}}
+</text>
+{{#adjustmentamount}}
+    <text>{{{adjustment}}}
+</text>
+{{/adjustmentamount}}
+{{#voucherroundoffdisplay}}
+    <text>{{{roundoff}}}
+</text>
+{{/voucherroundoffdisplay}}
+    <text size="1:1">{{{totalbig}}}
+</text>
+
+    {{{line}}}
+    
+    {{#totalMRP}}
+    <text>{{{totalMRP}}}
+</text>
+{{#totalSave}}
+    <text>Your Total Saving is : {{{totalSave}}}
+</text>
+{{/totalSave}}
+{{{line}}}
+{{/totalMRP}}
+
+    <text>{{#taxes}}{{{.}}}{{/taxes}}
+</text>
+{{{line}}}
+{{#isListPayment}}
+    {{#paymentList}}
+    <text>{{{.}}}
+</text>
+    {{/paymentList}}
+{{{line}}}
+{{/isListPayment}}
+ <text>{{{state}}}
+</text>
+    <text>{{terminalname}}
+</text>
+ <text>{{toc}}
+</text>`
+
+export const defaultKOTTemplate = `<align mode="center">
+<bold>
+<text size="2:2">{{ticketnumberprefix}}{{kotid}}
+</text>
+</bold>
+<text>{{{ticketdate}}} {{{tickettime}}}
+
+</text>
+</align>
+{{{line}}}
+<text>Staff Name : {{{staffname}}}
+</text>
+{{{line}}}
+<text>Table : {{{table}}}
+</text>
+{{{line}}}
+{{#commonkotnote}}<text>Note : {{{commonkotnote}}}
+</text>
+{{{line}}}{{/commonkotnote}}
+{{#ticketitems}}
+<text size="1:0">
+{{productqnt}} x {{productdisplayname}}
+<text size="0.5:0">{{{instruction}}}
+</text>
+{{#cancelled}}<bold><text>**Cancelled**
+</text></bold>{{/cancelled}}
+</text>
+{{/ticketitems}}
+{{{line}}}`;
+
+
+

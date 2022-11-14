@@ -35,7 +35,7 @@ const KOTPrinter = ({printers}: any) => {
                     return <List.Item
                         key={index}
                         title={department.name}
-                        description={Boolean(detail?.ip) && detail.ip}
+                        description={Boolean(detail?.host) && detail.host}
                         onPress={() => {
                             setPrinter({name: department.name, departmentid: department.departmentid})
                         }}

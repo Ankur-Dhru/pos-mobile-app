@@ -16,14 +16,14 @@ import {hideLoader, setAlert, setBottomSheet, setDialog, showLoader} from "../re
 import apiService from "./api-service";
 import {
     ACTIONS, adminUrl,
-    current,
+    current, defaultInvoiceTemplate, defaultKOTTemplate,
     isDevelopment,
     localredux,
     METHOD,
     posUrl,
     PRINTER,
     STATUS,
-    taxTypes,
+    taxTypes, testInvoiceData,
     TICKET_STATUS,
     TICKETS_TYPE,
     VOUCHER
@@ -46,6 +46,7 @@ import AddonActions from "../pages/Items/AddonActions";
 import {onPressNumber} from "../pages/Items/AddButton";
 import NetInfo from "@react-native-community/netinfo";
 import {insertItems} from "./Sqlite/insertData";
+import {sendDataToPrinter} from "./Network";
 
 
 let NumberFormat = require('react-number-format');
@@ -824,7 +825,6 @@ export const setItemRowData = (data: any) => {
         }
 
         const defaultCurrency:any = getDefaultCurrency()
-        appLog('defaultCurrency',defaultCurrency)
 
         let additem: any = {
             identificationtype,
@@ -1166,9 +1166,9 @@ export const selectItem = async (item: any) => {
 
 export const testPrint = async (printer: any) => {
 
-    const {ip, printername}: any = printer
+    const {host, printername}: any = printer
     await EscPosPrinter.init({
-        target: `TCP:${ip}`,
+        target: `TCP:${host}`,
         seriesName: getPrinterSeriesByName(printername),
         language: 'EPOS2_LANG_EN',
     })
@@ -1185,232 +1185,86 @@ export const testPrint = async (printer: any) => {
         .send()
 }
 
-export const printInvoice = async (order?: any) => {
+export const paperCut = async (printer: any) => {
 
+    const {host, printername,qrcode}: any = printer
+    await EscPosPrinter.init({
+        target: `TCP:${host}`,
+        seriesName: getPrinterSeriesByName(printername),
+        language: 'EPOS2_LANG_EN',
+    })
 
-    const getTrimChar = (count: number, char?: string, defaultLength: number = PAGE_WIDTH) => {
-        let space = "";
-        if (!Boolean(char)) {
-            char = " ";
-        }
-        for (let i = 0; i < (defaultLength - count); i++) {
-            space += char;
-        }
-        return space;
+    const printing = new EscPosPrinter.printing();
+
+    let status = await printing.initialize().align('center');
+
+    if (Boolean(qrcode)) {
+       await status.line(`Scan to Pay`).qrcode(qrcode)
     }
-
-    const getColString = (value: string, colLength: number) => {
-        if (!Boolean(value)) {
-            value = " ";
-        }
-
-        if (value.length > colLength) {
-            value = value.slice(0, colLength)
-        }
-        return value.toString()
-    }
-
-    const getItem = (col1: string = "", col2: string = "", col3: string = "", col4: string = "") => {
-
-        let fixCol1 = 20, fixCol2 = 7, fixCol3 = 9, fixCol4 = 9;
-
-        if (PAGE_WIDTH === 42) {
-            fixCol1 = 14;
-        }
-
-        col1 = getColString(col1, fixCol1);
-        col2 = getColString(col2, fixCol2);
-        col3 = getColString(col3, fixCol3);
-        col4 = getColString(col4, fixCol4);
-
-        let col1Length = fixCol1 - col1.length;
-        let col2Length = fixCol2 - col2.length;
-        let col3Length = fixCol3 - col3.length;
-        let col4Length = fixCol4 - col4.length;
-
-        let col1String = col1 + getTrimChar(PAGE_WIDTH - col1Length, " ");
-        let col2String = getTrimChar(PAGE_WIDTH - col2Length, " ") + col2;
-        let col3String = getTrimChar(PAGE_WIDTH - col3Length, " ") + col3;
-        let col4String = getTrimChar(PAGE_WIDTH - col4Length, " ") + col4;
-        return col1String + " " + col2String + " " + col3String + " " + col4String;
-    }
-
-
-    const getLeftRight = (left: string, right: string, large: boolean = false) => {
-
-        left = getColString(left, PAGE_WIDTH / 2);
-        right = getColString(right, PAGE_WIDTH / 2);
-
-        let charLength = left.length + right.length;
-
-        return left + getTrimChar(parseInt(charLength.toString()), " ", large ? PAGE_WIDTH / 2 : PAGE_WIDTH) + right
-    }
-
-
-    let PAGE_WIDTH = 48;
-    let cartData = order || store.getState().cartData;
-    const {printers}: any = store.getState().localSettings || {};
-
-
-    ///////// CREATE LOCALORDER ID //////////
-    if (!Boolean(cartData.invoice_display_number)) {
-        await retrieveData('fusion-pro-pos-mobile-vouchernos').then(async (vouchers: any) => {
-            cartData = {
-                ...cartData,
-                invoice_display_number: (Boolean(vouchers) && vouchers[cartData.vouchertypeid]) || 1
-            }
-            vouchers = {...vouchers, [cartData.vouchertypeid]: ++cartData.invoice_display_number}
-            await storeData('fusion-pro-pos-mobile-vouchernos', vouchers).then(async () => {
-                await store.dispatch(setCartData(cartData));
-            });
-        })
-    }
-    ///////// CREATE LOCALORDER ID //////////
-
-
-    const {
-        invoiceitems,
-        vouchertotaldisplay,
-        vouchertaxdisplay,
-        clientname,
-        vouchercreatetime,
-        payments,
-        tablename,
-        globaltax,
-        terminalid,
-        voucherroundoffdisplay,
-        vouchertotaldiscountamountdisplay,
-        adjustmentamount,
-        typeWiseTaxSummary,
-        invoice_display_number,
-        date
-    } = cartData;
-    const {currentLocation: {locationname, street1, street2, city}}: any = localredux.localSettingsData;
-    const {voucher, general: {legalname}}: any = localredux.initData;
-    const {terminal_name}: any = localredux.licenseData.data;
-    const {firstname, lastname}: any = localredux.authData;
-
-    try {
-        //const printers = await EscPosPrinter.discover();
-        // const printer = printers[0]
-
-        const {ip, printername} = printers[PRINTER.INVOICE]
-
-        if (Boolean(ip) && Boolean(printername)) {
-            await EscPosPrinter.init({
-                target: `TCP:${ip}`,
-                seriesName: getPrinterSeriesByName(printername),
-                language: 'EPOS2_LANG_EN',
-            })
-
-            const printing = new EscPosPrinter.printing();
-            // .barcode({
-            //     value:'Test123',
-            //     type:'EPOS2_BARCODE_CODE93',
-            //     hri:'EPOS2_HRI_BELOW',
-            //     width:2,
-            //     height:50,
-            // })
-            // .qrcode({
-            //     value: 'Test123',
-            //     level: 'EPOS2_LEVEL_M',
-            //     width: 5,
-            // })
-
-
-            let status = printing
-                .initialize()
-                .align('center')
-                .size(2, 2)
-                .line(legalname)
-                .smooth()
-                .size(2, 1)
-                .newline(1)
-                .line(locationname)
-                .smooth()
-                .size(1, 1)
-                .line(street1)
-                .line(street2)
-                .line(city)
-                .newline(1)
-                .align('right')
-                .line(voucher[cartData.vouchertypeid]?.vouchertypename || 'Voucher')
-                .size(2, 1)
-                .line(`No : ${terminal_name} - ${invoice_display_number}`)
-                .size(1, 1)
-                .line(`Date: ${dateFormat(date)} ${vouchercreatetime}`)
-                .align('left')
-                .line(`Staff : ${firstname + ' ' + lastname}`)
-                .line(getTrimChar(0, '-'))
-                .line(getLeftRight(`Client : ${clientname}`, `Table : ${tablename}`))
-                .line(getTrimChar(0, '-'))
-                .line(getItem("DESCRIPTION", "QNT", "RATE", "AMOUNT") + "\n" + getItem("HSN Code", "GST %", "", ""))
-                .line(getTrimChar(0, '-'))
-
-
-            let totalqnt: any = 0;
-            invoiceitems.map((item: any) => {
-                totalqnt += item.productqnt
-                status.line(getItem(item.productdisplayname, item.productqnt, item.productratedisplay, item.product_total_price_display) + "\n" +
-                    getItem(item?.hsn, item?.totalTaxPercentageDisplay + "%", "", ""))
-            })
-
-            status
-                .line(getTrimChar(0, '-'))
-                .line(getItem(`Total Items ${invoiceitems.length}`, totalqnt, "", vouchertotaldisplay))
-                .line(getLeftRight("Total Tax", vouchertaxdisplay))
-                .size(1, 2)
-
-            if (Boolean(payments) && Boolean(payments[0])) {
-                payments[0]?.paymentgateways?.map((gateway: any) => {
-                    status.line(getLeftRight(gateway.gatewayname, gateway.pay))
-                })
-            } else {
-                status.line(getLeftRight('Total', vouchertotaldisplay))
-            }
-
-            let taxes: any = '';
-            globaltax?.map((tax: any) => {
-                taxes += `${tax.taxname} : ${tax.taxpricedisplay} `
-            })
-            status
-                .size(1, 1)
-                .line(getTrimChar(0, '-'))
-                .line(taxes)
-                .line(getTrimChar(0, '-'))
-                .line(`${terminal_name}`)
-                .size(1, 1)
-                .align('center')
-
-
-            if ((Boolean(printers) && Boolean(printers[PRINTER.INVOICE]))) {
-                const {upiid, upiname} = printers[PRINTER.INVOICE] || {};
-                if (Boolean(upiid) && Boolean(upiname)) {
-                    status
-                        .line(`Scan to Pay`)
-                        .qrcode({
-                            value: `upi://pay?cu=INR&pa=${upiid}&pn=${upiname}&am=${vouchertotaldisplay}&tr=${invoice_display_number}`,
-                            level: 'EPOS2_LEVEL_M',
-                            width: 5,
-                        })
-                }
-            }
-
-            await status
-                .line("Powered By Dhru ERP")
-                .newline(2)
-                .cut()
-                .addPulse()
-                .send()
-
-        }
-
-
-    } catch (e) {
-        appLog("Error", e);
-    }
-
+    await status.line("Powered By Dhru ERP").cut().addPulse().send()
 }
+
+
+
+let PAGE_WIDTH = 48;
+export const getTrimChar = (count: number, char?: string, defaultLength: number = PAGE_WIDTH) => {
+    let space = "";
+    if (!Boolean(char)) {
+        char = " ";
+    }
+    for (let i = 0; i < (defaultLength - count); i++) {
+        space += char;
+    }
+    return space;
+}
+
+export const getColString = (value: string, colLength: number) => {
+    if (!Boolean(value)) {
+        value = " ";
+    }
+
+    if (value.length > colLength) {
+        value = value.slice(0, colLength)
+    }
+    return value.toString()
+}
+
+export const getItem = (col1: string = "", col2: string = "", col3: string = "", col4: string = "") => {
+
+    let fixCol1 = 20, fixCol2 = 7, fixCol3 = 9, fixCol4 = 9;
+
+    if (PAGE_WIDTH === 42) {
+        fixCol1 = 14;
+    }
+
+    col1 = getColString(col1, fixCol1);
+    col2 = getColString(col2, fixCol2);
+    col3 = getColString(col3, fixCol3);
+    col4 = getColString(col4, fixCol4);
+
+    let col1Length = fixCol1 - col1.length;
+    let col2Length = fixCol2 - col2.length;
+    let col3Length = fixCol3 - col3.length;
+    let col4Length = fixCol4 - col4.length;
+
+    let col1String = col1 + getTrimChar(PAGE_WIDTH - col1Length, " ");
+    let col2String = getTrimChar(PAGE_WIDTH - col2Length, " ") + col2;
+    let col3String = getTrimChar(PAGE_WIDTH - col3Length, " ") + col3;
+    let col4String = getTrimChar(PAGE_WIDTH - col4Length, " ") + col4;
+    return col1String + " " + col2String + " " + col3String + " " + col4String;
+}
+
+export const getLeftRight = (left: string, right: string, large: boolean = false) => {
+
+    left = getColString(left, PAGE_WIDTH / 2);
+    right = getColString(right, PAGE_WIDTH / 2);
+
+    let charLength = left.length + right.length;
+
+    return left + getTrimChar(parseInt(charLength.toString()), " ", large ? PAGE_WIDTH / 2 : PAGE_WIDTH) + right
+}
+
+
 
 export const generateKOT = async () => {
 
@@ -1434,8 +1288,6 @@ export const generateKOT = async () => {
                 kotno = 0;
             }
             kotid = kotno;
-
-            appLog('departments',departments)
 
             if (isEmpty(departments)) {
                 errorAlert(`No Kitchen Department`);
@@ -1591,6 +1443,7 @@ export const generateKOT = async () => {
                                 kotid,
                                 tableid,
                                 counter: 1,
+                                print:1,
                                 commonkotnote: commonkotnote,
                                 status: "pending",
                                 table: tablename,
@@ -1642,105 +1495,141 @@ export const generateKOT = async () => {
 }
 
 export const printKOT = async (kot?: any) => {
-
-    const getTrimChar = (count: number, char?: string, defaultLength: number = PAGE_WIDTH) => {
-        let space = "";
-        if (!Boolean(char)) {
-            char = " ";
-        }
-        for (let i = 0; i < (defaultLength - count); i++) {
-            space += char;
-        }
-        return space;
-    }
-
-
-    let PAGE_WIDTH = 48;
-
-    const printers: any = store.getState().localSettings?.printers;
-
-
-    const {ticketitems, ticketdate, tickettime, table, kotid, cancelreason} = kot;
-
-    const {firstname, lastname}: any = localredux.authData;
-
+    const PRINTERS: any = store.getState().localSettings?.printers || [];
     try {
-
-        const {ip, printername} = printers[kot?.departmentid] || {}
-
-        if (Boolean(ip) && Boolean(printername)) {
-            await EscPosPrinter.init({
-                target: `TCP:${ip}`,
-                seriesName: getPrinterSeriesByName(printername),
-                language: 'EPOS2_LANG_EN',
-            })
-
-            const printing = new EscPosPrinter.printing();
-
-
-            let status = printing
-                .initialize()
-                .align('center')
-                .size(3, 3)
-                .line(`#KOT-${kotid}`)
-                .smooth()
-                .size(1, 1)
-                .line(`Date: ${dateFormat(ticketdate)} ${tickettime}`)
-                .newline(1)
-                .align('left')
-                .line(getTrimChar(0, '-'))
-                .line(`Staff : ${firstname + ' ' + lastname}`)
-                .line(getTrimChar(0, '-'))
-                .line(`Table : ${table}`)
-                .line(getTrimChar(0, '-'))
-
-
-            if (Boolean(cancelreason)) {
-                status.size(1, 1)
-                status.line(`**** Cancel : ${cancelreason}`)
-            }
-
-            if (Boolean(ticketitems)) {
-                ticketitems?.map((item: any) => {
-                    status.size(1, 2)
-                    status.line(`${item.productqnt} X ${item.productdisplayname}`)
-                    status.size(1, 1)
-
-                    if (Boolean(item.itemaddon)) {
-                        item.itemaddon?.map((adon: any) => {
-                            status.line(`${adon}`)
-                        })
-                    }
-                    if (Boolean(item.itemtags)) {
-                        status.line(`${item.itemtags}`)
-                    }
-                    if (Boolean(item.instruction)) {
-                        status.line(`${item.instruction}`)
-                    }
-                    status.newline(1)
-                })
-            }
-
-
-            await status
-                .align('center')
-                .size(1, 1)
-                .line(getTrimChar(0, '-'))
-                .line("Powered By Dhru ERP")
-                .newline(2)
-                .cut()
-                .addPulse()
-                .send()
+        let printJson = {
+            ...kot,
+            line: () => "<text>" + getTrimChar(0, "-") + "\n</text>"
         }
 
+        await sendDataToPrinter(printJson, getTemplate(defaultKOTTemplate), PRINTERS[kot?.departmentid]);
 
     } catch (e) {
         appLog("Error", e);
     }
-
 }
 
 
+export const printInvoice = async (order?: any) => {
+
+
+
+    let cartData = order || store.getState().cartData;
+
+    const PRINTERS: any = store.getState().localSettings?.printers || [];
+
+
+
+    ///////// CREATE LOCALORDER ID //////////
+    if (!Boolean(cartData.invoice_display_number)) {
+        await retrieveData('fusion-pro-pos-mobile-vouchernos').then(async (vouchers: any) => {
+            cartData = {
+                ...cartData,
+                invoice_display_number: (Boolean(vouchers) && vouchers[cartData.vouchertypeid]) || 1
+            }
+            vouchers = {...vouchers, [cartData.vouchertypeid]: ++cartData.invoice_display_number}
+            await storeData('fusion-pro-pos-mobile-vouchernos', vouchers).then(async () => {
+                await store.dispatch(setCartData(cartData));
+            });
+        })
+    }
+    ///////// CREATE LOCALORDER ID //////////
+
+    const {currentLocation: {locationname, street1,state, street2, city,pin,mobile}}: any = localredux.localSettingsData;
+    const {general: {legalname}}: any = localredux.initData;
+    const {terminal_name}: any = localredux.licenseData.data;
+    const {firstname, lastname}: any = localredux.authData;
+
+    let decimalPlace = cartData?.currentDecimalPlace || 2;
+
+
+
+    try {
+
+
+
+        let totalqnt: any = 0;
+        let uniuqeitems:any = {};
+        let totalmrp = 0;
+        cartData?.invoiceitems.map((item: any) => {
+            totalqnt += item.productqnt;
+            if(!Boolean(uniuqeitems[item.itemid])){
+                uniuqeitems[item.itemid] = 0;
+            }
+            totalmrp += (item.mrp || item.productratedisplay) * item.productqnt;
+            uniuqeitems[item.itemid] = uniuqeitems[item.itemid]+1
+        });
+        const totaluniqueitems = objToArray(uniuqeitems).length;
+
+        let paymentsby:any = [];
+        cartData?.payment.map((pay:any)=>{
+            if(pay.paymentAmount) {
+                paymentsby.push(pay.paymentby)
+            }
+        })
+
+        if(Boolean(paymentsby)){
+            cartData = {
+                ...cartData,
+                paymentsby:paymentsby?.join(', '),
+                isListPayment:true
+            }
+        }
+
+        cartData.totalMRP = totalmrp;
+        if(+cartData.totalMRP > +cartData?.vouchertotaldisplay){
+            cartData = {
+                ...cartData,
+                totalSave:totalmrp - cartData?.vouchertotaldisplay
+            }
+        }
+
+        let printJson = {
+            ...cartData,
+            locationname, street1, street2,state, city,pin,mobile,legalname,terminalname:terminal_name,firstname, lastname,
+            isdisplaytaxable: cartData?.vouchersubtotaldisplay != cartData?.vouchertaxabledisplay,
+            head: () => getItem("DESCRIPTION", "QNT", "RATE", "AMOUNT") + "\n" + getItem("HSN Code", "GST %", "", ""),
+            items: cartData?.invoiceitems?.map((item: any) => getItem(item.productdisplayname, item.productqnt, numberFormat(item.productratedisplay, decimalPlace), numberFormat(item.product_total_price_display, decimalPlace)) + "\n" +
+                getItem(item?.hsn, item?.totalTaxPercentageDisplay + "%", "", "")),
+            counter: () => getItem(`Total Items ${totaluniqueitems}`, "QNT : "+totalqnt, "", numberFormat(cartData?.vouchertotaldisplay, decimalPlace)),
+            countersubtotal: () => getItem(`Total Items ${totaluniqueitems}`, "QNT : "+totalqnt, "", numberFormat(cartData?.vouchersubtotaldisplay, decimalPlace)),
+            total: () => getLeftRight(cartData.paymentsby || 'Total', numberFormat(cartData?.vouchertotaldisplay, decimalPlace)),
+            subtotal: () => getLeftRight(cartData.paymentsby || 'Sub Total', numberFormat(cartData?.vouchertotaldisplay, decimalPlace)),
+            taxabledisplay: () => getLeftRight("Taxable", numberFormat(cartData?.vouchertaxabledisplay, decimalPlace)),
+            totalbig: () => getLeftRight(cartData.paymentsby || 'Total', numberFormat(cartData?.vouchertotaldisplay, decimalPlace), true),
+            totaltax: () => getLeftRight("TotalTax", numberFormat(cartData?.vouchertaxdisplay, decimalPlace)),
+            discount: () => getLeftRight("Discount", numberFormat(cartData?.vouchertotaldiscountamountdisplay, decimalPlace)),
+            roundoff: () => getLeftRight("Roundoff", numberFormat(cartData?.voucherroundoffdisplay, decimalPlace)),
+            adjustment: () => getLeftRight("Adjustment", numberFormat(cartData?.adjustmentamount, decimalPlace)),
+            totalMRP: () => getLeftRight("Total MRP", numberFormat(cartData?.totalMRP, decimalPlace)),
+            paymentList: () => cartData.payment.map((pm: any) => getLeftRight(pm.paymentby, numberFormat(pm?.paymentAmount))),
+            taxes: () => cartData?.typeWiseTaxSummary?.map((item: any) => {
+                return `${item?.taxtype}:${numberFormat(item?.taxprice, decimalPlace)}`
+            }).join(", "),
+            line: () => "<text>" + getTrimChar(0, "-") + "\n</text>",
+        }
+
+        let printer = PRINTERS[PRINTER.INVOICE];
+        const {upiid,upiname,noofprint} = printer;
+
+        let qrcode:any = false;
+        if(upiid && upiname){
+            qrcode = {
+                value: `upi://pay?cu=INR&pa=${upiid}&pn=${upiname}&am=${cartData?.vouchertotaldisplay}&tr=${cartData?.invoice_display_number}`,
+                level: 'EPOS2_LEVEL_M',
+                width: 5,
+            }
+        }
+
+
+        await sendDataToPrinter(printJson, getTemplate(defaultInvoiceTemplate), {...printer, qrcode});
+
+    }
+    catch (e) {
+        appLog('e',e)
+    }
+
+}
 
 export const cancelOrder = async (navigation: any) => {
 
@@ -1827,10 +1716,13 @@ export const selectWorkspace = async (workspace:any,navigation:any) => {
 }
 
 
-
-
-
-
+export const getTemplate = (template: string) => {
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<document>
+   ` + template + `
+</document>
+`
+}
 
 
 

@@ -9,9 +9,9 @@ import {
     appLog,
     assignOption,
     findObject,
-    getCurrencySign,
+    getCurrencySign, isEmpty,
     isRestaurant,
-    selectItem,
+    selectItem, selectItemObject,
     updateComponent
 } from "../../libs/function";
 import {Field, Form} from "react-final-form";
@@ -146,6 +146,13 @@ const Index = (props: any) => {
 
     const onlyForRegistered = Boolean((general?.taxregtype[0] === "grr" || general?.taxregtype[0] === "grc"));
     const onlyForIndia = (general.country === 'IN');
+
+
+    const {currentLocation: {departments}} = localredux.localSettingsData;
+
+    let departmentList = isEmpty(departments) ? [] : departments?.map((dept: any, index: number) => {
+        return selectItemObject(dept.name, dept.departmentid, index + 1)
+    })
 
 
     const handleSubmit = async (values: any) => {
@@ -846,6 +853,26 @@ const Index = (props: any) => {
                                                             </Field>
                                                         </View>}
 
+
+                                                        <View>
+                                                            <Field name="itemdepartmentid">
+                                                                {props => (
+                                                                    <InputField
+                                                                        label={'Department'}
+                                                                        mode={'flat'}
+                                                                        list={departmentList}
+                                                                        value={props.input.value}
+                                                                        selectedValue={props.input.value}
+                                                                        displaytype={'pagelist'}
+                                                                        inputtype={'dropdown'}
+                                                                        listtype={'other'}
+                                                                        onChange={(value: any) => {
+                                                                            props.input.onChange(value)
+                                                                        }}>
+                                                                    </InputField>
+                                                                )}
+                                                            </Field>
+                                                        </View>
 
                                                     </View>
 

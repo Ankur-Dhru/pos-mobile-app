@@ -73,7 +73,7 @@ const Index = (props: any) => {
     if (!isRestaurant()) {
         navigation.setOptions({
             headerLeft: () => <View>
-                <TouchableOpacity style={[{paddingLeft:10}]} onPress={() => {
+                <TouchableOpacity   onPress={() => {
                     navigation.navigate('ProfileSettingsNavigator')
                 }}>
                     <ProIcon name={'bars'}/>

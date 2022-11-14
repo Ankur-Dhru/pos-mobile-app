@@ -12,7 +12,7 @@ import {appLog, getTicketStatus, objToArray, printKOT, saveLocalOrder, voucherTo
 import {localredux, TICKET_STATUS} from "../../libs/static";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
 import store from "../../redux-store/store";
-import { useNavigation } from "@react-navigation/native";
+import {CommonActions, useNavigation} from "@react-navigation/native";
 
 
 
@@ -29,7 +29,16 @@ const Index = (props: any) => {
 
     const confirmCancelOrder = async ({cancelreason, cancelreasonid}: any) => {
         try{
-            navigation.replace('ClientAreaStackNavigator');
+
+            navigation.dispatch(
+                CommonActions.reset({
+                    index: 0,
+                    routes: [
+                        {name: 'ClientAreaStackNavigator'},
+                    ],
+                })
+            );
+
             await store.dispatch(updateCartField({
                 cancelreason: cancelreason,
                 cancelreasonid: cancelreasonid,

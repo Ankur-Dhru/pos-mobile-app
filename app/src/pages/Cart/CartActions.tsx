@@ -12,7 +12,6 @@ import HoldOrders from "./HoldOrders";
 import {device} from "../../libs/static";
 
 
-
 const Index = ({
                    tableorders,
                    ordertype,
@@ -25,11 +24,11 @@ const Index = ({
     const hasRestaurant = isRestaurant()
     const dispatch = useDispatch()
 
-    useEffect(()=>{
-        if(printcounter){
+    useEffect(() => {
+        if (printcounter) {
             navigation.navigate('Payment')
         }
-    },[])
+    }, [])
 
 
     return <View style={[!device.tablet && styles.p_3]}>
@@ -81,14 +80,14 @@ const Index = ({
 
                                     onPress={() =>
                                         generateKOT().then(() => {
-                                            saveTempLocalOrder('',{print:true}).then(() => {
+                                            saveTempLocalOrder('', {print: true}).then(() => {
                                                 printInvoice().then();
                                                 dispatch(hideLoader())
                                             })
                                         })}
 
                                     more={{backgroundColor: styles.accent.color,}}
-                            >Print </Button>
+                            >Print {`${printcounter? '('+printcounter+')':''}`}</Button>
                         </View>}
                     </>}
                     {/*<View style={[styles.w_auto, styles.ml_1, styles.mr_1]}>
@@ -164,7 +163,6 @@ const mapStateToProps = (state: any) => {
 }
 
 export default connect(mapStateToProps)(withTheme(memo(Index)));
-
 
 
 

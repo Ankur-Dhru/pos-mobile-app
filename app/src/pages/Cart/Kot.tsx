@@ -3,10 +3,12 @@ import {View} from "react-native";
 import {Divider, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {Button} from "../../components";
-import {setDialog} from "../../redux-store/reducer/component";
+import {setAlert, setDialog} from "../../redux-store/reducer/component";
 import {connect, useDispatch} from "react-redux";
 import CancelReason from "./CancelReason";
-import {appLog, printKOT} from "../../libs/function";
+import {appLog, clone, printKOT, saveLocalOrder} from "../../libs/function";
+import store from "../../redux-store/store";
+import {updateCartField} from "../../redux-store/reducer/cart-data";
 
 
 const Index = memo((props: any) => {
@@ -17,8 +19,24 @@ const Index = memo((props: any) => {
     const dispatch = useDispatch();
 
     let [kot, setKot]: any = useState(kt);
-    const reprint = (kot: any) => {
-        printKOT(kot).then()
+    const reprint = async (kot: any) => {
+        kot.print = kot.print + 1;
+
+
+        let {kots}:any = store.getState().cartData;
+        const index = kots.findIndex(function (item: any) {
+            return item.kotid === kot.kotid
+        });
+        kots = {
+            ...kots,
+            [index]: kot
+        }
+
+        await printKOT(kot).then();
+        await dispatch(updateCartField({kots: Object.values(kots)}))
+
+        await setKot(clone(kot))
+
     }
 
 
@@ -62,7 +80,7 @@ const Index = memo((props: any) => {
                         <View>
                             <Button onPress={() => {
                                 reprint(kot)
-                            }}>Reprint</Button>
+                            }}> Reprint {kot.print? '('+(kot.print)+')':''}</Button>
                         </View>
                         <View>
                             {!Boolean(kot.cancelreason) && <Button onPress={() => {

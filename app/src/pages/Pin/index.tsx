@@ -18,7 +18,6 @@ import { setOrdersData} from "../../redux-store/reducer/orders-data";
 import { setSettings } from "../../redux-store/reducer/local-settings-data";
 import {ProIcon} from "../../components";
 import {setGroupList} from "../../redux-store/reducer/group-list";
-import {printBasic} from "../PrinterSettings/TestPrint";
 
 
 const md5 = require('md5');
@@ -162,11 +161,6 @@ const Index = (props: any) => {
                     <TouchableOpacity onPress={() => {syncData().then()}}><Text>Sync</Text></TouchableOpacity>
                 </View>
 
-
-                <View>
-                    <TouchableOpacity onPress={() => {printBasic().then()}}><Text>Print Test</Text></TouchableOpacity>
-
-                </View>
 
 
             </View>

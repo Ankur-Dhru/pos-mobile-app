@@ -19,6 +19,7 @@
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-sqlite-storage/platforms/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-sqlite-storage/platforms/android-native" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-svg/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-tcp-socket/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-vector-icons/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native/ReactAndroid" />
     <file type="web" url="file://$USER_HOME$/node_modules/react-native-esc-pos-printer/android" />

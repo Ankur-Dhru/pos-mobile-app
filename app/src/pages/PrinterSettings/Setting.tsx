@@ -23,6 +23,7 @@ const Index = (props: any) => {
     const navigation = useNavigation()
 
     const handleSubmit = async (values: any) => {
+
         printers = {
             ...printers,
             [type.departmentid]: values
@@ -36,6 +37,7 @@ const Index = (props: any) => {
     const initialValues = {
         printertype: 'network',
         ip: '',
+        host: '',
         printername: '',
         port: '9100',
         printsize: '72',
@@ -43,6 +45,7 @@ const Index = (props: any) => {
         ...printers[type.departmentid]
     }
 
+    //{value: 'shared', label: 'Shared Printer'},
 
     return <Container>
             <SafeAreaView>
@@ -66,7 +69,7 @@ const Index = (props: any) => {
                                                     <InputField
                                                         label={'Printer Type'}
                                                         mode={'flat'}
-                                                        list={[{value: 'shared', label: 'Shared Printer'}, {
+                                                        list={[{
                                                             value: 'network',
                                                             label: 'Network Printer'
                                                         }]}
@@ -86,7 +89,7 @@ const Index = (props: any) => {
                                         <View style={[styles.mb_5, styles.grid, styles.justifyContent]}>
                                             <View style={[styles.flexGrow]}>
 
-                                                <Field name="ip" validate={composeValidators(required)}>
+                                                <Field name="host" validate={composeValidators(required)}>
                                                     {props => (
                                                         <InputField
                                                             {...props}

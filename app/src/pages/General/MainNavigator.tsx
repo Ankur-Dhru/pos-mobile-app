@@ -44,6 +44,7 @@ import PrinterSettings from "../PrinterSettings/Setting";
 import SearchItem from "../Items/SearchItem";
 import AddTable from "../Tables/AddTable";
 import sample from "../sample";
+import CancelReason from "../Cart/CancelReason";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -216,6 +217,8 @@ const ClientAreaStackNavigator = (props:any) => {
 
 
             <Stack.Screen name={'Payment'} component={Payment} options={{headerTitle: 'Payment'}}/>
+
+            <Stack.Screen name={'CancelReason'} component={CancelReason} options={{presentation:'modal',headerTitle: 'Cancel Reason'}}/>
 
 
             <Stack.Screen name={'SalesReportNavigator'}  component={Report} options={{title: 'Sales Report'}}   />

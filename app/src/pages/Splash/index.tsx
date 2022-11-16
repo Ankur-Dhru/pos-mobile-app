@@ -9,7 +9,13 @@ import {useDispatch} from "react-redux";
 import {Card} from "react-native-paper";
 import {setTableOrdersData} from "../../redux-store/reducer/table-orders-data";
 import {hideLoader} from "../../redux-store/reducer/component";
-import {device, localredux} from "../../libs/static";
+import {
+    defaultInvoiceTemplate,
+    defaultPrintingTemplates,
+    device,
+    localredux,
+    printingTemplates
+} from "../../libs/static";
 import {setSettings} from "../../redux-store/reducer/local-settings-data";
 
 import {getDBConnection} from "../../libs/Sqlite";
@@ -58,11 +64,13 @@ const Index = (props: any) => {
         let screen = 'SetupStackNavigator';
         if (Boolean(data) && Boolean(licenseData)) {
             const {license: {expired_on, status}} = licenseData.data;
-            const today = moment().format('YYYY-MM-dd');
+            const today = moment().format('YYYY-MM-DD');
             if (expired_on >= today && status === 'Active') {
 
                 localredux.initData = initData;
                 localredux.localSettingsData = localSettingsData;
+
+                appLog('today',today)
 
                 //await store.dispatch(setInitData(initData))
 

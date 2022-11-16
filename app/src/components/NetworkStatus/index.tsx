@@ -11,7 +11,7 @@ const Index = ({internet}: any) => {
         return <></>
     }
 
-    return <View>
+    return <View style={[styles.absolute,{bottom:0,left:0,right:0}]}>
         <Text
             style={[styles.textCenter, {
                 color: "white",

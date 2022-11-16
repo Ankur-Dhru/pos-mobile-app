@@ -122,7 +122,7 @@ const App = () => {
 
                     <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'}
                                backgroundColor={isDarkMode ? 'black' : 'white'}/>
-                    <NetworkStatus/>
+
                     <NavigationContainer>
 
                         <MainStackNavigator/>
@@ -135,6 +135,8 @@ const App = () => {
                     <Dialog/>
                     <SnackBar/>
                     <ActivityIndicator/>
+
+                    <NetworkStatus/>
 
                 </PaperProvider>
             </SafeAreaView>

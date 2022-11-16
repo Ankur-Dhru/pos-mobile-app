@@ -23,7 +23,7 @@ import {
     posUrl,
     PRINTER,
     STATUS,
-    taxTypes, testInvoiceData,
+    taxTypes,
     TICKET_STATUS,
     TICKETS_TYPE,
     VOUCHER
@@ -47,6 +47,7 @@ import {onPressNumber} from "../pages/Items/AddButton";
 import NetInfo from "@react-native-community/netinfo";
 import {insertItems} from "./Sqlite/insertData";
 import {sendDataToPrinter} from "./Network";
+import {CommonActions} from "@react-navigation/native";
 
 
 let NumberFormat = require('react-number-format');
@@ -547,6 +548,7 @@ export const syncData = async (loader=true) => {
                         }
                     }
 
+
                     if (type !== "finish") {
                         await store.dispatch(setSyncDetail({type: result,rows:start,total:(Boolean(data?.extra) && Boolean(data?.extra?.total)) ? data.extra.total : 0}))
                         setTimeout(async ()=>{
@@ -562,6 +564,13 @@ export const syncData = async (loader=true) => {
                                 const locationid = licenseData?.data?.location_id;
                                 const locations = initData?.location;
 
+                                let printingtemplates:any = {}
+                                Object.values(initData.printingtemplate).map((template:any)=>{
+                                    if(template.location === locationid){
+                                        printingtemplates[template?.printertype] = template
+                                    }
+                                })
+
                                 data = {
                                     ...data,
                                     initData,
@@ -569,6 +578,7 @@ export const syncData = async (loader=true) => {
                                     clientsData,
                                     localSettingsData: {
                                         currentLocation: locations[locationid],
+                                        printingtemplates:printingtemplates,
                                         lastSynctime: moment().unix(),
                                         terminalname:terminalname,
                                         isRestaurant: (locations[locationid]?.industrytype === "foodservices"),
@@ -579,6 +589,7 @@ export const syncData = async (loader=true) => {
                                     localredux.initData = data.initData;
                                     localredux.addonsData = data.addonsData;
                                     localredux.clientsData = data.clientsData;
+                                    localredux.templatesData = data.templatesData;
                                     localredux.localSettingsData = data.localSettingsData;
                                 });
 
@@ -643,7 +654,7 @@ export const filterArray = (array: any, fields: any, searchText: any, multilevel
                                 searchin += item[field]
                             })
                         }
-                        return JSON.stringify(searchin).toLowerCase().includes(searchText && searchText.toLowerCase())
+                        return JSON.stringify(searchin)?.toLowerCase().includes(searchText && searchText?.toLowerCase())
                     })
                 }
             })
@@ -656,7 +667,7 @@ export const filterArray = (array: any, fields: any, searchText: any, multilevel
                         searchin += item[field]
                     })
                 }
-                return JSON.stringify(searchin).toLowerCase().includes(searchText && searchText.toLowerCase())
+                return JSON.stringify(searchin)?.toLowerCase().includes(searchText && searchText?.toLowerCase())
             })
         }
     }
@@ -803,6 +814,7 @@ export const setItemRowData = (data: any) => {
             itemtags,
             notes,
             hasAddon,
+            mrp,
             key
         } = data;
 
@@ -848,6 +860,7 @@ export const setItemRowData = (data: any) => {
             itemaddon,
             itemtags,
             notes,
+            mrp,
             hasAddon,
             isDepartmentSelected,
             ...getProductData(data, defaultCurrency, defaultCurrency, undefined, undefined, isInward, pricingTemplate)
@@ -1185,24 +1198,6 @@ export const testPrint = async (printer: any) => {
         .send()
 }
 
-export const paperCut = async (printer: any) => {
-
-    const {host, printername,qrcode}: any = printer
-    await EscPosPrinter.init({
-        target: `TCP:${host}`,
-        seriesName: getPrinterSeriesByName(printername),
-        language: 'EPOS2_LANG_EN',
-    })
-
-    const printing = new EscPosPrinter.printing();
-
-    let status = await printing.initialize().align('center');
-
-    if (Boolean(qrcode)) {
-       await status.line(`Scan to Pay`).qrcode(qrcode)
-    }
-    await status.line("Powered By Dhru ERP").cut().addPulse().send()
-}
 
 
 
@@ -1266,243 +1261,31 @@ export const getLeftRight = (left: string, right: string, large: boolean = false
 
 
 
-export const generateKOT = async () => {
-
-    let kotid: any = '';
-    store.dispatch(showLoader())
-    let cartData = store.getState().cartData;
-    const {currentLocation: {departments}} = localredux.localSettingsData;
-
-    const currentTicketType = localredux.initData?.tickets[TICKETS_TYPE.KOT];
-
-    const {adminid, username}: any = localredux.loginuserData;
-    const today: any = store.getState().localSettings?.today;
-
-    try {
-        await retrieveData('fusion-pro-pos-mobile-kotno').then(async (kotno: any) => {
-
-            if(!Boolean(kotno)){
-                kotno = 0;
-            }
-            if ((today !== moment().format('YYYY-MM-DD'))) {
-                kotno = 0;
-            }
-            kotid = kotno;
-
-            if (isEmpty(departments)) {
-                errorAlert(`No Kitchen Department`);
-            } else {
-
-                let {
-                    invoiceitems,
-                    tableorderid,
-                    tableid,
-                    tablename,
-                    ordertype,
-                    kots,
-                    commonkotnote,
-                } = cartData;
-
-
-                let itemForKot: any = [], newkot = {};
-                let printkot: any = [];
-                if (ordertype !== "tableorder") {
-                    tablename = ordertype
-                    if (tableorderid) {
-                        tablename += ` #${tableorderid}`
-                    }
-                }
-
-
-                if (invoiceitems) {
-
-                    itemForKot = invoiceitems.filter((itemL1: any) => {
-                        return Boolean(itemL1?.itemdepartmentid) && !Boolean(itemL1?.kotid)
-                    });
-
-                    if (itemForKot?.length > 0) {
-
-                        let kitchens: any = [];
-
-
-                        itemForKot?.forEach((item: any) => {
-
-                            const kitchenid = item?.itemdepartmentid;
-
-                            let find = kitchens.find((k: any) => k === kitchenid);
-                            if (!Boolean(find)) {
-                                kitchens = [
-                                    ...kitchens,
-                                    kitchenid
-                                ]
-                            }
-                        });
-
-                        const openTicketStatus = getTicketStatus(TICKET_STATUS.DONE);
-
-                        kitchens.forEach((k: any) => {
-                            kotid++;
-
-                            storeData('fusion-pro-pos-mobile-kotno', kotid).then(() => {
-                            });
-                            let kotitems: any = [];
-
-                            itemForKot.forEach((itemL1: any, index: any) => {
-
-                                if (itemL1?.itemdepartmentid === k) {
-
-                                    if (!Boolean(itemL1?.kotid)) {
-                                        itemL1 = {
-                                            ...itemL1,
-                                            kotid: kotid,
-                                            can_not_change: true
-                                        }
-                                    }
-
-                                    let {
-                                        product_qnt,
-                                        productratedisplay,
-                                        notes,
-                                        productqnt,
-                                        ref_id,
-                                        groupname,
-                                        itemunit,
-                                        itemid,
-                                        itemname,
-                                        itemaddon,
-                                        itemtags
-                                    } = itemL1;
-
-                                    const kot:any = {
-                                        "productid": itemid,
-                                        "productrate": productratedisplay,
-                                        "productratedisplay": productratedisplay,
-                                        "productqnt": productqnt,
-                                        "productqntunitid": itemunit,
-                                        "related": 0,
-                                        "item_ref_id": "",
-                                        "staffid": adminid,
-                                        "productdisplayname": itemname,
-                                        "itemgroupname": groupname,
-                                        "instruction": notes || '',
-                                        itemaddon: itemaddon?.map((item: any) => {
-                                            return `${item.productqnt} X ${item.itemname}`
-                                        }),
-                                        itemtags: itemtags?.map((itemtag: any) => {
-                                            return itemtag?.taglist?.map((tag: any) => {
-                                                if (tag.selected) {
-                                                    return `${itemtag.taggroupname} : ${tag.name}`
-                                                }
-                                            })
-                                        }).join(' '),
-                                        ref_id,
-                                        key: itemL1.key,
-                                    };
-
-                                    if (itemaddon) {
-                                        kot.addons = itemaddon
-                                            .map(({
-                                                      productid,
-                                                      productrate,
-                                                      productratedisplay,
-                                                      productqntunitid,
-
-                                                      productdisplayname,
-                                                      productqnt
-                                                  }: any) => {
-
-                                                return {
-                                                    productid,
-                                                    productrate,
-                                                    productdisplayname,
-                                                    productratedisplay,
-                                                    productqntunitid,
-                                                    productqnt
-                                                }
-                                            })
-                                    }
-
-                                    kotitems = [...kotitems, clone(kot)];
-
-                                    itemForKot[index] = itemL1;
-                                }
-
-                            });
-
-                            const department = findObject(departments, 'departmentid', k, true)
-
-                            newkot = {
-                                tickettypeid: currentTicketType?.tickettypeid,
-                                ticketnumberprefix: currentTicketType?.ticketnumberprefix,
-                                ticketstatus: openTicketStatus?.statusid,
-                                ticketstatusname: "Close",
-                                ticketitems: kotitems,
-                                ticketdate: moment().format("YYYY-MM-DD"),
-                                tickettime: moment().format("hh:mm A"),
-                                datetime: moment().unix(),
-                                kotid,
-                                tableid,
-                                counter: 1,
-                                print:1,
-                                commonkotnote: commonkotnote,
-                                status: "pending",
-                                table: tablename,
-                                departmentid: k,
-                                departmentname: department?.name,
-                                staffid: adminid,
-                                staffname: username,
-                                ordertype: ordertype,
-                            };
-
-                            appLog('newkot', newkot)
-
-
-                            kots = [...kots, newkot];
-
-                            printkot.push(newkot);
-
-                            printKOT(newkot)
-
-
-                        });
-
-                        const updateditems = invoiceitems.map((item: any) => {
-
-                            const find = findObject(itemForKot, 'key', item.key, true);
-                            if (Boolean(find)) {
-                                item = {
-                                    ...item,
-                                    kotid: find.kotid,
-                                }
-                            }
-                            return item
-                        })
-
-                        await store.dispatch(updateCartKots(kots))
-                        await store.dispatch(updateCartItems(updateditems))
-
-                        await store.dispatch(hideLoader())
-
-                    }
-
-                }
-            }
-        });
-    } catch (e) {
-        appLog('e', e)
-    }
-
-}
-
 export const printKOT = async (kot?: any) => {
-    const PRINTERS: any = store.getState().localSettings?.printers || [];
+
+
     try {
+        const PRINTERS: any = store.getState().localSettings?.printers || [];
         let printJson = {
             ...kot,
             line: () => "<text>" + getTrimChar(0, "-") + "\n</text>"
         }
 
-        await sendDataToPrinter(printJson, getTemplate(defaultKOTTemplate), PRINTERS[kot?.departmentid]);
+        const printer = PRINTERS[kot?.departmentid];
+
+        if((kot?.cancelled && printer?.printoncancel) || !kot?.cancelled) {
+            return new Promise(async (resolve) => {
+                if(Boolean(printer?.host)) {
+                    const template = getPrintTemplate('KOT');
+                    sendDataToPrinter(printJson, getTemplate(template || defaultKOTTemplate), printer).then(() => {
+                        resolve({})
+                    });
+                }
+                else{
+                    resolve({})
+                }
+            })
+        }
 
     } catch (e) {
         appLog("Error", e);
@@ -1512,41 +1295,37 @@ export const printKOT = async (kot?: any) => {
 
 export const printInvoice = async (order?: any) => {
 
-
-
-    let cartData = order || store.getState().cartData;
-
-    const PRINTERS: any = store.getState().localSettings?.printers || [];
-
-
-
-    ///////// CREATE LOCALORDER ID //////////
-    if (!Boolean(cartData.invoice_display_number)) {
-        await retrieveData('fusion-pro-pos-mobile-vouchernos').then(async (vouchers: any) => {
-            cartData = {
-                ...cartData,
-                invoice_display_number: (Boolean(vouchers) && vouchers[cartData.vouchertypeid]) || 1
-            }
-            vouchers = {...vouchers, [cartData.vouchertypeid]: ++cartData.invoice_display_number}
-            await storeData('fusion-pro-pos-mobile-vouchernos', vouchers).then(async () => {
-                await store.dispatch(setCartData(cartData));
-            });
-        })
-    }
-    ///////// CREATE LOCALORDER ID //////////
-
-    const {currentLocation: {locationname, street1,state, street2, city,pin,mobile}}: any = localredux.localSettingsData;
-    const {general: {legalname}}: any = localredux.initData;
-    const {terminal_name}: any = localredux.licenseData.data;
-    const {firstname, lastname}: any = localredux.authData;
-
-    let decimalPlace = cartData?.currentDecimalPlace || 2;
-
-
-
     try {
 
 
+
+        let cartData = order || store.getState().cartData;
+
+        const PRINTERS: any = store.getState()?.localSettings?.printers || [];
+
+
+
+        ///////// CREATE LOCALORDER ID //////////
+        if (!Boolean(cartData.invoice_display_number)) {
+            await retrieveData('fusion-pro-pos-mobile-vouchernos').then(async (vouchers: any) => {
+                cartData = {
+                    ...cartData,
+                    invoice_display_number: (Boolean(vouchers) && vouchers[cartData.vouchertypeid]) || 1
+                }
+                vouchers = {...vouchers, [cartData.vouchertypeid]: ++cartData.invoice_display_number}
+                await storeData('fusion-pro-pos-mobile-vouchernos', vouchers).then(async () => {
+                    await store.dispatch(setCartData(cartData));
+                });
+            })
+        }
+        ///////// CREATE LOCALORDER ID //////////
+
+        const {currentLocation: {locationname, street1,state, street2, city,pin,mobile}}: any = localredux.localSettingsData;
+        const {general: {legalname}}: any = localredux.initData;
+        const {terminal_name}: any = localredux.licenseData.data;
+        const {firstname, lastname}: any = localredux.authData;
+
+        let decimalPlace = cartData?.currentDecimalPlace || 2;
 
         let totalqnt: any = 0;
         let uniuqeitems:any = {};
@@ -1576,6 +1355,7 @@ export const printInvoice = async (order?: any) => {
             }
         }
 
+
         cartData.totalMRP = totalmrp;
         if(+cartData.totalMRP > +cartData?.vouchertotaldisplay){
             cartData = {
@@ -1583,6 +1363,7 @@ export const printInvoice = async (order?: any) => {
                 totalSave:totalmrp - cartData?.vouchertotaldisplay
             }
         }
+
 
         let printJson = {
             ...cartData,
@@ -1602,7 +1383,11 @@ export const printInvoice = async (order?: any) => {
             roundoff: () => getLeftRight("Roundoff", numberFormat(cartData?.voucherroundoffdisplay, decimalPlace)),
             adjustment: () => getLeftRight("Adjustment", numberFormat(cartData?.adjustmentamount, decimalPlace)),
             totalMRP: () => getLeftRight("Total MRP", numberFormat(cartData?.totalMRP, decimalPlace)),
-            paymentList: () => cartData.payment.map((pm: any) => getLeftRight(pm.paymentby, numberFormat(pm?.paymentAmount))),
+            paymentList: () => cartData.payment.map((pm: any) => {
+                if(Boolean(pm?.paymentAmount)) {
+                    getLeftRight(pm.paymentby, numberFormat(pm?.paymentAmount))
+                }
+            }),
             taxes: () => cartData?.typeWiseTaxSummary?.map((item: any) => {
                 return `${item?.taxtype}:${numberFormat(item?.taxprice, decimalPlace)}`
             }).join(", "),
@@ -1610,7 +1395,8 @@ export const printInvoice = async (order?: any) => {
         }
 
         let printer = PRINTERS[PRINTER.INVOICE];
-        const {upiid,upiname,noofprint} = printer;
+        const upiid  = printer?.upiid;
+        const upiname = printer?.upiname;
 
         let qrcode:any = false;
         if(upiid && upiname){
@@ -1622,13 +1408,34 @@ export const printInvoice = async (order?: any) => {
         }
 
 
-        await sendDataToPrinter(printJson, getTemplate(defaultInvoiceTemplate), {...printer, qrcode});
+        return await new Promise(async (resolve) => {
+            const template = getPrintTemplate('Thermal');
+            if(Boolean(printer?.host)) {
+                await sendDataToPrinter(printJson, getTemplate(template || defaultInvoiceTemplate), {
+                    ...printer,
+                    qrcode
+                }).then(() => {
+                    resolve({})
+                });
+            }
+            else{
+                resolve({})
+            }
+        })
 
     }
     catch (e) {
-        appLog('e',e)
+        appLog('e printInvoice',e)
     }
 
+}
+
+export const getPrintTemplate = (type?:any) => {
+    const {printingtemplates}:any = localredux.localSettingsData || {}
+    if(Boolean(printingtemplates) && Boolean(printingtemplates[type])) {
+        return  base64Decode(printingtemplates[type]?.content)
+    }
+    return
 }
 
 export const cancelOrder = async (navigation: any) => {
@@ -1641,19 +1448,23 @@ export const cancelOrder = async (navigation: any) => {
 
         if (kots?.length === 0 || (kots?.length > 0 && invoiceitems?.length === 0)) {
             store.dispatch(resetCart())
-            navigation.replace('ClientAreaStackNavigator');
+
+            navigation.dispatch(
+                CommonActions.reset({
+                    index: 0,
+                    routes: [
+                        {name: 'ClientAreaStackNavigator'},
+                    ],
+                })
+            );
+
             if (tableorderid) {
                 deleteTempLocalOrder(tableorderid).then(() => {
 
                 })
             }
         } else {
-            store.dispatch(setDialog({
-                visible: true,
-                hidecancel: true,
-                width: 380,
-                component: () => <CancelReason type={'ordercancelreason'} navigation={navigation}/>
-            }))
+            navigation.navigate('CancelReason',{type:'ordercancelreason'})
         }
     } catch (e) {
         appLog('e', e)

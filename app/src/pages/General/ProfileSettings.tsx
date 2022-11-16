@@ -1,7 +1,7 @@
 import React from "react";
-import {isEmpty, isRestaurant, storeData, syncData} from "../../libs/function";
+import {appLog, isEmpty, isRestaurant, storeData, syncData} from "../../libs/function";
 import {Dimensions, Image, ScrollView, View} from "react-native";
-import {Caption, Card, Divider, List, Title} from "react-native-paper";
+import {Caption, Card, Divider, List, Title,Text} from "react-native-paper";
 import {styles} from "../../theme";
 import {CommonActions, useNavigation} from "@react-navigation/native";
 import {ACTIONS, grecaptcharesponse, localredux, loginUrl, METHOD, STATUS} from "../../libs/static";
@@ -16,8 +16,9 @@ import {Container, ProIcon} from "../../components";
 const ProfileSettings = () => {
 
     const {avatar_url, companyname, email: aemail, firstname, lastname} = localredux.authData;
-    const {password, email} = localredux.licenseData
-    const {terminalname} = localredux.localSettingsData
+    const {password, email,data:{terminal_name}} = localredux.licenseData;
+
+    const {workspace} = localredux.initData
 
     const windowHeight = Dimensions.get('window').height;
     const navigation = useNavigation()
@@ -52,6 +53,7 @@ const ProfileSettings = () => {
         await storeData('fusion-pro-pos-mobile-settings',{}).then(async () => {});
         await storeData('fusion-pro-pos-mobile-vouchernos',0).then(async () => {});
         await storeData('fusion-pro-pos-mobile-kotno',0).then(async () => {});
+
         navigatToSetup()
     }
 
@@ -108,10 +110,12 @@ const ProfileSettings = () => {
                                     source={require('../../assets/dhru-logo-22.png')}
                                 />
                                 <View>
+
                                     <Title
-                                        style={[styles.text_md, styles.textCenter]}>{firstname + ' ' + lastname} {terminalname}</Title>
-                                    <Caption
-                                        style={[styles.paragraph, styles.textCenter, styles.mb_10]}>{aemail}</Caption>
+                                        style={[styles.text_md, styles.textCenter]}>{firstname + ' ' + lastname} </Title>
+                                    <Text style={[styles.paragraph, styles.textCenter,styles.mb_2]}>{aemail}</Text>
+                                    <Caption  style={[styles.paragraph, styles.textCenter, styles.mb_10]}>{workspace} ({terminal_name})</Caption>
+
                                 </View>
                             </View>
 
@@ -202,13 +206,18 @@ const ProfileSettings = () => {
                             />
 
                             <List.Item
-
                                 title="KOT Printer"
                                 onPress={() => {
                                     navigation.navigate("KOTPrinter");
                                 }}
-
                             />
+
+                            {/*<List.Item
+                                title="Printing Templates"
+                                onPress={() => {
+                                    navigation.navigate("PrintingTemplates");
+                                }}
+                            />*/}
 
                             <List.Item
 

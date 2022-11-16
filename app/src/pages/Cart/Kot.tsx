@@ -3,27 +3,28 @@ import {View} from "react-native";
 import {Divider, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {Button} from "../../components";
-import {setAlert, setDialog} from "../../redux-store/reducer/component";
 import {connect, useDispatch} from "react-redux";
 import CancelReason from "./CancelReason";
-import {appLog, clone, printKOT, saveLocalOrder} from "../../libs/function";
+import {clone, printKOT} from "../../libs/function";
 import store from "../../redux-store/store";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
+import {useNavigation} from "@react-navigation/native";
 
 
 const Index = memo((props: any) => {
 
-    let {kot: kt, tablename,   theme: {colors},hasLast}: any = props;
+    let {kot: kt, tablename, theme: {colors}, hasLast}: any = props;
 
     const {departmentname, commonkotnote, staffname, kotid, tickettime, ticketitems}: any = kt;
     const dispatch = useDispatch();
+    const navigation = useNavigation()
 
     let [kot, setKot]: any = useState(kt);
     const reprint = async (kot: any) => {
         kot.print = kot.print + 1;
 
 
-        let {kots}:any = store.getState().cartData;
+        let {kots}: any = store.getState().cartData;
         const index = kots.findIndex(function (item: any) {
             return item.kotid === kot.kotid
         });
@@ -41,12 +42,7 @@ const Index = memo((props: any) => {
 
 
     const cancelKOTDialog = async (kot: any) => {
-        dispatch(setDialog({
-            visible: true,
-            hidecancel: true,
-            width:360,
-            component: () => <CancelReason type={'ticketcancelreason'} kot={kot} setKot={setKot} />
-        }))
+        navigation.navigate('CancelReason', {type: 'ticketcancelreason', kot: kot, setKot: setKot})
     }
 
     return (
@@ -80,7 +76,7 @@ const Index = memo((props: any) => {
                         <View>
                             <Button onPress={() => {
                                 reprint(kot)
-                            }}> Reprint {kot.print? '('+(kot.print)+')':''}</Button>
+                            }}> Reprint {kot.print ? '(' + (kot.print) + ')' : ''}</Button>
                         </View>
                         <View>
                             {!Boolean(kot.cancelreason) && <Button onPress={() => {
@@ -90,11 +86,11 @@ const Index = memo((props: any) => {
                     </View>
 
                 </View>
-                {!hasLast &&  <Divider style={[styles.divider, {borderBottomColor: colors.divider}]}/>}
+                {!hasLast && <Divider style={[styles.divider, {borderBottomColor: colors.divider}]}/>}
             </View>
         </View>
     );
-},(r1, r2) => {
+}, (r1, r2) => {
     return r1.item === r2.item;
 })
 

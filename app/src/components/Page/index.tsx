@@ -46,7 +46,6 @@ const PageComponent = memo(({
     const dispatch = useDispatch();
     const Content =  component;
 
-    appLog('page pageKey',pageKey)
 
 /*    return <Modal
         style={{margin: 0,height:300}}

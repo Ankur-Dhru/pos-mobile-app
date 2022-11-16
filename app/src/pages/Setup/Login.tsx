@@ -31,10 +31,10 @@ const Index = (props: any) => {
     const [passwordVisible,setPasswordVisible]:any = useState(true)
 
     const initdata: any = isDevelopment ? {
-        email: 'ankur9090_132@dhrusoft.com',
-        password: 'Dhrunet1@',
-        //email: 'dhru360@yahoo.com',
-        //password: 'dhru@9090',
+        //email: 'ankur9090_132@dhrusoft.com',
+        //password: 'Dhrunet1@',
+        email: 'dhru360@yahoo.com',
+        password: 'dhru@9090',
     } : {
         email: '',
         password: ''

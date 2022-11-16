@@ -27,10 +27,10 @@ class Index extends React.Component<any> {
                         width: 35,
                         alignItems: align === 'left' ? 'flex-start' : align === 'right' ? 'flex-end' : 'center'
                     }]} onPress={onPress}>
-                        <Icon name={name} type={type} color={color} size={size} {...this.props}    />
+                        <Icon name={name} type={type} color={color}   {...this.props}    />
                     </TouchableOpacity>
                     :
-                    <Icon name={name} type={type} color={color}  size={size}  {...this.props} />}
+                    <Icon name={name} type={type} color={color}   {...this.props} />}
             </>
         );
     }

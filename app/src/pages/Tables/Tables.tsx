@@ -2,7 +2,7 @@ import {current, device, localredux} from "../../libs/static";
 import React, {memo, useCallback, useEffect, useState} from "react";
 import {appLog, isEmpty, saveTempLocalOrder, toCurrency} from "../../libs/function";
 import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
-import {FAB, Paragraph, withTheme} from "react-native-paper";
+import {Card, FAB, Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 
 import {connect, useDispatch} from "react-redux";
@@ -159,17 +159,16 @@ const Index = (props: any) => {
 
 
             return (
-                <View style={[{minWidth: 150}, styles.flexGrow,]} key={item.tableid}>
-                    {<TouchableOpacity style={[styles.m_2, styles.noshadow, {
-                        height: 140,
-                        backgroundColor: Boolean(item.kots?.length) ? styles.yellow.color : Boolean(item.invoiceitems?.length) ? styles.secondary.color : styles.light.color,
-                        borderRadius: 5
-                    }]}
+                <Card style={[styles.m_1, styles.noshadow, {maxWidth:'100%',minWidth: 150,
+                    backgroundColor: Boolean(item.kots?.length) ? styles.yellow.color : Boolean(item.invoiceitems?.length) ? styles.secondary.color : styles.light.color,
+                    borderRadius: 5}, styles.flexGrow,]} key={item.tableid}>
+                    {<TouchableOpacity
+                                    style={{minHeight: 100}}
                                        onPress={() => {
                                            current.table = {invoiceitems: [], kots: [], ...item};
                                            !shifttable ? navigation.navigate('CartStackNavigator', current.table) : Boolean(shifting) ? shiftTo(props) : shiftFrom(item.tableorderid)
                                        }}>
-                        {((shiftstart || shifting) || !shifttable) && <View style={[styles.p_5]}>
+                        {((shiftstart || shifting) || !shifttable) && <View style={[styles.p_4]}>
                             <View style={[styles.grid, styles.mb_3]}>
                                 <View
                                     style={[styles.badge, styles.px_5, {backgroundColor: styles.primary.color}]}>
@@ -179,22 +178,27 @@ const Index = (props: any) => {
                                 <Paragraph><ProIcon align={'left'} name={'user'} action_type={'text'}
                                                     size={13}/> {item.paxes} x {item.clientname}</Paragraph>
 
-                                {Boolean(item?.advanceorder?.date) &&
-                                    <Paragraph>Delivery on
-                                        : {moment(item?.advanceorder.date).format('DD/MM/YYYY')} {moment(item?.advanceorder.time).format('HH:mm')}</Paragraph>}
+                                {Boolean(item?.advanceorder?.date) && <>
+                                    <Paragraph style={[styles.paragraph,styles.text_xs]}>Delivery on </Paragraph>
+                                    <Text  style={[styles.paragraph]}>{moment(item?.advanceorder.date).format('DD/MM/YYYY')} {moment(item?.advanceorder.time).format('HH:mm')}</Text>
+                                </>}
+
 
                                 <View style={[styles.mt_3]}>
                                     <Text
                                         style={[styles.paragraph, styles.text_lg, styles.bold, {color: 'black'}]}>{toCurrency(item.vouchertotaldisplay)}</Text>
-                                    {item.printcounter && <Text style={[styles.mt_5]}><ProIcon name={'print'} action_type={'text'}/></Text>}
                                 </View>
+
                             </>}
 
+                            {item.printcounter && <View style={[styles.absolute,{right:10,top:12}]}><Text><ProIcon size={15} name={'print'} type={'solid'} action_type={'text'}/></Text></View>}
 
 
                         </View>}
+
+
                     </TouchableOpacity>}
-                </View>
+                </Card>
             );
         },
         (r1, r2) => {

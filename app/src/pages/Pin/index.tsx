@@ -4,7 +4,7 @@ import {Image, TouchableOpacity, View} from "react-native";
 import Container from "../../components/Container";
 import ReactNativePinView from "react-native-pin-view"
 import {useDispatch} from "react-redux";
-import {appLog, retrieveData, syncData} from "../../libs/function";
+import {appLog, retrieveData, saveLocalSettings, syncData} from "../../libs/function";
 
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
 import {Card, Paragraph, Text} from "react-native-paper";
@@ -12,7 +12,7 @@ import {styles} from "../../theme";
 import moment from "moment/moment";
 
 import {setTableOrdersData} from "../../redux-store/reducer/table-orders-data";
-import {device, localredux} from "../../libs/static";
+import {defaultInputValues, device, localredux} from "../../libs/static";
 
 import { setOrdersData} from "../../redux-store/reducer/orders-data";
 import { setSettings } from "../../redux-store/reducer/local-settings-data";
@@ -74,15 +74,11 @@ const Index = (props: any) => {
 
                                     await dispatch(setOrdersData(orders));
 
-
                                     await retrieveData('fusion-pro-pos-mobile-tableorder').then(async (tableorders: any) => {
                                         await dispatch(setTableOrdersData(tableorders));
                                     })
 
                                     await retrieveData('fusion-pro-pos-mobile-settings').then(async (data: any) => {
-                                        if(!Boolean(data?.today) || (data?.today !== today) ){
-                                            data.today =  today
-                                        }
                                         await dispatch(setSettings(data));
                                     })
 

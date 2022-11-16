@@ -12,6 +12,7 @@ import InputField from "../../components/InputField";
 import {Container} from "../../components";
 import KeyboardScroll from "../../components/KeyboardScroll";
 import {useNavigation} from "@react-navigation/native";
+import CheckBox from "../../components/CheckBox";
 
 
 const Index = (props: any) => {
@@ -42,6 +43,7 @@ const Index = (props: any) => {
         port: '9100',
         printsize: '72',
         noofprint: '1',
+        printoncancel:true,
         ...printers[type.departmentid]
     }
 
@@ -198,6 +200,23 @@ const Index = (props: any) => {
                                             </View>
 
                                         </View>
+
+                                        {type.departmentid !== PRINTER.INVOICE &&
+                                            <View style={[styles.mb_5]}>
+                                                <View style={[]}>
+                                                    <Field name="printoncancel">
+                                                        {props => (
+                                                            <><CheckBox
+                                                                value={props.input.value}
+                                                                label={'Print on cancel KOT or order'}
+                                                                onChange={(value: any) => {
+                                                                    values.printoncancel = value;
+                                                                }}
+                                                            /></>
+                                                        )}
+                                                    </Field>
+                                                </View>
+                                            </View>}
 
 
                                         {type.departmentid === PRINTER.INVOICE &&

@@ -1,60 +1,109 @@
-
-import { EscPos } from 'escpos-xml';
+import {EscPos} from 'escpos-xml';
 import Mustache from "mustache";
-import {errorAlert, paperCut} from "./function";
+import {appLog} from "./function";
 import store from "../redux-store/store";
 import {setAlert} from "../redux-store/reducer/component";
+import EscPosPrinter, {getPrinterSeriesByName} from "react-native-esc-pos-printer";
 
- const net = require('react-native-tcp-socket');
+const net = require('react-native-tcp-socket');
 
-const connectToPrinter = (
-    printer: any,
-    buffer: Buffer,
-): Promise<unknown> => {
+const connectToPrinter = async (printer: any, buffer: Buffer,): Promise<unknown> => {
     return new Promise(async (res: (value: unknown) => void, rej) => {
 
-        let device = new net.Socket();
+        try {
+            let device = new net.Socket();
 
-        device.on('close', () => {
-           if (device) {
-               device.destroy();
-               device = null;
-           }
-           res(true);
-           return;
-       });
+            device.on('close', async () => {
+                if (device) {
+                    device.destroy();
+                    device = null;
+                }
 
-       device.on('error', rej);
+                res(true);
+                return;
+            });
 
-       const {port,host}:any = printer;
+            device.on('error', () => rej('error'));
 
+            const {port, host}: any = printer;
 
-       if(Boolean(printer)) {
-           device.connect({port, host},async () => {
-               device.write(buffer);
-               device.emit('close');
-               paperCut(printer).then()
-           });
-       }
+            if (Boolean(printer?.host)) {
+
+                await device.connect({port, host}, async () => {
+
+                    device.write(buffer);
+                    device.emit('close');
+
+                });
+            }
+        } catch (e) {
+            appLog('e print', e)
+        }
 
     });
 
 };
 
-export const sendDataToPrinter = async (input: any, template: string,printer:any) => {
+export const sendDataToPrinter = async (input: any, template: string, printer: any) => {
 
-    let xmlData = Mustache.render(template, input);
+    return await new Promise(async (resolve) => {
+        try {
+            let xmlData = Mustache.render(template, input);
 
-    const buffer = EscPos.getBufferFromXML(xmlData);
+            const buffer = EscPos.getBufferFromXML(xmlData);
 
-    try {
-        if(Boolean(printer)) {
-            await connectToPrinter(printer, (buffer as unknown) as Buffer);
+            appLog('printer',printer)
+
+            if (Boolean(printer?.host)) {
+                return await connectToPrinter(printer, (buffer as unknown) as Buffer).then(async () => {
+                    await paperCut(printer).then(() => {
+                        resolve({})
+                    })
+                });
+            } else {
+                store.dispatch(setAlert({visible: true, message: 'printer not set'}))
+                resolve({})
+            }
+        } catch (err) {
+            console.log('some error', err);
+            resolve({})
         }
-        else{
-            store.dispatch(setAlert({visible: true, message: 'No printer set'}))
-        }
-    } catch (err) {
-        console.log('some error', err);
-    }
+
+    })
+
+
 };
+
+
+export const paperCut = async (printer: any) => {
+
+    return await new Promise(async (resolve) => {
+
+        try {
+
+            const {host, printername, qrcode}: any = printer
+            await EscPosPrinter.init({
+                target: `TCP:${host}`,
+                seriesName: getPrinterSeriesByName(printername),
+                language: 'EPOS2_LANG_EN',
+            })
+
+            const printing = new EscPosPrinter.printing();
+
+            let status = await printing.initialize().align('center');
+
+            if (Boolean(qrcode)) {
+                await status.line(`Scan to Pay`).qrcode(qrcode)
+            }
+
+            await status.line("Powered By Dhru ERP").cut().addPulse().send()
+            resolve({})
+        } catch (e) {
+            appLog('e', e)
+        }
+
+
+    });
+
+
+}

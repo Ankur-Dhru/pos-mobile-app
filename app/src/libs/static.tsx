@@ -177,7 +177,7 @@ export const pricing: any = {
 
 export const isDevelopment = process.env.NODE_ENV === "development";
 
-const apiUrl = isDevelopment ? ".api.dhru.com" : ".api.dhru.com";
+const apiUrl = isDevelopment ? ".api.dhru.io" : ".api.dhru.com";
 export const posUrl: any = `${apiUrl}/pos/v1/`;
 export const adminUrl: any = `${apiUrl}/admin/v1/`;
 const mainUrl = "https://api.dhru.com";
@@ -1568,6 +1568,8 @@ export const supportedPrinterList = [
 
 
 export const defaultInvoiceTemplate = `<align mode="center">
+ 
+
         <bold>
             <text size="1:1">{{{legalname}}}
 </text>
@@ -1592,7 +1594,7 @@ export const defaultInvoiceTemplate = `<align mode="center">
             <text size="1:0">NO:{{terminalname}}-{{invoice_display_number}}
 </text>
         </bold>
-        <text>Date : {{{date}}}
+        <text>Date : {{{date}}} {{vouchercreatetime}}
 </text>
     </align>
     <text>{{{city}}}
@@ -1662,7 +1664,7 @@ export const defaultInvoiceTemplate = `<align mode="center">
  <text>{{toc}}
 </text>`
 
-export const defaultKOTTemplate = `<align mode="center">
+export  const  defaultKOTTemplate = `<align mode="center">
 <bold>
 <text size="2:2">{{ticketnumberprefix}}{{kotid}}
 </text>
@@ -1684,13 +1686,22 @@ export const defaultKOTTemplate = `<align mode="center">
 {{#ticketitems}}
 <text size="1:0">
 {{productqnt}} x {{productdisplayname}}
-<text size="0.5:0">{{{instruction}}}
+<text size="0:0">
+{{#addons}}
++ {{productqnt}} x {{productdisplayname}}
+{{/addons}}
+{{{predefinenotes}}}
 </text>
 {{#cancelled}}<bold><text>**Cancelled**
 </text></bold>{{/cancelled}}
 </text>
 {{/ticketitems}}
-{{{line}}}`;
+{{{line}}}`
+
+
+
+
+
 
 
 

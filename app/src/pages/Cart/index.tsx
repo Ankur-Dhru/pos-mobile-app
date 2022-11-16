@@ -27,7 +27,7 @@ const Index = (props: any) => {
         const voucherDataJson: any = voucherData(VOUCHER.INVOICE, false);
         dispatch(refreshCartData({...tabledetails, ...voucherDataJson}));
 
-        if(tabledetails?.printcounter){
+        if(tabledetails?.printcounter && !device.tablet){
             navigation.navigate('DetailViewNavigator')
         }
 

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {SafeAreaView, TouchableOpacity, View,} from 'react-native';
 import {styles} from "../../theme";
 
@@ -53,14 +53,16 @@ import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
 
 
+let otherlanguage = false
+
 const Index = (props: any) => {
 
     const {item, pageKey} = props;
 
-
     let isShow: any = false;
     const dispatch = useDispatch()
     const navigation = useNavigation()
+    const otherlanguageRef = React.useRef<View>(null);
 
     let initdata: any = {
         veg:'veg',
@@ -73,7 +75,7 @@ const Index = (props: any) => {
         pricing: pricing,
         itemconfig: [],
         itemdepartmentid: PRODUCTCATEGORY.DEPARTMENT,
-        itemgroupid: store.getState()?.selectedData?.group?.value || PRODUCTCATEGORY.DEFAULT,
+        itemgroupid:PRODUCTCATEGORY.DEFAULT, // store.getState()?.selectedData?.group?.value
         itemhsncode: '',
         itemname: Boolean(device.search) ? device.search : '',
         itemstatus: "active",
@@ -209,11 +211,14 @@ const Index = (props: any) => {
         return <PageLoader/>
     }
 
+
+
+
     let isRetailIndustry = !isRestaurant();
     return (
 
         <Container>
-
+            <SafeAreaView>
             <Form
                 onSubmit={handleSubmit}
                 initialValues={{...initdata}}
@@ -226,7 +231,7 @@ const Index = (props: any) => {
                                 <KeyboardScroll>
 
 
-                                    <View style={[styles.px_6]}>
+                                    <View style={[styles.px_6,styles.mb_5]}>
                                         <View>
                                             <View>
                                                 <View>
@@ -313,32 +318,44 @@ const Index = (props: any) => {
                                                         </Field>
                                                     </View>
 
-                                                    <View>
-                                                        <Field name="itemname" validate={required}>
+                                                    <View style={[styles.grid,styles.justifyContent]}>
+                                                        <View style={[styles.w_auto]}>
+                                                            <Field name="itemname" validate={required}>
+                                                                {props => (
+                                                                    <InputField
+                                                                        {...props}
+                                                                        value={props.input.value}
+                                                                        label={'Name'}
+                                                                        inputtype={'textbox'}
+                                                                        onChange={props.input.onChange}
+                                                                    />
+                                                                )}
+                                                            </Field>
+                                                        </View>
+                                                        <View style={[styles.borderBottom]}>
+                                                            <TouchableOpacity onPress={()=>{
+                                                                otherlanguage = !otherlanguage
+                                                                updateComponent(otherlanguageRef,'display',otherlanguage?'flex':'none')
+                                                            }}>
+                                                                <ProIcon name={'language'}  />
+                                                            </TouchableOpacity>
+                                                        </View>
+                                                    </View>
+
+
+                                                    <View ref={otherlanguageRef} style={{display:'none'}}>
+                                                        <Field name="otherlanguagename">
                                                             {props => (
                                                                 <InputField
                                                                     {...props}
                                                                     value={props.input.value}
-                                                                    label={'Name'}
+                                                                    label={'Other Language Name'}
                                                                     inputtype={'textbox'}
                                                                     onChange={props.input.onChange}
                                                                 />
                                                             )}
                                                         </Field>
                                                     </View>
-
-
-                                                    <Field name="otherlanguagename">
-                                                        {props => (
-                                                            <InputField
-                                                                {...props}
-                                                                value={props.input.value}
-                                                                label={'Other Language Name'}
-                                                                inputtype={'textbox'}
-                                                                onChange={props.input.onChange}
-                                                            />
-                                                        )}
-                                                    </Field>
 
                                                     <View>
                                                         <Field name="uniqueproductcode">
@@ -354,46 +371,49 @@ const Index = (props: any) => {
                                                     </View>
 
 
-                                                    <View>
-                                                        <Field name="pricing.price.default[0].onetime.baseprice"
-                                                               validate={composeValidators(required, mustBeNumber)}>
-                                                            {props => (
-                                                                <InputField
-                                                                    {...props}
-                                                                    value={props.input.value}
-                                                                    label={'Selling Price  '}
-                                                                    keyboardType='numeric'
-                                                                    inputtype={'textbox'}
-                                                                    left={<TI.Affix text={getCurrencySign()}/>}
-                                                                    onChange={props.input.onChange}
-                                                                />
-                                                            )}
-                                                        </Field>
-
-                                                    </View>
-
-
-                                                    <View>
-                                                        <Field name="itemtaxgroupid" validate={required}>
-                                                            {props => (
-                                                                <>
+                                                    <View style={[styles.grid,styles.justifyContent]}>
+                                                        <View style={[styles.w_auto]}>
+                                                            <Field name="pricing.price.default[0].onetime.baseprice"
+                                                                   validate={composeValidators(required, mustBeNumber)}>
+                                                                {props => (
                                                                     <InputField
                                                                         {...props}
-                                                                        label={'Tax Rate'}
-                                                                        mode={'flat'}
-                                                                        list={option_taxes}
                                                                         value={props.input.value}
-                                                                        selectedValue={props.input.value}
-                                                                        displaytype={'pagelist'}
-                                                                        inputtype={'dropdown'}
-                                                                        listtype={'other'}
-                                                                        onChange={(value: any) => {
-                                                                            props.input.onChange(value)
-                                                                        }}>
-                                                                    </InputField>
-                                                                </>
-                                                            )}
-                                                        </Field>
+                                                                        label={'Selling Price  '}
+                                                                        keyboardType='numeric'
+                                                                        inputtype={'textbox'}
+                                                                        left={<TI.Affix text={getCurrencySign()}/>}
+                                                                        onChange={props.input.onChange}
+                                                                    />
+                                                                )}
+                                                            </Field>
+
+                                                        </View>
+
+
+                                                        <View style={[styles.w_auto,styles.ml_2]}>
+                                                            <Field name="itemtaxgroupid" validate={required}>
+                                                                {props => (
+                                                                    <>
+                                                                        <InputField
+                                                                            {...props}
+                                                                            label={'Tax Rate'}
+                                                                            mode={'flat'}
+                                                                            list={option_taxes}
+                                                                            value={props.input.value}
+                                                                            selectedValue={props.input.value}
+                                                                            displaytype={'pagelist'}
+                                                                            inputtype={'dropdown'}
+                                                                            listtype={'other'}
+                                                                            onChange={(value: any) => {
+                                                                                props.input.onChange(value)
+                                                                            }}>
+                                                                        </InputField>
+                                                                    </>
+                                                                )}
+                                                            </Field>
+
+                                                        </View>
 
                                                     </View>
 
@@ -887,7 +907,7 @@ const Index = (props: any) => {
 
                                 <KAccessoryView>
                                     <View style={[styles.submitbutton]}>
-                                        <Button disable={more.invalid} secondbutton={more.invalid} onPress={() => {
+                                        <Button more={{color:'white'}}  disable={more.invalid} secondbutton={more.invalid} onPress={() => {
                                             handleSubmit(values)
                                         }}> Add </Button>
                                     </View>
@@ -899,7 +919,7 @@ const Index = (props: any) => {
                     </>
                 )}
             />
-
+            </SafeAreaView>
         </Container>
 
     )

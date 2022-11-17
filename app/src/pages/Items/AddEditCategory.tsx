@@ -90,7 +90,7 @@ const Index = (props: any) => {
 
     return (
         <Container>
-
+            <SafeAreaView>
             <Form
                 onSubmit={handleSubmit}
                 initialValues={{...initdata}}
@@ -146,7 +146,7 @@ const Index = (props: any) => {
                             <KAccessoryView>
 
                                 <View style={[styles.submitbutton]}>
-                                    <Button disable={more.invalid} secondbutton={more.invalid} onPress={() => {
+                                    <Button more={{color:'white'}} disable={more.invalid} secondbutton={more.invalid} onPress={() => {
                                         handleSubmit(values)
                                     }}> Add </Button>
                                 </View>
@@ -158,7 +158,7 @@ const Index = (props: any) => {
             >
 
             </Form>
-
+            </SafeAreaView>
         </Container>
 
     )

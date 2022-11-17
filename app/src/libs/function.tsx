@@ -1288,7 +1288,7 @@ export const printKOT = async (kot?: any) => {
         }
 
     } catch (e) {
-        appLog("Error", e);
+        appLog("printKOT Error", e);
     }
 }
 
@@ -1296,7 +1296,6 @@ export const printKOT = async (kot?: any) => {
 export const printInvoice = async (order?: any) => {
 
     try {
-
 
 
         let cartData = order || store.getState().cartData;
@@ -1330,7 +1329,9 @@ export const printInvoice = async (order?: any) => {
         let totalqnt: any = 0;
         let uniuqeitems:any = {};
         let totalmrp = 0;
-        cartData?.invoiceitems.map((item: any) => {
+
+
+        cartData?.invoiceitems?.map((item: any) => {
             totalqnt += item.productqnt;
             if(!Boolean(uniuqeitems[item.itemid])){
                 uniuqeitems[item.itemid] = 0;
@@ -1338,14 +1339,16 @@ export const printInvoice = async (order?: any) => {
             totalmrp += (item.mrp || item.productratedisplay) * item.productqnt;
             uniuqeitems[item.itemid] = uniuqeitems[item.itemid]+1
         });
-        const totaluniqueitems = objToArray(uniuqeitems).length;
+
+        const totaluniqueitems = objToArray(uniuqeitems)?.length;
 
         let paymentsby:any = [];
-        cartData?.payment.map((pay:any)=>{
+        cartData?.payment?.map((pay:any)=>{
             if(pay.paymentAmount) {
                 paymentsby.push(pay.paymentby)
             }
         })
+
 
         if(Boolean(paymentsby)){
             cartData = {
@@ -1355,7 +1358,6 @@ export const printInvoice = async (order?: any) => {
             }
         }
 
-
         cartData.totalMRP = totalmrp;
         if(+cartData.totalMRP > +cartData?.vouchertotaldisplay){
             cartData = {
@@ -1363,7 +1365,6 @@ export const printInvoice = async (order?: any) => {
                 totalSave:totalmrp - cartData?.vouchertotaldisplay
             }
         }
-
 
         let printJson = {
             ...cartData,
@@ -1409,23 +1410,25 @@ export const printInvoice = async (order?: any) => {
 
 
         return await new Promise(async (resolve) => {
+
             const template = getPrintTemplate('Thermal');
             if(Boolean(printer?.host)) {
+
                 await sendDataToPrinter(printJson, getTemplate(template || defaultInvoiceTemplate), {
                     ...printer,
                     qrcode
                 }).then(() => {
-                    resolve({})
+                    resolve(true)
                 });
             }
             else{
-                resolve({})
+                resolve(false)
             }
         })
 
     }
     catch (e) {
-        appLog('e printInvoice',e)
+        appLog('error printInvoice',e)
     }
 
 }

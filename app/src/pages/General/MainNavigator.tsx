@@ -131,7 +131,7 @@ const MainStackNavigator = () => {
             <Stack.Screen name={'ProfileSettingsNavigator'} component={ProfileSettingsNavigator}   options={{headerShown:false,presentation:'modal',headerTitle:'Settings'}}  />
 
 
-            {/*<Stack.Screen name="Sample" component={sample}/>*/}
+            <Stack.Screen name="Sample" component={sample}/>
 
 
         </Stack.Navigator>
@@ -200,7 +200,7 @@ const ClientAreaStackNavigator = (props:any) => {
     const {route: {params}}: any = props;
     return (
         <Stack.Navigator  initialRouteName={isRestaurant() ? 'ClientAreaStackNavigator' : 'CartStackNavigator'} screenOptions={screenOptions}>
-            {isRestaurant() &&  <Stack.Screen name={'ClientAreaStackNavigator'}  component={Tables} options={{headerShown: false}}/>}
+            {isRestaurant() &&  <Stack.Screen name={'ClientAreaStackNavigator'}  component={Tables} options={{headerTitle:'Tables'}}   />}
             <Stack.Screen name={'CartStackNavigator'} {...params}  component={Cart} options={({route}: any) => ({headerShown:!device.tablet, title: route?.params?.tablename})}   />
 
 

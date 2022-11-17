@@ -4,11 +4,19 @@ import Tables from "./Tables";
 
 import PageLoader from "../../components/PageLoader";
 import {useDispatch} from "react-redux";
+import {TouchableOpacity, View} from "react-native";
+import {Menu, Title} from "react-native-paper";
+import ProIcon from "../../components/ProIcon";
+import DeleteButton from "../../components/Button/DeleteButton";
+import {cancelOrder} from "../../libs/function";
+import {styles} from "../../theme";
+import {setDialog} from "../../redux-store/reducer/component";
+import ReserveList from "./ReserveList";
 
 const Index = (props: any) => {
 
     const {navigation} = props;
-    const dispatch = useDispatch()
+
 
     const [loaded, setLoaded] = useState(false)
     useEffect(() => {
@@ -22,6 +30,8 @@ const Index = (props: any) => {
     if (!loaded) {
         return <PageLoader page={'table'}/>
     }
+
+
 
     /*React.useEffect(
         () =>

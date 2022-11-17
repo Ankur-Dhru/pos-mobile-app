@@ -4,13 +4,14 @@ import {Dimensions, Image, ScrollView, View} from "react-native";
 import {Caption, Card, Divider, List, Title,Text} from "react-native-paper";
 import {styles} from "../../theme";
 import {CommonActions, useNavigation} from "@react-navigation/native";
-import {ACTIONS, grecaptcharesponse, localredux, loginUrl, METHOD, STATUS} from "../../libs/static";
+import {ACTIONS, grecaptcharesponse, localredux, loginUrl, METHOD, PRINTER, STATUS} from "../../libs/static";
 import apiService from "../../libs/api-service";
 import Button from "../../components/Button";
 import AddEditCategory from "../Items/AddEditCategory";
 import AddEditClient from "../Client/AddEditClient";
 import DeleteButton from "../../components/Button/DeleteButton";
 import {Container, ProIcon} from "../../components";
+import {Button as PButton} from 'react-native-paper';
 
 
 const ProfileSettings = () => {
@@ -121,13 +122,13 @@ const ProfileSettings = () => {
 
 
                             <View style={[styles.grid, styles.justifyContent]}>
-                                <Button style={[styles.w_auto, styles.noshadow]} compact={true}
-                                        more={{backgroundColor: styles.accent.color}} onPress={() => {
+                                <Button style={[styles.w_auto, styles.noshadow]}
+                                        more={{backgroundColor: styles.accent.color,color:'white'}} onPress={() => {
                                     navigation.goBack();
                                     syncData().then()
                                 }}>Sync</Button>
-                                <Button style={[styles.ml_2, styles.w_auto, styles.noshadow]} compact={true}
-                                        more={{backgroundColor: styles.red.color}} onPress={() => {
+                                <Button style={[styles.ml_2, styles.w_auto, styles.noshadow]}
+                                        more={{backgroundColor: styles.red.color,color:'white'}} onPress={() => {
                                     logoutUser();
                                 }}>Logout</Button>
                             </View>
@@ -139,12 +140,10 @@ const ProfileSettings = () => {
                     <View>
                         <View>
 
+                            <List.Section>
 
-                            <List.Item
-                                style={[styles.listitem]}
-                                titleStyle={[styles.bold]}
-                                title={'Create a New'}
-                            />
+
+                            <List.Subheader>Create a New</List.Subheader>
 
                             <List.Item
 
@@ -152,7 +151,10 @@ const ProfileSettings = () => {
                                 onPress={async () => {
                                     navigation.navigate("AddEditCategory");
                                 }}
+                                right={() =>  <List.Icon icon="chevron-right"/>}
                             />
+
+                            <Divider/>
 
                             <List.Item
 
@@ -160,7 +162,10 @@ const ProfileSettings = () => {
                                 onPress={async () => {
                                     navigation.navigate("AddEditItemNavigator");
                                 }}
+                                right={() =>  <List.Icon icon="chevron-right"/>}
                             />
+
+                            <Divider/>
 
                             <List.Item
 
@@ -168,16 +173,14 @@ const ProfileSettings = () => {
                                 onPress={async () => {
                                     navigation.navigate("AddEditClient");
                                 }}
+                                right={() =>  <List.Icon icon="chevron-right"/>}
                             />
 
 
                             <Divider/>
 
-                            <List.Item
-                                style={[styles.listitem]}
-                                titleStyle={[styles.bold]}
-                                title={'Reports'}
-                            />
+
+                                <List.Subheader>Reports</List.Subheader>
 
                             <List.Item
 
@@ -186,38 +189,34 @@ const ProfileSettings = () => {
                                     navigation.goBack()
                                     navigation.navigate("SalesReportNavigator");
                                 }}
+                                right={() =>  <List.Icon icon="chevron-right"/>}
                             />
 
                             <Divider/>
 
-                            <List.Item
-                                style={[styles.listitem]}
-                                titleStyle={[styles.bold]}
-                                title={'Setting'}
-                            />
 
+                                <List.Subheader>Settings</List.Subheader>
 
                             <List.Item
 
                                 title="Invoice Printer"
                                 onPress={() => {
-                                    navigation.navigate("InvoicePrinter");
+                                    navigation.navigate('PrinterSettings', {type: {name: 'Invoice', departmentid: PRINTER.INVOICE}})
                                 }}
+                                right={() =>  <List.Icon icon="chevron-right"/>}
                             />
+
+                                <Divider/>
 
                             <List.Item
                                 title="KOT Printer"
                                 onPress={() => {
                                     navigation.navigate("KOTPrinter");
                                 }}
+                                right={() =>  <List.Icon icon="chevron-right"/>}
                             />
 
-                            {/*<List.Item
-                                title="Printing Templates"
-                                onPress={() => {
-                                    navigation.navigate("PrintingTemplates");
-                                }}
-                            />*/}
+                                <Divider/>
 
                             <List.Item
 
@@ -225,8 +224,10 @@ const ProfileSettings = () => {
                                 onPress={() => {
                                     navigation.navigate("InputOpenSetting");
                                 }}
-
+                                right={() =>  <List.Icon icon="chevron-right"/>}
                             />
+
+                                <Divider/>
 
                             <List.Item
 
@@ -234,8 +235,13 @@ const ProfileSettings = () => {
                                 onPress={() => {
                                     navigation.navigate("DefaultInputValues");
                                 }}
-
+                                right={() =>  <List.Icon icon="chevron-right"/>}
                             />
+
+
+                            </List.Section>
+
+
 
                             <Divider/>
 
@@ -249,12 +255,11 @@ const ProfileSettings = () => {
                                         message={`Are you sure want to reset Terminal?`}
                                         render={()=>{
                                             return (
-                                                <Button
-                                                    compact={true}
+                                                <PButton
+
                                                     mode={'text'}
-                                                    secondbutton={false}
-                                                    more={{borderColor: styles.red.color,borderWidth:1,borderStyle:'dashed',borderRadius:7}}
-                                                    labelStyle={[styles.capitalize, {color: styles.red.color}]}> Reset Terminal </Button>
+                                                    contentStyle={{borderColor: styles.red.color,borderWidth:1,borderStyle:'dashed',borderRadius:7,color:styles.red.color}}
+                                                    labelStyle={[styles.capitalize, {color: styles.red.color}]}> Reset Terminal </PButton>
                                             )
                                         }}
                                         onPress={(index: any) => {

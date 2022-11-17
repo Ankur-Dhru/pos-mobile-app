@@ -2,24 +2,29 @@ import {current, device, localredux} from "../../libs/static";
 import React, {memo, useCallback, useEffect, useState} from "react";
 import {appLog, isEmpty, saveTempLocalOrder, toCurrency} from "../../libs/function";
 import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
-import {Card, FAB, Paragraph, withTheme} from "react-native-paper";
+import {Card, FAB, Menu, Paragraph, Title, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 
 import {connect, useDispatch} from "react-redux";
 import ProIcon from "../../components/ProIcon";
 import {refreshCartData} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
-import {hideLoader,  setAlert,  showLoader} from "../../redux-store/reducer/component";
+import {hideLoader, setAlert, setDialog, showLoader} from "../../redux-store/reducer/component";
 import ClientAndSource from "../Cart/ClientAndSource";
 import moment from "moment";
 
 import OrderTypes from "./OrderTypes";
 import {setSelected} from "../../redux-store/reducer/selected-data";
+import {AddItem} from "../Items/ItemListTablet";
+import Button from "../../components/Button";
+import ReserveList from "./ReserveList";
+import Tabs from "../../components/TabView";
 
 
 const Index = (props: any) => {
 
     const {tableorders, ordertype} = props;
+
 
     const navigation = useNavigation()
 
@@ -61,6 +66,27 @@ const Index = (props: any) => {
         setShifttable(value)
         setShiftingFromtable('');
         setShiftingTotable('');
+    }
+
+
+    const [visible, setVisible] = React.useState(false);
+    const openMenu = () => setVisible(true);
+    const closeMenu = () => setVisible(false);
+
+    const onClickReserveTable = () => {
+        closeMenu();
+        dispatch(setDialog({
+            visible: true,
+            title: "Reserved Tables",
+            hidecancel: true,
+            width: '90%',
+            component: () => <ReserveList navigation={navigation}/>
+        }))
+    }
+
+    const onClickAddTable = () => {
+        navigation.navigate('AddTable', {getOrder: getOrder})
+        closeMenu();
     }
 
 
@@ -159,7 +185,7 @@ const Index = (props: any) => {
 
 
             return (
-                <Card style={[styles.m_1, styles.noshadow, {maxWidth:'100%',minWidth: 150,
+                <Card style={[styles.m_2, styles.noshadow, {maxWidth:'100%',minWidth: 150,
                     backgroundColor: Boolean(item.kots?.length) ? styles.yellow.color : Boolean(item.invoiceitems?.length) ? styles.secondary.color : styles.light.color,
                     borderRadius: 5}, styles.flexGrow,]} key={item.tableid}>
                     {<TouchableOpacity
@@ -206,6 +232,33 @@ const Index = (props: any) => {
         }
     );
 
+    navigation.setOptions({
+        headerLeft:()=><Title onPress={()=>navigation.navigate('ProfileSettingsNavigator')}><ProIcon name={'bars'}/></Title>,
+        headerRight:()=>{
+            return <View>
+
+                <Menu
+                    visible={visible}
+                    onDismiss={closeMenu}
+                    anchor={<TouchableOpacity onPress={() => {
+                        openMenu()
+                    }} >
+                        <ProIcon name={'ellipsis-vertical'}/>
+                    </TouchableOpacity>}>
+                    <Menu.Item onPress={onClickAddTable} title="Add Table"/>
+                    {!shifttable && <Menu.Item onPress={() => {
+                        setShifttable(true)
+                    }} title="Shift Table"/>}
+                    {shifttable && <Menu.Item onPress={() => {
+                        setShifttable(false)
+                    }} title="Disable Shift"/>}
+                    <Menu.Item onPress={onClickReserveTable} title="Reserve Tables"/>
+                </Menu>
+
+            </View>
+        }
+    })
+
 
     const renderItem = useCallback(({item, index}: any) => <Item shifttable={shifttable}
                                                                  shiftingFromtable={shiftingFromtable}
@@ -216,9 +269,41 @@ const Index = (props: any) => {
                                                                  resetTables={resetTables} item={item}
                                                                  key={index}/>, [shifttable, shiftingFromtable, shiftingTotable]);
 
+
+    /*const LatestRoute = () => (
+        <View style={[styles.flex,{backgroundColor: '#ff4081'}]}/>
+    );
+
+    const FavoritesRoute = () => (
+        <View style={[styles.flex,{backgroundColor: '#673ab7'}]}/>
+    );
+
+    const AllRoute = () => (
+        <View style={[styles.flex,{backgroundColor: '#673ab7'}]}/>
+    );
+
+
+    return (
+        <Tabs
+            scenes={{all: LatestRoute, tableorder: FavoritesRoute, homedelivery: AllRoute, takeaway: AllRoute, advanceorder: AllRoute, qsr: AllRoute}}
+            routes={[
+                {key: 'all', title: 'All'},
+                {key: 'tableorder', title: 'Tables'},
+                {key: 'homedelivery', title: 'Home Delivery'},
+                {key: 'takeaway', title: 'Take Away'},
+                {key: 'advanceorder', title: 'Advance Order'},
+                {key: 'qsr', title: 'QSR'},
+            ]}
+        />
+    );*/
+
+
     return (
         <>
-            <OrderTypes shifttable={shifttable} setShifttable={(value: any) => shiftStart(value)} getOrder={getOrder}/>
+            <OrderTypes shifttable={shifttable}  />
+
+
+
 
             <View style={[styles.px_4, styles.flex, styles.h_100]}>
 
@@ -246,15 +331,36 @@ const Index = (props: any) => {
                     ListFooterComponent={() => {
                         return <View style={{height: 80}}></View>
                     }}
-                    ListEmptyComponent={() => {
-                        return (
-                            <>
-                                <View style={{marginTop: 70}}><Paragraph
-                                    style={[styles.paragraph, {textAlign: 'center'}]}>No any order </Paragraph></View>
 
-                            </>
-                        )
-                    }}
+                    ListEmptyComponent={<View>
+                        <View style={[styles.p_6]}>
+
+                        </View>
+                        <View style={[]}>
+
+                            <View style={[styles.grid, styles.center]}>
+                                <Button
+                                    more={{color:'white'}}
+                                    secondbutton={true}
+                                    onPress={async () => {
+                                        if (ordertype.value === 'qsr') {
+                                            setOrderSetting("+ QSR / Quick Bill", {'label': '+ QSR / Quick Bill', value: 'qsr'})
+                                        } else if (ordertype.value === 'takeaway') {
+                                            setOrderSetting("Takeaway", {'label': 'Takeaway', value: 'takeaway'})
+                                        } else if (ordertype.value === 'advanceorder') {
+                                            setOrderSetting("Advanced Order", {'label': 'Advance Order', value: 'advanceorder'})
+                                        } else if (ordertype.value === 'homedelivery') {
+                                            setOrderSetting("Home Delivery", {'label': 'Home Delivery', value: 'homedelivery'})
+                                        } else if (ordertype.value === 'tableorder') {
+                                            setOrderSetting("Table Reservation", {'label': 'Table Reservation', value: 'tableorder'})
+                                        }
+                                    }}> + Take New Order
+                                </Button>
+                            </View>
+                        </View>
+                    </View>}
+
+
                 />
 
             </View>
@@ -302,7 +408,10 @@ const Index = (props: any) => {
                     },
                 ]}
                 onStateChange={() => {
-                    if (ordertype.value === 'qsr') {
+
+                    setFloating(!floating)
+
+                    /*if (ordertype.value === 'qsr') {
                         setOrderSetting("+ QSR / Quick Bill", {'label': '+ QSR / Quick Bill', value: 'qsr'})
                     } else if (ordertype.value === 'takeaway') {
                         setOrderSetting("Takeaway", {'label': 'Takeaway', value: 'takeaway'})
@@ -312,9 +421,7 @@ const Index = (props: any) => {
                         setOrderSetting("Home Delivery", {'label': 'Home Delivery', value: 'homedelivery'})
                     } else if (ordertype.value === 'tableorder') {
                         setOrderSetting("Table Reservation", {'label': 'Table Reservation', value: 'tableorder'})
-                    } else {
-                        setFloating(!floating)
-                    }
+                    }*/
                 }}
                 onPress={() => {
                     if (floating) {

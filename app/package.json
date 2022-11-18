@@ -1,9 +1,9 @@
 {
   "name": "app",
-  "version": "3.0",
   "private": true,
   "scripts": {
     "android": "yarn  react-native run-android --active-arch-only   ",
+    "iosdefault": "yarn  react-native run-ios",
     "ios": "yarn  react-native run-ios   --simulator='iPhone 11 Pro'  ",
     "iosIpad": "yarn  react-native run-ios --simulator='iPad Pro (12.9-inch)' ",
     "start": "react-native start",
@@ -17,6 +17,8 @@
     "gradle clean": "cd android && ./gradlew clean"
   },
   "dependencies": {
+    "@brooons/react-native-bluetooth-escpos-printer": "^1.2.0",
+    "@dailykit/xml-escpos-helper": "^1.0.3",
     "@fortawesome/free-brands-svg-icons": "^6.1.2",
     "@fortawesome/pro-light-svg-icons": "^6.1.2",
     "@fortawesome/pro-regular-svg-icons": "^6.1.2",
@@ -32,6 +34,7 @@
     "@types/uuid": "^8.3.4",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "base-64": "^1.0.0",
+    "convert-string": "^0.1.0",
     "currency-symbol-map": "^5.1.0",
     "escpos-xml": "^1.0.0",
     "final-form": "^4.20.7",
@@ -46,6 +49,7 @@
     "react-final-form": "^6.5.9",
     "react-native": "0.70.1",
     "react-native-actionsheet": "^2.4.2",
+    "react-native-ble-manager": "^8.4.4",
     "react-native-esc-pos-printer": "^2.1.0",
     "react-native-extra-dimensions-android": "^1.2.5",
     "react-native-fontawesome-pro": "^2.1.0",

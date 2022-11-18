@@ -85,7 +85,7 @@ const Index = (props: any) => {
             }
         }
 
-        //screen = 'Sample';
+        screen = 'Sample';
 
         dispatch(hideLoader())
         navigation.replace(screen)

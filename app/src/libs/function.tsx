@@ -1201,7 +1201,7 @@ export const testPrint = async (printer: any) => {
 
 
 
-let PAGE_WIDTH = 48;
+let PAGE_WIDTH = 32;
 export const getTrimChar = (count: number, char?: string, defaultLength: number = PAGE_WIDTH) => {
     let space = "";
     if (!Boolean(char)) {

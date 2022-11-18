@@ -10,12 +10,12 @@ import {
     toCurrency
 } from "../../libs/function";
 import {ScrollView, TouchableOpacity, View} from "react-native";
-import {Paragraph, TextInput, withTheme} from "react-native-paper";
+import {Paragraph, TextInput, withTheme,} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {Button, Container} from "../../components";
 import {CommonActions, useNavigation} from "@react-navigation/native";
-import {localredux} from "../../libs/static";
+import {device, localredux} from "../../libs/static";
 import store from "../../redux-store/store";
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
 import {setCartData} from "../../redux-store/reducer/cart-data";
@@ -141,16 +141,26 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
 
                 if (config?.print) {
                     await printInvoice(cartData).then(() => {
-                        navigation.dispatch(
-                            CommonActions.reset({
-                                index: 0,
-                                routes: [
-                                    {name: 'ClientAreaStackNavigator'},
-                                ],
-                            })
-                        );
+                        redirectTo()
                     });
                 } else {
+                    redirectTo()
+                }
+
+                dispatch(setAlert({visible: true, message: 'Order Save Successfully'}))
+                dispatch(hideLoader())
+            })
+            ////////// SAVE FINAL DATA //////////
+
+            const redirectTo = () => {
+
+                if(cartData.ordertype === 'qsr'){
+                    if(!device.tablet) {
+                        navigation.goBack()
+                    }
+                    navigation.goBack()
+                }
+                else {
                     navigation.dispatch(
                         CommonActions.reset({
                             index: 0,
@@ -160,11 +170,8 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
                         })
                     );
                 }
+            }
 
-                dispatch(setAlert({visible: true, message: 'Order Save Successfully'}))
-                dispatch(hideLoader())
-            })
-            ////////// SAVE FINAL DATA //////////
 
         } catch (e) {
             appLog('e', e)
@@ -354,17 +361,17 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
 
             {<View style={[styles.grid, styles.justifyContent, styles.px_5]}>
                 <View style={[styles.w_auto]}>
-                    <Button onPress={() => {
-                        validatePayment()
-                    }}> {`Generate Invoice`} </Button>
+                    <Button more={{color:'white'}} onPress={() => {
+                        validatePayment().then()
+                    }}> Generate Invoice </Button>
                 </View>
 
                 <View style={[styles.w_auto, styles.ml_2]}>
                     <Button
                         more={{backgroundColor: styles.yellow.color, color: 'black'}}
                         onPress={() => {
-                            validatePayment({print: true})
-                        }}> {`Print & Generate Invoice`} </Button>
+                            validatePayment({print: true}).then()
+                        }}>Print & Generate Invoice</Button>
                 </View>
 
             </View>}

@@ -74,14 +74,14 @@ const Index = memo((props: any) => {
 
                     <View style={[styles.grid, styles.justifyContentSpaceBetween, styles.mt_4]}>
                         <View>
-                            <Button onPress={() => {
+                            <Button more={{color:'white'}}  onPress={() => {
                                 reprint(kot)
                             }}> Reprint {kot.print ? '(' + (kot.print) + ')' : ''}</Button>
                         </View>
                         <View>
                             {!Boolean(kot.cancelreason) && <Button onPress={() => {
                                 cancelKOTDialog(kot).then()
-                            }} more={{backgroundColor: styles.bg_red.backgroundColor}}>Cancel KOT</Button>}
+                            }} more={{backgroundColor: styles.bg_red.backgroundColor,color:'white'}}>Cancel KOT</Button>}
                         </View>
                     </View>
 

@@ -252,7 +252,7 @@ const Index = (props: any) => {
 
 
                                         <Button disable={more.invalid}
-
+                                                more={{color:'white'}}
                                                 secondbutton={true} onPress={() => {
                                             testPrint(values)
                                         }}>Test Print</Button>
@@ -261,7 +261,7 @@ const Index = (props: any) => {
                                 </View>
                             </KeyboardScroll>
                             <View style={[styles.submitbutton]}>
-                                <Button disable={more.invalid} secondbutton={more.invalid}
+                                <Button more={{color:'white'}}  disable={more.invalid} secondbutton={more.invalid}
                                         onPress={() => {
                                             handleSubmit(values)
                                         }}> Save

@@ -89,7 +89,7 @@ const Index = ({
                                         })
                                     })}
                                     more={{backgroundColor: styles.yellow.color, color: 'black'}}
-                            >KOT </Button>
+                            >Print KOT </Button>
                         </View>
                         {ordertype !== 'qsr' && <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
@@ -97,19 +97,21 @@ const Index = ({
                                     onPress={() => {
                                         generateKOT().then(() => {
                                             appLog('kot print success')
-                                            saveTempLocalOrder('', {print: true}).then(() => {
-                                                appLog('save success')
-                                                printInvoice().then(()=>{
-                                                    appLog('invoice print success')
+                                            printInvoice().then((status:any) => {
+
+                                                appLog('invoice print success',status)
+                                                saveTempLocalOrder('', {print: status}).then(() => {
+                                                    appLog('save success')
                                                     dispatch(hideLoader())
-                                                });
-                                            })
+                                                })
+                                            });
+
                                         })
                                     }
                                 }
 
-                                    more={{backgroundColor: styles.accent.color,}}
-                            >Print {`${printcounter ? '(' + printcounter + ')' : ''}`}</Button>
+                                    more={{backgroundColor: styles.accent.color,color:'white'}}
+                            >Print Bill {`${printcounter ? '(' + printcounter + ')' : ''}`}</Button>
                         </View>}
                     </>}
                     {/*<View style={[styles.w_auto, styles.ml_1, styles.mr_1]}>
@@ -165,7 +167,7 @@ const Index = ({
                             }}
 
                             more={{backgroundColor: styles.green.color, color: 'white'}}
-                        >Payment
+                        > Payment Received
                         </Button>
                     </View>
                 </View>
@@ -396,7 +398,7 @@ export const generateKOT = async () => {
                                 await printKOT(newkot).then(async () => {
 
                                     if (i < length - 1) {
-                                        recursive(++i)
+                                        recursive(++i).then()
                                     } else {
                                         const updateditems = invoiceitems.map((item: any) => {
 

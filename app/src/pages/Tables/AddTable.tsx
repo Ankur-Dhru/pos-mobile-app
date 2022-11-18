@@ -122,7 +122,7 @@ const AddTable = (props: any) => {
 
                             <KAccessoryView>
                                 <View style={[styles.submitbutton]}>
-                                    <Button disable={more.invalid} secondbutton={more.invalid}
+                                    <Button more={{color:'white'}} disable={more.invalid} secondbutton={more.invalid}
                                             onPress={() => {
                                                 handleSubmit(values)
                                             }}> Add

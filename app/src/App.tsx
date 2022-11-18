@@ -120,14 +120,11 @@ const App = () => {
             <SafeAreaView style={[styles.h_100]}>
                 <PaperProvider theme={CombinedDefaultTheme}>
 
-                    <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-                               backgroundColor={isDarkMode ? 'black' : 'white'}/>
+                    <StatusBar />
 
-                    <NavigationContainer>
-
-                        <MainStackNavigator/>
-
-                    </NavigationContainer>
+                        <NavigationContainer>
+                            <MainStackNavigator/>
+                        </NavigationContainer>
 
                     <Page/>
                     <Modal/>

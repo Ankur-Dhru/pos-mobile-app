@@ -82,7 +82,7 @@ const apiService = async (config: configData) => {
       .then(response => response.json())
       .then((response: any) => {
 
-        store.dispatch(hideLoader())
+        store.dispatch(hideLoader());
         if (response?.message && (response?.status === STATUS.ERROR) && !config?.hidealert) {
           if((config.action?.includes('server/')) && (response?.message?.includes('ENOTFOUND'))){
             errorAlert('Internet connection not available')

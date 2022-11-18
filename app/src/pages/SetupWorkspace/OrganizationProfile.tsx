@@ -526,7 +526,7 @@ class Index extends Component<any, any> {
                                 </KeyboardScroll>
                                 <KAccessoryView>
                                     <View style={[styles.submitbutton]}>
-                                        <Button disable={more.invalid} secondbutton={more.invalid} onPress={() => {
+                                        <Button more={{color:'white'}} disable={more.invalid} secondbutton={more.invalid} onPress={() => {
                                             handleSubmit(values)
                                         }}>{this.update ? "Save" : "Next"}</Button>
                                     </View>

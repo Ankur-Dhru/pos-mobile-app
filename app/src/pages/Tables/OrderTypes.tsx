@@ -14,7 +14,7 @@ import AddTable from "./AddTable";
 
 
 const OrderType = (props: any) => {
-    const {type, selected, getOrder} = props;
+    const {type, selected} = props;
     const navigation: any = useNavigation();
     const dispatch = useDispatch()
 
@@ -41,42 +41,14 @@ const OrderType = (props: any) => {
 
 const Index = (props: any) => {
 
-    const {ordertype, shifttable, setShifttable, getOrder} = props;
-    const navigation: any = useNavigation();
-    const dispatch = useDispatch();
+    const {ordertype, shifttable} = props;
 
-    const [visible, setVisible] = React.useState(false);
-    const openMenu = () => setVisible(true);
-    const closeMenu = () => setVisible(false);
-
-    const onClickReserveTable = () => {
-        closeMenu();
-        dispatch(setDialog({
-            visible: true,
-            title: "Reserved Tables",
-            hidecancel: true,
-            width: '90%',
-            component: () => <ReserveList navigation={navigation}/>
-        }))
-    }
-
-    const onClickAddTable = () => {
-        navigation.navigate('AddTable', {getOrder: getOrder})
-        closeMenu();
-    }
 
     return (
 
         <>
             <View style={[styles.grid, styles.noWrap, styles.justifyContent]}>
 
-                <View>
-                    <TouchableOpacity onPress={() => {
-                        navigation.navigate('ProfileSettingsNavigator')
-                    }} style={[{paddingLeft:10}]}>
-                        <ProIcon name={'bars'}/>
-                    </TouchableOpacity>
-                </View>
 
                 <ScrollView horizontal={true}>
                     {
@@ -89,26 +61,6 @@ const Index = (props: any) => {
                     }
                 </ScrollView>
 
-                <View>
-
-                    <Menu
-                        visible={visible}
-                        onDismiss={closeMenu}
-                        anchor={<TouchableOpacity onPress={() => {
-                            openMenu()
-                        }} style={[styles.p_5]}>
-                            <ProIcon name={'ellipsis-vertical'}/>
-                        </TouchableOpacity>}>
-                        <Menu.Item onPress={onClickAddTable} title="Add Table"/>
-                        {!shifttable && <Menu.Item onPress={() => {
-                            setShifttable(true)
-                        }} title="Shift Table"/>}
-                        {shifttable && <Menu.Item onPress={() => {
-                            setShifttable(false)
-                        }} title="Disable Shift"/>}
-                        <Menu.Item onPress={onClickReserveTable} title="Reserve Tables"/>
-                    </Menu>
-                </View>
 
             </View>
 

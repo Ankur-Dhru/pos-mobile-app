@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {List} from "react-native-paper"
+import {Divider, List} from "react-native-paper"
 import {appLog} from "../../libs/function";
 import Container from "../../components/Container";
 import {connect, useDispatch} from "react-redux";
@@ -32,7 +32,7 @@ const KOTPrinter = ({printers}: any) => {
             {
                 departments.map((department: any, index: any) => {
                     const detail = printers[department.departmentid];
-                    return <List.Item
+                    return <><List.Item
                         key={index}
                         title={department.name}
                         description={Boolean(detail?.host) && detail.host}
@@ -40,8 +40,10 @@ const KOTPrinter = ({printers}: any) => {
                             setPrinter({name: department.name, departmentid: department.departmentid})
                         }}
                         left={() => <List.Icon icon="printer"/>}
-                        right={() => Boolean(detail) && <List.Icon icon="check"/>}
+                        right={() =>  <List.Icon icon="chevron-right"/>}
                     />
+                        <Divider/>
+                    </>
                 })
             }
 

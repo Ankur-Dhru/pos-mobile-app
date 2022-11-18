@@ -342,7 +342,7 @@ const ClientAndSource = (props: any) => {
                 <KAccessoryView>
 
                     <View style={[styles.submitbutton]}>
-                        <Button onPress={() => {
+                        <Button more={{color:'white'}}  onPress={() => {
 
                             let clientDisplayName = selectedClient?.displayname?.trim();
 

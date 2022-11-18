@@ -70,7 +70,6 @@ const Index = (props: any) => {
                 localredux.initData = initData;
                 localredux.localSettingsData = localSettingsData;
 
-                appLog('today',today)
 
                 //await store.dispatch(setInitData(initData))
 

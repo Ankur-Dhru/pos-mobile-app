@@ -77,16 +77,16 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
             <View style={[styles.middleForm,styles.px_6]}>
                 <View>
                     <View style={[styles.grid, styles.justifyContent,styles.mt_5]}>
-                        <Button style={[styles.w_auto]} compact={true} onPress={() => {
+                        <Button more={{color:'white'}}  style={[styles.w_auto]}  onPress={() => {
                             setSelectedTab("num")
 
 
-                        }} secondbutton={true}><Text style={{color: 'black'}}>Quick Quantity</Text></Button>
-                        <Button style={[styles.ml_2, styles.w_auto]} compact={true} onPress={() => {
+                        }} secondbutton={true}>Quick Quantity</Button>
+                        <Button style={[styles.ml_2, styles.w_auto]} more={{color:'white'}}  onPress={() => {
                             setSelectedTab("amt")
 
 
-                        }} secondbutton={true}><Text style={{color: 'black'}}>Quick Amount</Text></Button>
+                        }} secondbutton={true}>Quick Amount</Button>
                     </View>
                 </View>
 
@@ -103,7 +103,7 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
                         />
                     </View>
                     <View style={[styles.ml_2]}>
-                        <Button compact={true} onPress={onClickAddInputValues}>Add</Button>
+                        <Button more={{color:'white'}}  onPress={onClickAddInputValues}>Add</Button>
                     </View>
                 </View>
 

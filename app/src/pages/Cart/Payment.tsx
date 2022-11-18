@@ -272,7 +272,7 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
                         }]}>
 
 
-                            <View style={[styles.grid, styles.justifyContent,]}>
+                            <View style={[styles.grid, styles.justifyContent,styles.mb_3]}>
                                 <TouchableOpacity onPress={() => {
                                     if (remainingAmount > 0) {
                                         paymentMethods[key] = {
@@ -305,7 +305,7 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
                                             label=""
                                             placeholder={'Amount'}
                                             mode={'outlined'}
-                                            style={{height: 40}}
+
                                             keyboardType='numeric'
                                             defaultValue={pm?.paymentAmount + ''}
                                             onChangeText={(value) => {
@@ -316,13 +316,13 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
                                         />
 
                                     </View>}
-                                    {Boolean(paymentMethods[key]?.paymentAmount) &&
-                                        <View style={{width: 100, marginLeft: 10}}>
+                                    {/*{Boolean(paymentMethods[key]?.paymentAmount) &&
+                                        <View style={{width: 140, marginLeft: 5}}>
 
                                             <TextInput
                                                 label=""
                                                 placeholder={'Bank Charges'}
-                                                style={{height: 40}}
+
                                                 mode={'outlined'}
                                                 keyboardType='numeric'
                                                 onChangeText={(value) => {
@@ -332,7 +332,7 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
                                                 }
                                             />
 
-                                        </View>}
+                                        </View>}*/}
                                     {Boolean(paymentMethods[key]?.paymentAmount) && <View style={[styles.p_6]}>
                                         <TouchableOpacity onPress={() => {
                                             paymentMethods[key].paymentAmount = 0;
@@ -359,7 +359,7 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
         <View>
 
 
-            {<View style={[styles.grid, styles.justifyContent, styles.px_5]}>
+            {<View style={[styles.grid, styles.justifyContent, styles.p_5]}>
                 <View style={[styles.w_auto]}>
                     <Button more={{color:'white'}} onPress={() => {
                         validatePayment().then()

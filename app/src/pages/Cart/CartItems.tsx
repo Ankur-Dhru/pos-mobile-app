@@ -11,6 +11,7 @@ import {Card, Paragraph, Text} from "react-native-paper";
 import Button from "../../components/Button";
 import {appLog, isRestaurant, updateComponent} from "../../libs/function";
 import ProIcon from "../../components/ProIcon";
+import Tabs from "../../components/TabView";
 
 const Index = (props: any) => {
 
@@ -49,62 +50,59 @@ const Index = (props: any) => {
     const renderKot = useCallback(({item, index}: any) => <Kot kot={item} hasLast={kots.length === index+1} key={item.key} />, []);
 
 
+    const Items = () => (
+        <View style={[styles.flex]}>
+            <FlatList
+                data={invoiceitems}
+
+                keyboardDismissMode={'on-drag'}
+                keyboardShouldPersistTaps={'always'}
+                getItemLayout={(data, index) => {
+                    return { length: 80, offset: 80 * index, index };
+                }}
+                renderItem={renderItem}
+                ListEmptyComponent={()=>{
+                    return (
+                        <Card>
+                            <Card.Content>
+                                <View style={{marginTop:50}}><Paragraph style={[styles.paragraph,{textAlign:'center'}]}>No any item(s) added</Paragraph></View>
+                                <View  style={{marginTop:20}}><Paragraph  style={[styles.paragraph,{textAlign:'center'}]}><ProIcon name={'utensils'} size={25}/></Paragraph></View>
+                            </Card.Content>
+                        </Card>
+                    )
+                }}
+
+            />
+        </View>
+    );
+
+    const Kots = () => (
+        <View style={[styles.flex]}>
+            <FlatList
+                data={kots}
+                keyboardDismissMode={'on-drag'}
+                keyboardShouldPersistTaps={'always'}
+
+                getItemLayout={(data, index) => {
+                    return { length: 200, offset: 200 * index, index };
+                }}
+                renderItem={renderKot}
+            />
+        </View>
+    );
+
 
     return (
         <>
-            {Boolean(kots?.length > 0) &&  <View>
-                <View style={[styles.grid,styles.justifyContent,styles.p_4]}>
-
-                    <Button style={[styles.w_auto]}  more={{color:'white'}}   onPress={() => {
-                        updateComponent(cartListRef,'display','flex')
-                        updateComponent(kotListRef,'display','none')
-
-                    }} secondbutton={true} >Items</Button>
-                    <Button style={[styles.ml_2,styles.w_auto]} more={{color:'white'}}   onPress={() => {
-                        updateComponent(cartListRef,'display','none')
-                        updateComponent(kotListRef,'display','flex')
-
-                    }}  secondbutton={true}>KOTs</Button>
-                </View>
-            </View>}
+            {Boolean(kots?.length > 0) ? <Tabs
+                scenes={{items: Items, kots: Kots}}
+                routes={[
+                    {key: 'items', title: 'Items'},
+                    {key: 'kots', title: 'Kots'},
+                ]}
+            />  : <Items />  }
 
 
-                <>
-                    <FlatList
-                        data={kots}
-                        keyboardDismissMode={'on-drag'}
-                        keyboardShouldPersistTaps={'always'}
-                        ref={kotListRef}
-                        getItemLayout={(data, index) => {
-                            return { length: 200, offset: 200 * index, index };
-                        }}
-                        renderItem={renderKot}
-                    />
-                </>
-
-                <>
-                    <FlatList
-                        data={invoiceitems}
-                        ref={cartListRef}
-                        keyboardDismissMode={'on-drag'}
-                        keyboardShouldPersistTaps={'always'}
-                        getItemLayout={(data, index) => {
-                            return { length: 80, offset: 80 * index, index };
-                        }}
-                        renderItem={renderItem}
-                        ListEmptyComponent={()=>{
-                            return (
-                                <Card>
-                                    <Card.Content>
-                                        <View style={{marginTop:50}}><Paragraph style={[styles.paragraph,{textAlign:'center'}]}>No any item(s) added</Paragraph></View>
-                                        <View  style={{marginTop:20}}><Paragraph  style={[styles.paragraph,{textAlign:'center'}]}><ProIcon name={'utensils'} size={25}/></Paragraph></View>
-                                    </Card.Content>
-                                </Card>
-                            )
-                        }}
-
-                    />
-                </>
 
         </>
     )

@@ -1,6 +1,6 @@
 import {current, device, localredux} from "../../libs/static";
 import React, {memo, useCallback, useEffect, useState} from "react";
-import {appLog, isEmpty, saveTempLocalOrder, toCurrency} from "../../libs/function";
+import {isEmpty, saveTempLocalOrder, toCurrency} from "../../libs/function";
 import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
 import {Card, FAB, Menu, Paragraph, Title, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
@@ -12,10 +12,7 @@ import {useNavigation} from "@react-navigation/native";
 import {hideLoader, setAlert, setDialog, showLoader} from "../../redux-store/reducer/component";
 import ClientAndSource from "../Cart/ClientAndSource";
 import moment from "moment";
-
-import OrderTypes from "./OrderTypes";
 import {setSelected} from "../../redux-store/reducer/selected-data";
-import {AddItem} from "../Items/ItemListTablet";
 import Button from "../../components/Button";
 import ReserveList from "./ReserveList";
 import Tabs from "../../components/TabView";
@@ -23,7 +20,7 @@ import Tabs from "../../components/TabView";
 
 const Index = (props: any) => {
 
-    const {tableorders, ordertype} = props;
+    const {tableorders} = props;
 
 
     const navigation = useNavigation()
@@ -32,7 +29,7 @@ const Index = (props: any) => {
 
 
     const dispatch = useDispatch();
-    const [refreshing,setRefreshing]:any = useState(false);
+    const [refreshing, setRefreshing]: any = useState(false);
     const [floating, setFloating] = useState(false);
     const [shifttable, setShifttable] = useState(false);
     const [shiftingFromtable, setShiftingFromtable] = useState<any>();
@@ -54,7 +51,7 @@ const Index = (props: any) => {
 
     useEffect(() => {
         getOrder().then()
-    }, [tableorders,currentLocation.tables])
+    }, [tableorders, currentLocation.tables])
 
 
     const resetTables = async () => {
@@ -113,7 +110,6 @@ const Index = (props: any) => {
         current.table = {'tablename': ordertype.label, ordertype: ordertype.value, invoiceitems: [], kots: []};
 
 
-
         const placeOrder = async (config: any) => {
 
             //await dispatch(resetCart())
@@ -142,11 +138,14 @@ const Index = (props: any) => {
             }
         }
 
-        if(ordertype.value === 'qsr'){
+        if (ordertype.value === 'qsr') {
             placeOrder(current.table).then()
-        }
-        else{
-            navigation.navigate('ClientAndSource', {title:title,tabledetails:current.table,'placeOrder':placeOrder});
+        } else {
+            navigation.navigate('ClientAndSource', {
+                title: title,
+                tabledetails: current.table,
+                'placeOrder': placeOrder
+            });
         }
 
     }
@@ -185,15 +184,17 @@ const Index = (props: any) => {
 
 
             return (
-                <Card style={[styles.m_2, styles.noshadow, {maxWidth:'100%',minWidth: 150,
+                <Card style={[styles.m_2, styles.noshadow, {
+                    maxWidth: '100%', minWidth: 150,
                     backgroundColor: Boolean(item.kots?.length) ? styles.yellow.color : Boolean(item.invoiceitems?.length) ? styles.secondary.color : styles.light.color,
-                    borderRadius: 5}, styles.flexGrow,]} key={item.tableid}>
+                    borderRadius: 5
+                }, styles.flexGrow,]} key={item.tableid}>
                     {<TouchableOpacity
-                                    style={{minHeight: 100}}
-                                       onPress={() => {
-                                           current.table = {invoiceitems: [], kots: [], ...item};
-                                           !shifttable ? navigation.navigate('CartStackNavigator', current.table) : Boolean(shifting) ? shiftTo(props) : shiftFrom(item.tableorderid)
-                                       }}>
+                        style={{minHeight: 100}}
+                        onPress={() => {
+                            current.table = {invoiceitems: [], kots: [], ...item};
+                            !shifttable ? navigation.navigate('CartStackNavigator', current.table) : Boolean(shifting) ? shiftTo(props) : shiftFrom(item.tableorderid)
+                        }}>
                         {((shiftstart || shifting) || !shifttable) && <View style={[styles.p_4]}>
                             <View style={[styles.grid, styles.mb_3]}>
                                 <View
@@ -205,8 +206,9 @@ const Index = (props: any) => {
                                                     size={13}/> {item.paxes} x {item.clientname}</Paragraph>
 
                                 {Boolean(item?.advanceorder?.date) && <>
-                                    <Paragraph style={[styles.paragraph,styles.text_xs]}>Delivery on </Paragraph>
-                                    <Text  style={[styles.paragraph]}>{moment(item?.advanceorder.date).format('DD/MM/YYYY')} {moment(item?.advanceorder.time).format('HH:mm')}</Text>
+                                    <Paragraph style={[styles.paragraph, styles.text_xs]}>Delivery on </Paragraph>
+                                    <Text
+                                        style={[styles.paragraph]}>{moment(item?.advanceorder.date).format('DD/MM/YYYY')} {moment(item?.advanceorder.time).format('HH:mm')}</Text>
                                 </>}
 
 
@@ -217,7 +219,11 @@ const Index = (props: any) => {
 
                             </>}
 
-                            {item.printcounter && <View style={[styles.absolute,{right:10,top:12}]}><Text><ProIcon size={15} name={'print'} type={'solid'} action_type={'text'}/></Text></View>}
+                            {item.printcounter &&
+                                <View style={[styles.absolute, {right: 10, top: 12}]}><Text><ProIcon size={15}
+                                                                                                     name={'print'}
+                                                                                                     type={'solid'}
+                                                                                                     action_type={'text'}/></Text></View>}
 
 
                         </View>}
@@ -233,8 +239,9 @@ const Index = (props: any) => {
     );
 
     navigation.setOptions({
-        headerLeft:()=><Title onPress={()=>navigation.navigate('ProfileSettingsNavigator')}><ProIcon name={'bars'}/></Title>,
-        headerRight:()=>{
+        headerLeft: () => <Title onPress={() => navigation.navigate('ProfileSettingsNavigator')}><ProIcon
+            name={'bars'}/></Title>,
+        headerRight: () => {
             return <View>
 
                 <Menu
@@ -242,7 +249,7 @@ const Index = (props: any) => {
                     onDismiss={closeMenu}
                     anchor={<TouchableOpacity onPress={() => {
                         openMenu()
-                    }} >
+                    }}>
                         <ProIcon name={'ellipsis-vertical'}/>
                     </TouchableOpacity>}>
                     <Menu.Item onPress={onClickAddTable} title="Add Table"/>
@@ -270,49 +277,47 @@ const Index = (props: any) => {
                                                                  key={index}/>, [shifttable, shiftingFromtable, shiftingTotable]);
 
 
-    /*const LatestRoute = () => (
-        <View style={[styles.flex,{backgroundColor: '#ff4081'}]}/>
+    const AllTable = () => (
+        <View style={[styles.flex]}>
+            <TableFlatlist type={'all'}/>
+        </View>
     );
 
-    const FavoritesRoute = () => (
-        <View style={[styles.flex,{backgroundColor: '#673ab7'}]}/>
+    const OnlyTable = () => (
+        <View style={[styles.flex]}>
+            <TableFlatlist type={'tableorder'}/>
+        </View>
     );
 
-    const AllRoute = () => (
-        <View style={[styles.flex,{backgroundColor: '#673ab7'}]}/>
+    const HomeDelivery = () => (
+        <View style={[styles.flex]}>
+            <TableFlatlist type={'homedelivery'}/>
+        </View>
+    );
+
+    const TakeAway = () => (
+        <View style={[styles.flex]}>
+            <TableFlatlist type={'takeaway'}/>
+        </View>
+    );
+
+    const AdvanceOrder = () => (
+        <View style={[styles.flex]}>
+            <TableFlatlist type={'advanceorder'}/>
+        </View>
     );
 
 
-    return (
-        <Tabs
-            scenes={{all: LatestRoute, tableorder: FavoritesRoute, homedelivery: AllRoute, takeaway: AllRoute, advanceorder: AllRoute, qsr: AllRoute}}
-            routes={[
-                {key: 'all', title: 'All'},
-                {key: 'tableorder', title: 'Tables'},
-                {key: 'homedelivery', title: 'Home Delivery'},
-                {key: 'takeaway', title: 'Take Away'},
-                {key: 'advanceorder', title: 'Advance Order'},
-                {key: 'qsr', title: 'QSR'},
-            ]}
-        />
-    );*/
+    const TableFlatlist = ({type}: any) => {
 
-
-    return (
-        <>
-            <OrderTypes shifttable={shifttable}  />
-
-
-
-
-            <View style={[styles.px_4, styles.flex, styles.h_100]}>
-
+        return (
+            <>
                 <FlatList
                     data={tables?.filter((table: any) => {
-                        if (ordertype?.value === 'all') {
+                        if (type === 'all') {
                             return true
                         } else {
-                            return table.ordertype === ordertype?.value
+                            return table.ordertype === type
                         }
                     })}
                     renderItem={renderItem}
@@ -340,19 +345,31 @@ const Index = (props: any) => {
 
                             <View style={[styles.grid, styles.center]}>
                                 <Button
-                                    more={{color:'white'}}
+                                    more={{color: 'white'}}
                                     secondbutton={true}
                                     onPress={async () => {
-                                        if (ordertype.value === 'qsr') {
-                                            setOrderSetting("+ QSR / Quick Bill", {'label': '+ QSR / Quick Bill', value: 'qsr'})
-                                        } else if (ordertype.value === 'takeaway') {
+                                        if (type === 'qsr') {
+                                            setOrderSetting("+ QSR / Quick Bill", {
+                                                'label': '+ QSR / Quick Bill',
+                                                value: 'qsr'
+                                            })
+                                        } else if (type === 'takeaway') {
                                             setOrderSetting("Takeaway", {'label': 'Takeaway', value: 'takeaway'})
-                                        } else if (ordertype.value === 'advanceorder') {
-                                            setOrderSetting("Advanced Order", {'label': 'Advance Order', value: 'advanceorder'})
-                                        } else if (ordertype.value === 'homedelivery') {
-                                            setOrderSetting("Home Delivery", {'label': 'Home Delivery', value: 'homedelivery'})
-                                        } else if (ordertype.value === 'tableorder') {
-                                            setOrderSetting("Table Reservation", {'label': 'Table Reservation', value: 'tableorder'})
+                                        } else if (type === 'advanceorder') {
+                                            setOrderSetting("Advanced Order", {
+                                                'label': 'Advance Order',
+                                                value: 'advanceorder'
+                                            })
+                                        } else if (type === 'homedelivery') {
+                                            setOrderSetting("Home Delivery", {
+                                                'label': 'Home Delivery',
+                                                value: 'homedelivery'
+                                            })
+                                        } else if (type === 'tableorder') {
+                                            setOrderSetting("Table Reservation", {
+                                                'label': 'Table Reservation',
+                                                value: 'tableorder'
+                                            })
                                         }
                                     }}> + Take New Order
                                 </Button>
@@ -363,9 +380,30 @@ const Index = (props: any) => {
 
                 />
 
-            </View>
+            </>
+        )
+    }
 
 
+    return (
+        <>
+            <Tabs
+                scenes={{
+                    all: AllTable,
+                    tableorder: OnlyTable,
+                    homedelivery: HomeDelivery,
+                    takeaway: TakeAway,
+                    advanceorder: AdvanceOrder
+                }}
+                routes={[
+                    {key: 'all', title: 'All'},
+                    {key: 'tableorder', title: 'Tables'},
+                    {key: 'homedelivery', title: 'HomeDelivery'},
+                    {key: 'takeaway', title: 'TakeAway'},
+                    {key: 'advanceorder', title: 'AdvanceOrder'},
+                ]}
+                scrollable={true}
+            />
             <FAB.Group
                 open={floating}
                 fabStyle={{backgroundColor: 'black', marginBottom: 10}}
@@ -396,7 +434,10 @@ const Index = (props: any) => {
                     {
                         icon: 'popcorn',
                         label: '+ QSR / Quick Bill',
-                        onPress: () => setOrderSetting("+ QSR / Quick Bill", {'label': '+ QSR / Quick Bill', value: 'qsr'}),
+                        onPress: () => setOrderSetting("+ QSR / Quick Bill", {
+                            'label': '+ QSR / Quick Bill',
+                            value: 'qsr'
+                        }),
                     },
                     {
                         icon: 'table',
@@ -408,20 +449,7 @@ const Index = (props: any) => {
                     },
                 ]}
                 onStateChange={() => {
-
                     setFloating(!floating)
-
-                    /*if (ordertype.value === 'qsr') {
-                        setOrderSetting("+ QSR / Quick Bill", {'label': '+ QSR / Quick Bill', value: 'qsr'})
-                    } else if (ordertype.value === 'takeaway') {
-                        setOrderSetting("Takeaway", {'label': 'Takeaway', value: 'takeaway'})
-                    } else if (ordertype.value === 'advanceorder') {
-                        setOrderSetting("Advanced Order", {'label': 'Advance Order', value: 'advanceorder'})
-                    } else if (ordertype.value === 'homedelivery') {
-                        setOrderSetting("Home Delivery", {'label': 'Home Delivery', value: 'homedelivery'})
-                    } else if (ordertype.value === 'tableorder') {
-                        setOrderSetting("Table Reservation", {'label': 'Table Reservation', value: 'tableorder'})
-                    }*/
                 }}
                 onPress={() => {
                     if (floating) {
@@ -429,9 +457,10 @@ const Index = (props: any) => {
                     }
                 }}
             />
-
         </>
-    )
+    );
+
+
 }
 
 const mapStateToProps = (state: any) => ({

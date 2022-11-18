@@ -3,20 +3,22 @@ import React from "react";
 
 import {ActivityIndicator, View} from "react-native";
 import {styles} from "../../theme";
-import {Text} from "react-native-paper";
+import {Paragraph, Text} from "react-native-paper";
 import {connect} from "react-redux";
 import {appLog} from "../../libs/function";
 
 
 const Index = ({syncDetail}: any) => {
 
-    const {type,rows,total}:any = syncDetail;
+    const {type,rows,total,more}:any = syncDetail;
 
 
     return <View style={[styles.p_3]}>
         <View style={[styles.mb_5]}><ActivityIndicator/></View>
         <Text style={[styles.textCenter,styles.mb_2]}>Please wait</Text>
         <Text style={[styles.textCenter,styles.mb_2,styles.muted,]}>It may take upto 15 min...</Text>
+
+        <Text style={[styles.textCenter,styles.mb_2,styles.muted,]}>{more}</Text>
 
         {Boolean(type) &&  <Text style={[styles.textCenter,styles.text_xs,styles.muted,]}>{rows?rows+' - ':''} {type} synced</Text>}
 

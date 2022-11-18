@@ -7,7 +7,7 @@ import InputField from "../../components/InputField";
 import Button from "../../components/Button";
 import React, {useState} from "react";
 import {localredux} from "../../libs/static";
-import {errorAlert, isEmpty, saveTempLocalOrder} from "../../libs/function";
+import {appLog, errorAlert, isEmpty, saveTempLocalOrder} from "../../libs/function";
 
 import moment from "moment";
 
@@ -69,9 +69,10 @@ const ClientAndSource = (props: any) => {
     })
 
     const onClientSearch = () => {
-        let findClient: any = Object.values(localredux?.clientsData).find((client: any) => client?.phone == clientSearch);
 
-        if (isEmpty(findClient)) {
+        let findClient: any = Object.values(localredux?.clientsData).find((client: any) => client?.phone?.includes(clientSearch));
+
+        if (isEmpty(findClient) || (clientSearch.length < 10)) {
             errorAlert("Phone number not found!");
             findClient = defaultClientData;
         }
@@ -268,6 +269,7 @@ const ClientAndSource = (props: any) => {
                                 <View style={[styles.grid, styles.justifyContent]}>
                                     <View style={[styles.flexGrow, styles.w_auto, {marginRight: 12}]}>
                                         <InputField
+                                            minLength={10}
                                             value={clientSearch}
                                             label={'Mobile'}
                                             inputtype={'textbox'}

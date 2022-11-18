@@ -1,21 +1,27 @@
 
 export enum TABLE {
-  DATA = "tblData",
+  INIT = "tblInit",
   ITEM = "tblItem",
+  ADDON = "tblAddon",
   CLIENT = "tblClient",
   ORDER = "tblOrder",
 }
 
-export const CREATE_CLIENT_TABLE = `create table if not exists ${TABLE.CLIENT}
-                                    (
-                                      clientid    int  not null primary key,
-                                      displayname TEXT  null,
-                                      phone       TEXT   null,
-                                      data        TEXT          null,
-                                      taxregtype  TEXT   null,
-                                      clienttype  int default 0 null
-                                    );`;
+export const CREATE_INIT_TABLE = `create table if not exists ${TABLE.INIT}
+(
+  id            TEXT not null   
+  data              TEXT,   
+);`;
 
+export const CREATE_CLIENT_TABLE = `create table if not exists ${TABLE.CLIENT}
+(
+  clientid    int  not null primary key,
+  displayname TEXT  null,
+  phone       TEXT   null,
+  data        TEXT          null,
+  taxregtype  TEXT   null,
+  clienttype  int default 0 null
+);`;
 
 export const CREATE_ITEM_TABLE = `create table if not exists ${TABLE.ITEM}
 (
@@ -28,6 +34,19 @@ export const CREATE_ITEM_TABLE = `create table if not exists ${TABLE.ITEM}
   itemstatus        TEXT,
   pricealert        tinyint(1) default 0
 );`;
+
+export const CREATE_ADDON_TABLE = `create table if not exists ${TABLE.ADDON}
+(
+  itemid            INT not null
+  primary key,
+  itemname          TEXT,
+  itemgroupid       TEXT,
+  uniqueproductcode TEXT,
+  data              TEXT,
+  itemstatus        TEXT,
+  pricealert        tinyint(1) default 0
+);`;
+
 
 
 export const CREATE_ITEM_INDEX_ITEMGROUPID = `create index index_itemgroupid on ${TABLE.ITEM} (itemgroupid);`;

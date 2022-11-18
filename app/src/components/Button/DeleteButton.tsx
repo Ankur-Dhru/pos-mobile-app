@@ -9,7 +9,7 @@ import {ProIcon} from "../index";
 class Index extends React.Component<any> {
 
     render(){
-        let {onPress,message,title,render,buttonTitle}:any = this.props;
+        let {onPress,message,title,render,buttonTitle,options}:any = this.props;
         const Render:any = render;
 
         return (
@@ -20,7 +20,7 @@ class Index extends React.Component<any> {
                         message={message}
                         styles={[styles.middle, styles.p_5]}
                         titleBox={{backgroundColor: 'pink'}}
-                        options={['Delete', 'Cancel']}
+                        options={options || ['Delete', 'Cancel']}
                         cancelButtonIndex={1}
                         destructiveButtonIndex={0}
                         onPress={onPress}>

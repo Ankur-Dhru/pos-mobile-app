@@ -10,16 +10,16 @@ import {Card} from "react-native-paper";
 import {setTableOrdersData} from "../../redux-store/reducer/table-orders-data";
 import {hideLoader} from "../../redux-store/reducer/component";
 import {
-    defaultInvoiceTemplate,
-    defaultPrintingTemplates,
+
     device,
     localredux,
-    printingTemplates
+
 } from "../../libs/static";
 import {setSettings} from "../../redux-store/reducer/local-settings-data";
 
 import {getDBConnection} from "../../libs/Sqlite";
 import {
+    CREATE_ADDON_TABLE, CREATE_CLIENT_TABLE, CREATE_INIT_TABLE,
 
     CREATE_ITEM_INDEX_ITEMGROUPID,
     CREATE_ITEM_INDEX_ITEMNAME, CREATE_ITEM_INDEX_ITEMUNIQUE,
@@ -36,8 +36,16 @@ const Index = (props: any) => {
 
     const loadDataCallback = useCallback(async () => {
         try {
-            const db = await getDBConnection();
+           const db = await getDBConnection();
+
+           // await db.executeSql(CREATE_INIT_TABLE);
+
            await db.executeSql(CREATE_ITEM_TABLE);
+
+           await db.executeSql(CREATE_ADDON_TABLE);
+            await db.executeSql(CREATE_CLIENT_TABLE);
+
+
            await db.executeSql(CREATE_ITEM_INDEX_ITEMGROUPID);
             await db.executeSql(CREATE_ITEM_INDEX_ITEMNAME);
             await db.executeSql(CREATE_ITEM_INDEX_ITEMUNIQUE);

@@ -4,7 +4,7 @@ import {Image, TouchableOpacity, View} from "react-native";
 import Container from "../../components/Container";
 import ReactNativePinView from "react-native-pin-view"
 import {useDispatch} from "react-redux";
-import {appLog, retrieveData, saveLocalSettings, syncData} from "../../libs/function";
+import {appLog, getAddons, getClients, retrieveData, saveLocalSettings, syncData} from "../../libs/function";
 
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
 import {Card, Paragraph, Text} from "react-native-paper";
@@ -12,11 +12,11 @@ import {styles} from "../../theme";
 import moment from "moment/moment";
 
 import {setTableOrdersData} from "../../redux-store/reducer/table-orders-data";
-import {defaultInputValues, device, localredux} from "../../libs/static";
+import {  localredux} from "../../libs/static";
 
 import { setOrdersData} from "../../redux-store/reducer/orders-data";
 import { setSettings } from "../../redux-store/reducer/local-settings-data";
-import {ProIcon} from "../../components";
+
 import {setGroupList} from "../../redux-store/reducer/group-list";
 
 
@@ -47,8 +47,6 @@ const Index = (props: any) => {
                                 licenseData,
                                 authData,
                                 localSettingsData,
-                                clientsData,
-                                addonsData,
                                 orders
                             } = data || {};
 
@@ -62,9 +60,11 @@ const Index = (props: any) => {
 
                                     localredux.licenseData=licenseData;
                                     localredux.authData= {...params,...authData};
-                                    localredux.clientsData = clientsData;
                                     localredux.localSettingsData = localSettingsData;
-                                    localredux.addonsData = addonsData;
+
+                                    getClients().then()
+                                    getAddons().then()
+
 
                                     const {itemgroup}:any = localredux.initData;
 

@@ -5,7 +5,7 @@ import {FlatList, Text, TouchableOpacity, View} from "react-native";
 import {connect} from "react-redux";
 
 import {styles} from "../../theme";
-import {isRestaurant, selectItem, toCurrency} from "../../libs/function";
+import {appLog, isRestaurant, selectItem, toCurrency} from "../../libs/function";
 import {Divider, Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
 import AddButton from "./AddButton";
@@ -33,7 +33,7 @@ const Item = memo(({item}: any) => {
                 <View style={[styles.grid, styles.top, styles.noWrap, styles.p_4, styles.px_6]}>
 
                     <View style={[styles.w_auto,]}>
-                        <Text style={[styles.paragraph, styles.text_sm, styles.bold]}>{item.itemname}</Text>
+                        <Paragraph style={[styles.paragraph, styles.text_sm, styles.bold]}>{item.itemname}</Paragraph>
 
                         <View style={[styles.grid, styles.middle]}>
                             {hasRestaurant && <View style={[styles.mr_1]}>
@@ -95,6 +95,7 @@ const Index = (props: any) => {
         }*/
 
         getItemsByWhere({itemgroupid: selectedgroup}).then((newitems: any) => {
+
             if (Boolean(newitems.length > 0)) {
                 newitems = newitems?.map((i: any) => {
                     const find = invoiceitems.filter((ii: any) => {

@@ -45,9 +45,10 @@ import ItemDetail from "../pages/Items/ItemDetail";
 import AddonActions from "../pages/Items/AddonActions";
 import {onPressNumber} from "../pages/Items/AddButton";
 import NetInfo from "@react-native-community/netinfo";
-import {insertItems} from "./Sqlite/insertData";
+import {insertAddons, insertClients, insertItems} from "./Sqlite/insertData";
 import {sendDataToPrinter} from "./Network";
 import {CommonActions} from "@react-navigation/native";
+import {getAddonByWhere, getClientsByWhere, getItemsByWhere} from "./Sqlite/selectData";
 
 
 let NumberFormat = require('react-number-format');
@@ -472,20 +473,20 @@ export const CheckConnectivity = () => {
 
 export const syncData = async (loader=true) => {
 
+    await retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
+
     try {
 
-        let licenseData: any
-        let itemsData: any;
 
         let start = moment();
 
-        await retrieveData('fusion-pro-pos-mobile').then((data: any) => {
-            itemsData = data?.itemsData || {}
-            licenseData = data?.licenseData || {};
-        })
+          let  initData = data?.initData || {}
+        let   licenseData = data?.licenseData || {};
+        let   localSettingsData = data?.localSettingsData || {};
 
 
-        let {initData, localSettingsData: {lastSynctime,terminalname}, addonsData, clientsData}: any = localredux;
+
+        let {lastSynctime,terminalname}: any = localSettingsData;
 
 
         loader && store.dispatch(setDialog({visible: true, hidecancel: true, width: 300, component: () => <SyncingInfo/>}))
@@ -527,24 +528,12 @@ export const syncData = async (loader=true) => {
                         }
                     } else if (result === 'addon') {
                         if (Boolean(data.result)) {
-                            let addons = data.result.reduce((accumulator: any, value: any) => {
-                                return {...accumulator, [value.itemid]: value};
-                            }, {});
-                            addonsData = {
-                                ...addonsData,
-                                ...addons
-                            }
+                            await insertAddons(data.result,'all').then(() => { });
                         }
+
                     } else if (result === 'customer') {
                         if (Boolean(data.result)) {
-                            let clients = data.result.reduce((accumulator: any, value: any) => {
-                                return {...accumulator, [value.clientid]: value};
-                            }, {});
-
-                            clientsData = {
-                                ...clientsData,
-                                ...clients
-                            }
+                            await insertClients(data.result,'all').then(() => { });
                         }
                     }
 
@@ -565,8 +554,8 @@ export const syncData = async (loader=true) => {
                                 const locations = initData?.location;
 
                                 let printingtemplates:any = {}
-                                Object.values(initData.printingtemplate).map((template:any)=>{
-                                    if(template.location === locationid){
+                                Object.values(initData?.printingtemplate).map((template:any)=>{
+                                    if(template?.location === locationid){
                                         printingtemplates[template?.printertype] = template
                                     }
                                 })
@@ -574,8 +563,6 @@ export const syncData = async (loader=true) => {
                                 data = {
                                     ...data,
                                     initData,
-                                    addonsData,
-                                    clientsData,
                                     localSettingsData: {
                                         currentLocation: locations[locationid],
                                         printingtemplates:printingtemplates,
@@ -585,13 +572,18 @@ export const syncData = async (loader=true) => {
                                     }
                                 }
 
+
+
                                 await storeData('fusion-pro-pos-mobile', data).then(async () => {
-                                    localredux.initData = data.initData;
-                                    localredux.addonsData = data.addonsData;
-                                    localredux.clientsData = data.clientsData;
-                                    localredux.templatesData = data.templatesData;
+                                    localredux.initData = initData;
                                     localredux.localSettingsData = data.localSettingsData;
+
+                                    await store.dispatch(setSyncDetail({type: result,rows:start,total:(Boolean(data?.extra) && Boolean(data?.extra?.total)) ? data.extra.total : 0}))
+
                                 });
+
+                                getClients().then()
+                                getAddons().then()
 
 
                             } catch (e) {
@@ -623,6 +615,8 @@ export const syncData = async (loader=true) => {
     } catch (e) {
         appLog('e', e)
     }
+
+    })
 
 }
 
@@ -1558,3 +1552,18 @@ Permissions.getPermissionStatus('localNetwork').then((r) => {
         // Notify user about Local Network permission denied, advice user to turn on permission
     }
 });*/
+
+
+
+
+export const getClients = async (refresh = false) => {
+    await getClientsByWhere({}).then((clients: any) => {
+        localredux.clientsData = clients
+    });
+}
+
+export const getAddons = async (refresh = false) => {
+    await getAddonByWhere({}).then((addons:any) => {
+        localredux.addonsData = addons
+    });
+}

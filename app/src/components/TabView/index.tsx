@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 
 import { Dimensions } from 'react-native';
-import { TabView, SceneMap } from 'react-native-tab-view';
+import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import Container from "../../components/Container";
+import {styles} from "../../theme";
 
 
 const Index = (props: any) => {
 
-    const {routes,scenes} = props
+    const {routes,scenes,scrollable} = props
 
 
 
@@ -22,6 +23,18 @@ const Index = (props: any) => {
         return setState({...state,index: index});
     }
 
+    const renderTabBar = (props:any) => (
+        <TabBar
+            {...props}
+            indicatorStyle={{ backgroundColor:styles.primary.color}}
+            style={{ backgroundColor: 'white'}}
+
+            labelStyle={{color:'white'}}
+            indicatorContainerStyle={{backgroundColor:styles.accent.color}}
+            scrollEnabled={scrollable}
+        />
+    );
+
     return (
         <Container>
             <TabView
@@ -30,6 +43,7 @@ const Index = (props: any) => {
                 renderScene={renderScene}
                 onIndexChange={ (index) => selectTab(index) }
                 initialLayout={{ width: Dimensions.get('window').width, height : Dimensions.get('window').height }}
+                renderTabBar={renderTabBar}
             />
         </Container>
     );

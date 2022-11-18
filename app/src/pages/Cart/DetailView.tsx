@@ -40,6 +40,7 @@ const Index = (props: any) => {
                     </TouchableOpacity>}>
 
                     <DeleteButton
+                        options={['Yes','No']}
                         title={'Cancel Order'}
                         message={`Are you sure want to Cancel Order?`}
                         render={()=>{

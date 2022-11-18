@@ -118,8 +118,7 @@ const Index = (props: any) => {
                                                 onSubmitEditing={(e: any) => {
                                                     handleSubmit(values)
                                                 }}
-                                                right={<TI.Icon name={passwordVisible ? "eye" : "eye-off"}
-                                                                onPress={() =>  setPasswordVisible(!passwordVisible)}/>}
+                                                right={<TI.Icon name={passwordVisible ? "eye" : "eye-off"}  onPress={() =>  setPasswordVisible(!passwordVisible)}/>}
                                                 returnKeyType={'go'}
                                                 autoCapitalize='none'
                                                 secureTextEntry={passwordVisible}
@@ -140,8 +139,8 @@ const Index = (props: any) => {
                     </ScrollView>
 
                     <KAccessoryView>
-                        <View style={[styles.submitbutton]}>
-                            <Button disable={more.invalid} secondbutton={more.invalid}
+                        <View style={[styles.submitbutton,styles.mb_5]}>
+                            <Button more={{color:'white'}} disable={more.invalid} secondbutton={more.invalid}
                                     onPress={() => {
                                         handleSubmit(values)
                                     }}> Login

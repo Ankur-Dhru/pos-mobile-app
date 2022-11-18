@@ -5,12 +5,8 @@ import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 
 import {setSelected} from "../../redux-store/reducer/selected-data";
-import ProIcon from "../../components/ProIcon";
 import {useNavigation} from "@react-navigation/native";
-import {Menu, Paragraph} from "react-native-paper";
-import {setDialog} from "../../redux-store/reducer/component";
-import ReserveList from "./ReserveList";
-import AddTable from "./AddTable";
+import {Paragraph} from "react-native-paper";
 
 
 const OrderType = (props: any) => {

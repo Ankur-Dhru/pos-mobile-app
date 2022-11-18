@@ -250,6 +250,7 @@ const ProfileSettings = () => {
 
                                 <View style={[styles.mb_5]}>
                                     <DeleteButton
+                                        options={['Reset','Cancel']}
                                         title={'Reset Terminal'}
                                         buttonTitle={'Reset Terminal'}
                                         message={`Are you sure want to reset Terminal?`}
@@ -272,6 +273,7 @@ const ProfileSettings = () => {
 
                                 <View style={[styles.mb_5]}>
                                     <DeleteButton
+                                        options={['Delete Account','Cancel']}
                                         title={'Close & Delete Account'}
                                         buttonTitle={'Close & Delete Account'}
                                         message={`Are you sure want to delete "${email}" account?`}

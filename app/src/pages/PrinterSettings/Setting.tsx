@@ -3,16 +3,30 @@ import React from "react";
 import {SafeAreaView, View} from "react-native";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
-import {Title} from "react-native-paper";
-import {composeValidators, PRINTER, required, supportedPrinterList} from "../../libs/static";
+import {Caption, Paragraph, Title} from "react-native-paper";
+import {
+    composeValidators,
+    defaultInvoiceTemplate,
+    PRINTER,
+    required,
+    supportedPrinterList,
+    testInvoiceData
+} from "../../libs/static";
 import Button from "../../components/Button";
 import {connect} from "react-redux";
-import {saveLocalSettings, testPrint} from "../../libs/function";
+import {appLog, getPrintTemplate, getTemplate, saveLocalSettings} from "../../libs/function";
 import InputField from "../../components/InputField";
 import {Container} from "../../components";
 import KeyboardScroll from "../../components/KeyboardScroll";
 import {useNavigation} from "@react-navigation/native";
 import CheckBox from "../../components/CheckBox";
+import BlueToothPrinter from "./BlueToothPrinter";
+import ItemCategoryList from "../Items/ItemCategoryList";
+import BleManager from "react-native-ble-manager";
+import {EscPos} from "escpos-xml";
+import EscPosPrinter, {getPrinterSeriesByName} from "react-native-esc-pos-printer";
+import {sendDataToPrinter} from "../../libs/Network";
+import Mustache from "mustache";
 
 
 const Index = (props: any) => {
@@ -35,22 +49,25 @@ const Index = (props: any) => {
     }
 
 
-    const initialValues = {
+    let initialValues = {
         printertype: 'network',
+        bluetoothdetail: {},
+        macid: '',
         ip: '',
         host: '',
         printername: '',
         port: '9100',
         printsize: '72',
         noofprint: '1',
-        printoncancel:true,
+        printoncancel: true,
         ...printers[type.departmentid]
     }
+
 
     //{value: 'shared', label: 'Shared Printer'},
 
     return <Container>
-            <SafeAreaView>
+        <SafeAreaView>
             <Form
                 initialValues={initialValues}
                 onSubmit={handleSubmit}
@@ -74,6 +91,9 @@ const Index = (props: any) => {
                                                         list={[{
                                                             value: 'network',
                                                             label: 'Network Printer'
+                                                        }, {
+                                                            value: 'bluetooth',
+                                                            label: 'Bluetooth Printer'
                                                         }]}
                                                         value={props.input.value}
                                                         selectedValue={props.input.value}
@@ -88,66 +108,75 @@ const Index = (props: any) => {
                                             </Field>
                                         </View>
 
-                                        <View style={[styles.mb_5, styles.grid, styles.justifyContent]}>
-                                            <View style={[styles.flexGrow]}>
+                                        {values.printertype === 'bluetooth' ? <>
+                                            <Field name="macid">
+                                                {props => (
+                                                    <><BlueToothPrinter values={values} fieldprops={props}/></>
+                                                )}
+                                            </Field>
+                                        </> : <>
+                                            <View style={[styles.mb_5, styles.grid, styles.justifyContent]}>
+                                                <View style={[styles.flexGrow]}>
 
-                                                <Field name="host" validate={composeValidators(required)}>
-                                                    {props => (
-                                                        <InputField
-                                                            {...props}
-                                                            label={'IP'}
-                                                            value={props.input.value}
-                                                            inputtype={'textbox'}
+                                                    <Field name="host" validate={composeValidators(required)}>
+                                                        {props => (
+                                                            <InputField
+                                                                {...props}
+                                                                label={'IP'}
+                                                                value={props.input.value}
+                                                                inputtype={'textbox'}
 
-                                                            onChange={(value: any) => {
-                                                                props.input.onChange(value)
-                                                            }}
-                                                        />
-                                                    )}
-                                                </Field>
+                                                                onChange={(value: any) => {
+                                                                    props.input.onChange(value)
+                                                                }}
+                                                            />
+                                                        )}
+                                                    </Field>
+
+                                                </View>
+
+                                                <View style={[styles.ml_2, {width: '50%'}]}>
+                                                    <Field name="port">
+                                                        {props => (
+                                                            <InputField
+                                                                {...props}
+                                                                value={props.input.value}
+                                                                label={'Port'}
+                                                                inputtype={'textbox'}
+                                                                onChange={props.input.onChange}
+                                                            />
+                                                        )}
+                                                    </Field>
+                                                </View>
+                                            </View>
+
+
+                                            <View style={[styles.mb_5]}>
+                                                <View>
+                                                    <Field name="printername">
+                                                        {props => (
+                                                            <InputField
+                                                                label={'Printer Name'}
+                                                                mode={'flat'}
+                                                                list={supportedPrinterList.map((item: any) => {
+                                                                    return {label: item, value: item}
+                                                                })}
+                                                                value={props.input.value}
+                                                                selectedValue={props.input.value}
+                                                                displaytype={'pagelist'}
+                                                                inputtype={'dropdown'}
+                                                                listtype={'other'}
+                                                                onChange={(value: any) => {
+                                                                    props.input.onChange(value);
+                                                                }}>
+                                                            </InputField>
+                                                        )}
+                                                    </Field>
+                                                </View>
 
                                             </View>
 
-                                            <View style={[styles.ml_2, {width: '50%'}]}>
-                                                <Field name="port">
-                                                    {props => (
-                                                        <InputField
-                                                            {...props}
-                                                            value={props.input.value}
-                                                            label={'Port'}
-                                                            inputtype={'textbox'}
-                                                            onChange={props.input.onChange}
-                                                        />
-                                                    )}
-                                                </Field>
-                                            </View>
-                                        </View>
-
-
-                                        <View style={[styles.mb_5]}>
-                                            <View>
-                                                <Field name="printername">
-                                                    {props => (
-                                                        <InputField
-                                                            label={'Printer Name'}
-                                                            mode={'flat'}
-                                                            list={supportedPrinterList.map((item:any)=>{
-                                                                return {label:item,value:item}
-                                                            })}
-                                                            value={props.input.value}
-                                                            selectedValue={props.input.value}
-                                                            displaytype={'pagelist'}
-                                                            inputtype={'dropdown'}
-                                                            listtype={'other'}
-                                                            onChange={(value: any) => {
-                                                                props.input.onChange(value);
-                                                            }}>
-                                                        </InputField>
-                                                    )}
-                                                </Field>
-                                            </View>
-
-                                        </View>
+                                        </>}
 
 
                                         <View style={[styles.mb_5, styles.grid, styles.justifyContent]}>
@@ -158,10 +187,11 @@ const Index = (props: any) => {
                                                         <InputField
                                                             label={'Printer Size'}
                                                             mode={'flat'}
-                                                            list={[{label: '56 mm', value: '56'}, {
-                                                                label: '72 mm',
-                                                                value: '72'
-                                                            }, {label: '80 mm', value: '80'}]}
+                                                            list={[
+                                                                {label: '56 mm', value: '32'},
+                                                                {label: '72 mm', value: '42'},
+                                                                {label: '80 mm', value: '48'}
+                                                            ]}
                                                             value={props.input.value}
                                                             selectedValue={props.input.value}
                                                             displaytype={'pagelist'}
@@ -252,7 +282,7 @@ const Index = (props: any) => {
 
 
                                         <Button disable={more.invalid}
-                                                more={{color:'white'}}
+                                                more={{color: 'white'}}
                                                 secondbutton={true} onPress={() => {
                                             testPrint(values)
                                         }}>Test Print</Button>
@@ -261,7 +291,7 @@ const Index = (props: any) => {
                                 </View>
                             </KeyboardScroll>
                             <View style={[styles.submitbutton]}>
-                                <Button more={{color:'white'}}  disable={more.invalid} secondbutton={more.invalid}
+                                <Button more={{color: 'white'}} disable={more.invalid} secondbutton={more.invalid}
                                         onPress={() => {
                                             handleSubmit(values)
                                         }}> Save
@@ -274,7 +304,7 @@ const Index = (props: any) => {
 
             </Form>
 
-            </SafeAreaView>
+        </SafeAreaView>
     </Container>
 }
 
@@ -285,3 +315,102 @@ const mapStateToProps = (state: any) => ({
 export default connect(mapStateToProps)(Index);
 
 
+export const testPrint = async (printer: any) => {
+
+    const {host, printername, printertype, bluetoothdetail}: any = printer
+
+    if (printertype === 'bluetooth') {
+        const peripheral = bluetoothdetail.more;
+
+        readyforPrint(peripheral).then((findSC: any) => {
+
+            //let xmlData = Mustache.render(getTemplate(defaultInvoiceTemplate), printJson);
+            //const buffer: any = EscPos.getBufferFromXML(xmlData);
+
+            const buffer: any = EscPos.getBufferFromXML(`<?xml version="1.0" encoding="UTF-8"?><document><align mode="center"><text size="1:0">Test Print</text></align></document>`);
+            BleManager.write(peripheral.id, findSC?.service, findSC?.characteristic, [...buffer]).then(() => {
+            });
+        })
+
+    } else {
+        await EscPosPrinter.init({
+            target: `TCP:${host}`,
+            seriesName: getPrinterSeriesByName(printername),
+            language: 'EPOS2_LANG_EN',
+        })
+
+        const printing = new EscPosPrinter.printing();
+        let status = printing
+            .initialize()
+            .align('center')
+            .size(2, 2)
+            .line('Test Print')
+            .newline(1)
+            .cut()
+            .addPulse()
+            .send()
+    }
+}
+
+
+export const retrieveConnected = () => {
+    BleManager.getConnectedPeripherals([]).then((results) => {
+        if (results.length == 0) {
+            console.log('No connected peripherals')
+        }
+        console.log(results);
+        for (var i = 0; i < results.length; i++) {
+            var peripheral: any = results[i];
+            peripheral.connected = true;
+        }
+    });
+}
+
+
+const connectToDevice = async (peripheral: any) => {
+    return await new Promise(async (resolve) => {
+        if (peripheral) {
+            if (peripheral.connected) {
+                resolve(true)
+            } else {
+                await BleManager.connect(peripheral.id).then(() => {
+                    resolve(true)
+                }).catch((error) => {
+                    appLog('Connection error', error);
+                    resolve(false)
+                });
+            }
+        } else {
+            resolve(false)
+        }
+    })
+}
+
+export const readyforPrint = async (peripheral: any) => {
+
+    return await new Promise(async (resolve) => {
+
+        connectToDevice(peripheral).then(async (connected) => {
+            if (connected) {
+
+                BleManager.retrieveServices(peripheral.id).then((peripheralInfo: any) => {
+
+                    const findSC = peripheralInfo?.characteristics?.find((sc: any) => sc?.characteristic?.length === 36 && sc?.service?.length === 36)
+                    if (findSC?.service && findSC?.characteristic) {
+                        setTimeout(() => {
+                            BleManager.startNotification(peripheral.id, findSC?.service, findSC?.characteristic).then(() => {
+                                setTimeout(() => {
+                                    resolve(findSC)
+                                }, 200)
+                            }).catch((error) => {
+                                appLog('Notification error', error);
+                                resolve(false)
+                            });
+                        }, 200);
+                    }
+                });
+            }
+        })
+
+    })
+}

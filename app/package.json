@@ -17,8 +17,6 @@
     "gradle clean": "cd android && ./gradlew clean"
   },
   "dependencies": {
-    "@brooons/react-native-bluetooth-escpos-printer": "^1.2.0",
-    "@dailykit/xml-escpos-helper": "^1.0.3",
     "@fortawesome/free-brands-svg-icons": "^6.1.2",
     "@fortawesome/pro-light-svg-icons": "^6.1.2",
     "@fortawesome/pro-regular-svg-icons": "^6.1.2",
@@ -34,7 +32,6 @@
     "@types/uuid": "^8.3.4",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "base-64": "^1.0.0",
-    "convert-string": "^0.1.0",
     "currency-symbol-map": "^5.1.0",
     "escpos-xml": "^1.0.0",
     "final-form": "^4.20.7",

@@ -23,7 +23,7 @@ import {
     posUrl,
     PRINTER,
     STATUS,
-    taxTypes,
+    taxTypes, testInvoiceData,
     TICKET_STATUS,
     TICKETS_TYPE,
     VOUCHER
@@ -49,6 +49,9 @@ import {insertAddons, insertClients, insertItems} from "./Sqlite/insertData";
 import {sendDataToPrinter} from "./Network";
 import {CommonActions} from "@react-navigation/native";
 import {getAddonByWhere, getClientsByWhere, getItemsByWhere} from "./Sqlite/selectData";
+import BleManager from "react-native-ble-manager";
+import Mustache from "mustache";
+import {EscPos} from "escpos-xml";
 
 
 let NumberFormat = require('react-number-format');
@@ -575,7 +578,7 @@ export const syncData = async (loader=true) => {
 
 
                                 await storeData('fusion-pro-pos-mobile', data).then(async () => {
-                                    localredux.initData = initData;
+                                    localredux.initData = data.initData;
                                     localredux.localSettingsData = data.localSettingsData;
 
                                     await store.dispatch(setSyncDetail({type: result,rows:start,total:(Boolean(data?.extra) && Boolean(data?.extra?.total)) ? data.extra.total : 0}))
@@ -1171,31 +1174,66 @@ export const selectItem = async (item: any) => {
 
 }
 
-export const testPrint = async (printer: any) => {
+/*export const testPrint = async (printer: any) => {
 
-    const {host, printername}: any = printer
-    await EscPosPrinter.init({
-        target: `TCP:${host}`,
-        seriesName: getPrinterSeriesByName(printername),
-        language: 'EPOS2_LANG_EN',
-    })
+    const {host, printername,printertype,bluetoothdetail}: any = printer
 
-    const printing = new EscPosPrinter.printing();
-    let status = printing
-        .initialize()
-        .align('center')
-        .size(2, 2)
-        .line('Test Print')
-        .newline(1)
-        .cut()
-        .addPulse()
-        .send()
-}
+    appLog('printertype',printertype)
+
+    if(printertype === 'bluetooth'){
+
+        const peripheral = bluetoothdetail.more;
+
+        BleManager.retrieveServices(peripheral.id).then((peripheralInfo: any) => {
+            appLog("peripheralInfo", peripheralInfo);
+
+            const findSC = peripheralInfo?.characteristics?.find((sc: any) => sc?.characteristic?.length === 36 && sc?.service?.length === 36)
+            if (findSC?.service && findSC?.characteristic) {
+
+                setTimeout(() => {
+                    BleManager.startNotification(peripheral.id, findSC?.service, findSC?.characteristic).then(() => {
+                        appLog('Started notification on ' + peripheral.id);
+                        setTimeout(async () => {
+                            const cartData: any = testInvoiceData;
+
+
+                            const buffer: any = EscPos.getBufferFromXML(`<?xml version="1.0" encoding="UTF-8"?><document><align mode="center"><text size="1:0">Test Print</text></align></document>`);
+                            BleManager.write(peripheral.id, findSC?.service, findSC?.characteristic, [...buffer]).then(() => { });
+
+                        }, 500);
+                    }).catch((error) => {
+                        appLog('Notification error', error);
+                    });
+                }, 200);
+            }
+        });
+
+    }
+    else {
+        await EscPosPrinter.init({
+            target: `TCP:${host}`,
+            seriesName: getPrinterSeriesByName(printername),
+            language: 'EPOS2_LANG_EN',
+        })
+
+        const printing = new EscPosPrinter.printing();
+        let status = printing
+            .initialize()
+            .align('center')
+            .size(2, 2)
+            .line('Test Print')
+            .newline(1)
+            .cut()
+            .addPulse()
+            .send()
+    }
+}*/
 
 
 
 
-let PAGE_WIDTH = 32;
+let PAGE_WIDTH = 48;
+
 export const getTrimChar = (count: number, char?: string, defaultLength: number = PAGE_WIDTH) => {
     let space = "";
     if (!Boolean(char)) {
@@ -1266,6 +1304,7 @@ export const printKOT = async (kot?: any) => {
         }
 
         const printer = PRINTERS[kot?.departmentid];
+        PAGE_WIDTH = printer?.printsize || 48;
 
         if((kot?.cancelled && printer?.printoncancel) || !kot?.cancelled) {
             return new Promise(async (resolve) => {
@@ -1287,145 +1326,8 @@ export const printKOT = async (kot?: any) => {
 }
 
 
-export const printInvoice = async (order?: any) => {
-
-    try {
 
 
-        let cartData = order || store.getState().cartData;
-
-        const PRINTERS: any = store.getState()?.localSettings?.printers || [];
-
-
-
-        ///////// CREATE LOCALORDER ID //////////
-        if (!Boolean(cartData.invoice_display_number)) {
-            await retrieveData('fusion-pro-pos-mobile-vouchernos').then(async (vouchers: any) => {
-                cartData = {
-                    ...cartData,
-                    invoice_display_number: (Boolean(vouchers) && vouchers[cartData.vouchertypeid]) || 1
-                }
-                vouchers = {...vouchers, [cartData.vouchertypeid]: ++cartData.invoice_display_number}
-                await storeData('fusion-pro-pos-mobile-vouchernos', vouchers).then(async () => {
-                    await store.dispatch(setCartData(cartData));
-                });
-            })
-        }
-        ///////// CREATE LOCALORDER ID //////////
-
-        const {currentLocation: {locationname, street1,state, street2, city,pin,mobile}}: any = localredux.localSettingsData;
-        const {general: {legalname}}: any = localredux.initData;
-        const {terminal_name}: any = localredux.licenseData.data;
-        const {firstname, lastname}: any = localredux.authData;
-
-        let decimalPlace = cartData?.currentDecimalPlace || 2;
-
-        let totalqnt: any = 0;
-        let uniuqeitems:any = {};
-        let totalmrp = 0;
-
-
-        cartData?.invoiceitems?.map((item: any) => {
-            totalqnt += item.productqnt;
-            if(!Boolean(uniuqeitems[item.itemid])){
-                uniuqeitems[item.itemid] = 0;
-            }
-            totalmrp += (item.mrp || item.productratedisplay) * item.productqnt;
-            uniuqeitems[item.itemid] = uniuqeitems[item.itemid]+1
-        });
-
-        const totaluniqueitems = objToArray(uniuqeitems)?.length;
-
-        let paymentsby:any = [];
-        cartData?.payment?.map((pay:any)=>{
-            if(pay.paymentAmount) {
-                paymentsby.push(pay.paymentby)
-            }
-        })
-
-
-        if(Boolean(paymentsby)){
-            cartData = {
-                ...cartData,
-                paymentsby:paymentsby?.join(', '),
-                isListPayment:true
-            }
-        }
-
-        cartData.totalMRP = totalmrp;
-        if(+cartData.totalMRP > +cartData?.vouchertotaldisplay){
-            cartData = {
-                ...cartData,
-                totalSave:totalmrp - cartData?.vouchertotaldisplay
-            }
-        }
-
-        let printJson = {
-            ...cartData,
-            locationname, street1, street2,state, city,pin,mobile,legalname,terminalname:terminal_name,firstname, lastname,
-            isdisplaytaxable: cartData?.vouchersubtotaldisplay != cartData?.vouchertaxabledisplay,
-            head: () => getItem("DESCRIPTION", "QNT", "RATE", "AMOUNT") + "\n" + getItem("HSN Code", "GST %", "", ""),
-            items: cartData?.invoiceitems?.map((item: any) => getItem(item.productdisplayname, item.productqnt, numberFormat(item.productratedisplay, decimalPlace), numberFormat(item.product_total_price_display, decimalPlace)) + "\n" +
-                getItem(item?.hsn, item?.totalTaxPercentageDisplay + "%", "", "")),
-            counter: () => getItem(`Total Items ${totaluniqueitems}`, "QNT : "+totalqnt, "", numberFormat(cartData?.vouchertotaldisplay, decimalPlace)),
-            countersubtotal: () => getItem(`Total Items ${totaluniqueitems}`, "QNT : "+totalqnt, "", numberFormat(cartData?.vouchersubtotaldisplay, decimalPlace)),
-            total: () => getLeftRight(cartData.paymentsby || 'Total', numberFormat(cartData?.vouchertotaldisplay, decimalPlace)),
-            subtotal: () => getLeftRight(cartData.paymentsby || 'Sub Total', numberFormat(cartData?.vouchertotaldisplay, decimalPlace)),
-            taxabledisplay: () => getLeftRight("Taxable", numberFormat(cartData?.vouchertaxabledisplay, decimalPlace)),
-            totalbig: () => getLeftRight(cartData.paymentsby || 'Total', numberFormat(cartData?.vouchertotaldisplay, decimalPlace), true),
-            totaltax: () => getLeftRight("TotalTax", numberFormat(cartData?.vouchertaxdisplay, decimalPlace)),
-            discount: () => getLeftRight("Discount", numberFormat(cartData?.vouchertotaldiscountamountdisplay, decimalPlace)),
-            roundoff: () => getLeftRight("Roundoff", numberFormat(cartData?.voucherroundoffdisplay, decimalPlace)),
-            adjustment: () => getLeftRight("Adjustment", numberFormat(cartData?.adjustmentamount, decimalPlace)),
-            totalMRP: () => getLeftRight("Total MRP", numberFormat(cartData?.totalMRP, decimalPlace)),
-            paymentList: () => cartData.payment.map((pm: any) => {
-                if(Boolean(pm?.paymentAmount)) {
-                    getLeftRight(pm.paymentby, numberFormat(pm?.paymentAmount))
-                }
-            }),
-            taxes: () => cartData?.typeWiseTaxSummary?.map((item: any) => {
-                return `${item?.taxtype}:${numberFormat(item?.taxprice, decimalPlace)}`
-            }).join(", "),
-            line: () => "<text>" + getTrimChar(0, "-") + "\n</text>",
-        }
-
-        let printer = PRINTERS[PRINTER.INVOICE];
-        const upiid  = printer?.upiid;
-        const upiname = printer?.upiname;
-
-        let qrcode:any = false;
-        if(upiid && upiname){
-            qrcode = {
-                value: `upi://pay?cu=INR&pa=${upiid}&pn=${upiname}&am=${cartData?.vouchertotaldisplay}&tr=${cartData?.invoice_display_number}`,
-                level: 'EPOS2_LEVEL_M',
-                width: 5,
-            }
-        }
-
-
-        return await new Promise(async (resolve) => {
-
-            const template = getPrintTemplate('Thermal');
-            if(Boolean(printer?.host)) {
-
-                await sendDataToPrinter(printJson, getTemplate(template || defaultInvoiceTemplate), {
-                    ...printer,
-                    qrcode
-                }).then(() => {
-                    resolve(true)
-                });
-            }
-            else{
-                resolve(false)
-            }
-        })
-
-    }
-    catch (e) {
-        appLog('error printInvoice',e)
-    }
-
-}
 
 export const getPrintTemplate = (type?:any) => {
     const {printingtemplates}:any = localredux.localSettingsData || {}

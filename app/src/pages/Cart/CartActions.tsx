@@ -3,11 +3,11 @@ import {
     appLog,
     clone,
     errorAlert,
-    findObject,
-    getTicketStatus,
+    findObject, getItem, getLeftRight, getPrintTemplate, getTemplate,
+    getTicketStatus, getTrimChar,
     isEmpty,
-    isRestaurant,
-    printInvoice,
+    isRestaurant, numberFormat, objToArray,
+
     printKOT,
     retrieveData, saveLocalSettings,
     saveTempLocalOrder,
@@ -19,13 +19,15 @@ import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {useNavigation} from "@react-navigation/native";
 import Button from "../../components/Button";
-import {resetCart, updateCartItems, updateCartKots} from "../../redux-store/reducer/cart-data";
+import {resetCart, setCartData, updateCartItems, updateCartKots} from "../../redux-store/reducer/cart-data";
 import {hideLoader, setBottomSheet, showLoader} from "../../redux-store/reducer/component";
 import HoldOrders from "./HoldOrders";
-import {device, localredux, TICKET_STATUS, TICKETS_TYPE} from "../../libs/static";
+import {defaultInvoiceTemplate, device, localredux, PRINTER, TICKET_STATUS, TICKETS_TYPE} from "../../libs/static";
 import store from "../../redux-store/store";
 import moment from "moment/moment";
 import {setSettings} from "../../redux-store/reducer/local-settings-data";
+import {itemTotalCalculation} from "../../libs/item-calculation";
+import {sendDataToPrinter} from "../../libs/Network";
 
 
 const Index = ({
@@ -439,5 +441,163 @@ export const generateKOT = async () => {
 
 
     })
+
+}
+
+
+
+let PAGE_WIDTH = 10;
+export const printInvoice = async (order?: any) => {
+
+    try {
+
+
+        let cartData = order || store.getState().cartData;
+
+        cartData = await itemTotalCalculation(cartData, undefined, undefined, undefined, undefined, 2, 2, false, false);
+
+        const PRINTERS: any = store.getState()?.localSettings?.printers || [];
+
+        appLog('1')
+
+        ///////// CREATE LOCALORDER ID //////////
+        if (!Boolean(cartData.invoice_display_number)) {
+            await retrieveData('fusion-pro-pos-mobile-vouchernos').then(async (vouchers: any) => {
+                cartData = {
+                    ...cartData,
+                    invoice_display_number: (Boolean(vouchers) && vouchers[cartData.vouchertypeid]) || 1
+                }
+                vouchers = {...vouchers, [cartData.vouchertypeid]: ++cartData.invoice_display_number}
+                await storeData('fusion-pro-pos-mobile-vouchernos', vouchers).then(async () => {
+                    await store.dispatch(setCartData(cartData));
+                });
+            })
+        }
+        ///////// CREATE LOCALORDER ID //////////
+
+        const {currentLocation: {locationname, street1,state, street2, city,pin,mobile}}: any = localredux.localSettingsData;
+        const {general: {legalname}}: any = localredux.initData;
+        const {terminal_name}: any = localredux.licenseData.data;
+        const {firstname, lastname}: any = localredux.authData;
+
+        let decimalPlace = cartData?.currentDecimalPlace || 2;
+
+        let totalqnt: any = 0;
+        let uniuqeitems:any = {};
+        let totalmrp = 0;
+
+        appLog('2')
+
+        cartData?.invoiceitems?.map((item: any) => {
+            totalqnt += +item.productqnt;
+            if(!Boolean(uniuqeitems[item.itemid])){
+                uniuqeitems[item.itemid] = 0;
+            }
+            totalmrp += (item.mrp || item.productratedisplay) * item.productqnt;
+            uniuqeitems[item.itemid] = uniuqeitems[item.itemid]+1
+        });
+
+        const totaluniqueitems = objToArray(uniuqeitems)?.length;
+
+        let paymentsby:any = [];
+        cartData?.payment?.map((pay:any)=>{
+            if(pay.paymentAmount) {
+                paymentsby.push(pay.paymentby)
+            }
+        })
+
+        appLog('3')
+
+        if(Boolean(paymentsby)){
+            cartData = {
+                ...cartData,
+                paymentsby:paymentsby?.join(', '),
+                isListPayment:true
+            }
+        }
+
+        cartData.totalMRP = totalmrp;
+        if(+cartData.totalMRP > +cartData?.vouchertotaldisplay){
+            cartData = {
+                ...cartData,
+                totalSave:totalmrp - cartData?.vouchertotaldisplay
+            }
+        }
+
+        appLog('4')
+
+        let printJson = {
+            ...cartData,
+            locationname, street1, street2,state, city,pin,mobile,legalname,terminalname:terminal_name,firstname, lastname,
+            clientname:cartData?.client,
+            isListPayment:Boolean(cartData?.payment),
+            isdisplaytaxable: cartData?.vouchersubtotaldisplay != cartData?.vouchertaxabledisplay,
+            head: () => getItem("DESCRIPTION", "QNT", "RATE", "AMOUNT") + "\n" + getItem("HSN Code", "GST %", "", ""),
+            items: cartData?.invoiceitems?.map((item: any) => {
+                    return getItem(item.productdisplayname, item.productqnt, numberFormat(item.productratedisplay, decimalPlace), numberFormat(item.product_total_price_display, decimalPlace)) + "\n" + getItem(item?.hsn || '', item?.totalTaxPercentageDisplay + "%", "", "")
+                }
+            ),
+            counter: () => getItem(`Total Items ${totaluniqueitems}`, "QNT : "+totalqnt, "", numberFormat(cartData?.vouchertotaldisplay, decimalPlace)),
+            countersubtotal: () => getItem(`Total Items ${totaluniqueitems}`, "QNT : "+totalqnt, "", numberFormat(cartData?.vouchersubtotaldisplay, decimalPlace)),
+            total: () => getLeftRight(cartData.paymentsby || 'Total', numberFormat(cartData?.vouchertotaldisplay, decimalPlace)),
+            subtotal: () => getLeftRight(cartData.paymentsby || 'Sub Total', numberFormat(cartData?.vouchertotaldisplay, decimalPlace)),
+            taxabledisplay: () => getLeftRight("Taxable", numberFormat(cartData?.vouchertaxabledisplay, decimalPlace)),
+            totalbig: () => getLeftRight(cartData.paymentsby || 'Total', numberFormat(cartData?.vouchertotaldisplay, decimalPlace), true),
+            totaltax: () => getLeftRight("TotalTax", numberFormat(cartData?.vouchertaxdisplay, decimalPlace)),
+            discount: () => getLeftRight("Discount", numberFormat(cartData?.vouchertotaldiscountamountdisplay, decimalPlace)),
+            roundoff: () => getLeftRight("Roundoff", numberFormat(cartData?.voucherroundoffdisplay, decimalPlace)),
+            adjustment: () => getLeftRight("Adjustment", numberFormat(cartData?.adjustmentamount, decimalPlace)),
+            totalMRP: () => getLeftRight("Total MRP", numberFormat(cartData?.totalMRP, decimalPlace)),
+            paymentList: () => cartData.payment?.map((pm: any) => {
+                if(Boolean(pm?.paymentAmount)) {
+                    return getLeftRight(pm.paymentby, numberFormat(pm?.paymentAmount))
+                }
+            }),
+            taxes: () => cartData?.typeWiseTaxSummary?.map((item: any) => {
+                return `${item?.taxtype}:${numberFormat(item?.taxprice, decimalPlace)}`
+            }).join(", "),
+            line: () => "<text>" + getTrimChar(0, "-") + "\n</text>",
+        }
+
+        appLog('5')
+
+        let printer = PRINTERS[PRINTER.INVOICE];
+        const upiid  = printer?.upiid;
+        const upiname = printer?.upiname;
+
+        PAGE_WIDTH = printer?.printsize || 48;
+
+        let qrcode:any = false;
+        if(upiid && upiname){
+            qrcode = {
+                value: `upi://pay?cu=INR&pa=${upiid}&pn=${upiname}&am=${cartData?.vouchertotaldisplay}&tr=${cartData?.invoice_display_number}`,
+                level: 'EPOS2_LEVEL_M',
+                width: 5,
+            }
+        }
+
+        appLog('6')
+
+        return await new Promise(async (resolve) => {
+
+            const template = getPrintTemplate('Thermal');
+            if(Boolean(printer?.host)) {
+
+                await sendDataToPrinter(printJson, getTemplate(template || defaultInvoiceTemplate), {
+                    ...printer,
+                    qrcode
+                }).then(() => {
+                    resolve(true)
+                });
+            }
+            else{
+                resolve(false)
+            }
+        })
+
+    }
+    catch (e) {
+        appLog('error printInvoice',e)
+    }
 
 }

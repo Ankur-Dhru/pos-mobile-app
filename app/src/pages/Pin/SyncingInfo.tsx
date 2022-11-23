@@ -18,10 +18,7 @@ const Index = ({syncDetail}: any) => {
         <Text style={[styles.textCenter,styles.mb_2]}>Please wait</Text>
         <Text style={[styles.textCenter,styles.mb_2,styles.muted,]}>It may take upto 15 min...</Text>
 
-        <Text style={[styles.textCenter,styles.mb_2,styles.muted,]}>{more}</Text>
-
         {Boolean(type) &&  <Text style={[styles.textCenter,styles.text_xs,styles.muted,]}>{rows?rows+' - ':''} {type} synced</Text>}
-
 
         {/*{type === 'item' && <View style={[styles.bg_light,styles.mt_5,{borderRadius:5}]}>
             <View style={[{backgroundColor:styles.accent.color,borderRadius:5,height:5,width:`${(rows*100)/total}%`}]}></View>

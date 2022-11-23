@@ -133,6 +133,9 @@ const MainStackNavigator = () => {
 
             <Stack.Screen name="Sample" component={sample}/>
 
+            <Stack.Screen name="PrinterSettings" component={PrinterSettings}/>
+            <Stack.Screen name={'DropDownList'} component={DropDownList}   options={{headerTitle:'Select'}}   />
+
 
         </Stack.Navigator>
     );

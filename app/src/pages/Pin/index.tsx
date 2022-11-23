@@ -44,6 +44,7 @@ const Index = (props: any) => {
                    await retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
 
                             const {
+                                initData,
                                 licenseData,
                                 authData,
                                 localSettingsData,
@@ -57,7 +58,7 @@ const Index = (props: any) => {
                                 if (expired_on >= today && status === 'Active') {
 
 
-
+                                    localredux.initData=initData;
                                     localredux.licenseData=licenseData;
                                     localredux.authData= {...params,...authData};
                                     localredux.localSettingsData = localSettingsData;

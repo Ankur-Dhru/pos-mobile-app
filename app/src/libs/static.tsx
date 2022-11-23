@@ -2,6 +2,15 @@ import {getType} from "@reduxjs/toolkit";
 import {assignOption} from "./function";
 
 
+export const isDevelopment = process.env.NODE_ENV === "development";
+
+const apiUrl = isDevelopment ? ".api.dhru.com" : ".api.dhru.com";
+export const posUrl: any = `${apiUrl}/pos/v1/`;
+export const adminUrl: any = `${apiUrl}/admin/v1/`;
+const mainUrl = "https://api.dhru.com";
+export const loginUrl: any = `${mainUrl}/client/api/v1/`;
+
+
 export enum STATUS {
     ACTIVE_WORKSPACE = "Active",
     SUCCESS = "success",
@@ -174,14 +183,6 @@ export const pricing: any = {
     "advancestructure": false,
     "setup": false
 };
-
-export const isDevelopment = process.env.NODE_ENV === "development";
-
-const apiUrl = isDevelopment ? ".api.dhru.io" : ".api.dhru.com";
-export const posUrl: any = `${apiUrl}/pos/v1/`;
-export const adminUrl: any = `${apiUrl}/admin/v1/`;
-const mainUrl = "https://api.dhru.com";
-export const loginUrl: any = `${mainUrl}/client/api/v1/`;
 
 export const screenOptionStyle: any = {
     headerTitleAlign: 'center',
@@ -1652,13 +1653,20 @@ export const defaultInvoiceTemplate = `<align mode="left">
     <text>{{#taxes}}{{{.}}}{{/taxes}}
 </text>
 {{{line}}}
+
+
+
 {{#isListPayment}}
     {{#paymentList}}
     <text>{{{.}}}
 </text>
     {{/paymentList}}
+    
 {{{line}}}
 {{/isListPayment}}
+
+
+
  <text>{{{state}}}
 </text>
     <text>{{terminalname}}

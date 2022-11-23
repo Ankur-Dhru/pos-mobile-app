@@ -291,557 +291,573 @@ export const itemTotalCalculation = (
     isTypeTicket?: boolean,
     step: number = 0) => {
 
-  if (values?.currentDecimalPlace) {
-    currentDecimalPlace = values?.currentDecimalPlace;
-    companyDecimalPlace = values?.currentDecimalPlace;
-  }
+  try {
 
-  let globaltax: any = [], typeWiseTaxSummary: any = {};
-
-  let {globaldiscountvalue, vouchertransitionaldiscount, discounttype, vouchertaxtype} = values;
-
-
-  if (values.invoiceitems) {
-
-    let total = grandTotal(values, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
-
-    // inline Discount
-    values.invoiceitems = values.invoiceitems
-        .filter((item: any) => Boolean(item.productid))
-        .map((item: any, index: any) => {
-          if (index == 0) {
-            item.change = true;
-          }
-
-          if (Boolean(item?.change)) {
-
-
-
-            if (vouchertaxtype === "inclusive" &&
-                !isDiscountAfterTax) {
-              item = newItemCalculation("inclusive", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
-            }
-
-            item = newItemCalculation("inline", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
-            if (vouchertaxtype === "inclusive" &&
-                isDiscountAfterTax) {
-              item = newItemCalculation("inclusive", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
-            }
-
-            if (Boolean(item.itemaddon)) {
-
-
-              item.itemaddon = item.itemaddon.map((ai: any) => {
-
-                ai.item_qnt = item.productqnt * ai.productqnt
-
-                if (vouchertaxtype === "inclusive" &&
-                    !isDiscountAfterTax) {
-                  ai = newItemCalculation("inclusive", ai, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
-                }
-
-                ai = newItemCalculation("inline", ai, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
-                if (vouchertaxtype === "inclusive" &&
-                    isDiscountAfterTax) {
-                  ai = newItemCalculation("inclusive", ai, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
-                }
-                return ai;
-              });
-              values.invoiceitems[index].itemaddon = item.itemaddon;
-            }
-
-          }
-
-
-          return item
-        });
-
-
-    if (!isTypeTicket) {
-
-      if (vouchertaxtype === "inclusive" && !isDiscountAfterTax) {
-        values.invoiceitems = values.invoiceitems.map((item: any, index: any) => {
-          if (Boolean(item?.change)) {
-            item = newItemCalculation("inclusive", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
-
-            if (Boolean(item.itemaddon)) {
-              item.itemaddon = item.itemaddon.map((ai: any) => {
-                ai.item_qnt = item.productqnt * ai.productqnt
-                ai = newItemCalculation("inclusive", ai, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
-                return ai;
-              })
-              values.invoiceitems[index].itemaddon = item.itemaddon;
-            }
-
-          }
-          return item
-        })
-      }
-
-      // Global Discount
-      if (Boolean(vouchertransitionaldiscount) && !isDiscountAfterTax) {
-        total = grandTotal(values, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
-        values.invoiceitems = values.invoiceitems.map((item: any, index: any) => {
-          if (Boolean(item?.change)) {
-            item = newItemCalculation("global", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace,
-                companyDecimalPlace, isDiscountAfterTax);
-
-            if (Boolean(item.itemaddon)) {
-              item.itemaddon = item.itemaddon.map((ai: any) => {
-                ai.item_qnt = item.productqnt * ai.productqnt
-                return newItemCalculation("global", ai, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax)
-              });
-              values.invoiceitems[index].itemaddon = item.itemaddon;
-            }
-
-          }
-          return item
-        })
-      }
-
-      // TAX CAL
-      values.invoiceitems = values.invoiceitems.map((item: any, index: any) => {
-        if (Boolean(item?.change)) {
-
-
-          item = newItemCalculation("tax", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax)
-
-
-        }
-        item.product_tax_object_display.forEach((itemTax: any) => {
-          const taxIndex: any = globaltax.findIndex((taxItem: any) => taxItem.taxid === itemTax.taxid);
-
-          let typeTotal = 0;
-
-          if (typeWiseTaxSummary[itemTax?.taxtype]) {
-            typeTotal = typeWiseTaxSummary[itemTax?.taxtype];
-          }
-          typeWiseTaxSummary[itemTax?.taxtype] = typeTotal + itemTax?.taxprice
-
-          if (taxIndex === -1) {
-            const {taxprice, taxablerate, ...otherData} = itemTax;
-            globaltax = [
-              ...globaltax,
-              {
-                ...otherData,
-                taxpricedisplay: taxprice,
-                taxableratedisplay: taxablerate,
-                taxprice,
-                taxablerate
-              }
-            ]
-          } else {
-            let addedTax = itemTax.taxprice,
-                sumtaxon = itemTax.taxablerate;
-            if (globaltax[taxIndex].taxpricedisplay) {
-              addedTax += globaltax[taxIndex].taxpricedisplay;
-            }
-            if (globaltax[taxIndex].taxableratedisplay) {
-              sumtaxon += globaltax[taxIndex].taxableratedisplay;
-            }
-
-            globaltax = globaltax.map((itemTax: any, index: any) => {
-              let taxpricedisplay = index === taxIndex ? addedTax : itemTax.taxpricedisplay,
-                  taxableratedisplay = index === taxIndex ? sumtaxon : itemTax.taxableratedisplay
-              return {
-                ...itemTax,
-                taxpricedisplay,
-                taxableratedisplay,
-                taxprice: taxpricedisplay,
-                taxablerate: taxableratedisplay
-              }
-            })
-          }
-        })
-
-        if (Boolean(item.itemaddon)) {
-          item.itemaddon = item.itemaddon.map((ai: any) => {
-
-            ai.item_qnt = item.productqnt * ai.productqnt
-
-            ai = newItemCalculation("tax", ai, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax)
-
-            ai.product_tax_object_display.forEach((itemTax: any) => {
-
-              const taxIndex: any = globaltax.findIndex((taxItem: any) => taxItem.taxid === itemTax.taxid);
-
-              if (taxIndex === -1) {
-                const {taxprice, taxablerate, ...otherData} = itemTax;
-                globaltax = [
-                  ...globaltax,
-                  {
-                    ...otherData,
-                    taxpricedisplay: taxprice,
-                    taxableratedisplay: taxablerate,
-                    taxprice,
-                    taxablerate
-                  }
-                ]
-              } else {
-
-                let addedTax = itemTax.taxprice,
-                    sumtaxon = itemTax.taxablerate;
-                if (globaltax[taxIndex].taxprice) {
-                  addedTax += globaltax[taxIndex].taxpricedisplay;
-                }
-                if (globaltax[taxIndex].taxablerate) {
-                  sumtaxon += globaltax[taxIndex].taxableratedisplay;
-                }
-
-                globaltax = globaltax.map((itemTax: any, index: any) => {
-                  let taxpricedisplay = index === taxIndex ? addedTax : itemTax.taxpricedisplay,
-                      taxableratedisplay = index === taxIndex ? sumtaxon : itemTax.taxableratedisplay
-                  return {
-                    ...itemTax,
-                    taxpricedisplay,
-                    taxableratedisplay,
-                    taxprice: taxpricedisplay,
-                    taxablerate: taxableratedisplay
-                  }
-                })
-              }
-            });
-
-            return ai;
-          })
-          values.invoiceitems[index].itemaddon = item.itemaddon;
-        }
-
-        return item
-      })
-
-      // Global Discount
-      if (Boolean(vouchertransitionaldiscount) && isDiscountAfterTax) {
-        total = grandTotal(values, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
-        values.invoiceitems = values.invoiceitems.map((item: any, index: any) => {
-          if (Boolean(item?.change)) {
-            item = newItemCalculation("global", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax, values?.reversecharge);
-            if (Boolean(item.itemaddon)) {
-              item.itemaddon = item.itemaddon.map((ai: any) => {
-                ai.item_qnt = item.productqnt * ai.productqnt
-                return newItemCalculation("global", ai, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax, values?.reversecharge);
-              });
-              values.invoiceitems[index].itemaddon = item.itemaddon;
-            }
-          }
-          return item
-        })
-      }
+    if (values?.currentDecimalPlace) {
+      currentDecimalPlace = values?.currentDecimalPlace;
+      companyDecimalPlace = values?.currentDecimalPlace;
     }
 
-    let inlinediscountamountdisplay: number = 0,
-        globaldiscountamountdisplay: number = 0,
-        subtotalamountdisplay: number = 0,
-        taxbleamountdisplay: number = 0,
-        totaldiscountdisplay: number = 0,
-        taxamountdisplay: number = 0,
-        totalamountwithoutroundoffdisplay: number = 0,
-        inlinediscountamount: number = 0,
-        globaldiscountamount: number = 0,
-        subtotalamount: number = 0,
-        taxbleamount: number = 0,
-        totaldiscount: number = 0,
-        taxamount: number = 0,
-        totalamountwithoutroundoff: number = 0;
+    let globaltax: any = [], typeWiseTaxSummary: any = {};
 
-    values.inclusive_subtotal_display = 0;
-    values.inclusive_subtotal = 0;
-    values.invoiceitems.forEach((item: any, index: any) => {
-      const {
-        productqnt,
-        pricedisplay
-      } = item;
+    let {globaldiscountvalue, vouchertransitionaldiscount, discounttype, vouchertaxtype} = values;
 
-      let qnt: any = getFloatValue(productqnt),
-          itemqnt: any = qnt;
+    appLog('1')
 
-      if (Boolean(item.itemaddon)) {
+    if (values.invoiceitems) {
+
+      let total = grandTotal(values, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
+
+      // inline Discount
+      values.invoiceitems = values.invoiceitems
+          .filter((item: any) => Boolean(item.productid))
+          .map((item: any, index: any) => {
+            if (index == 0) {
+              item.change = true;
+            }
+
+            if (Boolean(item?.change)) {
 
 
-        item.itemaddon.forEach((ai: any) => {
+              if (vouchertaxtype === "inclusive" &&
+                  !isDiscountAfterTax) {
+                item = newItemCalculation("inclusive", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
+              }
 
-          if (!Boolean(ai.item_total_global_discount_display)) {
-            ai.item_total_global_discount_display = 0
+              item = newItemCalculation("inline", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
+              if (vouchertaxtype === "inclusive" &&
+                  isDiscountAfterTax) {
+                item = newItemCalculation("inclusive", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
+              }
+
+              if (Boolean(item.itemaddon)) {
+
+
+                item.itemaddon = item.itemaddon.map((ai: any) => {
+
+                  ai.item_qnt = item.productqnt * ai.productqnt
+
+                  if (vouchertaxtype === "inclusive" &&
+                      !isDiscountAfterTax) {
+                    ai = newItemCalculation("inclusive", ai, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
+                  }
+
+                  ai = newItemCalculation("inline", ai, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
+                  if (vouchertaxtype === "inclusive" &&
+                      isDiscountAfterTax) {
+                    ai = newItemCalculation("inclusive", ai, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
+                  }
+                  return ai;
+                });
+                values.invoiceitems[index].itemaddon = item.itemaddon;
+              }
+
+            }
+
+
+            return item
+          });
+
+      appLog('2')
+      if (!isTypeTicket) {
+
+        if (vouchertaxtype === "inclusive" && !isDiscountAfterTax) {
+          values.invoiceitems = values.invoiceitems.map((item: any, index: any) => {
+            if (Boolean(item?.change)) {
+              item = newItemCalculation("inclusive", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
+
+              if (Boolean(item.itemaddon)) {
+                item.itemaddon = item.itemaddon.map((ai: any) => {
+                  ai.item_qnt = item.productqnt * ai.productqnt
+                  ai = newItemCalculation("inclusive", ai, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
+                  return ai;
+                })
+                values.invoiceitems[index].itemaddon = item.itemaddon;
+              }
+
+            }
+            return item
+          })
+        }
+
+        // Global Discount
+        if (Boolean(vouchertransitionaldiscount) && !isDiscountAfterTax) {
+          total = grandTotal(values, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
+          values.invoiceitems = values.invoiceitems.map((item: any, index: any) => {
+            if (Boolean(item?.change)) {
+              item = newItemCalculation("global", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace,
+                  companyDecimalPlace, isDiscountAfterTax);
+
+              if (Boolean(item.itemaddon)) {
+                item.itemaddon = item.itemaddon.map((ai: any) => {
+                  ai.item_qnt = item.productqnt * ai.productqnt
+                  return newItemCalculation("global", ai, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax)
+                });
+                values.invoiceitems[index].itemaddon = item.itemaddon;
+              }
+
+            }
+            return item
+          })
+        }
+
+        appLog('3')
+
+        // TAX CAL
+        values.invoiceitems = values.invoiceitems?.map((item: any, index: any) => {
+          if (Boolean(item?.change)) {
+
+
+            item = newItemCalculation("tax", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax)
+
+
           }
-          if (!Boolean(ai.item_total_global_discount)) {
-            ai.item_total_global_discount = 0
+          item?.product_tax_object_display?.forEach((itemTax: any) => {
+            const taxIndex: any = globaltax.findIndex((taxItem: any) => taxItem.taxid === itemTax.taxid);
+
+            let typeTotal = 0;
+
+            if (typeWiseTaxSummary[itemTax?.taxtype]) {
+              typeTotal = typeWiseTaxSummary[itemTax?.taxtype];
+            }
+            typeWiseTaxSummary[itemTax?.taxtype] = typeTotal + itemTax?.taxprice
+
+            if (taxIndex === -1) {
+              const {taxprice, taxablerate, ...otherData} = itemTax;
+              globaltax = [
+                ...globaltax,
+                {
+                  ...otherData,
+                  taxpricedisplay: taxprice,
+                  taxableratedisplay: taxablerate,
+                  taxprice,
+                  taxablerate
+                }
+              ]
+            } else {
+              let addedTax = itemTax.taxprice,
+                  sumtaxon = itemTax.taxablerate;
+              if (globaltax[taxIndex].taxpricedisplay) {
+                addedTax += globaltax[taxIndex].taxpricedisplay;
+              }
+              if (globaltax[taxIndex].taxableratedisplay) {
+                sumtaxon += globaltax[taxIndex].taxableratedisplay;
+              }
+
+              globaltax = globaltax.map((itemTax: any, index: any) => {
+                let taxpricedisplay = index === taxIndex ? addedTax : itemTax.taxpricedisplay,
+                    taxableratedisplay = index === taxIndex ? sumtaxon : itemTax.taxableratedisplay
+                return {
+                  ...itemTax,
+                  taxpricedisplay,
+                  taxableratedisplay,
+                  taxprice: taxpricedisplay,
+                  taxablerate: taxableratedisplay
+                }
+              })
+            }
+          })
+
+          appLog('4')
+
+          if (Boolean(item?.itemaddon)) {
+
+            item.itemaddon = item?.itemaddon.map((ai: any) => {
+
+              ai.item_qnt = item.productqnt * ai.productqnt
+
+              ai = newItemCalculation("tax", ai, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax)
+
+              ai?.product_tax_object_display?.forEach((itemTax: any) => {
+
+                const taxIndex: any = globaltax.findIndex((taxItem: any) => taxItem.taxid === itemTax.taxid);
+
+                if (taxIndex === -1) {
+                  const {taxprice, taxablerate, ...otherData} = itemTax;
+                  globaltax = [
+                    ...globaltax,
+                    {
+                      ...otherData,
+                      taxpricedisplay: taxprice,
+                      taxableratedisplay: taxablerate,
+                      taxprice,
+                      taxablerate
+                    }
+                  ]
+                } else {
+
+                  let addedTax = itemTax.taxprice,
+                      sumtaxon = itemTax.taxablerate;
+                  if (globaltax[taxIndex].taxprice) {
+                    addedTax += globaltax[taxIndex].taxpricedisplay;
+                  }
+                  if (globaltax[taxIndex].taxablerate) {
+                    sumtaxon += globaltax[taxIndex].taxableratedisplay;
+                  }
+
+                  globaltax = globaltax.map((itemTax: any, index: any) => {
+                    let taxpricedisplay = index === taxIndex ? addedTax : itemTax.taxpricedisplay,
+                        taxableratedisplay = index === taxIndex ? sumtaxon : itemTax.taxableratedisplay
+                    return {
+                      ...itemTax,
+                      taxpricedisplay,
+                      taxableratedisplay,
+                      taxprice: taxpricedisplay,
+                      taxablerate: taxableratedisplay
+                    }
+                  })
+                }
+              });
+
+              return ai;
+            })
+            values.invoiceitems[index].itemaddon = item.itemaddon;
           }
 
 
-          if (!isDiscountAfterTax && vouchertaxtype === taxtype.exclusive) {
-            inlinediscountamountdisplay += (ai.item_total_inline_discount_display);
-            inlinediscountamount += (ai.item_total_inline_discount);
-
-            globaldiscountamountdisplay += (ai.item_total_global_discount_display)
-            globaldiscountamount += (ai.item_total_global_discount)
-          } else if (!isDiscountAfterTax && vouchertaxtype === taxtype.inclusive) {
-
-            inlinediscountamountdisplay += (ai.item_total_inline_discount_display);
-            inlinediscountamount += (ai.item_total_inline_discount);
-
-            globaldiscountamountdisplay += (ai.item_total_global_discount_display)
-
-            globaldiscountamount += (ai.item_total_global_discount)
-
-            values.inclusive_subtotal_display += getFloatValue(ai.item_amount_for_subtotal_display, currentDecimalPlace)
-            values.inclusive_subtotal += getFloatValue(ai.item_amount_for_subtotal, companyDecimalPlace)
-
-          } else {
-
-
-            inlinediscountamountdisplay += ((ai.productdiscountamountdisplay1 * ai.item_qnt));
-            inlinediscountamount += ((ai.productdiscountamount1 * ai.item_qnt) * itemqnt);
-
-            globaldiscountamountdisplay += ((ai.productdiscountamountdisplay2 * ai.item_qnt))
-            globaldiscountamount += ((ai.productdiscountamount2 * ai.item_qnt) * itemqnt)
-
-            // TOTAL DISCOUNT
-            totaldiscountdisplay += ((ai.productdiscountamountdisplay * ai.item_qnt));
-            totaldiscount += ((ai.productdiscount1 * ai.item_qnt));
-          }
-
-          // SUBTOTAL
-
-          subtotalamountdisplay += ((ai.pricedisplay))
-          subtotalamount += ((ai.price))
-
-          // TAXABLE AMOUNT
-          taxbleamountdisplay += ai.producttaxabledisplay;
-          taxbleamount += ai.producttaxableamount;
-
-          // TAX AMOUNT
-          taxamountdisplay += ai.producttaxamountdisplay * itemqnt;
-          taxamount += ai.producttaxamount * itemqnt;
-
-
-
+          return item
         })
+
+        appLog('5')
+
+        // Global Discount
+        if (Boolean(vouchertransitionaldiscount) && isDiscountAfterTax) {
+          total = grandTotal(values, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
+          values.invoiceitems = values.invoiceitems.map((item: any, index: any) => {
+            if (Boolean(item?.change)) {
+              item = newItemCalculation("global", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax, values?.reversecharge);
+              if (Boolean(item.itemaddon)) {
+                item.itemaddon = item.itemaddon.map((ai: any) => {
+                  ai.item_qnt = item.productqnt * ai.productqnt
+                  return newItemCalculation("global", ai, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax, values?.reversecharge);
+                });
+                values.invoiceitems[index].itemaddon = item.itemaddon;
+              }
+            }
+            return item
+          })
+        }
       }
 
-      if (!Boolean(item.item_total_global_discount_display)) {
-        item.item_total_global_discount_display = 0
-        item.item_total_global_discount = item.item_total_global_discount_display
-      }
+      appLog('6')
 
+      let inlinediscountamountdisplay: number = 0,
+          globaldiscountamountdisplay: number = 0,
+          subtotalamountdisplay: number = 0,
+          taxbleamountdisplay: number = 0,
+          totaldiscountdisplay: number = 0,
+          taxamountdisplay: number = 0,
+          totalamountwithoutroundoffdisplay: number = 0,
+          inlinediscountamount: number = 0,
+          globaldiscountamount: number = 0,
+          subtotalamount: number = 0,
+          taxbleamount: number = 0,
+          totaldiscount: number = 0,
+          taxamount: number = 0,
+          totalamountwithoutroundoff: number = 0;
+
+      values.inclusive_subtotal_display = 0;
+      values.inclusive_subtotal = 0;
+      values?.invoiceitems?.forEach((item: any, index: any) => {
+        const {
+          productqnt,
+          pricedisplay
+        } = item;
+
+        let qnt: any = getFloatValue(productqnt),
+            itemqnt: any = qnt;
+
+        if (Boolean(item.itemaddon)) {
+
+
+          item.itemaddon?.forEach((ai: any) => {
+
+            if (!Boolean(ai.item_total_global_discount_display)) {
+              ai.item_total_global_discount_display = 0
+            }
+            if (!Boolean(ai.item_total_global_discount)) {
+              ai.item_total_global_discount = 0
+            }
+
+
+            if (!isDiscountAfterTax && vouchertaxtype === taxtype.exclusive) {
+              inlinediscountamountdisplay += (ai.item_total_inline_discount_display);
+              inlinediscountamount += (ai.item_total_inline_discount);
+
+              globaldiscountamountdisplay += (ai.item_total_global_discount_display)
+              globaldiscountamount += (ai.item_total_global_discount)
+            } else if (!isDiscountAfterTax && vouchertaxtype === taxtype.inclusive) {
+
+              inlinediscountamountdisplay += (ai.item_total_inline_discount_display);
+              inlinediscountamount += (ai.item_total_inline_discount);
+
+              globaldiscountamountdisplay += (ai.item_total_global_discount_display)
+
+              globaldiscountamount += (ai.item_total_global_discount)
+
+              values.inclusive_subtotal_display += getFloatValue(ai.item_amount_for_subtotal_display, currentDecimalPlace)
+              values.inclusive_subtotal += getFloatValue(ai.item_amount_for_subtotal, companyDecimalPlace)
+
+            } else {
+
+
+              inlinediscountamountdisplay += ((ai.productdiscountamountdisplay1 * ai.item_qnt));
+              inlinediscountamount += ((ai.productdiscountamount1 * ai.item_qnt) * itemqnt);
+
+              globaldiscountamountdisplay += ((ai.productdiscountamountdisplay2 * ai.item_qnt))
+              globaldiscountamount += ((ai.productdiscountamount2 * ai.item_qnt) * itemqnt)
+
+              // TOTAL DISCOUNT
+              totaldiscountdisplay += ((ai.productdiscountamountdisplay * ai.item_qnt));
+              totaldiscount += ((ai.productdiscount1 * ai.item_qnt));
+            }
+
+            // SUBTOTAL
+
+            subtotalamountdisplay += ((ai.pricedisplay))
+            subtotalamount += ((ai.price))
+
+            // TAXABLE AMOUNT
+            taxbleamountdisplay += ai.producttaxabledisplay;
+            taxbleamount += ai.producttaxableamount;
+
+            // TAX AMOUNT
+            taxamountdisplay += ai.producttaxamountdisplay * itemqnt;
+            taxamount += ai.producttaxamount * itemqnt;
+
+
+          })
+        }
+
+        if (!Boolean(item.item_total_global_discount_display)) {
+          item.item_total_global_discount_display = 0
+          item.item_total_global_discount = item.item_total_global_discount_display
+        }
+
+        if (!isDiscountAfterTax && vouchertaxtype === taxtype.exclusive) {
+          inlinediscountamountdisplay += item.item_total_inline_discount_display;
+          values.voucherinlinediscountdisplay = getFloatValue(inlinediscountamountdisplay, currentDecimalPlace);
+          values.voucherinlinediscount = values.voucherinlinediscountdisplay;
+
+          globaldiscountamountdisplay += item.item_total_global_discount_display
+          values.voucherglobaldiscountdisplay = getFloatValue(globaldiscountamountdisplay, currentDecimalPlace);
+          values.voucherglobaldiscount = values.voucherglobaldiscountdisplay;
+
+          values.voucherdiscountdisplay = getFloatValue(globaldiscountamountdisplay, currentDecimalPlace);
+          values.voucherdiscount = values.voucherdiscountdisplay;
+
+        } else if (vouchertaxtype === taxtype.inclusive) {
+          inlinediscountamountdisplay += item.item_total_inline_discount_display;
+          values.voucherinlinediscountdisplay = getFloatValue(inlinediscountamountdisplay, currentDecimalPlace);
+          values.voucherinlinediscount = values.voucherinlinediscountdisplay;
+
+          globaldiscountamountdisplay += item.item_total_global_discount_display
+          values.voucherglobaldiscountdisplay = getFloatValue(globaldiscountamountdisplay, currentDecimalPlace);
+          values.voucherglobaldiscount = values.voucherglobaldiscountdisplay;
+
+          values.voucherdiscountdisplay = getFloatValue(globaldiscountamountdisplay, currentDecimalPlace);
+          values.voucherdiscount = values.voucherdiscountdisplay;
+
+          values.inclusive_subtotal_display += getFloatValue(item.item_amount_for_subtotal_display, currentDecimalPlace)
+          values.inclusive_subtotal = values.inclusive_subtotal_display
+
+        } else {
+
+          inlinediscountamountdisplay += item.productdiscountamountdisplay1 * qnt;
+          values.voucherinlinediscountdisplay = getFloatValue(inlinediscountamountdisplay, currentDecimalPlace);
+          values.voucherinlinediscount = values.voucherinlinediscountdisplay;
+
+          globaldiscountamountdisplay += (item.productdiscountamountdisplay2 * qnt)
+          values.voucherglobaldiscountdisplay = getFloatValue(globaldiscountamountdisplay, currentDecimalPlace);
+          values.voucherglobaldiscount = values.voucherglobaldiscountdisplay;
+
+          values.voucherdiscountdisplay = getFloatValue(globaldiscountamountdisplay, currentDecimalPlace);
+          values.voucherdiscount = values.voucherdiscountdisplay;
+
+          // TOTAL DISCOUNT
+          totaldiscountdisplay += item.productdiscountamountdisplay * productqnt;
+          values.vouchertotaldiscountamountdisplay = getFloatValue(totaldiscountdisplay, currentDecimalPlace);
+          values.vouchertotaldiscountamount = values.vouchertotaldiscountamountdisplay;
+        }
+
+        // SUBTOTAL
+        subtotalamountdisplay += pricedisplay;
+        values.vouchersubtotaldisplay = getFloatValue(subtotalamountdisplay, currentDecimalPlace);
+        values.vouchersubtotal = values.vouchersubtotaldisplay;
+
+        // TAXABLE AMOUNT
+        taxbleamountdisplay += item.producttaxabledisplay;
+        values.vouchertaxabledisplay = getFloatValue(taxbleamountdisplay, currentDecimalPlace);
+        values.vouchertaxable = values.vouchertaxabledisplay;
+
+        // TAX AMOUNT
+        taxamountdisplay += item.producttaxamountdisplay;
+        values.vouchertaxdisplay = getFloatValue(taxamountdisplay, currentDecimalPlace);
+        values.vouchertax = values.vouchertaxdisplay;
+        values.invoiceitems[index].change = false;
+      })
+
+      if (!isDiscountAfterTax && vouchertaxtype === taxtype.exclusive && discounttype === "$") {
+        if (globaldiscountvalue !== values.voucherglobaldiscount) {
+          let differencedisplay = getFloatValue(globaldiscountvalue - values.voucherglobaldiscountdisplay, companyDecimalPlace);
+          globaldiscountamountdisplay = values.voucherglobaldiscount + differencedisplay
+
+          values.voucherglobaldiscountdisplay = getFloatValue(globaldiscountamountdisplay, currentDecimalPlace);
+          values.voucherglobaldiscount = values.voucherglobaldiscountdisplay;
+
+          values.voucherdiscountdisplay = getFloatValue(globaldiscountamountdisplay, currentDecimalPlace);
+          values.voucherdiscount = values.voucherdiscountdisplay;
+        }
+      }
       if (!isDiscountAfterTax && vouchertaxtype === taxtype.exclusive) {
-        inlinediscountamountdisplay += item.item_total_inline_discount_display;
-        values.voucherinlinediscountdisplay = getFloatValue(inlinediscountamountdisplay, currentDecimalPlace);
-        values.voucherinlinediscount = values.voucherinlinediscountdisplay;
-
-        globaldiscountamountdisplay += item.item_total_global_discount_display
-        values.voucherglobaldiscountdisplay = getFloatValue(globaldiscountamountdisplay, currentDecimalPlace);
-        values.voucherglobaldiscount = values.voucherglobaldiscountdisplay;
-
-        values.voucherdiscountdisplay = getFloatValue(globaldiscountamountdisplay, currentDecimalPlace);
-        values.voucherdiscount = values.voucherdiscountdisplay;
-
-      } else if (vouchertaxtype === taxtype.inclusive) {
-        inlinediscountamountdisplay += item.item_total_inline_discount_display;
-        values.voucherinlinediscountdisplay = getFloatValue(inlinediscountamountdisplay, currentDecimalPlace);
-        values.voucherinlinediscount = values.voucherinlinediscountdisplay;
-
-        globaldiscountamountdisplay += item.item_total_global_discount_display
-        values.voucherglobaldiscountdisplay = getFloatValue(globaldiscountamountdisplay, currentDecimalPlace);
-        values.voucherglobaldiscount = values.voucherglobaldiscountdisplay;
-
-        values.voucherdiscountdisplay = getFloatValue(globaldiscountamountdisplay, currentDecimalPlace);
-        values.voucherdiscount = values.voucherdiscountdisplay;
-
-        values.inclusive_subtotal_display += getFloatValue(item.item_amount_for_subtotal_display, currentDecimalPlace)
-        values.inclusive_subtotal = values.inclusive_subtotal_display
-
-      } else {
-
-        inlinediscountamountdisplay += item.productdiscountamountdisplay1 * qnt;
-        values.voucherinlinediscountdisplay = getFloatValue(inlinediscountamountdisplay, currentDecimalPlace);
-        values.voucherinlinediscount = values.voucherinlinediscountdisplay;
-
-        globaldiscountamountdisplay += (item.productdiscountamountdisplay2 * qnt)
-        values.voucherglobaldiscountdisplay = getFloatValue(globaldiscountamountdisplay, currentDecimalPlace);
-        values.voucherglobaldiscount = values.voucherglobaldiscountdisplay;
-
-        values.voucherdiscountdisplay = getFloatValue(globaldiscountamountdisplay, currentDecimalPlace);
-        values.voucherdiscount = values.voucherdiscountdisplay;
-
-        // TOTAL DISCOUNT
-        totaldiscountdisplay += item.productdiscountamountdisplay * productqnt;
+        totaldiscountdisplay += (inlinediscountamountdisplay + globaldiscountamountdisplay);
+        values.vouchertotaldiscountamountdisplay = getFloatValue(totaldiscountdisplay, currentDecimalPlace);
+        values.vouchertotaldiscountamount = values.vouchertotaldiscountamountdisplay;
+      } else if (!isDiscountAfterTax && vouchertaxtype === taxtype.inclusive) {
+        totaldiscountdisplay += (inlinediscountamountdisplay + globaldiscountamountdisplay);
         values.vouchertotaldiscountamountdisplay = getFloatValue(totaldiscountdisplay, currentDecimalPlace);
         values.vouchertotaldiscountamount = values.vouchertotaldiscountamountdisplay;
       }
 
-      // SUBTOTAL
-      subtotalamountdisplay += pricedisplay;
-      values.vouchersubtotaldisplay = getFloatValue(subtotalamountdisplay, currentDecimalPlace);
-      values.vouchersubtotal = values.vouchersubtotaldisplay;
-
-      // TAXABLE AMOUNT
-      taxbleamountdisplay += item.producttaxabledisplay;
-      values.vouchertaxabledisplay = getFloatValue(taxbleamountdisplay, currentDecimalPlace);
-      values.vouchertaxable = values.vouchertaxabledisplay;
-
-      // TAX AMOUNT
-      taxamountdisplay += item.producttaxamountdisplay;
-      values.vouchertaxdisplay = getFloatValue(taxamountdisplay, currentDecimalPlace);
-      values.vouchertax = values.vouchertaxdisplay;
-      values.invoiceitems[index].change = false;
-    })
-
-    if (!isDiscountAfterTax && vouchertaxtype === taxtype.exclusive && discounttype === "$") {
-      if (globaldiscountvalue !== values.voucherglobaldiscount) {
-        let differencedisplay = getFloatValue(globaldiscountvalue - values.voucherglobaldiscountdisplay, companyDecimalPlace);
-        globaldiscountamountdisplay = values.voucherglobaldiscount + differencedisplay
-
-        values.voucherglobaldiscountdisplay = getFloatValue(globaldiscountamountdisplay, currentDecimalPlace);
-        values.voucherglobaldiscount = values.voucherglobaldiscountdisplay;
-
-        values.voucherdiscountdisplay = getFloatValue(globaldiscountamountdisplay, currentDecimalPlace);
-        values.voucherdiscount = values.voucherdiscountdisplay;
-      }
-    }
-    if (!isDiscountAfterTax && vouchertaxtype === taxtype.exclusive) {
-      totaldiscountdisplay += (inlinediscountamountdisplay + globaldiscountamountdisplay);
-      values.vouchertotaldiscountamountdisplay = getFloatValue(totaldiscountdisplay, currentDecimalPlace);
-      values.vouchertotaldiscountamount = values.vouchertotaldiscountamountdisplay;
-    } else if (!isDiscountAfterTax && vouchertaxtype === taxtype.inclusive) {
-      totaldiscountdisplay += (inlinediscountamountdisplay + globaldiscountamountdisplay);
-      values.vouchertotaldiscountamountdisplay = getFloatValue(totaldiscountdisplay, currentDecimalPlace);
-      values.vouchertotaldiscountamount = values.vouchertotaldiscountamountdisplay;
-    }
-
-    globaltax = globaltax.map((taxdata: any) => {
-      if (vouchertaxtype !== "inclusive") {
-        taxdata.taxableratedisplay = getFloatValue(taxdata.taxableratedisplay, companyDecimalPlace);
-        taxdata.taxablerate = taxdata.taxableratedisplay;
-        taxdata.taxpricedisplay = getFloatValue(taxdata.taxableratedisplay * parseFloat(taxdata.taxpercentage) / 100, currentDecimalPlace)
-        taxdata.taxprice = taxdata.taxpricedisplay
-      } else {
-        taxdata.taxableratedisplay = getFloatValue(taxdata.taxableratedisplay, companyDecimalPlace);
-        taxdata.taxablerate = taxdata.taxableratedisplay;
-        taxdata.taxpricedisplay = getFloatValue(taxdata.taxpricedisplay, currentDecimalPlace)
-        taxdata.taxprice = taxdata.taxpricedisplay
-      }
-      return taxdata;
-    })
-
-    // TOTAL WITHOUT ROUND OFF
-    if (vouchertaxtype !== "inclusive") {
-      totalamountwithoutroundoffdisplay = values.vouchersubtotaldisplay - (isNaN(totaldiscountdisplay) ? 0 : totaldiscountdisplay);
-    } else {
-      totalamountwithoutroundoffdisplay = values.vouchertaxabledisplay + values.vouchertaxdisplay;
-
-      if (vouchertaxtype === taxtype.inclusive) {
-        let subtotaldisplay = values.inclusive_subtotal_display,
-            disaountdisplay = 0;
-
-        values.vouchersubtotaldisplay = subtotaldisplay + inlinediscountamountdisplay;
-        values.vouchersubtotal = values.vouchersubtotaldisplay;
-        // GLOBAL DISCOUNT
-
-        if (Boolean(globaldiscountvalue)) {
-          disaountdisplay = fullDiscount(subtotaldisplay, globaldiscountvalue, "%");
+      globaltax = globaltax.map((taxdata: any) => {
+        if (vouchertaxtype !== "inclusive") {
+          taxdata.taxableratedisplay = getFloatValue(taxdata.taxableratedisplay, companyDecimalPlace);
+          taxdata.taxablerate = taxdata.taxableratedisplay;
+          taxdata.taxpricedisplay = getFloatValue(taxdata.taxableratedisplay * parseFloat(taxdata.taxpercentage) / 100, currentDecimalPlace)
+          taxdata.taxprice = taxdata.taxpricedisplay
+        } else {
+          taxdata.taxableratedisplay = getFloatValue(taxdata.taxableratedisplay, companyDecimalPlace);
+          taxdata.taxablerate = taxdata.taxableratedisplay;
+          taxdata.taxpricedisplay = getFloatValue(taxdata.taxpricedisplay, currentDecimalPlace)
+          taxdata.taxprice = taxdata.taxpricedisplay
         }
-        totalamountwithoutroundoffdisplay = subtotaldisplay - disaountdisplay;
-      }
-    }
-
-    if (vouchertaxtype === "exclusive") {
-      globaltax.forEach((t: any) => {
-        if (!Boolean(values?.reversecharge)) {
-          totalamountwithoutroundoffdisplay = totalamountwithoutroundoffdisplay + getFloatValue(t.taxpricedisplay, currentDecimalPlace);
-        }
+        return taxdata;
       })
-    }
-    values.totalwithoutroundoffdisplay = getFloatValue(totalamountwithoutroundoffdisplay, currentDecimalPlace);
-    values.totalwithoutroundoff = values.totalwithoutroundoffdisplay;
-    if (Boolean(values.adjustmentamount)) {
-      values.totalwithoutroundoffdisplay = getFloatValue(values.totalwithoutroundoffdisplay + parseFloat(values.adjustmentamount), currentDecimalPlace);
+
+      // TOTAL WITHOUT ROUND OFF
+      if (vouchertaxtype !== "inclusive") {
+        totalamountwithoutroundoffdisplay = values.vouchersubtotaldisplay - (isNaN(totaldiscountdisplay) ? 0 : totaldiscountdisplay);
+      } else {
+        totalamountwithoutroundoffdisplay = values.vouchertaxabledisplay + values.vouchertaxdisplay;
+
+        if (vouchertaxtype === taxtype.inclusive) {
+          let subtotaldisplay = values.inclusive_subtotal_display,
+              disaountdisplay = 0;
+
+          values.vouchersubtotaldisplay = subtotaldisplay + inlinediscountamountdisplay;
+          values.vouchersubtotal = values.vouchersubtotaldisplay;
+          // GLOBAL DISCOUNT
+
+          if (Boolean(globaldiscountvalue)) {
+            disaountdisplay = fullDiscount(subtotaldisplay, globaldiscountvalue, "%");
+          }
+          totalamountwithoutroundoffdisplay = subtotaldisplay - disaountdisplay;
+        }
+      }
+
+      if (vouchertaxtype === "exclusive") {
+        globaltax?.forEach((t: any) => {
+          if (!Boolean(values?.reversecharge)) {
+            totalamountwithoutroundoffdisplay = totalamountwithoutroundoffdisplay + getFloatValue(t.taxpricedisplay, currentDecimalPlace);
+          }
+        })
+      }
+      values.totalwithoutroundoffdisplay = getFloatValue(totalamountwithoutroundoffdisplay, currentDecimalPlace);
       values.totalwithoutroundoff = values.totalwithoutroundoffdisplay;
+      if (Boolean(values.adjustmentamount)) {
+        values.totalwithoutroundoffdisplay = getFloatValue(values.totalwithoutroundoffdisplay + parseFloat(values.adjustmentamount), currentDecimalPlace);
+        values.totalwithoutroundoff = values.totalwithoutroundoffdisplay;
+      }
+
+
+      // const isTDS = values.selectedtdstcs === "TDS";
+      // if (Boolean(tds) || Boolean(tcs)) {
+      //
+      //   if ((isTDS && Boolean(values.tdsaccount)) || (!isTDS && Boolean(values.tcsaccount))) {
+      //
+      //     if (isTDS) {
+      //       const percentagevalue = tds[values.tdsaccount]?.tdsrate
+      //       if (vouchertaxtype === taxtype.exclusive) {
+      //         let subtotalAmountDisplay = values.vouchersubtotaldisplay;
+      //         if (!isDiscountAfterTax) {
+      //           subtotalAmountDisplay -= values.voucherglobaldiscountdisplay
+      //         }
+      //         let tdsAmountDisplay = getFloatValue(findPercentageAmount(subtotalAmountDisplay, percentagevalue), currentDecimalPlace);
+      //
+      //         values.tdstcsamountdisplay = tdsAmountDisplay;
+      //         values.tdstcsamount = values.tdstcsamountdisplay;
+      //
+      //         values.tdsamountdisplay = values.tdstcsamountdisplay;
+      //         values.tdsamount = values.tdsamountdisplay;
+      //
+      //         values.totalwithoutroundoffdisplay = getFloatValue(values.totalwithoutroundoffdisplay - tdsAmountDisplay, currentDecimalPlace)
+      //         values.totalwithoutroundoff = values.totalwithoutroundoffdisplay
+      //       } else {
+      //         let subtotalAmountDisplay = 0;
+      //         values.invoiceitems.forEach((item: any) => {
+      //           subtotalAmountDisplay += item.item_total_inclusive_display
+      //         })
+      //
+      //         if (!isDiscountAfterTax) {
+      //           subtotalAmountDisplay -= values.voucherglobaldiscountdisplay
+      //         }
+      //         let tdsAmountDisplay = getFloatValue(findPercentageAmount(subtotalAmountDisplay, percentagevalue), currentDecimalPlace);
+      //
+      //         values.tdstcsamountdisplay = tdsAmountDisplay;
+      //         values.tdstcsamount = values.tdstcsamountdisplay;
+      //
+      //         values.tdsamountdisplay = values.tdstcsamountdisplay;
+      //         values.tdsamount = values.tdsamountdisplay;
+      //
+      //         values.totalwithoutroundoffdisplay = getFloatValue(values.totalwithoutroundoffdisplay - tdsAmountDisplay, currentDecimalPlace)
+      //         values.totalwithoutroundoff = values.totalwithoutroundoffdisplay
+      //       }
+      //
+      //     } else {
+      //       // TCS CALCULATION
+      //       const percentagevalue = tcs[values.tcsaccount]?.tcsrate
+      //
+      //       let tcsAmountDisplay = getFloatValue(findPercentageAmount(values.totalwithoutroundoffdisplay, percentagevalue), currentDecimalPlace);
+      //       values.totalwithoutroundoffdisplay = getFloatValue(values.totalwithoutroundoffdisplay + tcsAmountDisplay, currentDecimalPlace)
+      //       values.tdstcsamountdisplay = getFloatValue(tcsAmountDisplay, currentDecimalPlace);
+      //       values.tcsamountdisplay = values.tdstcsamountdisplay;
+      //
+      //       values.totalwithoutroundoff = values.totalwithoutroundoffdisplay
+      //       values.tdstcsamount = values.tdstcsamountdisplay;
+      //       values.tcsamount = values.tdstcsamount;
+      //     }
+      //   }
+      // }
+
+
+      // TOTAL ROUND OFF
+      values.vouchertotaldisplay = getRoundOffValue(values.roundoffselected, values.totalwithoutroundoffdisplay, currentDecimalPlace);
+      values.vouchertotal = values.vouchertotaldisplay;
+
+      // ROUND OFF AMOUNT
+      values.voucherroundoffdisplay = getFloatValue(values.vouchertotaldisplay - values.totalwithoutroundoffdisplay, currentDecimalPlace);
+      values.voucherroundoff = values.voucherroundoffdisplay;
+
+
+      if (values.invoiceitems && values.invoiceitems.length > 0 && values.invoiceitems[0].pricenew) {
+        compareInwardOutward(values, globaltax, companyDecimalPlace)
+      }
     }
 
+    values.globaltax = globaltax;
+    values.typeWiseTaxSummary = Object.keys(typeWiseTaxSummary).map((key: any) => {
+      return {
+        taxtype: key,
+        taxprice: getFloatValue(typeWiseTaxSummary[key], currentDecimalPlace)
+      }
+    });
 
-    // const isTDS = values.selectedtdstcs === "TDS";
-    // if (Boolean(tds) || Boolean(tcs)) {
-    //
-    //   if ((isTDS && Boolean(values.tdsaccount)) || (!isTDS && Boolean(values.tcsaccount))) {
-    //
-    //     if (isTDS) {
-    //       const percentagevalue = tds[values.tdsaccount]?.tdsrate
-    //       if (vouchertaxtype === taxtype.exclusive) {
-    //         let subtotalAmountDisplay = values.vouchersubtotaldisplay;
-    //         if (!isDiscountAfterTax) {
-    //           subtotalAmountDisplay -= values.voucherglobaldiscountdisplay
-    //         }
-    //         let tdsAmountDisplay = getFloatValue(findPercentageAmount(subtotalAmountDisplay, percentagevalue), currentDecimalPlace);
-    //
-    //         values.tdstcsamountdisplay = tdsAmountDisplay;
-    //         values.tdstcsamount = values.tdstcsamountdisplay;
-    //
-    //         values.tdsamountdisplay = values.tdstcsamountdisplay;
-    //         values.tdsamount = values.tdsamountdisplay;
-    //
-    //         values.totalwithoutroundoffdisplay = getFloatValue(values.totalwithoutroundoffdisplay - tdsAmountDisplay, currentDecimalPlace)
-    //         values.totalwithoutroundoff = values.totalwithoutroundoffdisplay
-    //       } else {
-    //         let subtotalAmountDisplay = 0;
-    //         values.invoiceitems.forEach((item: any) => {
-    //           subtotalAmountDisplay += item.item_total_inclusive_display
-    //         })
-    //
-    //         if (!isDiscountAfterTax) {
-    //           subtotalAmountDisplay -= values.voucherglobaldiscountdisplay
-    //         }
-    //         let tdsAmountDisplay = getFloatValue(findPercentageAmount(subtotalAmountDisplay, percentagevalue), currentDecimalPlace);
-    //
-    //         values.tdstcsamountdisplay = tdsAmountDisplay;
-    //         values.tdstcsamount = values.tdstcsamountdisplay;
-    //
-    //         values.tdsamountdisplay = values.tdstcsamountdisplay;
-    //         values.tdsamount = values.tdsamountdisplay;
-    //
-    //         values.totalwithoutroundoffdisplay = getFloatValue(values.totalwithoutroundoffdisplay - tdsAmountDisplay, currentDecimalPlace)
-    //         values.totalwithoutroundoff = values.totalwithoutroundoffdisplay
-    //       }
-    //
-    //     } else {
-    //       // TCS CALCULATION
-    //       const percentagevalue = tcs[values.tcsaccount]?.tcsrate
-    //
-    //       let tcsAmountDisplay = getFloatValue(findPercentageAmount(values.totalwithoutroundoffdisplay, percentagevalue), currentDecimalPlace);
-    //       values.totalwithoutroundoffdisplay = getFloatValue(values.totalwithoutroundoffdisplay + tcsAmountDisplay, currentDecimalPlace)
-    //       values.tdstcsamountdisplay = getFloatValue(tcsAmountDisplay, currentDecimalPlace);
-    //       values.tcsamountdisplay = values.tdstcsamountdisplay;
-    //
-    //       values.totalwithoutroundoff = values.totalwithoutroundoffdisplay
-    //       values.tdstcsamount = values.tdstcsamountdisplay;
-    //       values.tcsamount = values.tdstcsamount;
-    //     }
-    //   }
-    // }
+    return values
 
-
-    // TOTAL ROUND OFF
-    values.vouchertotaldisplay = getRoundOffValue(values.roundoffselected, values.totalwithoutroundoffdisplay, currentDecimalPlace);
-    values.vouchertotal = values.vouchertotaldisplay;
-
-    // ROUND OFF AMOUNT
-    values.voucherroundoffdisplay = getFloatValue(values.vouchertotaldisplay - values.totalwithoutroundoffdisplay, currentDecimalPlace);
-    values.voucherroundoff = values.voucherroundoffdisplay;
-
-
-    if (values.invoiceitems && values.invoiceitems.length > 0 && values.invoiceitems[0].pricenew) {
-      compareInwardOutward(values, globaltax, companyDecimalPlace)
-    }
   }
-
-  values.globaltax = globaltax;
-  values.typeWiseTaxSummary = Object.keys(typeWiseTaxSummary).map((key: any) => {
-    return {
-      taxtype: key,
-      taxprice: getFloatValue(typeWiseTaxSummary[key], currentDecimalPlace)
-    }
-  });
-
-  return values
+  catch (e){
+    appLog('e',e)
+  }
 
   //return clone(values)
 }

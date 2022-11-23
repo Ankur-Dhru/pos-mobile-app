@@ -52,6 +52,7 @@ const Index = (props: any) => {
             body: values
         }).then((response: any) => {
 
+
             const {email_verified,mobile_verified,whatsapp_verified,phone_number_verified} = response.data;
 
             if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {

@@ -22,7 +22,6 @@
           <set>
             <option value="$PROJECT_DIR$/app/android" />
             <option value="$PROJECT_DIR$/app/android/app" />
-            <option value="$PROJECT_DIR$/app/node_modules/@brooons/react-native-bluetooth-escpos-printer/android" />
             <option value="$PROJECT_DIR$/app/node_modules/@react-native-async-storage/async-storage/android" />
             <option value="$PROJECT_DIR$/app/node_modules/@react-native-community/datetimepicker/android" />
             <option value="$PROJECT_DIR$/app/node_modules/@react-native-community/netinfo/android" />

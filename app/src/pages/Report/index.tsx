@@ -3,23 +3,35 @@ import {FlatList, TouchableOpacity, View} from "react-native";
 import {Divider, Paragraph} from "react-native-paper"
 import {
     appLog,
-    getDateWithFormat,
-    isEmpty,
-    objToArray,
-    printInvoice,
-    selectItem,
+    getDateWithFormat, getItem, getLeftRight, getPrintTemplate, getTemplate, getTrimChar,
+    isEmpty, numberFormat, objToArray,
+
+    retrieveData,
+    storeData,
     toCurrency
 } from "../../libs/function";
 import Container from "../../components/Container";
 import {styles} from "../../theme";
-import {connect, useDispatch} from "react-redux";
-import {ACTIONS, adminUrl, device, localredux, METHOD, posUrl, STATUS, VOUCHER} from "../../libs/static";
+import {connect} from "react-redux";
+import {
+    ACTIONS,
+    adminUrl,
+    defaultInvoiceTemplate,
+    localredux,
+    METHOD,
+    posUrl,
+    PRINTER,
+    STATUS,
+    VOUCHER
+} from "../../libs/static";
 import apiService from "../../libs/api-service";
 import ProIcon from "../../components/ProIcon";
-import {hideLoader, showLoader} from "../../redux-store/reducer/component";
+
+import {itemTotalCalculation} from "../../libs/item-calculation";
 import store from "../../redux-store/store";
-import {insertItems} from "../../libs/Sqlite/insertData";
-import {setSelected} from "../../redux-store/reducer/selected-data";
+import {setCartData} from "../../redux-store/reducer/cart-data";
+import {sendDataToPrinter} from "../../libs/Network";
+import {printInvoice} from "../Cart/CartActions";
 
 const Index = ({ordersData}: any) => {
 
@@ -32,7 +44,7 @@ const Index = ({ordersData}: any) => {
 
 
     const [data, setData] = useState<any>([]);
-    const [liveData, setLiveData] = useState<any>([]);
+
 
     useEffect(() => {
         Boolean(ordersData) && setData((prev: any) => ({...prev, ...ordersData}))
@@ -60,13 +72,16 @@ const Index = ({ordersData}: any) => {
     }, [])
 
 
-    const printData = async (invoice:any) => {
+    const printData = async (invoice: any) => {
 
-        const {workspace}: any = localredux.initData;
+
+        const {workspace, tax}: any = localredux.initData;
+
         const {token}: any = localredux.authData;
 
+
         await apiService({
-            method:  METHOD.GET ,
+            method: METHOD.GET,
             action: ACTIONS.VOUCHER,
             queryString: {voucherdisplayid: invoice.voucherdisplayid, vouchertype: VOUCHER.INVOICE},
             workspace: workspace,
@@ -76,10 +91,16 @@ const Index = ({ordersData}: any) => {
 
             if (result.status === STATUS.SUCCESS) {
 
+                const {voucheritems, receipt}: any = result.data
+
                 result.data = {
                     ...result.data,
-                    invoiceitems:objToArray(result.data.voucheritems),
+                    invoiceitems: Object.values(voucheritems),
+                    payment: Object.values(receipt).map((payment: any) => {
+                        return {paymentAmount: payment.amount, paymentby: payment.payment}
+                    })
                 }
+
                 printInvoice(result.data).then()
             }
         });
@@ -110,15 +131,16 @@ const Index = ({ordersData}: any) => {
                         </View>
                     </View>
                 </View>
-                <View style={{width:50}}>
-                    <TouchableOpacity onPress={()=>{
-                        printData(item)
+                <View style={{width: 50}}>
+                    {Boolean(item?.voucherdisplayid) && <TouchableOpacity onPress={() => {
+                        printData(item).then()
                     }}>
                         <ProIcon name={'print'} type={'solid'} size={15}/>
-                    </TouchableOpacity>
+                    </TouchableOpacity>}
                 </View>
-                {<View style={{width:100}}>
-                    <Paragraph  style={[styles.paragraph, styles.text_xs, {textAlign: 'right'}]}>{toCurrency(item?.vouchertotaldisplay)}</Paragraph>
+                {<View style={{width: 100}}>
+                    <Paragraph
+                        style={[styles.paragraph, styles.text_xs, {textAlign: 'right'}]}>{toCurrency(item?.vouchertotaldisplay)}</Paragraph>
                     {
                         Boolean(item?.synced) && <Paragraph
                             style={[styles.paragraph, styles.text_xs, {
@@ -152,4 +174,6 @@ const mapStateToProps = (state: any) => ({
 })
 
 export default connect(mapStateToProps)(Index);
+
+
 

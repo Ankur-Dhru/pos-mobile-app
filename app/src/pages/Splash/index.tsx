@@ -12,7 +12,7 @@ import {hideLoader} from "../../redux-store/reducer/component";
 import {
 
     device,
-    localredux,
+    localredux, PRINTER,
 
 } from "../../libs/static";
 import {setSettings} from "../../redux-store/reducer/local-settings-data";
@@ -92,7 +92,13 @@ const Index = (props: any) => {
             }
         }
 
-        screen = 'Sample';
+       // screen = 'Sample';
+
+        await retrieveData('fusion-pro-pos-mobile-settings').then(async (data: any) => {
+            await dispatch(setSettings(data));
+        })
+
+        //navigation.replace('PrinterSettings', {type: {name: 'Invoice', departmentid: PRINTER.INVOICE}})
 
         dispatch(hideLoader())
         navigation.replace(screen)

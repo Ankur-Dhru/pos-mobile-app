@@ -74,7 +74,7 @@ export const getAddonByWhere = async ({itemgroupid,itemname,start}:any) => {
     db.close().then()
 }
 
-export const getClientsByWhere = async ({displayname,phone,start}:any) => {
+export const getClientsByWhere = async ({displayname,phone,search,start}:any) => {
     const db = await getDBConnection();
 
     try {
@@ -88,6 +88,9 @@ export const getClientsByWhere = async ({displayname,phone,start}:any) => {
             }
             if(Boolean(displayname)){
                 where += ` and (displayname LIKE '%${displayname}%') `;
+            }
+            if(Boolean(search)){
+                where += ` and ((displayname LIKE '%${search}%') or (phone LIKE '%${search}'))`;
             }
 
             const query = `SELECT * FROM ${TABLE.CLIENT} where  ${where}`; // limit ${start*20},20

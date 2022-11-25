@@ -79,6 +79,7 @@ const Register = (props: any) => {
 
 
     const initialValues = isDevelopment ? {
+        deviceid:'asdfadsf',
         "g-recaptcha-response": grecaptcharesponse,
         "mobile_number": "8866522619",
         "first_name": "ankur",
@@ -96,6 +97,7 @@ const Register = (props: any) => {
         "code": "91",
 
     } : {
+        deviceid:'asdfadsf',
         "g-recaptcha-response": grecaptcharesponse,
         "mobile_number": "",
         "first_name": "",

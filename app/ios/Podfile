@@ -23,8 +23,10 @@ target 'app' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
+    permissions_path = '../node_modules/react-native-permissions/ios'
 
     pod 'react-native-sqlite-storage', :path => '../node_modules/react-native-sqlite-storage'
+    pod 'Permission-Contacts', :path => "#{permissions_path}/Contacts"
 
 
   target 'appTests' do

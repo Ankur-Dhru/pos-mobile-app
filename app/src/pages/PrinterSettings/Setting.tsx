@@ -55,9 +55,9 @@ const Index = (props: any) => {
         macid: '',
         ip: '',
         host: '',
-        printername: '',
+        printername: 'TM-T82',
         port: '9100',
-        printsize: '72',
+        printsize: '48',
         noofprint: '1',
         printoncancel: true,
         ...printers[type.departmentid]
@@ -238,7 +238,7 @@ const Index = (props: any) => {
                                                         {props => (
                                                             <><CheckBox
                                                                 value={props.input.value}
-                                                                label={'Print on cancel KOT or order'}
+                                                                label={'Print on cancel KOT or cancel Order'}
                                                                 onChange={(value: any) => {
                                                                     values.printoncancel = value;
                                                                 }}
@@ -281,21 +281,35 @@ const Index = (props: any) => {
                                             </View>}
 
 
-                                        <Button disable={more.invalid}
-                                                more={{color: 'white'}}
-                                                secondbutton={true} onPress={() => {
-                                            testPrint(values)
-                                        }}>Test Print</Button>
+
 
                                     </View>
                                 </View>
                             </KeyboardScroll>
                             <View style={[styles.submitbutton]}>
-                                <Button more={{color: 'white'}} disable={more.invalid} secondbutton={more.invalid}
-                                        onPress={() => {
-                                            handleSubmit(values)
-                                        }}> Save
-                                </Button>
+
+                                {<View style={[styles.grid, styles.justifyContent, styles.p_5]}>
+                                    <View style={[styles.w_auto]}>
+                                        <Button disable={more.invalid}
+                                                more={{color: 'white'}}
+                                                secondbutton={true} onPress={() => {
+                                            testPrint(values).then(r => {
+                                                //handleSubmit(values)
+                                            });
+                                        }}>Test Print  </Button>
+                                    </View>
+
+                                    <View style={[styles.w_auto, styles.ml_2]}>
+                                        <Button more={{color: 'white'}} disable={more.invalid} secondbutton={more.invalid}
+                                                onPress={() => {
+                                                    handleSubmit(values)
+                                                }}> Save
+                                        </Button>
+                                    </View>
+
+                                </View>}
+
+
                             </View>
                         </View>
                     </View>
@@ -329,10 +343,19 @@ export const testPrint = async (printer: any) => {
 
             const buffer: any = EscPos.getBufferFromXML(`<?xml version="1.0" encoding="UTF-8"?><document><align mode="center"><text size="1:0">Test Print</text></align></document>`);
             BleManager.write(peripheral.id, findSC?.service, findSC?.characteristic, [...buffer]).then(() => {
+                BleManager.disconnect(peripheral.id).then(() => {
+                        console.log("Disconnected");
+                    })
+                    .catch((error) => {
+                        // Failure code
+                        console.log(error);
+                    });
             });
         })
 
     } else {
+
+
         await EscPosPrinter.init({
             target: `TCP:${host}`,
             seriesName: getPrinterSeriesByName(printername),
@@ -353,18 +376,6 @@ export const testPrint = async (printer: any) => {
 }
 
 
-export const retrieveConnected = () => {
-    BleManager.getConnectedPeripherals([]).then((results) => {
-        if (results.length == 0) {
-            console.log('No connected peripherals')
-        }
-        console.log(results);
-        for (var i = 0; i < results.length; i++) {
-            var peripheral: any = results[i];
-            peripheral.connected = true;
-        }
-    });
-}
 
 
 const connectToDevice = async (peripheral: any) => {

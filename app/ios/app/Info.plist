@@ -37,6 +37,8 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSContactsUsageDescription</key>
+    	<string>Contact Permission</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>

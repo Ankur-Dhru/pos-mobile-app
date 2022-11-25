@@ -23,7 +23,7 @@ const Item = memo(({item}: any) => {
     const baseprice = item?.pricing?.price?.default[0][pricingtype]?.baseprice || 0;
     const hasRestaurant = isRestaurant();
     const hasKot = Boolean(item?.kotid);
-    const {veg} = item;
+
 
     return (<TouchableOpacity onPress={() => {
         !Boolean(item?.productqnt) && selectItem(item)
@@ -37,7 +37,7 @@ const Item = memo(({item}: any) => {
 
                         <View style={[styles.grid, styles.middle]}>
                             {hasRestaurant && <View style={[styles.mr_1]}>
-                                <VegNonVeg type={veg}/>
+                                <VegNonVeg type={item.veg}/>
                             </View>}
                             <Paragraph style={[styles.paragraph, styles.text_xs]}>
                                 {toCurrency(baseprice)}

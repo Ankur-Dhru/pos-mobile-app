@@ -59,7 +59,7 @@ const Index = (props: any) => {
                             </View>
                         </Card></View> : <Card style={[styles.noshadow, {marginRight: 5}]}>
                             <TouchableOpacity  onPress={() => navigation.navigate('ProfileSettingsNavigator')}
-                                              style={[styles.px_6]}>
+                                              style={[styles.p_6]}>
                                 <ProIcon name={'bars'} action_type={'text'}/>
                             </TouchableOpacity>
                         </Card>}

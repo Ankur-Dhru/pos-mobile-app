@@ -13,13 +13,13 @@ const KOTPrinter = ({printers}: any) => {
 
     const {currentLocation: {departments}} = localredux.localSettingsData;
 
-    useEffect(() => {
+    /*useEffect(() => {
         EscPosPrinter.discover()
             .then((printers) => {
                 appLog(printers);
             })
             .catch((e) => console.log('Print error:', e.message));
-    }, [])
+    }, [])*/
 
     const setPrinter = (value?: any) => {
         navigation.navigate('PrinterSettings', {type: value})

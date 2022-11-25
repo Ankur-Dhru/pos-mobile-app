@@ -45,6 +45,7 @@ import SearchItem from "../Items/SearchItem";
 import AddTable from "../Tables/AddTable";
 import sample from "../sample";
 import CancelReason from "../Cart/CancelReason";
+import ClientList from "../Client/ClientList";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -133,9 +134,6 @@ const MainStackNavigator = () => {
 
             <Stack.Screen name="Sample" component={sample}/>
 
-            <Stack.Screen name="PrinterSettings" component={PrinterSettings}/>
-            <Stack.Screen name={'DropDownList'} component={DropDownList}   options={{headerTitle:'Select'}}   />
-
 
         </Stack.Navigator>
     );
@@ -215,6 +213,8 @@ const ClientAreaStackNavigator = (props:any) => {
             <Stack.Screen name={'AddEditCategory'} component={AddEditCategory}  options={{headerTitle:'Add Category'}} />
             <Stack.Screen name={'AddEditClient'} component={AddEditClient}  options={{headerTitle:'Add Client'}}  />
             <Stack.Screen name={'AddTable'} component={AddTable}  options={{headerTitle:'Add Table'}}  />
+
+            <Stack.Screen name={'ClientList'} component={ClientList}  options={{headerTitle:'Client List'}}  />
 
             <Stack.Screen name={'ClientAndSource'} {...params}   component={ClientAndSource}  options={{headerTitle:'Order Source'}}  />
 

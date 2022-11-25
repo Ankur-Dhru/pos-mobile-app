@@ -37,7 +37,16 @@ const ProfileSettings = () => {
         );
     }
 
-    const navigatToSetup = () => {
+
+
+    const resetTerminal = async () => {
+        await storeData('fusion-pro-pos-mobile', {}).then(async () => {});
+        await storeData('fusion-pro-pos-mobile-tableorder',{}).then(async () => {});
+        await storeData('fusion-pro-pos-mobile-settings',{}).then(async () => {});
+        await storeData('fusion-pro-pos-mobile-vouchernos',0).then(async () => {});
+        await storeData('fusion-pro-pos-mobile-kotno',0).then(async () => {});
+
+
         navigation.dispatch(
             CommonActions.reset({
                 index: 0,
@@ -48,21 +57,12 @@ const ProfileSettings = () => {
         );
     }
 
-    const resetTerminal = async () => {
-        await storeData('fusion-pro-pos-mobile', []).then(async () => {});
-        await storeData('fusion-pro-pos-mobile-tableorder',{}).then(async () => {});
-        await storeData('fusion-pro-pos-mobile-settings',{}).then(async () => {});
-        await storeData('fusion-pro-pos-mobile-vouchernos',0).then(async () => {});
-        await storeData('fusion-pro-pos-mobile-kotno',0).then(async () => {});
-
-        navigatToSetup()
-    }
-
     const closeAccount = async () => {
 
         let access = {email: email, password: password}
         access = {
             ...access,
+            deviceid:'asdfadsf',
             "g-recaptcha-response": grecaptcharesponse
         }
         await apiService({
@@ -80,11 +80,11 @@ const ProfileSettings = () => {
                     token: response.token
                 }).then((result) => {
                     if (result.status === STATUS.SUCCESS) {
-                        navigatToSetup()
+                        resetTerminal()
                     }
                 });
             } else {
-                navigatToSetup()
+                resetTerminal()
             }
         })
 
@@ -208,13 +208,13 @@ const ProfileSettings = () => {
 
                                 <Divider/>
 
-                            <List.Item
-                                title="KOT Printer"
-                                onPress={() => {
-                                    navigation.navigate("KOTPrinter");
-                                }}
-                                right={() =>  <List.Icon icon="chevron-right"/>}
-                            />
+                                {isRestaurant() && <List.Item
+                                    title="KOT Printer"
+                                    onPress={() => {
+                                        navigation.navigate("KOTPrinter");
+                                    }}
+                                    right={() =>  <List.Icon icon="chevron-right"/>}
+                                />}
 
                                 <Divider/>
 
@@ -265,7 +265,7 @@ const ProfileSettings = () => {
                                         }}
                                         onPress={(index: any) => {
                                             if (index === 0) {
-                                                resetTerminal()
+                                                resetTerminal().then()
                                             }
                                         }}
                                     />
@@ -279,7 +279,7 @@ const ProfileSettings = () => {
                                         message={`Are you sure want to delete "${email}" account?`}
                                         onPress={(index: any) => {
                                             if (index === 0) {
-                                                closeAccount()
+                                                closeAccount().then()
                                             }
                                         }}
                                     />

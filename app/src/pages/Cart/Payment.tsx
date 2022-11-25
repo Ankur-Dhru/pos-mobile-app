@@ -4,7 +4,7 @@ import {
     clone,
     getDefaultCurrency,
     getFloatValue,
-    isEmpty,
+    isEmpty, printInvoice,
 
     saveLocalOrder,
     toCurrency
@@ -19,7 +19,7 @@ import {device, localredux} from "../../libs/static";
 import store from "../../redux-store/store";
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
 import {setCartData} from "../../redux-store/reducer/cart-data";
-import {printInvoice} from "./CartActions";
+
 
 const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: any) => {
 

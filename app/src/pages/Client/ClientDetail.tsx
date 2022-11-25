@@ -1,49 +1,45 @@
 import React, {useEffect, useState} from "react";
-import {appLog, chevronRight, clone} from "../../libs/function";
-import {TouchableOpacity, View} from "react-native";
-import {Card, Paragraph, Text, Title} from "react-native-paper";
+import {chevronRight} from "../../libs/function";
+import {View} from "react-native";
+import {Card, Paragraph, Text} from "react-native-paper";
 import {styles} from "../../theme";
-import InputField from "../../components/InputField";
-import {connect, useDispatch} from "react-redux";
-import ProIcon from "../../components/ProIcon";
-import {setCartData} from "../../redux-store/reducer/cart-data";
-import {device, localredux} from "../../libs/static";
+import {connect} from "react-redux";
 import Avatar from "../../components/Avatar";
-
-
-import AddEditClient from "./AddEditClient";
 import {useNavigation} from "@react-navigation/native";
 
 
-const Index = ({cartData}: any) => {
+const Index = ({clientid, clientname}: any) => {
 
-    const {clientsData}:any = localredux;
-    const [client, setClient]:any = useState({});
 
-    const dispatch = useDispatch();
+    const [client, setClient]: any = useState({});
+
     const navigation = useNavigation()
 
-    const selectClient = async (client: any) => {
-
-        cartData = {
-            ...cartData,
-            clientid: client.clientid,
-            clientname: client.displayname
-        }
-
-        dispatch(setCartData(clone(cartData)));
-        setClient(client);
-    }
-
     useEffect(() => {
-        setClient({label: cartData?.clientname, value: cartData?.clientid})
-    }, [])
+        setClient({label: clientname, value: clientid})
+    }, [clientid])
+
+    return <Card style={[styles.noshadow]} onPress={() => {
+        navigation.navigate('ClientList');
+    }}>
+
+        <View style={[styles.px_5]}>
+
+            <View style={[styles.grid, styles.justifyContent, {paddingTop: 8, paddingBottom: 8}]}>
+                <View style={[styles.grid, styles.justifyContent, styles.noWrap]}>
+                    <Avatar label={client.label} value={client.value} fontsize={12} size={30}/>
+                    <View style={[styles.ml_2]}><Paragraph
+                        style={[styles.paragraph, styles.bold]}> {client.label}</Paragraph></View>
+                </View>
+                <View><Text>{chevronRight}</Text></View>
+            </View>
+
+        </View>
+
+    </Card>
 
 
-
-
-
-    return <Card style={[styles.noshadow]}>
+    /*return <Card style={[styles.noshadow]}>
 
         <View style={[styles.px_5]}>
 
@@ -63,7 +59,7 @@ const Index = ({cartData}: any) => {
                     </View>
                     <View><Text>{chevronRight}</Text></View>
                 </View>}
-                list={Object.values(clientsData).map((client: any) => {
+                list={Object.values({}).map((client: any) => {
                     return {...client, label: client.displayname, value: client.clientid}
                 })}
                 addItem={<TouchableOpacity onPress={async () => {
@@ -79,11 +75,12 @@ const Index = ({cartData}: any) => {
             />
         </View>
 
-    </Card>
+    </Card>*/
 }
 
 const mapStateToProps = (state: any) => ({
-    cartData: state.cartData,
+    clientid: state.cartData.clientid,
+    clientname: state.cartData.clientname,
 })
 
 

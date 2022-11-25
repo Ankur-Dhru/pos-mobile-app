@@ -47,20 +47,31 @@ const Index = ({fieldprops, values}: any) => {
 
 
     const startScan = () => {
-        if (!isScanning) {
-            appLog('isScanning',isScanning)
-            BleManager.scan([], 3, true).then((results) => {
-                appLog('results',results)
-                setIsScanning(true);
-            }).catch(err => {
-                appLog(err);
+
+        BleManager.enableBluetooth()
+            .then(() => {
+                if (!isScanning) {
+                    appLog('isScanning',isScanning)
+                    BleManager.scan([], 5, true).then((results) => {
+                        setIsScanning(true);
+                    }).catch(err => {
+                        appLog(err);
+                    });
+                }
+                console.log("The bluetooth is already enabled or the user confirm");
+            })
+            .catch((error) => {
+                // Failure code
+                console.log("The user refuse to enable bluetooth");
             });
-        }
+
+
     }
 
     const handleStopScan = () => {
         console.log('Scan is stopped');
         setIsScanning(false);
+       // retrieveConnected()
     }
 
     const handleDisconnectedPeripheral = (data: any) => {
@@ -77,6 +88,23 @@ const Index = ({fieldprops, values}: any) => {
         console.log('Received data from ' + data.peripheral + ' characteristic ' + data.characteristic, data.value);
     }
 
+    const retrieveConnected = () => {
+        BleManager.getConnectedPeripherals([]).then((results) => {
+            if (results.length == 0) {
+                console.log('No connected peripherals')
+            }
+
+            for (var i = 0; i < results.length; i++) {
+                var peripheral: any = results[i];
+                peripheral.connected = true;
+               // devices.push({label: peripheral.name, value: peripheral.id, more: peripheral})
+            }
+
+            //setList(devices)
+
+        });
+    }
+
 
     const handleDiscoverPeripheral = (peripheral: any) => {
         if (!peripheral.name) {
@@ -88,29 +116,32 @@ const Index = ({fieldprops, values}: any) => {
 
 
     useEffect(() => {
-        BleManager.start({showAlert: false});
+
+
+        BleManager.start({showAlert: false}).then(()=>{
+            if (Platform.OS === 'android' && Platform.Version >= 23) {
+                PermissionsAndroid.requestMultiple([PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN]).then((result) => {
+                    appLog('result',result)
+                    if (result) {
+                        startScan()
+                        console.log("User accept");
+                    } else {
+                        console.log("User refuse");
+                    }
+                });
+            }
+            else {
+                startScan()
+            }
+        });
         const BleManagerDiscoverPeripheral = bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', handleDiscoverPeripheral);
         const BleManagerStopScan = bleManagerEmitter.addListener('BleManagerStopScan', handleStopScan);
         const BleManagerDisconnectPeripheral = bleManagerEmitter.addListener('BleManagerDisconnectPeripheral', handleDisconnectedPeripheral);
         const BleManagerDidUpdateValueForCharacteristic = bleManagerEmitter.addListener('BleManagerDidUpdateValueForCharacteristic', handleUpdateValueForCharacteristic);
 
-        if (Platform.OS === 'android' && Platform.Version >= 23) {
-            PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then((result) => {
-                if (result) {
-                    startScan()
-                    console.log("Permission is OK");
-                } else {
-                    PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then((result) => {
-                        if (result) {
-                            startScan()
-                            console.log("User accept");
-                        } else {
-                            console.log("User refuse");
-                        }
-                    });
-                }
-            });
-        }
+
+
+
 
 
         return (() => {
@@ -157,3 +188,5 @@ const Index = ({fieldprops, values}: any) => {
 
 
 export default Index;
+
+

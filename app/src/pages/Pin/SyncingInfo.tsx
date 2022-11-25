@@ -20,6 +20,8 @@ const Index = ({syncDetail}: any) => {
 
         {Boolean(type) &&  <Text style={[styles.textCenter,styles.text_xs,styles.muted,]}>{rows?rows+' - ':''} {type} synced</Text>}
 
+        {/*{Boolean(more) &&  <Text style={[styles.textCenter,styles.text_xs,styles.muted,]}>{more}</Text>}*/}
+
         {/*{type === 'item' && <View style={[styles.bg_light,styles.mt_5,{borderRadius:5}]}>
             <View style={[{backgroundColor:styles.accent.color,borderRadius:5,height:5,width:`${(rows*100)/total}%`}]}></View>
         </View>}*/}

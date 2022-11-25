@@ -1,48 +1,14 @@
 import {EscPos} from 'escpos-xml';
 import Mustache from "mustache";
-import {appLog} from "./function";
+import {appLog, errorAlert, getTemplate} from "./function";
 import store from "../redux-store/store";
 import {setAlert} from "../redux-store/reducer/component";
 import EscPosPrinter, {getPrinterSeriesByName} from "react-native-esc-pos-printer";
+import BleManager from "react-native-ble-manager";
+import {readyforPrint} from "../pages/PrinterSettings/Setting";
 
 const net = require('react-native-tcp-socket');
 
-const connectToPrinter = async (printer: any, buffer: Buffer,): Promise<unknown> => {
-
-    return new Promise(async (res: (value: unknown) => void, rej) => {
-
-        try {
-            let device = new net.Socket();
-
-            device.on('close', async () => {
-                if (device) {
-                    device.destroy();
-                    device = null;
-                }
-                res(true);
-                return;
-            });
-
-            device.on('error', () => rej('error'));
-
-            const {port, host}: any = printer;
-
-            if (Boolean(printer?.host)) {
-                //device.setTimeout(2000)
-                await device.connect({port, host}, async () => {
-                    device.write(buffer);
-                    device.emit('close');
-                });
-
-            }
-        } catch (e) {
-            appLog('connectToPrinter error', e)
-            res(false);
-        }
-
-    });
-
-};
 
 export const sendDataToPrinter = async (input: any, template: string, printer: any) => {
 
@@ -53,20 +19,47 @@ export const sendDataToPrinter = async (input: any, template: string, printer: a
 
             const buffer = EscPos.getBufferFromXML(xmlData);
 
-            if (Boolean(printer?.host)) {
-                return await connectToPrinter(printer, (buffer as unknown) as Buffer).then(async () => {
-                    await paperCut(printer).then(() => {
-                        resolve(true)
+
+            if (printer.printertype === 'bluetooth') {
+                const peripheral = printer.bluetoothdetail.more;
+
+                BleManager.start({showAlert: false}).then(()=> {
+                    readyforPrint(peripheral).then((findSC: any) => {
+                        BleManager.write(peripheral.id, findSC?.service, findSC?.characteristic, [...buffer]).then(() => {
+                            /*BleManager.disconnect(peripheral.id).then(() => {console.log("Disconnected");})
+                                .catch((error) => {// Failure code
+                                    console.log(error);
+                                });*/
+                            resolve('Print Successful')
+                        });
+
                     })
-                });
-            } else {
-                store.dispatch(setAlert({visible: true, message: 'printer not set'}))
-                resolve(false)
+                })
+
             }
+            else{
+                if (Boolean(printer?.host)) {
+                    return await connectToPrinter(printer, (buffer as unknown) as Buffer).then(async (msg:any) => {
+                        if(Boolean(msg)) {
+                            setTimeout(async ()=>{
+                                await paperCut(printer).then((msg) => {
+                                    resolve(msg)
+                                })
+                            },500)
+                        }
+                        else{
+                            store.dispatch(setAlert({visible: true, message: msg}))
+                        }
+                    });
+                } else {
+                    resolve('printer not set')
+                }
+            }
+
+
+
         } catch (err) {
-            console.log('sendDataToPrinter error', err);
-            store.dispatch(setAlert({visible: true, message: 'Check Printer Connection'}))
-            resolve(false)
+            resolve('Check Printer Connection')
         }
 
     })
@@ -74,6 +67,52 @@ export const sendDataToPrinter = async (input: any, template: string, printer: a
 
 };
 
+
+const connectToPrinter = async (printer: any, buffer: Buffer,): Promise<unknown> => {
+
+    return new Promise(async (res: (value: unknown) => void, rej) => {
+
+        try {
+            let device = new net.Socket();
+
+            if(device) {
+
+                device.on('close', async () => {
+                    if (device) {
+                        device.destroy();
+                        device.end();
+                        device = null;
+                    }
+                    res('Print Successful');
+                });
+
+                device.on('timeout', () => {
+                    device.end();
+                    res('Printer connection timeout');
+                });
+
+                device.on('error', () => res('Printer connection Error'));
+
+                const {port, host}: any = printer;
+
+                if (Boolean(printer?.host)) {
+                    await device.connect({port, host}, async () => {
+                        device.write(buffer);
+                        setTimeout(()=>{
+                            device.emit('close');
+                        },500)
+                    });
+                    await device.setTimeout(5000)
+                }
+            }
+
+        } catch (e) {
+            res('Printer connection Error');
+        }
+
+    });
+
+};
 
 export const paperCut = async (printer: any) => {
 
@@ -96,10 +135,9 @@ export const paperCut = async (printer: any) => {
                 status.line(`Scan to Pay`).qrcode(qrcode)
             }
             await status.line("Powered By Dhru ERP").cut().addPulse().send()
-            resolve(true)
+            resolve('Print successful')
         } catch (e) {
-            appLog('paperCut error', e)
-            resolve(true)
+            resolve('Printer connection Error')
         }
 
 

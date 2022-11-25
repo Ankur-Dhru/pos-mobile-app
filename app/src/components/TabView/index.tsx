@@ -26,11 +26,9 @@ const Index = (props: any) => {
     const renderTabBar = (props:any) => (
         <TabBar
             {...props}
-            indicatorStyle={{ backgroundColor:styles.primary.color}}
             style={{ backgroundColor: 'white'}}
-
-            labelStyle={{color:'white'}}
-            indicatorContainerStyle={{backgroundColor:styles.accent.color}}
+            labelStyle={{color:'black'}}
+            indicatorStyle={{backgroundColor:styles.accent.color}}
             scrollEnabled={scrollable}
         />
     );

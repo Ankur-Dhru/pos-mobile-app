@@ -10,17 +10,22 @@ import KeyboardScroll from "../../components/KeyboardScroll";
 import {localredux} from "../../libs/static";
 
 
+
 const Index = (props: any) => {
 
     const {navigation}: any = props;
-    const {staff}: any = localredux.initData;
+    let {staff}: any = localredux.initData;
+
+    staff = Object.values(staff).filter((staf:any)=>{
+        return !staf.support
+    })
 
     const selectedStaff = (staff: any) => {
         navigation.navigate('Pin', staff);
     }
 
-    if(Boolean(staff) && Object.keys(staff).length === 1){
-        navigation.replace('Pin',{...staff[1],onlyone:true});
+    if(Boolean(staff) && staff.length === 1){
+        navigation.replace('Pin',{...staff[0],onlyone:true});
         return
     }
 

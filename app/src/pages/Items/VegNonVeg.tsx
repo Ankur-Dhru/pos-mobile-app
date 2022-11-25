@@ -1,10 +1,10 @@
 import React from "react";
-import {View} from "react-native";
+import {View,Text} from "react-native";
 import {styles} from "../../theme";
 
-const Index = ({veg}:any) => {
+const Index = ({type}:any) => {
 
-    const color = veg === 'veg' ? styles.veg.color : veg === 'nonveg' ? styles.nonveg.color : styles.vegan.color
+    const color = type === 'veg' ? styles.veg.color : type === 'nonveg' ? styles.nonveg.color : styles.vegan.color;
 
     return (
         <>

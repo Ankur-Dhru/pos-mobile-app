@@ -95,7 +95,9 @@ const Index = ({ordersData}: any) => {
 
                 result.data = {
                     ...result.data,
-                    invoiceitems: Object.values(voucheritems),
+                    invoiceitems: Object.values(voucheritems).map((item:any)=>{
+                        return {...item,change:true}
+                    }),
                     payment: Object.values(receipt).map((payment: any) => {
                         return {paymentAmount: payment.amount, paymentby: payment.payment}
                     })

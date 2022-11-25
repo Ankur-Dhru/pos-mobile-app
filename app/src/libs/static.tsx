@@ -1568,15 +1568,16 @@ export const supportedPrinterList = [
 ]
 
 
-export const defaultInvoiceTemplate = `<align mode="left">
- 
-
+export const defaultInvoiceTemplate = `<align mode="center">
+{{#logo}}
+<image>
+{{{logo}}}
+</image>
+{{/logo}}
         <bold>
             <text size="1:1">{{{legalname}}}
 </text>
         </bold>
-        </align>
-        <align mode="center">
         <line-feed/>
         <text size="1:0">{{{locationname}}}
 </text>
@@ -1590,14 +1591,14 @@ export const defaultInvoiceTemplate = `<align mode="left">
 </text>
     </align>
   <line-feed/>
-    <align mode="left">
+    <align mode="right">
     <text>{{{invoicetype}}}
 </text>
         <bold>
             <text size="1:0">NO:{{terminalname}}-{{invoice_display_number}}
 </text>
         </bold>
-        <text>Date : {{{date}}} {{vouchercreatetime}}
+        <text>Date : {{{date}}}
 </text>
     </align>
     <text>{{{city}}}
@@ -1637,10 +1638,8 @@ export const defaultInvoiceTemplate = `<align mode="left">
 {{/voucherroundoffdisplay}}
     <text size="1:1">{{{totalbig}}}
 </text>
-
     {{{line}}}
-    
-    {{#totalMRP}}
+{{#totalMRP}}
     <text>{{{totalMRP}}}
 </text>
 {{#totalSave}}
@@ -1649,30 +1648,24 @@ export const defaultInvoiceTemplate = `<align mode="left">
 {{/totalSave}}
 {{{line}}}
 {{/totalMRP}}
-
     <text>{{#taxes}}{{{.}}}{{/taxes}}
 </text>
 {{{line}}}
-
-
-
 {{#isListPayment}}
     {{#paymentList}}
     <text>{{{.}}}
 </text>
     {{/paymentList}}
-    
 {{{line}}}
 {{/isListPayment}}
-
-
-
  <text>{{{state}}}
 </text>
     <text>{{terminalname}}
 </text>
- <text>{{toc}}
-</text>`
+<align mode="center">
+    <text>{{{toc}}}
+</text>
+</align>`
 
 export  const  defaultKOTTemplate = `<align mode="center">
 <bold>

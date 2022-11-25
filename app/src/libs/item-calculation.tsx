@@ -291,6 +291,8 @@ export const itemTotalCalculation = (
     isTypeTicket?: boolean,
     step: number = 0) => {
 
+
+
   try {
 
     if (values?.currentDecimalPlace) {
@@ -302,7 +304,6 @@ export const itemTotalCalculation = (
 
     let {globaldiscountvalue, vouchertransitionaldiscount, discounttype, vouchertaxtype} = values;
 
-    appLog('1')
 
     if (values.invoiceitems) {
 
@@ -358,7 +359,6 @@ export const itemTotalCalculation = (
             return item
           });
 
-      appLog('2')
       if (!isTypeTicket) {
 
         if (vouchertaxtype === "inclusive" && !isDiscountAfterTax) {
@@ -401,17 +401,13 @@ export const itemTotalCalculation = (
           })
         }
 
-        appLog('3')
 
         // TAX CAL
         values.invoiceitems = values.invoiceitems?.map((item: any, index: any) => {
           if (Boolean(item?.change)) {
-
-
             item = newItemCalculation("tax", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax)
-
-
           }
+
           item?.product_tax_object_display?.forEach((itemTax: any) => {
             const taxIndex: any = globaltax.findIndex((taxItem: any) => taxItem.taxid === itemTax.taxid);
 
@@ -457,8 +453,6 @@ export const itemTotalCalculation = (
               })
             }
           })
-
-          appLog('4')
 
           if (Boolean(item?.itemaddon)) {
 
@@ -518,8 +512,6 @@ export const itemTotalCalculation = (
           return item
         })
 
-        appLog('5')
-
         // Global Discount
         if (Boolean(vouchertransitionaldiscount) && isDiscountAfterTax) {
           total = grandTotal(values, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
@@ -538,8 +530,6 @@ export const itemTotalCalculation = (
           })
         }
       }
-
-      appLog('6')
 
       let inlinediscountamountdisplay: number = 0,
           globaldiscountamountdisplay: number = 0,
@@ -852,6 +842,8 @@ export const itemTotalCalculation = (
       }
     });
 
+    appLog('2')
+
     return values
 
   }
@@ -903,6 +895,8 @@ export const newItemCalculation = (
   if (item_qnt) {
     productqnt = item_qnt;
   }
+
+  appLog2('product_tax_object_display',product_tax_object_display)
 
   if (!Boolean(product_inclusive_taxable_display)) {
     product_inclusive_taxable_display = 0;

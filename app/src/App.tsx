@@ -32,6 +32,10 @@ import NetworkStatus from "./components/NetworkStatus";
 import {styles} from "./theme";
 
 
+
+// Add this code on your app.js
+
+
 configureFontAwesomePro();
 
 LogBox.ignoreAllLogs();
@@ -49,6 +53,7 @@ const App = () => {
     const isDarkMode = useColorScheme() === 'dark';
 
     // StatusBar.setHidden(true);
+
 
 
     const CombinedDefaultTheme = {

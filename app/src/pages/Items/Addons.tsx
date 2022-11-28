@@ -12,7 +12,7 @@ const Index = ({addtags, itemaddon,updateProduct}: any) => {
 
     const {addonsData} = localredux;
 
-    let {addongroupid, addonid} = addtags || {addongroupid: [], addonid: []}
+    let {addongroupid, addonid,autoaddon} = addtags || {addongroupid: [], addonid: [],autoaddon:[]}
 
     const [moreaddon, setMoreAddon]: any = useState(clone(addonsData))
 
@@ -29,6 +29,7 @@ const Index = ({addtags, itemaddon,updateProduct}: any) => {
     })
 
     useEffect(() => {
+
         addonid.map((addon: any, key: any) => {
             const find = findObject(itemaddon, 'itemid', addon, true);
             if (Boolean(find)) {
@@ -40,6 +41,13 @@ const Index = ({addtags, itemaddon,updateProduct}: any) => {
         })
 
         setMoreAddon(clone(moreaddon));
+
+        setTimeout(()=>{
+            autoaddon?.map((addon:any)=>{
+                updateQnt(addon,'add')
+            })
+        })
+
     }, [])
 
 
@@ -77,6 +85,7 @@ const Index = ({addtags, itemaddon,updateProduct}: any) => {
                     addonid.map((addon: any, key: any) => {
 
                         let {itemname, pricing, productqnt} = moreaddon[addon];
+
                         const pricingtype = pricing?.type;
 
                         const baseprice = pricing?.price?.default[0][pricingtype]?.baseprice || 0;

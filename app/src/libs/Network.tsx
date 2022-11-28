@@ -19,7 +19,6 @@ export const sendDataToPrinter = async (input: any, template: string, printer: a
 
             const buffer = EscPos.getBufferFromXML(xmlData);
 
-
             if (printer.printertype === 'bluetooth') {
                 const peripheral = printer.bluetoothdetail.more;
 

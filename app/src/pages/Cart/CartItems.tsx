@@ -55,16 +55,16 @@ const Index = (props: any) => {
             {Boolean(kots?.length > 0) &&  <View>
                 <View style={[styles.grid,styles.justifyContent,styles.p_4]}>
 
-                    <Button style={[styles.w_auto]} compact={true}  onPress={() => {
+                    <Button style={[styles.w_auto]} more={{color:'white'}} compact={true}  onPress={() => {
                         updateComponent(cartListRef,'display','flex')
                         updateComponent(kotListRef,'display','none')
 
-                    }} secondbutton={true} ><Text style={{color:'black'}}>Items</Text></Button>
-                    <Button style={[styles.ml_2,styles.w_auto]} compact={true}  onPress={() => {
+                    }} secondbutton={true} >Items</Button>
+                    <Button style={[styles.ml_2,styles.w_auto]} more={{color:'white'}}  compact={true}  onPress={() => {
                         updateComponent(cartListRef,'display','none')
                         updateComponent(kotListRef,'display','flex')
 
-                    }}  secondbutton={true}><Text style={{color:'black'}}>KOTs</Text></Button>
+                    }}  secondbutton={true}>KOTs</Button>
                 </View>
             </View>}
 

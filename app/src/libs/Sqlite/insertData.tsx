@@ -33,6 +33,7 @@ export const insertInit = async (  initdata?: any) => {
 
 
 export const insertItems = async (  itemsdata?: any,type:any = 'all') => {
+
     const db = await getDBConnection();
     const regx = /[^a-zA-Z0-9_. -]/g;
 
@@ -53,19 +54,29 @@ export const insertItems = async (  itemsdata?: any,type:any = 'all') => {
               insertQuery = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert") values ${values}`;
               appLog('insertQuery',insertQuery)
               try {
-                  await db.executeSql(insertQuery);
+                  const results = await db.executeSql(insertQuery);
+                  appLog('results',results)
               }
               catch (e) {
                   appLog('ERROR',insertQuery)
-                  appLog('e',e)
+                  appLog('insertItems e',e)
               }
           }
       }
 
       if(type === 'all'){
-          const query = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert") values ${insertQuery.join(', ')}`;
-          appLog('query',query)
-          const results = await db.executeSql(query);
+
+          try {
+              const query = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert") values ${insertQuery.join(', ')}`;
+              appLog('query',query)
+              const results = await db.executeSql(query);
+              appLog('results',results)
+          }
+          catch (e) {
+              appLog('insertItems e',e)
+          }
+
+
 
       }
   }
@@ -98,7 +109,7 @@ export const insertAddons = async (  itemsdata?: any,type:any = 'all') => {
                 }
                 catch (e) {
                     appLog('ERROR',insertQuery)
-                    appLog('e',e)
+                    appLog('insertAddons e',e)
                 }
             }
         }
@@ -136,7 +147,7 @@ export const insertClients = async (  clientsdata?: any,type:any = 'all') => {
                 }
                 catch (e) {
                     appLog('ERROR',insertQuery)
-                    appLog('e',e)
+                    appLog('insertClients e',e)
                 }
             }
         }

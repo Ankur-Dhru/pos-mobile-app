@@ -2,9 +2,9 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="android-native.app.react-native-sqlite-storage" target="17" />
       <module name="app.brooons_react-native-bluetooth-escpos-printer" target="17" />
       <module name="app.react-native-haptic-feedback" target="17" />
-      <module name="app.react-native-permissions" target="17" />
       <module name="app.ReactAndroid" target="17" />
       <module name="app.ReactAndroid.hermes-engine" target="17" />
     </bytecodeTargetLevel>

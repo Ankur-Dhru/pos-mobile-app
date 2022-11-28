@@ -81,6 +81,8 @@ const Index = (props: any) => {
         }))
     }
 
+
+
     const onClickAddTable = () => {
         navigation.navigate('AddTable', {getOrder: getOrder})
         closeMenu();

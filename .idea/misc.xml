@@ -8,6 +8,7 @@
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@react-native-community/datetimepicker/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@react-native-community/netinfo/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-ble-manager/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-contacts/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-esc-pos-printer/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-extra-dimensions-android/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-gesture-handler/android" />
@@ -30,7 +31,7 @@
   <component name="PWA">
     <option name="wasEnabledAtLeastOnce" value="true" />
   </component>
-  <component name="ProjectRootManager">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_18" project-jdk-name="Android API 29 Platform" project-jdk-type="Android SDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>

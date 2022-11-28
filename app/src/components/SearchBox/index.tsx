@@ -49,7 +49,6 @@ const Search = (props: any) => {
                 useNativeDriver={true}
                 onSubmitEditing={() => props.handleSearch(searchQuery.trim())}
                 style={[styles.noshadow,{elevation: 0,  borderRadius: 5, backgroundColor: '#eee'}]}
-
                 {...props}
             />
         </View>

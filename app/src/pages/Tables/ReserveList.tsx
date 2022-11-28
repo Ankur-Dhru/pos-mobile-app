@@ -41,11 +41,8 @@ const ReserveList = (props: any) => {
             keyboardDismissMode={'on-drag'}
             keyboardShouldPersistTaps={'always'}
             ListEmptyComponent={() => {
-                return (<View style={[]}><Paragraph
-                    style={[styles.paragraph, styles.p_6, styles.muted, {textAlign: 'center'}]}>No any
-                    Table</Paragraph></View>)
+                return (<View style={[]}><Paragraph  style={[styles.paragraph, styles.p_6, styles.muted, {textAlign: 'center'}]}>No any Table</Paragraph></View>)
             }}
-
         />
         <View style={[styles.grid, styles.justifyContent, styles.mt_4]}>
             <View></View>

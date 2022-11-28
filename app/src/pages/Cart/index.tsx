@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {isRestaurant, saveTempLocalOrder, voucherData} from "../../libs/function";
+import {appLog, isRestaurant, saveTempLocalOrder, voucherData} from "../../libs/function";
 import Cart from "./Cart";
 import {device, localredux, PRODUCTCATEGORY, VOUCHER} from "../../libs/static";
 import {useDispatch} from "react-redux";
@@ -12,6 +12,8 @@ import {TouchableOpacity, View} from "react-native";
 import ProIcon from "../../components/ProIcon";
 import SearchItem from "../Items/SearchItem";
 import store from "../../redux-store/store";
+import {setDialog} from "../../redux-store/reducer/component";
+import Paxes from "../Tables/Paxes";
 
 const Index = (props: any) => {
 
@@ -29,6 +31,15 @@ const Index = (props: any) => {
 
         if(tabledetails?.printcounter && !device.tablet){
             navigation.navigate('DetailViewNavigator')
+        }
+
+        if(tabledetails.invoiceitems.length === 0 && (tabledetails.ordertype === 'tableorder')){
+            dispatch(setDialog({
+                visible: true,
+                title: "Paxes",
+                hidecancel: true,
+                component: () => <Paxes />
+            }))
         }
 
         dispatch(setSelected({value: mainproductgroupid, field: 'group'}))

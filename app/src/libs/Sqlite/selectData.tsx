@@ -107,7 +107,7 @@ export const getClientsByWhere = async ({displayname,phone,search,start}:any) =>
         });
         return items
     } catch (e) {
-        appLog('e', e)
+        appLog('get clients', e)
     }
     db.close().then()
 }

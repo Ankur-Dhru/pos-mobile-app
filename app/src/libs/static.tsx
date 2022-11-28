@@ -1574,6 +1574,7 @@ export const defaultInvoiceTemplate = `<align mode="center">
 {{{logo}}}
 </image>
 {{/logo}}
+
         <bold>
             <text size="1:1">{{{legalname}}}
 </text>

@@ -41,8 +41,7 @@ const Index = (props: any) => {
                         paddingLeft: 20,
                         paddingRight: 20
                     }]}>
-                    <Paragraph><ProIcon name={'bars-staggered'} type={"solid"} color={'white'} size={'18'}
-                                        action_type={'text'}/> </Paragraph>
+                    <Paragraph><ProIcon name={'bars-staggered'} type={"solid"} color={'white'} size={'18'}  action_type={'text'}/> </Paragraph>
                     <Paragraph style={[styles.paragraph, styles.bold, {color: 'white'}]}> Categories</Paragraph>
                 </View>
             </View>}

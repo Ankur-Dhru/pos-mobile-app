@@ -36,21 +36,22 @@ const Index = (props: any) => {
 
     const loadDataCallback = useCallback(async () => {
         try {
-           const db = await getDBConnection();
+           const db:any = await getDBConnection();
 
-           // await db.executeSql(CREATE_INIT_TABLE);
+            await db.transaction(function (txn:any) {
 
-           await db.executeSql(CREATE_ITEM_TABLE);
+                txn.executeSql(CREATE_ITEM_TABLE);
+                txn.executeSql(CREATE_ADDON_TABLE);
+                txn.executeSql(CREATE_CLIENT_TABLE);
 
-           await db.executeSql(CREATE_ADDON_TABLE);
-            await db.executeSql(CREATE_CLIENT_TABLE);
 
+                txn.executeSql(CREATE_ITEM_INDEX_ITEMGROUPID);
+                txn.executeSql(CREATE_ITEM_INDEX_ITEMNAME);
+                txn.executeSql(CREATE_ITEM_INDEX_ITEMUNIQUE);
+            });
 
-           await db.executeSql(CREATE_ITEM_INDEX_ITEMGROUPID);
-            await db.executeSql(CREATE_ITEM_INDEX_ITEMNAME);
-            await db.executeSql(CREATE_ITEM_INDEX_ITEMUNIQUE);
         } catch (error) {
-            appLog(error);
+            appLog('error',error);
         }
     }, []);
 

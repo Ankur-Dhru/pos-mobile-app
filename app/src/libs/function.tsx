@@ -593,7 +593,7 @@ export const syncData = async (loader=true) => {
 
 
                             } catch (e) {
-                                appLog('e', e)
+                                appLog('retrieveData', e)
                             }
                         })
 
@@ -619,7 +619,7 @@ export const syncData = async (loader=true) => {
         }
 
     } catch (e) {
-        appLog('e', e)
+        appLog('main e', e)
     }
 
     })
@@ -1465,13 +1465,17 @@ export const generateKOT = async () => {
                                         }
 
                                         if (Boolean(itemtags)) {
-                                            kot.predefinenotes = kot.predefinenotes + ' ' + itemtags?.map((itemtag: any) => {
-                                                return itemtag?.taglist?.map((tag: any) => {
-                                                    if (tag.selected) {
-                                                        return `${itemtag.taggroupname} : ${tag.name}`
-                                                    }
+                                            let tags = itemtags?.map((itemtag: any) => {
+                                                return itemtag?.taglist.filter((tag:any)=>{
+                                                    return tag.selected
+                                                })?.map((tag: any) => {
+                                                    return `${itemtag.taggroupname} : ${tag.name}`
                                                 })
-                                            })?.join('  ')
+                                            });
+
+                                            kot.predefinenotes = kot.predefinenotes + ' ' + tags.filter((tag:any)=>{
+                                                return Boolean(tag.length)
+                                            }).join(' , ');
                                         }
 
                                         kotitems = [...kotitems, clone(kot)];
@@ -1689,8 +1693,8 @@ export const printInvoice = async (order?: any) => {
         return await new Promise(async (resolve) => {
 
             const template:any = getPrintTemplate('Thermal');
-            if(Boolean(printer?.host)) {
 
+            if(Boolean(printer?.host)) {
                 setTimeout(()=>{
                     sendDataToPrinter(printJson, getTemplate(template), {
                         ...printer,
@@ -1703,7 +1707,9 @@ export const printInvoice = async (order?: any) => {
 
             }
             else{
-                store.dispatch(setAlert({visible: true, message: 'Invoice Printer not set'}))
+                setTimeout(()=>{
+                    store.dispatch(setAlert({visible: true, message: 'Invoice Printer not set'}))
+                },200)
                 resolve(false)
             }
         })
@@ -1913,7 +1919,9 @@ export const gePhonebook = async (force?:any) => {
 
     const synccontact:any = await  getLocalSettings('synccontact');
 
-    if(synccontact || force) {
+    appLog('synccontact',synccontact)
+
+    if(!Boolean(synccontact) || force) {
 
         if (Platform.OS === "android") {
             try {

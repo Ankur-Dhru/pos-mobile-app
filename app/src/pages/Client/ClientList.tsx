@@ -41,6 +41,7 @@ const Index = (props: any) => {
     let [search, setSearch] = useState('');
     const [refreshing, setRefreshing]: any = useState(false);
     const [loading, setLoading]: any = useState(true);
+    const navigation = useNavigation()
 
     const handleSearch = async (search?: any) => {
         setLoading(false)
@@ -78,7 +79,8 @@ const Index = (props: any) => {
             <View style={[styles.h_100, styles.flex, styles.w_100, {flexDirection: 'column'}]}>
 
                 <View style={[{marginTop: 10}]}>
-                    <SearchBox handleSearch={handleSearch} autoFocus={false}  placeholder="Search Client..."/>
+                    <SearchBox handleSearch={handleSearch} onIconPress={() => navigation.goBack()}
+                               icon={{ source: 'arrow-left', direction: 'auto' }} autoFocus={false}  placeholder="Search Client..."/>
                 </View>
 
                 <Card style={[styles.h_100, styles.flex]}>

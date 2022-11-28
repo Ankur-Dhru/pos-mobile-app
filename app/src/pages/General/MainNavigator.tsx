@@ -178,7 +178,7 @@ const SetupStackNavigator = () => {
             <Stack.Screen name="Terminal" component={Terminal}
                           options={{headerShown: false, headerTitle: '', headerLargeTitle: false}}/>
 
-            <Stack.Screen name={'DropDownList'} component={DropDownList}   options={{headerTitle:'Select'}}   />
+            <Stack.Screen name={'DropDownList'} component={DropDownList}   options={{headerShown:false,headerTitle:'Select'}}   />
 
         </Stack.Navigator>
     );
@@ -206,7 +206,7 @@ const ClientAreaStackNavigator = (props:any) => {
 
 
 
-            <Stack.Screen name={'SearchItem'}   component={SearchItem} options={{headerTitle:'Search Item'}}   />
+            <Stack.Screen name={'SearchItem'}   component={SearchItem} options={{headerShown:false,headerTitle:'Search Item'}}   />
             <Stack.Screen name={'DetailViewNavigator'} component={DetailView}  options={{headerTitle:'Detail view'}}  />
 
             <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem}  options={{headerTitle:'Add Item'}}/>
@@ -214,7 +214,7 @@ const ClientAreaStackNavigator = (props:any) => {
             <Stack.Screen name={'AddEditClient'} component={AddEditClient}  options={{headerTitle:'Add Client'}}  />
             <Stack.Screen name={'AddTable'} component={AddTable}  options={{headerTitle:'Add Table'}}  />
 
-            <Stack.Screen name={'ClientList'} component={ClientList}  options={{headerTitle:'Client List'}}  />
+            <Stack.Screen name={'ClientList'} component={ClientList}  options={{headerShown:false,headerTitle:'Client List'}}  />
 
             <Stack.Screen name={'ClientAndSource'} {...params}   component={ClientAndSource}  options={{headerTitle:'Order Source'}}  />
 
@@ -226,7 +226,7 @@ const ClientAreaStackNavigator = (props:any) => {
 
             <Stack.Screen name={'SalesReportNavigator'}  component={Report} options={{title: 'Sales Report'}}   />
 
-            <Stack.Screen name={'DropDownList'} component={DropDownList}  options={({route}: any) => ({presentation:route?.params?.presentation,  title: 'select'})}   />
+            <Stack.Screen name={'DropDownList'} component={DropDownList}  options={({route}: any) => ({presentation:route?.params?.presentation,headerShown:false,  title: 'select'})}   />
 
 
 
@@ -254,7 +254,7 @@ const ProfileSettingsNavigator = (props:any) => {
             <Stack.Screen name={'InputOpenSetting'} component={InputOpenSetting} options={{title: 'Quick Quantity Unit'}}/>
             <Stack.Screen name={'DefaultInputValues'} component={DefaultInputValues} options={{title: 'Quick Quantity & Amount'}}/>
             <Stack.Screen name={'PrinterSettings'} component={PrinterSettings} options={{title: ''}}/>
-            <Stack.Screen name={'DropDownList'} component={DropDownList}   options={{headerTitle:'Select'}}  />
+            <Stack.Screen name={'DropDownList'} component={DropDownList}   options={{headerShown:false,headerTitle:'Select'}}  />
         </Stack.Navigator>
     );
 };

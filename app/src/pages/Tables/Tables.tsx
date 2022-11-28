@@ -2,7 +2,7 @@ import {current, device, localredux} from "../../libs/static";
 import React, {memo, useCallback, useEffect, useState} from "react";
 import {isEmpty, saveTempLocalOrder, toCurrency} from "../../libs/function";
 import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
-import {Card, FAB, Menu, Paragraph, Title, withTheme} from "react-native-paper";
+import {Appbar, Card, FAB, Menu, Paragraph, Title, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 
 import {connect, useDispatch} from "react-redux";
@@ -16,6 +16,7 @@ import {setSelected} from "../../redux-store/reducer/selected-data";
 import Button from "../../components/Button";
 import ReserveList from "./ReserveList";
 import Tabs from "../../components/TabView";
+import {Button as IButton} from "react-native-paper"
 
 
 const Index = (props: any) => {
@@ -241,19 +242,16 @@ const Index = (props: any) => {
     );
 
     navigation.setOptions({
-        headerLeft: () => <Title onPress={() => navigation.navigate('ProfileSettingsNavigator')}><ProIcon
-            name={'bars'}/></Title>,
+        headerLeft: () =>  <Appbar.Action icon="menu" onPress={() => navigation.navigate('ProfileSettingsNavigator')}/> ,
         headerRight: () => {
             return <View>
 
                 <Menu
                     visible={visible}
                     onDismiss={closeMenu}
-                    anchor={<TouchableOpacity onPress={() => {
+                    anchor={<Appbar.Action icon={'dots-vertical'} onPress={() => {
                         openMenu()
-                    }}>
-                        <ProIcon name={'ellipsis-vertical'}/>
-                    </TouchableOpacity>}>
+                    }}/>  }>
                     <Menu.Item onPress={onClickAddTable} title="Add Table"/>
                     {!shifttable && <Menu.Item onPress={() => {
                         setShifttable(true)

@@ -13,6 +13,7 @@ import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 
 import {AddItem} from "./ItemListTablet";
 import {useNavigation} from "@react-navigation/native";
+import Search from "../../components/SearchBox";
 
 
 const Item = memo(({item}: any) => {
@@ -78,8 +79,10 @@ const Index = ({navigation}: any) => {
         <Container>
             <View style={[styles.h_100, styles.flex, styles.w_100, {flexDirection: 'column'}]}>
 
+
                 <View style={[{marginTop: 10}]}>
-                    <SearchBox handleSearch={handleSearch} autoFocus={true}  placeholder="Search Item..."/>
+                    <SearchBox handleSearch={handleSearch} autoFocus={true}  onIconPress={() => navigation.goBack()}
+                               icon={{ source: 'arrow-left', direction: 'auto' }} placeholder="Search Item..."/>
                 </View>
 
                 <Card style={[styles.h_100, styles.flex]}>

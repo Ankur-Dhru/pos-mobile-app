@@ -104,8 +104,8 @@ class Index extends Component<any> {
                                     <KeyboardScroll>
 
 
-                                        <View style={[styles.px_6]}>
-                                        <Title>Business Details </Title>
+                                        <View style={[styles.p_6]}>
+
 
 
 

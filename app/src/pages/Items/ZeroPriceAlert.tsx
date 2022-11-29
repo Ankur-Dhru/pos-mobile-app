@@ -8,49 +8,41 @@ import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
 import Button from "../../components/Button";
 import {setDialog} from "../../redux-store/reducer/component";
-import {loginUrl, METHOD, STATUS} from "../../libs/static";
-import apiService from "../../libs/api-service";
-import {appLog} from "../../libs/function";
+import {appLog, selectItem} from "../../libs/function";
 
 
 const Index = (props: any) => {
 
-
+    const item = props.item
     const dispatch = useDispatch()
 
     const handleSubmit = (values: any) => {
 
-        apiService({
-            method: METHOD.PUT,
-            action: 'verifyemail',
-            other: {url: loginUrl},
-            body: values
-        }).then((result) => {
-            if (result.status === STATUS.SUCCESS) {
-                props.updateEmail(values.new_email)
-                dispatch(setDialog({visible: false}))
-            }
-
+        const pricingtype = item?.pricing?.type;
+        item.pricing.price.default[0] = {[pricingtype]:{baseprice:values.price}};
+        selectItem(item).then(()=>{
+            dispatch(setDialog({visible: false}))
         });
+
     }
 
 
     return <View>
         <Form
-            initialValues={{new_email: ''}}
+            initialValues={{price: ''}}
             onSubmit={handleSubmit}
             render={({handleSubmit, submitting, values, ...more}: any) => (
                 <>
 
                     <View>
 
-                        <Field name="new_email">
+                        <Field name="price">
                             {props => (
                                 <InputBox
                                     value={props.input.value}
-                                    label={'Change Email'}
+                                    label={'Item Price'}
                                     autoFocus={true}
-                                    autoCapitalize='none'
+                                    keyboardType={'numeric'}
                                     onSubmitEditing={(e: any) => {
                                         handleSubmit(props.values)
                                     }}
@@ -63,12 +55,10 @@ const Index = (props: any) => {
                     </View>
 
 
-                    <View style={[styles.grid, styles.justifyContent, styles.mt_5]}>
-                        <Button more={{backgroundColor:styles.light.color,color:'black'}}
-                                onPress={() => dispatch(setDialog({visible: false}))}>Cancel</Button>
+                    <View style={[styles.mt_5]}>
                         <Button onPress={() => {
                             handleSubmit(values)
-                        }}>Update</Button>
+                        }}>Done</Button>
                     </View>
 
                 </>

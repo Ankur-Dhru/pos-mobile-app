@@ -12,7 +12,15 @@ import Splash from "../Splash";
 import {createDrawerNavigator} from "@react-navigation/drawer";
 import Tables from "../Tables";
 import Cart from "../Cart";
-import {appLog, CheckConnectivity, isEmpty, isRestaurant, retrieveData, storeData} from "../../libs/function";
+import {
+    appLog,
+    CheckConnectivity,
+    getTempOrders,
+    isEmpty,
+    isRestaurant,
+    retrieveData,
+    storeData
+} from "../../libs/function";
 import DetailView from "../Cart/DetailView";
 import Payment from "../Cart/Payment";
 import Report from "../Report";
@@ -46,6 +54,10 @@ import AddTable from "../Tables/AddTable";
 import sample from "../sample";
 import CancelReason from "../Cart/CancelReason";
 import ClientList from "../Client/ClientList";
+import {deleteTable} from "../../libs/Sqlite/deleteData";
+import {TABLE} from "../../libs/Sqlite/config";
+import store from "../../redux-store/store";
+import {resetCart} from "../../redux-store/reducer/cart-data";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -78,15 +90,22 @@ const MainStackNavigator = () => {
                 hidealert: true,
                 other: {url: posUrl},
             }).then((response: any) => {
-                appLog("SYNC REPOSNE", response);
+
                 if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
-                    retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
+
+                    appLog('invoiceData',invoiceData)
+
+                    deleteTable(TABLE.ORDER,`orderid = '${invoiceData?.orderid}'`).then(async ()=>{
+                        dispatch(setOrder({...invoiceData, synced: true}))
+                    })
+
+                    /*retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
                         let localOrder: any = data?.orders
                         delete localOrder[invoiceData?.orderid];
                         storeData('fusion-pro-pos-mobile', data).then(async () => {
                             dispatch(setOrder({...invoiceData, synced: true}))
                         });
-                    })
+                    })*/
                 } else {
                     resolve({status: "ERROR"})
                 }
@@ -142,7 +161,7 @@ const MainStackNavigator = () => {
 
 const SplashStackNavigator = () => {
     return (
-        <Stack.Navigator initialRouteName={'Splash'}>
+        <Stack.Navigator initialRouteName={'Splash'} screenOptions={screenOptions}>
             <Stack.Screen name="Splash" component={Splash}
                           options={{headerShown: false}}/>
         </Stack.Navigator>
@@ -154,31 +173,23 @@ const SetupStackNavigator = () => {
         <Stack.Navigator initialRouteName={'Login'} screenOptions={screenOptions}>
             <Stack.Screen name="Login" component={Login}
                           options={{headerShown: false}}/>
-            <Stack.Screen name="Register" component={Register}
-                          options={{headerShown: false}}/>
+            <Stack.Screen name="Register" component={Register}  options={{ headerTitle: 'Create an account'}}/>
 
-            <Stack.Screen name="Verification" component={Verification}
-                          options={{headerShown: false}}/>
+            <Stack.Screen name="Verification" component={Verification}  options={{ headerTitle: 'Verify Email'}}/>
 
-            <Stack.Screen name="AddWorkspace" component={AddWorkspace}
-                          options={{headerShown: false, headerTitle: 'AddWorkspace', headerLargeTitle: false}}/>
+            <Stack.Screen name="AddWorkspace" component={AddWorkspace} options={{headerTitle: 'Add Workspace'}}/>
 
-            <Stack.Screen name="OrganizationProfile" component={OrganizationProfile}
-                          options={{  headerTitle: '', headerLargeTitle: false}}/>
+            <Stack.Screen name="OrganizationProfile" component={OrganizationProfile}  options={{ headerTitle: 'Organization Profile'}}/>
 
-            <Stack.Screen name="BusinessDetails" component={BusinessDetails}
-                          options={{ headerTitle: '', headerLargeTitle: false}}/>
+            <Stack.Screen name="BusinessDetails" component={BusinessDetails}  options={{ headerTitle: 'Business Details'}}/>
 
-            <Stack.Screen name="CurrencyPreferences" component={CurrencyPreferences}
-                          options={{ headerTitle: '', headerLargeTitle: false}}/>
+            <Stack.Screen name="CurrencyPreferences" component={CurrencyPreferences}  options={{ headerTitle: 'Currency Preferences'}}/>
 
-            <Stack.Screen name="Workspaces" component={Workspaces}
-                          options={{ headerTitle: 'Workspaces', headerLargeTitle: false}}/>
+            <Stack.Screen name="Workspaces" component={Workspaces}  options={{headerTitle: 'Workspaces'}}/>
 
-            <Stack.Screen name="Terminal" component={Terminal}
-                          options={{headerShown: false, headerTitle: '', headerLargeTitle: false}}/>
+            <Stack.Screen name="Terminal" component={Terminal}  options={{headerShown:false, headerTitle: 'Terminal'}}/>
 
-            <Stack.Screen name={'DropDownList'} component={DropDownList}   options={{headerShown:false,headerTitle:'Select'}}   />
+            <Stack.Screen name={'DropDownList'} component={DropDownList}  options={{headerShown:false,headerTitle:'Select'}}   />
 
         </Stack.Navigator>
     );

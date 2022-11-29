@@ -297,9 +297,7 @@ class Index extends Component<any, any> {
                                 <KeyboardScroll>
 
 
-                                    <View style={[styles.px_6]}>
-
-                                        <Title>Organization Profile </Title>
+                                    <View style={[styles.p_6]}>
 
                                         <View>
 

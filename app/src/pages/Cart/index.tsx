@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from "react";
-import {appLog, isRestaurant, saveTempLocalOrder, voucherData} from "../../libs/function";
+import {appLog, getTempOrders, isRestaurant, saveTempLocalOrder, voucherData} from "../../libs/function";
 import Cart from "./Cart";
 import {device, localredux, PRODUCTCATEGORY, VOUCHER} from "../../libs/static";
 import {useDispatch} from "react-redux";
-import {withTheme} from "react-native-paper";
+import {Appbar, withTheme} from "react-native-paper";
 import {setSelected} from "../../redux-store/reducer/selected-data";
-import {refreshCartData} from "../../redux-store/reducer/cart-data";
+import {refreshCartData, setCartData} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
 import {TouchableOpacity, View} from "react-native";
@@ -54,7 +54,9 @@ const Index = (props: any) => {
                     e.preventDefault();
                     const {ordertype}: any = store.getState().cartData;
                     if(ordertype !== 'qsr') {
-                        saveTempLocalOrder().then(() => {})
+                        saveTempLocalOrder().then(() => {
+                            /*getTempOrders().then(()=>{})*/
+                        })
                     }
                     navigation.dispatch(e.data.action)
                 }
@@ -78,31 +80,19 @@ const Index = (props: any) => {
 
     navigation.setOptions({
         headerTitle: tabledetails?.tablename || 'Retail Order',
-
     })
 
     if (!isRestaurant()) {
         navigation.setOptions({
-            headerLeft: () => <View>
-                <TouchableOpacity   onPress={() => {
-                    navigation.navigate('ProfileSettingsNavigator')
-                }}>
-                    <ProIcon name={'bars'}/>
-                </TouchableOpacity>
-            </View>
+            headerLeft: () =>  <Appbar.Action icon="menu" onPress={() => navigation.navigate('ProfileSettingsNavigator')}/>
         })
     }
 
     if (!device.tablet) {
         navigation.setOptions({
-            headerRight: () => <View>
-                <TouchableOpacity
-                    onPress={() => {
-                        navigation.navigate('SearchItem')
-                    }}>
-                    <ProIcon name={'magnifying-glass'}/>
-                </TouchableOpacity>
-            </View>
+            headerRight: () => <Appbar.Action icon={'magnify'} onPress={() => {
+                navigation.navigate('SearchItem')
+            }}/>
         })
     }
 

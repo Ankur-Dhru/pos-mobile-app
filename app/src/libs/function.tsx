@@ -15,15 +15,18 @@ import {decode} from 'html-entities';
 import {hideLoader, setAlert, setBottomSheet, setDialog, showLoader} from "../redux-store/reducer/component";
 import apiService from "./api-service";
 import {
-    ACTIONS, adminUrl,
-    current, defaultInvoiceTemplate, defaultKOTTemplate,
+    ACTIONS,
+    adminUrl,
+    current,
+    defaultInvoiceTemplate,
+    defaultKOTTemplate,
     isDevelopment,
     localredux,
     METHOD,
     posUrl,
     PRINTER,
     STATUS,
-    taxTypes, testInvoiceData,
+    taxTypes,
     TICKET_STATUS,
     TICKETS_TYPE,
     VOUCHER
@@ -36,25 +39,23 @@ import {setTableOrdersData} from "../redux-store/reducer/table-orders-data";
 import {v4 as uuid} from "uuid";
 import SyncingInfo from "../pages/Pin/SyncingInfo";
 import {setSyncDetail} from "../redux-store/reducer/sync-data";
-import {setOrder} from "../redux-store/reducer/orders-data";
+import {setOrder, setOrdersData} from "../redux-store/reducer/orders-data";
 import {getProductData, itemTotalCalculation} from "./item-calculation";
-import EscPosPrinter, {getPrinterSeriesByName} from "react-native-esc-pos-printer";
 import CancelReason from "../pages/Cart/CancelReason";
 import {setItemDetail} from "../redux-store/reducer/item-detail";
 import ItemDetail from "../pages/Items/ItemDetail";
 import AddonActions from "../pages/Items/AddonActions";
 import {onPressNumber} from "../pages/Items/AddButton";
 import NetInfo from "@react-native-community/netinfo";
-import {insertAddons, insertClients, insertItems} from "./Sqlite/insertData";
+import {insertAddons, insertClients, insertItems, insertOrder, insertTempOrder} from "./Sqlite/insertData";
 import {sendDataToPrinter} from "./Network";
 import {CommonActions} from "@react-navigation/native";
-import {getAddonByWhere, getClientsByWhere, getItemsByWhere} from "./Sqlite/selectData";
-import BleManager from "react-native-ble-manager";
-import Mustache from "mustache";
-import {EscPos} from "escpos-xml";
+import {getAddonByWhere, getClientsByWhere, getOrdersByWhere, getTempOrdersByWhere} from "./Sqlite/selectData";
 import Contacts from "react-native-contacts";
 import {PERMISSIONS} from "react-native-permissions";
-import {useDispatch} from "react-redux";
+import ZeroPriceAlert from "../pages/Items/ZeroPriceAlert";
+import {deleteTable} from "./Sqlite/deleteData";
+import {TABLE} from "./Sqlite/config";
 
 
 let NumberFormat = require('react-number-format');
@@ -268,9 +269,10 @@ export const getDateWithFormat = (date?: string, dateFormat?: string) => {
     return moment(date).format(`${dateFormat}`)
 }
 
-export const dateFormat = (date?: string, withTime?: boolean, standardformat?: boolean) => {
+export const dateFormat = (withTime?: boolean, standardformat?: boolean) => {
     let {initData: {general}}: any = localredux;
     let dateFormat = general?.dateformat;
+
     if (standardformat) {
         dateFormat = "YYYY-MM-DD"
     }
@@ -278,7 +280,7 @@ export const dateFormat = (date?: string, withTime?: boolean, standardformat?: b
         dateFormat += ' hh:mm A'
     }
 
-    return moment(date).format(`${dateFormat}`)
+    return dateFormat
 }
 
 
@@ -477,150 +479,166 @@ export const CheckConnectivity = () => {
     });
 };
 
-export const syncData = async (loader=true) => {
+export const syncData = async (loader = true) => {
 
     await retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
 
-    try {
+        try {
 
 
-        let start = moment();
+            let start = moment();
 
-          let  initData = data?.initData || {}
-        let   licenseData = data?.licenseData || {};
-        let   localSettingsData = data?.localSettingsData || {};
-
-
-
-        let {lastSynctime,terminalname}: any = localSettingsData;
+            let initData = data?.initData || {}
+            let licenseData = data?.licenseData || {};
+            let localSettingsData = data?.localSettingsData || {};
 
 
-        loader && store.dispatch(setDialog({visible: true, hidecancel: true, width: 300, component: () => <SyncingInfo/>}))
+            let {lastSynctime, terminalname}: any = localSettingsData;
 
 
-        const getData = async (queryString?: any) => {
-
-            if (!Boolean(lastSynctime)) {
-                lastSynctime = 0
-            }
-
-            queryString = {
-                ...queryString,
-                timestamp: lastSynctime
-            }
-
-            await apiService({
-                method: METHOD.GET,
-                action: ACTIONS.SYNC_DATA,
-                queryString,
-                workspace: initData.workspace,
-                token: licenseData?.token,
-                hideLoader: true,
-                other: {url: posUrl},
-            }).then(async (response: any) => {
-
-                const {status, data, info: {type, start, result}} = response;
+            loader && store.dispatch(setDialog({
+                visible: true,
+                hidecancel: true,
+                width: 300,
+                component: () => <SyncingInfo/>
+            }))
 
 
-                if (status === STATUS.SUCCESS) {
-                    if (result === 'setting') {
-                        initData = {
-                            ...initData,
-                            ...data
-                        }
-                    } else if (result === 'item') {
-                        if (Boolean(data.result)) {
-                            await insertItems(data.result,'all').then(() => { });
-                        }
-                    } else if (result === 'addon') {
-                        if (Boolean(data.result)) {
-                            await insertAddons(data.result,'all').then(() => { });
-                        }
+            const getData = async (queryString?: any) => {
 
-                    } else if (result === 'customer') {
-                        if (Boolean(data.result)) {
-                            await insertClients(data.result,'all').then(() => { });
-                        }
-                    }
+                if (!Boolean(lastSynctime)) {
+                    lastSynctime = 0
+                }
 
+                queryString = {
+                    ...queryString,
+                    timestamp: lastSynctime
+                }
 
-                    if (type !== "finish") {
-                        await store.dispatch(setSyncDetail({type: result,more:lastSynctime+'',rows:start,total:(Boolean(data?.extra) && Boolean(data?.extra?.total)) ? data.extra.total : 0}))
-                        setTimeout(async ()=>{
-                            await getData({type, start});
-                        },300)
+                await apiService({
+                    method: METHOD.GET,
+                    action: ACTIONS.SYNC_DATA,
+                    queryString,
+                    workspace: initData.workspace,
+                    token: licenseData?.token,
+                    hideLoader: true,
+                    other: {url: posUrl},
+                }).then(async (response: any) => {
 
-                    } else {
-
-                        await retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
-
-                            try {
-
-                                const locationid = licenseData?.data?.location_id;
-                                const locations = initData?.location;
-
-                                let printingtemplates:any = {}
-                                Object.values(initData?.printingtemplate).map((template:any)=>{
-                                    if(template?.location === locationid){
-                                        printingtemplates[template?.printertype] = template
-                                    }
-                                })
-
-                                data = {
-                                    ...data,
-                                    initData,
-                                    localSettingsData: {
-                                        currentLocation: locations[locationid],
-                                        printingtemplates:printingtemplates,
-                                        lastSynctime: moment().unix(),
-                                        terminalname:terminalname,
-                                        isRestaurant: (locations[locationid]?.industrytype === "foodservices"),
-                                    }
-                                }
+                    const {status, data, info: {type, start, result}} = response;
 
 
-
-                                await storeData('fusion-pro-pos-mobile', data).then(async () => {
-                                    localredux.initData = data.initData;
-                                    localredux.localSettingsData = data.localSettingsData;
-
-                                    await store.dispatch(setSyncDetail({type: result,more:lastSynctime+' finish',rows:start,total:(Boolean(data?.extra) && Boolean(data?.extra?.total)) ? data.extra.total : 0}))
-
-                                });
-
-                                getClients().then()
-                                getAddons().then()
-
-
-                            } catch (e) {
-                                appLog('retrieveData', e)
+                    if (status === STATUS.SUCCESS) {
+                        if (result === 'setting') {
+                            initData = {
+                                ...initData,
+                                ...data
                             }
-                        })
+                        } else if (result === 'item') {
+                            if (Boolean(data.result)) {
+                                await insertItems(data.result, 'all').then(() => {
+                                });
+                            }
+                        } else if (result === 'addon') {
+                            if (Boolean(data.result)) {
+                                await insertAddons(data.result, 'all').then(() => {
+                                });
+                            }
 
+                        } else if (result === 'customer') {
+                            if (Boolean(data.result)) {
+                                await insertClients(data.result, 'all').then(() => {
+                                });
+                            }
+                        }
+
+
+                        if (type !== "finish") {
+                            await store.dispatch(setSyncDetail({
+                                type: result,
+                                more: lastSynctime + '',
+                                rows: start,
+                                total: (Boolean(data?.extra) && Boolean(data?.extra?.total)) ? data.extra.total : 0
+                            }))
+                            setTimeout(async () => {
+                                await getData({type, start});
+                            }, 300)
+
+                        } else {
+
+                            await retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
+
+                                try {
+
+                                    const locationid = licenseData?.data?.location_id;
+                                    const locations = initData?.location;
+
+                                    let printingtemplates: any = {}
+                                    Object.values(initData?.printingtemplate).map((template: any) => {
+                                        if (template?.location === locationid) {
+                                            printingtemplates[template?.printertype] = template
+                                        }
+                                    })
+
+                                    data = {
+                                        ...data,
+                                        initData,
+                                        localSettingsData: {
+                                            currentLocation: locations[locationid],
+                                            printingtemplates: printingtemplates,
+                                            lastSynctime: moment().unix(),
+                                            terminalname: terminalname,
+                                            isRestaurant: (locations[locationid]?.industrytype === "foodservices"),
+                                        }
+                                    }
+
+
+                                    await storeData('fusion-pro-pos-mobile', data).then(async () => {
+                                        localredux.initData = data.initData;
+                                        localredux.localSettingsData = data.localSettingsData;
+
+                                        await store.dispatch(setSyncDetail({
+                                            type: result,
+                                            more: lastSynctime + ' finish',
+                                            rows: start,
+                                            total: (Boolean(data?.extra) && Boolean(data?.extra?.total)) ? data.extra.total : 0
+                                        }))
+
+                                    });
+
+                                    getClients().then()
+                                    getAddons().then()
+
+
+                                } catch (e) {
+                                    appLog('retrieveData', e)
+                                }
+                            })
+
+                        }
                     }
-                }
-                if (status === STATUS.ERROR || type === "finish") {
-                    store.dispatch(setDialog({visible: false}))
-                    loader && store.dispatch(setAlert({visible: true, message: 'Sync Successful'}))
-                }
+                    if (status === STATUS.ERROR || type === "finish") {
+                        store.dispatch(setDialog({visible: false}))
+                        loader && store.dispatch(setAlert({visible: true, message: 'Sync Successful'}))
+                    }
 
-            })
+                })
+            }
+
+            await getData().then()
+
+
+            let end = moment();
+            var duration = moment.duration(end.diff(start));
+
+            if (isDevelopment) {
+                appLog('total time', duration.asMilliseconds())
+                store.dispatch(setAlert({visible: true, message: duration.asMilliseconds()}))
+            }
+
+        } catch (e) {
+            appLog('main e', e)
         }
-
-        await getData().then()
-
-
-        let end = moment();
-        var duration = moment.duration(end.diff(start));
-
-        if (isDevelopment) {
-            appLog('total time', duration.asMilliseconds())
-            store.dispatch(setAlert({visible: true, message: duration.asMilliseconds()}))
-        }
-
-    } catch (e) {
-        appLog('main e', e)
-    }
 
     })
 
@@ -836,7 +854,7 @@ export const setItemRowData = (data: any) => {
             producttaxgroupid = itemtaxgroupid;
         }
 
-        const defaultCurrency:any = getDefaultCurrency()
+        const defaultCurrency: any = getDefaultCurrency()
 
         let additem: any = {
             identificationtype,
@@ -881,70 +899,70 @@ export const setItemRowData = (data: any) => {
 }
 
 
-export const saveTempLocalOrder = async (order?: any,config?:any) => {
+export const saveTempLocalOrder = (order?: any, config?: any) => {
 
-    try {
+    appLog('1')
 
-        if (!Boolean(order)) {
-            order = await store.getState().cartData
-        }
+    return new Promise<any>(async (resolve) => {
+        try {
 
-        order = await itemTotalCalculation(clone(order), undefined, undefined, undefined, undefined, 2, 2, false, false);
+            appLog('2')
+            if (!Boolean(order)) {
+                order = await store.getState().cartData
+            }
 
+            order = await itemTotalCalculation(clone(order), undefined, undefined, undefined, undefined, 2, 2, false, false);
 
-        if (!Boolean(order.tableorderid)) {
+            if (!Boolean(order.tableorderid)) {
+                order = {
+                    ...order,
+                    tableorderid: uuid(),
+                }
+            }
+            if (!Boolean(order.tableid)) {
+                order = {
+                    ...order,
+                    tableid: uuid(),
+                }
+            }
+            if (config?.print) {
+                let counter = order?.printcounter ? order?.printcounter + 1 : 1;
+                order = {
+                    ...order,
+                    printcounter: counter,
+                }
+            }
+
+            appLog('3')
+
             order = {
                 ...order,
-                tableorderid: uuid(),
+                terminalid: localredux?.licenseData?.data?.terminal_id
             }
-        }
-        if (!Boolean(order.tableid)) {
-            order = {
-                ...order,
-                tableid: uuid(),
-            }
-        }
-        if(config?.print){
-            let counter = order?.printcounter ? order?.printcounter + 1 : 1;
-            order = {
-                ...order,
-                printcounter: counter,
-            }
-        }
 
-        order = {
-            ...order,
-            terminalid: localredux?.licenseData?.data?.terminal_id
+            appLog('4')
+            await insertTempOrder(order).then(() => {
+                appLog('5')
+                // await getTempOrders().then(() => {})
+                resolve('Save Temp Order')
+            })
+
+
+
+
+        } catch (e) {
+            appLog('e', e)
         }
-
-        let tableorders: any = store.getState().tableOrdersData || {}
-        tableorders = {
-            ...tableorders,
-            [order.tableorderid]: order
-        }
-
-        await storeData('fusion-pro-pos-mobile-tableorder', tableorders).then(async () => {
-            await store.dispatch(setCartData(order));
-            await store.dispatch(setTableOrdersData(tableorders));
-        });
-
-    } catch (e) {
-        appLog('e', e)
-    }
+    });
 }
 
-export const deleteTempLocalOrder = async (tableorderid: any) => {
-
-
-    let tableorders: any = clone(store.getState().tableOrdersData) || {}
-
-    delete tableorders[tableorderid];
-
-    await storeData('fusion-pro-pos-mobile-tableorder', tableorders).then(async () => {
-        await store.dispatch(setTableOrdersData(tableorders));
-        await store.dispatch(resetCart())
-    });
-
+export const deleteTempLocalOrder = (tableorderid: any) => {
+    return new Promise<any>(async (resolve) => {
+        await deleteTable(TABLE.TEMPORDER, `tableorderid = '${tableorderid}'`).then(async () => {})
+        await getTempOrders().then(() => {})
+        store.dispatch(resetCart())
+        resolve('Delete Temp Order')
+    })
 }
 
 
@@ -963,70 +981,70 @@ export const saveLocalSettings = async (key: any, setting?: any) => {
 
 export const getLocalSettings = async (key: any) => {
     await retrieveData('fusion-pro-pos-mobile-settings').then(async (data: any) => {
-         return data[key];
+        return data[key];
     })
 }
 
 
+export const saveLocalOrder = (order?: any) => {
 
-export const saveLocalOrder = async (order?: any) => {
-
-
-    if (!Boolean(order)) {
-        order = clone(store.getState().cartData)
-    }
-
-    if (!Boolean(order.orderid)) {
-        order = {
-            ...order,
-            orderid: uuid(),
+    return new Promise<any>(async (resolve) => {
+        if (!Boolean(order)) {
+            order = clone(store.getState().cartData)
         }
-    }
-    if (!Boolean(order.tableorderid)) {
-        order = {
-            ...order,
-            tableorderid: uuid(),
-        }
-    }
 
-    if (order?.kots.length > 0) {
-        order.kots = order?.kots.map((kot: any) => {
-            kot = {
-                ...kot,
-                orderid: order.orderid
-            }
-            return kot
-        })
-    }
-
-
-    ///////// CREATE LOCALORDER ID //////////
-    if (!Boolean(order.invoice_display_number)) {
-        await retrieveData('fusion-pro-pos-mobile-vouchernos').then(async (vouchers: any) => {
+        if (!Boolean(order.orderid)) {
             order = {
                 ...order,
-                invoice_display_number: (Boolean(vouchers) && vouchers[order.vouchertypeid]) || 1
+                orderid: uuid(),
             }
-            vouchers = {...vouchers, [order.vouchertypeid]: ++order.invoice_display_number}
-            await storeData('fusion-pro-pos-mobile-vouchernos', vouchers).then(async () => {
-            });
-        })
-    }
-    ///////// CREATE LOCALORDER ID //////////
-
-    await retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
-        data.orders = {
-            ...data.orders,
-            [order.orderid]: order
+        }
+        if (!Boolean(order.tableorderid)) {
+            order = {
+                ...order,
+                tableorderid: uuid(),
+            }
         }
 
-        await deleteTempLocalOrder(order.tableorderid).then(async () => {
+        if (order?.kots.length > 0) {
+            order.kots = order?.kots.map((kot: any) => {
+                kot = {
+                    ...kot,
+                    orderid: order.orderid
+                }
+                return kot
+            })
+        }
 
-            await storeData('fusion-pro-pos-mobile', data).then(async () => {
-                await store.dispatch(setOrder(order))
+
+        ///////// CREATE LOCALORDER ID //////////
+        if (!Boolean(order.invoice_display_number)) {
+           await retrieveData('fusion-pro-pos-mobile-vouchernos').then(async (vouchers: any) => {
+                order = {
+                    ...order,
+                    invoice_display_number: (Boolean(vouchers) && vouchers[order.vouchertypeid]) || 1
+                }
+                vouchers = {...vouchers, [order.vouchertypeid]: ++order.invoice_display_number}
+                await storeData('fusion-pro-pos-mobile-vouchernos', vouchers).then(async () => {
+                });
+            })
+        }
+        ///////// CREATE LOCALORDER ID //////////
+
+        deleteTempLocalOrder(order.tableorderid).then((msg:any) => {
+            appLog('msg',msg)
+            insertOrder(order).then(()=>{
+                getTempOrders().then(()=>{})
+                resolve('Save Order')
             });
+
+
         })
     })
+
+
+
+
 
 }
 
@@ -1115,6 +1133,9 @@ export const groupBy = (arr: any, property: any) => {
 
 export const selectItem = async (item: any) => {
 
+    const pricingtype = item?.pricing?.type;
+    const baseprice = item?.pricing?.price?.default[0][pricingtype]?.baseprice || 0;
+
     const setItemQnt = async (item: any) => {
 
         try {
@@ -1180,6 +1201,13 @@ export const selectItem = async (item: any) => {
             setItemQnt({...item, productqnt: +productqnt}).then()
             store.dispatch(setDialog({visible: false}))
         })
+    } else if (!Boolean(baseprice)) {
+        store.dispatch(setDialog({
+            visible: true,
+            hidecancel: true,
+            width: 360,
+            component: () => <ZeroPriceAlert item={item}/>
+        }))
     } else {
         setItemQnt(item).then()
     }
@@ -1240,8 +1268,6 @@ export const selectItem = async (item: any) => {
             .send()
     }
 }*/
-
-
 
 
 let PAGE_WIDTH = 48;
@@ -1306,7 +1332,7 @@ export const getLeftRight = (left: string, right: string, large: boolean = false
 
 export const generateKOT = async () => {
 
-    return new Promise(async (resolve,reject) => {
+    return new Promise(async (resolve, reject) => {
 
         let kotid: any = '';
         store.dispatch(showLoader())
@@ -1328,7 +1354,7 @@ export const generateKOT = async () => {
                 if ((today !== moment().format('YYYY-MM-DD'))) {
                     kotno = 0;
                     await retrieveData('fusion-pro-pos-mobile-settings').then(async (data: any) => {
-                        data.today=moment().format('YYYY-MM-DD');
+                        data.today = moment().format('YYYY-MM-DD');
                         saveLocalSettings("today", data.today).then();
                         await store.dispatch(setSettings(data));
                     })
@@ -1466,14 +1492,14 @@ export const generateKOT = async () => {
 
                                         if (Boolean(itemtags)) {
                                             let tags = itemtags?.map((itemtag: any) => {
-                                                return itemtag?.taglist.filter((tag:any)=>{
+                                                return itemtag?.taglist.filter((tag: any) => {
                                                     return tag.selected
                                                 })?.map((tag: any) => {
                                                     return `${itemtag.taggroupname} : ${tag.name}`
                                                 })
                                             });
 
-                                            kot.predefinenotes = kot.predefinenotes + ' ' + tags.filter((tag:any)=>{
+                                            kot.predefinenotes = kot.predefinenotes + ' ' + tags.filter((tag: any) => {
                                                 return Boolean(tag.length)
                                             }).join(' , ');
                                         }
@@ -1542,8 +1568,7 @@ export const generateKOT = async () => {
 
                             await recursive(0);
 
-                        }
-                        else{
+                        } else {
                             resolve(true)
                         }
 
@@ -1557,11 +1582,9 @@ export const generateKOT = async () => {
         }
 
 
-
     })
 
 }
-
 
 
 export const printInvoice = async (order?: any) => {
@@ -1574,7 +1597,6 @@ export const printInvoice = async (order?: any) => {
         cartData = await itemTotalCalculation(clone(cartData), undefined, undefined, undefined, undefined, 2, 2, false, false);
 
         const PRINTERS: any = store.getState()?.localSettings?.printers || [];
-
 
 
         ///////// CREATE LOCALORDER ID //////////
@@ -1592,7 +1614,17 @@ export const printInvoice = async (order?: any) => {
         }
         ///////// CREATE LOCALORDER ID //////////
 
-        const {currentLocation: {locationname, street1,state, street2, city,pin,mobile}}: any = localredux.localSettingsData;
+        const {
+            currentLocation: {
+                locationname,
+                street1,
+                state,
+                street2,
+                city,
+                pin,
+                mobile
+            }
+        }: any = localredux.localSettingsData;
         const {general: {legalname}}: any = localredux.initData;
         const {terminal_name}: any = localredux.licenseData.data;
         const {firstname, lastname}: any = localredux.authData;
@@ -1600,59 +1632,70 @@ export const printInvoice = async (order?: any) => {
         let decimalPlace = cartData?.currentDecimalPlace || 2;
 
         let totalqnt: any = 0;
-        let uniuqeitems:any = {};
+        let uniuqeitems: any = {};
         let totalmrp = 0;
 
 
         cartData?.invoiceitems?.map((item: any) => {
             totalqnt += +item.productqnt;
-            if(!Boolean(uniuqeitems[item.itemid])){
+            if (!Boolean(uniuqeitems[item.itemid])) {
                 uniuqeitems[item.itemid] = 0;
             }
             totalmrp += (item.mrp || item.productratedisplay) * item.productqnt;
-            uniuqeitems[item.itemid] = uniuqeitems[item.itemid]+1
+            uniuqeitems[item.itemid] = uniuqeitems[item.itemid] + 1
         });
 
         const totaluniqueitems = objToArray(uniuqeitems)?.length;
 
-        let paymentsby:any = [];
-        cartData?.payment?.map((pay:any)=>{
-            if(pay.paymentAmount) {
+        let paymentsby: any = [];
+        cartData?.payment?.map((pay: any) => {
+            if (pay.paymentAmount) {
                 paymentsby.push(pay.paymentby)
             }
         })
 
 
-        if(Boolean(paymentsby)){
+        if (Boolean(paymentsby)) {
             cartData = {
                 ...cartData,
-                paymentsby:paymentsby?.join(', '),
-                isListPayment:true
+                paymentsby: paymentsby?.join(', '),
+                isListPayment: true
             }
         }
 
         cartData.totalMRP = totalmrp;
-        if(+cartData.totalMRP > +cartData?.vouchertotaldisplay){
+        if (+cartData.totalMRP > +cartData?.vouchertotaldisplay) {
             cartData = {
                 ...cartData,
-                totalSave:totalmrp - cartData?.vouchertotaldisplay
+                totalSave: totalmrp - cartData?.vouchertotaldisplay
             }
         }
 
         let printJson = {
             ...cartData,
-            logo:getPrintTemplateLogo('Thermal'),
-            locationname, street1, street2,state, city,pin,mobile,legalname,terminalname:terminal_name,firstname, lastname,
-            clientname:cartData?.client || cartData?.clientname,
-            isListPayment:Boolean(cartData?.payment?.length > 0),
+            date: moment(cartData.date).format(dateFormat()) + ' ' + cartData.vouchercreatetime,
+            logo: getPrintTemplateLogo('Thermal'),
+            locationname,
+            street1,
+            street2,
+            state,
+            city,
+            pin,
+            mobile,
+            legalname,
+            terminalname: terminal_name,
+            firstname,
+            lastname,
+            clientname: cartData?.client || cartData?.clientname,
+            isListPayment: Boolean(cartData?.payment?.length > 0),
             isdisplaytaxable: cartData?.vouchersubtotaldisplay != cartData?.vouchertaxabledisplay,
             head: () => getItem("DESCRIPTION", "QNT", "RATE", "AMOUNT") + "\n" + getItem("HSN Code", "GST %", "", ""),
             items: cartData?.invoiceitems?.map((item: any) => {
                     return getItem(item.productdisplayname, item.productqnt, numberFormat(item.productratedisplay, decimalPlace), numberFormat(item.product_total_price_display, decimalPlace)) + "\n" + getItem(item?.hsn || '', item?.totalTaxPercentageDisplay + "%", "", "")
                 }
             ),
-            counter: () => getItem(`Total Items ${totaluniqueitems}`, "QNT : "+totalqnt, "", numberFormat(cartData?.vouchertotaldisplay, decimalPlace)),
-            countersubtotal: () => getItem(`Total Items ${totaluniqueitems}`, "QNT : "+totalqnt, "", numberFormat(cartData?.vouchersubtotaldisplay, decimalPlace)),
+            counter: () => getItem(`Total Items ${totaluniqueitems}`, "QNT : " + totalqnt, "", numberFormat(cartData?.vouchertotaldisplay, decimalPlace)),
+            countersubtotal: () => getItem(`Total Items ${totaluniqueitems}`, "QNT : " + totalqnt, "", numberFormat(cartData?.vouchersubtotaldisplay, decimalPlace)),
             total: () => getLeftRight(cartData.paymentsby || 'Total', numberFormat(cartData?.vouchertotaldisplay, decimalPlace)),
             subtotal: () => getLeftRight(cartData.paymentsby || 'Sub Total', numberFormat(cartData?.vouchertotaldisplay, decimalPlace)),
             taxabledisplay: () => getLeftRight("Taxable", numberFormat(cartData?.vouchertaxabledisplay, decimalPlace)),
@@ -1663,7 +1706,7 @@ export const printInvoice = async (order?: any) => {
             adjustment: () => getLeftRight("Adjustment", numberFormat(cartData?.adjustmentamount, decimalPlace)),
             totalMRP: () => getLeftRight("Total MRP", numberFormat(cartData?.totalMRP, decimalPlace)),
             paymentList: () => cartData.payment?.map((pm: any) => {
-                if(Boolean(pm?.paymentAmount)) {
+                if (Boolean(pm?.paymentAmount)) {
                     return getLeftRight(pm.paymentby, numberFormat(pm?.paymentAmount))
                 }
             }),
@@ -1674,13 +1717,13 @@ export const printInvoice = async (order?: any) => {
         }
 
         let printer = PRINTERS[PRINTER.INVOICE];
-        const upiid  = printer?.upiid;
+        const upiid = printer?.upiid;
         const upiname = printer?.upiname;
 
         PAGE_WIDTH = printer?.printsize || 48;
 
-        let qrcode:any = false;
-        if(upiid && upiname){
+        let qrcode: any = false;
+        if (upiid && upiname) {
             qrcode = {
                 value: `upi://pay?cu=INR&pa=${upiid}&pn=${upiname}&am=${cartData?.vouchertotaldisplay}&tr=${cartData?.invoice_display_number}`,
                 level: 'EPOS2_LEVEL_M',
@@ -1689,13 +1732,12 @@ export const printInvoice = async (order?: any) => {
         }
 
 
-
         return await new Promise(async (resolve) => {
 
-            const template:any = getPrintTemplate('Thermal');
+            const template: any = getPrintTemplate('Thermal');
 
-            if(Boolean(printer?.host)) {
-                setTimeout(()=>{
+            if (Boolean(printer?.host)) {
+                setTimeout(() => {
                     sendDataToPrinter(printJson, getTemplate(template), {
                         ...printer,
                         qrcode
@@ -1703,28 +1745,21 @@ export const printInvoice = async (order?: any) => {
                         store.dispatch(setAlert({visible: true, message: msg}))
                         resolve(msg)
                     });
-                },200)
+                }, 200)
 
-            }
-            else{
-                setTimeout(()=>{
+            } else {
+                setTimeout(() => {
                     store.dispatch(setAlert({visible: true, message: 'Invoice Printer not set'}))
-                },200)
+                }, 200)
                 resolve(false)
             }
         })
 
-    }
-    catch (e) {
-        appLog('error printInvoice',e)
+    } catch (e) {
+        appLog('error printInvoice', e)
     }
 
 }
-
-
-
-
-
 
 
 export const printKOT = async (kot?: any) => {
@@ -1740,15 +1775,14 @@ export const printKOT = async (kot?: any) => {
         const printer = PRINTERS[kot?.departmentid];
         PAGE_WIDTH = printer?.printsize || 48;
 
-        if((kot?.cancelled && printer?.printoncancel) || !kot?.cancelled) {
+        if ((kot?.cancelled && printer?.printoncancel) || !kot?.cancelled) {
             return new Promise(async (resolve) => {
-                if(Boolean(printer?.host)) {
-                    const template:any = getPrintTemplate('KOT');
+                if (Boolean(printer?.host)) {
+                    const template: any = getPrintTemplate('KOT');
                     sendDataToPrinter(printJson, getTemplate(template), printer).then((msg) => {
                         resolve(msg)
                     });
-                }
-                else{
+                } else {
                     store.dispatch(setAlert({visible: true, message: 'Kitchen Printer not set'}))
                     resolve('No printer set')
                 }
@@ -1761,21 +1795,21 @@ export const printKOT = async (kot?: any) => {
 }
 
 
-export const getPrintTemplateLogo = (type?:any) => {
-    const {printingtemplates}:any = localredux.localSettingsData || {}
+export const getPrintTemplateLogo = (type?: any) => {
+    const {printingtemplates}: any = localredux.localSettingsData || {}
 
-    if(Boolean(printingtemplates) && Boolean(printingtemplates[type])) {
-        return  printingtemplates[type]?.logo
+    if (Boolean(printingtemplates) && Boolean(printingtemplates[type])) {
+        return printingtemplates[type]?.logo
     }
     return ''
 }
 
 
-export const getPrintTemplate = (type?:any) => {
-    const {printingtemplates}:any = localredux.localSettingsData || {}
+export const getPrintTemplate = (type?: any) => {
+    const {printingtemplates}: any = localredux.localSettingsData || {}
 
-    if(Boolean(printingtemplates) && Boolean(printingtemplates[type])) {
-        return  base64Decode(printingtemplates[type]?.content)
+    if (Boolean(printingtemplates) && Boolean(printingtemplates[type])) {
+        return base64Decode(printingtemplates[type]?.content)
     }
     return type === 'KOT' ? defaultKOTTemplate : defaultInvoiceTemplate
 }
@@ -1806,7 +1840,7 @@ export const cancelOrder = async (navigation: any) => {
                 })
             }
         } else {
-            navigation.navigate('CancelReason',{type:'ordercancelreason'})
+            navigation.navigate('CancelReason', {type: 'ordercancelreason'})
         }
     } catch (e) {
         appLog('e', e)
@@ -1822,43 +1856,42 @@ export const arraySome = (arrayList: any[], key: string) => {
 
 
 export const getStateList = (country: any) => {
-    const {workspace}:any = localredux.initData;
-    const {token}:any = localredux.authData;
+    const {workspace}: any = localredux.initData;
+    const {token}: any = localredux.authData;
 
     let queryString = {country};
     return apiService({
         method: METHOD.GET,
         action: ACTIONS.GETSTATE,
         queryString,
-        workspace:workspace,
-        token:token,
+        workspace: workspace,
+        token: token,
         hideLoader: true,
         other: {url: adminUrl},
     })
 }
 
 
-export const selectWorkspace = async (workspace:any,navigation:any) => {
+export const selectWorkspace = async (workspace: any, navigation: any) => {
 
     store.dispatch(showLoader())
-    const {token}:any = localredux.authData;
+    const {token}: any = localredux.authData;
 
     await apiService({
         method: METHOD.GET,
         action: ACTIONS.INIT,
         queryString: {stream: "pos"},
-        other: {url: adminUrl,workspace:true},
+        other: {url: adminUrl, workspace: true},
         token: token,
         workspace: workspace.name
     }).then((response: any) => {
         store.dispatch(hideLoader())
 
         if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
-            localredux.initData = {...response.data, deviceName: response?.deviceName,workspace:workspace.name}
-            if(Boolean(localredux.initData?.general?.legalname) && Boolean(localredux.initData?.location) && Boolean(localredux.initData?.currency)){
+            localredux.initData = {...response.data, deviceName: response?.deviceName, workspace: workspace.name}
+            if (Boolean(localredux.initData?.general?.legalname) && Boolean(localredux.initData?.location) && Boolean(localredux.initData?.currency)) {
                 navigation.navigate('Terminal');
-            }
-            else{
+            } else {
                 navigation.navigate('OrganizationProfile');
             }
         }
@@ -1876,8 +1909,6 @@ export const getTemplate = (template: string) => {
 </document>
 `
 }
-
-
 
 
 /*
@@ -1899,8 +1930,6 @@ Permissions.getPermissionStatus('localNetwork').then((r) => {
 });*/
 
 
-
-
 export const getClients = async (refresh = false) => {
     await getClientsByWhere({}).then((clients: any) => {
         localredux.clientsData = clients
@@ -1908,20 +1937,31 @@ export const getClients = async (refresh = false) => {
 }
 
 export const getAddons = async (refresh = false) => {
-    await getAddonByWhere({}).then((addons:any) => {
+    await getAddonByWhere({}).then((addons: any) => {
         localredux.addonsData = addons
     });
 }
 
+export const getTempOrders = async (refresh = false) => {
+    await getTempOrdersByWhere().then((orders: any) => {
+        store.dispatch(setTableOrdersData(orders));
+    });
+}
+
+export const getOrders = async (refresh = false) => {
+    await getOrdersByWhere().then((orders: any) => {
+        store.dispatch(setOrdersData(orders));
+    });
+}
 
 
-export const gePhonebook = async (force?:any) => {
+export const gePhonebook = async (force?: any) => {
 
-    const synccontact:any = await  getLocalSettings('synccontact');
+    const synccontact: any = await getLocalSettings('synccontact');
 
-    appLog('synccontact',synccontact)
+    appLog('synccontact', synccontact)
 
-    if(!Boolean(synccontact) || force) {
+    if (!Boolean(synccontact) || force) {
 
         if (Platform.OS === "android") {
             try {
@@ -1947,7 +1987,7 @@ export const gePhonebook = async (force?:any) => {
         }
 
         if (Platform.OS === "ios") {
-           await PermissionsAndroid.requestMultiple([PERMISSIONS.IOS.CONTACTS]).then(async (statuses: any) => {
+            await PermissionsAndroid.requestMultiple([PERMISSIONS.IOS.CONTACTS]).then(async (statuses: any) => {
                 if (statuses[PERMISSIONS.IOS.CONTACTS]) {
                     await loadContacts()
                 }
@@ -1978,19 +2018,19 @@ export const loadContacts = async () => {
                     const regx = /[^0-9]/g;
                     const regx2 = /[^a-zA-Z0-9_. -]/g;
                     contact && clients.push({
-                        displayname: (contact.displayName || contact.givenName + ' ' + contact.familyName).replace(regx2," "),
-                        phone:  contact.phoneNumbers[0].number,
-                        clientid: contact.phoneNumbers[0].number?.replace(regx,""),
+                        displayname: (contact.displayName || contact.givenName + ' ' + contact.familyName).replace(regx2, " "),
+                        phone: contact.phoneNumbers[0].number,
+                        clientid: contact.phoneNumbers[0].number?.replace(regx, ""),
                         phonebook: true,
-                        clienttype:0,
-                        taxregtype:'',
+                        clienttype: 0,
+                        taxregtype: '',
                         thumbnailPath: contact.thumbnailPath
                     })
                 }
             });
             clients.sort(compare);
 
-            await insertClients(clients,'all').then(async () => {
+            await insertClients(clients, 'all').then(async () => {
                 await saveLocalSettings('synccontact', true).then(() => {
                     store.dispatch(hideLoader())
                 })

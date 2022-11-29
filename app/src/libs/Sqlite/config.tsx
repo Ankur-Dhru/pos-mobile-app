@@ -5,6 +5,7 @@ export enum TABLE {
   ADDON = "tblAddon",
   CLIENT = "tblClient",
   ORDER = "tblOrder",
+  TEMPORDER = "tblTempOrder",
 }
 
 export const CREATE_INIT_TABLE = `create table if not exists ${TABLE.INIT}
@@ -65,20 +66,16 @@ export const CREATE_ITEM_INDEX_ITEMUNIQUE = `create index index_itemuniquecode o
 
 export const CREATE_ORDER_TABLE = `create table if not exists ${TABLE.ORDER}
 (
-  localorderid           int auto_increment
-  primary key,
-  invoice_display_number int                          null,
-  orderid                varchar(50)                  null,
-  datetime               datetime                     null,
-  vouchertypeid          varchar(100)                 null,
-  paymentmethod          varchar(50)                  null,
-  clientid               int                          null,
-  staffid                int            default 0     null,
-  vouchertotaldisplay    decimal(20, 3) default 0.000 null,
-  data                   json                         null,
-  syncstatus             tinyint(1)     default 0     null
+  orderid            varchar primary key,   
+  data                   TEXT  
 );`;
 
+
+export const CREATE_TEMPORDER_TABLE = `create table if not exists ${TABLE.TEMPORDER}
+(
+  tableorderid           varchar primary key,   
+  data                   TEXT  
+);`;
 
 
 

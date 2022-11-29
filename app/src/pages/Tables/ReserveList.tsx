@@ -3,7 +3,7 @@ import {Divider, Paragraph, Text} from "react-native-paper";
 import {setDialog} from "../../redux-store/reducer/component";
 import React from "react";
 import {connect, useDispatch} from "react-redux";
-import {appLog, isEmpty} from "../../libs/function";
+import {appLog, dateFormat, isEmpty} from "../../libs/function";
 import {styles} from "../../theme";
 import {Button} from "../../components";
 import {current} from "../../libs/static";
@@ -32,7 +32,7 @@ const ReserveList = (props: any) => {
                 return <TouchableOpacity onPress={() => onClickReserveItem(data?.item)}>
                     <View style={[styles.py_4]}>
                         <View><Text style={[styles.bold]}>{data?.item?.clientname}</Text></View>
-                        <View style={[styles.grid]}><Text>{data?.item?.tablename} </Text><Text> {moment(data?.item?.date).format('DD/MM/YYYY')}</Text><Text> {moment(data?.item?.time).format('HH:mm')}</Text></View>
+                        <View style={[styles.grid]}><Text>{data?.item?.tablename} </Text><Text> {moment(data?.item?.date).format(dateFormat())}</Text><Text> {moment(data?.item?.time).format('HH:mm')}</Text></View>
                     </View>
                     <Divider/>
                 </TouchableOpacity>

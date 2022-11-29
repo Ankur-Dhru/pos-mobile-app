@@ -126,8 +126,8 @@ const Register = (props: any) => {
                     <View style={[styles.middleForm]}>
                         <KeyboardScroll>
 
-                            <View style={[styles.px_6]}>
-                                <Title>Create an account </Title>
+                            <View style={[styles.p_6]}>
+
                                 <View>
 
                                     <View>

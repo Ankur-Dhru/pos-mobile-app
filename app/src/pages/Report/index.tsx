@@ -2,9 +2,9 @@ import React, {useEffect, useState} from "react";
 import {FlatList, TouchableOpacity, View} from "react-native";
 import {Divider, Paragraph} from "react-native-paper"
 import {
-    appLog,
+    appLog, dateFormat,
     getDateWithFormat, getItem, getLeftRight, getPrintTemplate, getTemplate, getTrimChar,
-    isEmpty, numberFormat, objToArray,
+    isEmpty, numberFormat, objToArray, printInvoice,
 
     retrieveData,
     storeData,
@@ -27,11 +27,6 @@ import {
 import apiService from "../../libs/api-service";
 import ProIcon from "../../components/ProIcon";
 
-import {itemTotalCalculation} from "../../libs/item-calculation";
-import store from "../../redux-store/store";
-import {setCartData} from "../../redux-store/reducer/cart-data";
-import {sendDataToPrinter} from "../../libs/Network";
-import {printInvoice} from "../Cart/CartActions";
 
 const Index = ({ordersData}: any) => {
 
@@ -118,9 +113,7 @@ const Index = ({ordersData}: any) => {
             name = `${item?.voucherprefix}${item?.voucherdisplayid} ${name}`
         }
 
-        return <TouchableOpacity
-            style={[styles.noshadow]}>
-
+        return <TouchableOpacity style={[styles.noshadow]}>
             <View
                 style={[styles.grid, styles.p_4, styles.noWrap, styles.top, styles.justifyContentSpaceBetween]}>
                 <View style={[styles.w_auto]}>
@@ -128,7 +121,7 @@ const Index = ({ordersData}: any) => {
 
                         <View style={[styles.ml_2]}>
                             <Paragraph
-                                style={[styles.bold, styles.paragraph]}>{getDateWithFormat(item?.date, "DD/MM/YYYY")}</Paragraph>
+                                style={[styles.bold, styles.paragraph]}>{getDateWithFormat(item?.date, dateFormat())}</Paragraph>
                             <Paragraph style={[styles.bold, styles.paragraph]}>{name}</Paragraph>
                         </View>
                     </View>

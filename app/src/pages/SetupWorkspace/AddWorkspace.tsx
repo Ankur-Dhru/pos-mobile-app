@@ -69,9 +69,8 @@ class AddWorkspace extends Component<any> {
 
                                     <ScrollView>
 
-                                        <View style={[styles.px_6]}>
+                                        <View style={[styles.p_6]}>
 
-                                        <Title>Add Workspace </Title>
 
                                         <View>
 

@@ -8,6 +8,7 @@ import moment from "moment";
 import {defalut_payment_term, localredux} from "../../libs/static";
 import {styles} from "../../theme";
 import {ScrollView} from "react-native-gesture-handler";
+import {setBottomSheet} from "../../redux-store/reducer/component";
 
 
 class Index extends React.Component<any> {
@@ -133,4 +134,11 @@ class Index extends React.Component<any> {
 }
 
 
-export default  Index;
+const mapStateToProps = (state:any) => {
+    return {bottomsheet: state.component.bottomsheet}
+};
+const mapDispatchToProps = (dispatch:any) => ({
+    setBottomSheet: (bottomsheet:any) => dispatch(setBottomSheet(bottomsheet)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(withTheme(Index));

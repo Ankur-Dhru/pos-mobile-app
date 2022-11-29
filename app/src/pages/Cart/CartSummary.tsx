@@ -1,5 +1,5 @@
 import React, {memo, useEffect} from "react";
-import {appLog, clone, isRestaurant, toCurrency, updateComponent} from "../../libs/function";
+import {appLog, clone, dateFormat, isRestaurant, toCurrency, updateComponent} from "../../libs/function";
 import {View} from "react-native";
 import {Card, Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
@@ -63,7 +63,7 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
                       navigation.navigate('ClientAndSource', {title: 'Advance Order', edit: true,});
                   }}>
                 <Paragraph>Delivery on
-                    : {moment(advanceorder.date).format('DD/MM/YYYY')} {moment(advanceorder.time).format('HH:mm A')}</Paragraph>
+                    : {moment(advanceorder.date).format(dateFormat())} {moment(advanceorder.time).format('HH:mm A')}</Paragraph>
                 {Boolean(advanceorder.notes) && <Paragraph>{advanceorder.notes}</Paragraph>}
             </Card>}
         <Card onPress={() => {

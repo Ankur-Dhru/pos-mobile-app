@@ -1,5 +1,8 @@
 import {getType} from "@reduxjs/toolkit";
 import {assignOption} from "./function";
+import {Appbar} from "react-native-paper";
+import React from "react";
+import Icon from "react-native-fontawesome-pro";
 
 
 export const isDevelopment = process.env.NODE_ENV === "development";
@@ -191,13 +194,15 @@ export const screenOptionStyle: any = {
     disableBackButtonMenu: false,
     backButtonInCustomView: false,
     headerBackTitleVisible: false,
-    headerHideBackButton: true,
+    headerHideBackButton: false,
     stackAnimation: 'slide_from_right',
     stackPresentation: 'push',
     screenOrientation: 'portrait',
     headerTopInsetEnabled: false,
     headerHideShadow: true,
     headerLargeTitleHideShadow: true,
+
+
     headerStyle: {
         /*shadowOpacity: 0,
         elevation: 0,*/

@@ -52,14 +52,11 @@ export const insertItems = async (  itemsdata?: any,type:any = 'all') => {
           }
           else{
               insertQuery = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert") values ${values}`;
-              appLog('insertQuery',insertQuery)
               try {
                   const results = await db.executeSql(insertQuery);
-                  appLog('results',results)
               }
               catch (e) {
                   appLog('ERROR',insertQuery)
-                  appLog('insertItems e',e)
               }
           }
       }
@@ -68,9 +65,7 @@ export const insertItems = async (  itemsdata?: any,type:any = 'all') => {
 
           try {
               const query = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert") values ${insertQuery.join(', ')}`;
-              appLog('query',query)
               const results = await db.executeSql(query);
-              appLog('results',results)
           }
           catch (e) {
               appLog('insertItems e',e)
@@ -103,13 +98,11 @@ export const insertAddons = async (  itemsdata?: any,type:any = 'all') => {
             }
             else{
                 insertQuery = `INSERT OR REPLACE INTO tblAddon("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert") values ${values}`;
-                appLog('insertQuery',insertQuery)
                 try {
                     await db.executeSql(insertQuery);
                 }
                 catch (e) {
                     appLog('ERROR',insertQuery)
-                    appLog('insertAddons e',e)
                 }
             }
         }
@@ -141,13 +134,11 @@ export const insertClients = async (  clientsdata?: any,type:any = 'all') => {
             }
             else{
                 insertQuery = `INSERT OR REPLACE INTO tblClient("clientid","displayname","phone","taxregtype","data","clienttype") values ${values}`;
-                appLog('insertQuery',insertQuery)
                 try {
                     await db.executeSql(insertQuery);
                 }
                 catch (e) {
                     appLog('ERROR',insertQuery)
-                    appLog('insertClients e',e)
                 }
             }
         }
@@ -163,53 +154,55 @@ export const insertClients = async (  clientsdata?: any,type:any = 'all') => {
 };
 
 
-/*export const insertItemsAll = async (itemsdata?: any) => {
-    const db = await getDBConnection();
-    const regx = /[^a-zA-Z0-9_. -]/g;
-    let insertQuery:any = [];
+export const insertTempOrder =  (data?: any) => {
+    appLog('11')
+    return new Promise<any>(async (resolve)=> {
+        const db = await getDBConnection();
+        appLog('12')
+        let values = `('${data?.tableorderid}', '${JSON.stringify(data)}')`;
+        let insertQuery = `INSERT
+        OR REPLACE INTO tblTempOrder("tableorderid","data") values
+        ${values}`;
 
-    if(itemsdata.length > 0) {
-        await itemsdata.map(async (data: any) => {
-            data.itemname =  data?.itemname.replace(regx," ");
-            data.groupname =  data?.groupname.replace(regx," ");
-            let values = `(${data?.itemid}, "${data?.itemname}", "${data?.itemgroupid}", "${data?.uniqueproductcode}", '${JSON.stringify(data)}', "${data?.itemstatus}", ${data?.pricealert})`;
-            insertQuery.push(values);
-        })
-        const query = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert") values ${insertQuery.join(', ')}`;
-        const results = await db.executeSql(query);
-        appLog('results',results)
-    }
-    db.close().then()
-};*/
+        appLog('13')
+        try {
+            await db.executeSql(insertQuery);
+
+            appLog('14')
+        } catch (e) {
+            appLog('ERROR', insertQuery)
+        }
+        db.close().then();
+        appLog('15')
+        resolve('Inset Temp Order')
+    })
+};
+
+export const insertOrder =  (data?: any) => {
+    return new Promise<any>(async (resolve)=>{
+        const db = await getDBConnection();
+        let values = `('${data?.orderid}', '${JSON.stringify(data)}')`;
+        let  insertQuery = `INSERT OR REPLACE INTO tblOrder("orderid","data") values ${values}`;
+        try {
+            appLog('insertQuery',insertQuery)
+            await db.executeSql(insertQuery);
+        }
+        catch (e) {
+            appLog('ERROR',insertQuery)
+        }
+        db.close().then()
+        resolve('Inset Order')
+    })
+
+};
 
 
 
-/*export const insertOrder = async (tblOrder: any, invoice_display_number: number, localdatetime: any, data: any) => {
 
-  let orderid = uuidv4();
 
-  return await tblOrder
-    .insert("invoice_display_number",
-      "orderid",
-      "datetime",
-      "clientid",
-      "vouchertypeid",
-      "vouchertotaldisplay",
-      "data",
-      "staffid",
-      "syncstatus",
-      "paymentmethod")
-    .values(invoice_display_number,
-      orderid,
-      localdatetime,
-      data?.clientid,
-      data?.vouchertypeid,
-      data?.vouchertotaldisplay,
-      data,
-      data?.staffid,
-      false,
-      data?.paymentmethod)
-    .execute()
-}*/
+
+
+
+
 
 

@@ -1,6 +1,6 @@
 import {current, device, localredux} from "../../libs/static";
 import React, {memo, useCallback, useEffect, useState} from "react";
-import {isEmpty, saveTempLocalOrder, toCurrency} from "../../libs/function";
+import {dateFormat, isEmpty, saveTempLocalOrder, toCurrency} from "../../libs/function";
 import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
 import {Appbar, Card, FAB, Menu, Paragraph, Title, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
@@ -211,7 +211,7 @@ const Index = (props: any) => {
                                 {Boolean(item?.advanceorder?.date) && <>
                                     <Paragraph style={[styles.paragraph, styles.text_xs]}>Delivery on </Paragraph>
                                     <Text
-                                        style={[styles.paragraph]}>{moment(item?.advanceorder.date).format('DD/MM/YYYY')} {moment(item?.advanceorder.time).format('HH:mm')}</Text>
+                                        style={[styles.paragraph]}>{moment(item?.advanceorder.date).format(dateFormat())} {moment(item?.advanceorder.time).format('HH:mm')}</Text>
                                 </>}
 
 

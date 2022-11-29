@@ -23,7 +23,7 @@ import {
 
     CREATE_ITEM_INDEX_ITEMGROUPID,
     CREATE_ITEM_INDEX_ITEMNAME, CREATE_ITEM_INDEX_ITEMUNIQUE,
-    CREATE_ITEM_TABLE
+    CREATE_ITEM_TABLE, CREATE_ORDER_TABLE, CREATE_TEMPORDER_TABLE
 } from "../../libs/Sqlite/config";
 
 const Index = (props: any) => {
@@ -38,17 +38,15 @@ const Index = (props: any) => {
         try {
            const db:any = await getDBConnection();
 
-            await db.transaction(function (txn:any) {
+            db.executeSql(CREATE_ITEM_TABLE);
+            db.executeSql(CREATE_ADDON_TABLE);
+            db.executeSql(CREATE_CLIENT_TABLE);
+            db.executeSql(CREATE_ORDER_TABLE);
+            db.executeSql(CREATE_TEMPORDER_TABLE);
 
-                txn.executeSql(CREATE_ITEM_TABLE);
-                txn.executeSql(CREATE_ADDON_TABLE);
-                txn.executeSql(CREATE_CLIENT_TABLE);
-
-
-                txn.executeSql(CREATE_ITEM_INDEX_ITEMGROUPID);
-                txn.executeSql(CREATE_ITEM_INDEX_ITEMNAME);
-                txn.executeSql(CREATE_ITEM_INDEX_ITEMUNIQUE);
-            });
+            db.executeSql(CREATE_ITEM_INDEX_ITEMGROUPID);
+            db.executeSql(CREATE_ITEM_INDEX_ITEMNAME);
+            db.executeSql(CREATE_ITEM_INDEX_ITEMUNIQUE);
 
         } catch (error) {
             appLog('error',error);
@@ -86,9 +84,7 @@ const Index = (props: any) => {
                     await dispatch(setSettings(settings));
                 })
 
-                retrieveData('fusion-pro-pos-mobile-tableorder').then(async (tableorders: any) => {
-                    await dispatch(setTableOrdersData(tableorders));
-                })
+
                 screen = 'PinStackNavigator';
             }
         }

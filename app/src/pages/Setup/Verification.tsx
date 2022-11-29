@@ -87,9 +87,7 @@ class Index extends Component<any> {
 
                                     <ScrollView>
 
-                                        <View style={[styles.px_6]}>
-
-                                        <Title>Verify Email </Title>
+                                        <View style={[styles.p_6]}>
 
                                         <View>
                                             <Paragraph style={[styles.paragraph]}>Your Registered Email </Paragraph>
@@ -98,7 +96,6 @@ class Index extends Component<any> {
                                                     {this.initdata.email} -
                                                 </Paragraph>
                                                 <TouchableOpacity onPress={() => {
-                                                    appLog('change  emial')
                                                     store.dispatch(setDialog({
                                                         visible: true,
                                                         hidecancel: true,

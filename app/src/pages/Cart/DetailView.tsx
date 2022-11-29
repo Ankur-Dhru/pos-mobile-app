@@ -8,7 +8,7 @@ import {device} from "../../libs/static";
 import CartActions from "./CartActions";
 import CartSummary from "./CartSummary";
 import {useNavigation} from "@react-navigation/native";
-import {Menu} from "react-native-paper";
+import {Appbar, Menu} from "react-native-paper";
 import {TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
 import ProIcon from "../../components/ProIcon";
@@ -33,11 +33,9 @@ const Index = (props: any) => {
                 <Menu
                     visible={visible}
                     onDismiss={closeMenu}
-                    anchor={<TouchableOpacity onPress={() => {
+                    anchor={<Appbar.Action icon={'dots-vertical'} onPress={() => {
                         openMenu()
-                    }} >
-                        <ProIcon name={'ellipsis-vertical'}/>
-                    </TouchableOpacity>}>
+                    }}/>}>
 
                     <DeleteButton
                         options={['Yes','No']}

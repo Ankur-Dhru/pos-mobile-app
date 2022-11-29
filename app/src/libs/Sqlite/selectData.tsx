@@ -1,7 +1,5 @@
-//import {v4 as uuidv4} from "uuid";
 
-import {SQLiteDatabase} from "react-native-sqlite-storage";
-import {appLog,  errorAlert} from "../function";
+import {appLog} from "../function";
 import {getDBConnection} from "./index";
 import {TABLE} from "./config";
 
@@ -42,7 +40,6 @@ export const getItemsByWhere = async ({itemgroupid,itemname,start}:any) => {
     }
     db.close().then()
 }
-
 
 export const getAddonByWhere = async ({itemgroupid,itemname,start}:any) => {
     const db = await getDBConnection();
@@ -108,6 +105,59 @@ export const getClientsByWhere = async ({displayname,phone,search,start}:any) =>
         return items
     } catch (e) {
         appLog('get clients', e)
+    }
+    db.close().then()
+}
+
+export const getTempOrdersByWhere = async () => {
+    const db = await getDBConnection();
+
+    try {
+        let items:any=[];
+        await db.transaction(function (txn) {
+
+            let where=' 1 = 1 ';
+            const query = `SELECT * FROM ${TABLE.TEMPORDER} where  ${where}`;
+            txn.executeSql(
+                query,
+                [],
+                function (tx, res) {
+                    for (let i = 0; i < res.rows.length; ++i) {
+                        items.push(JSON.parse(res.rows.item(i).data))
+                    }
+                }
+            );
+        });
+        return items
+    } catch (e) {
+        appLog('get temp orders', e)
+    }
+    db.close().then()
+}
+
+export const getOrdersByWhere = async () => {
+    const db = await getDBConnection();
+
+    try {
+        let items:any=[];
+        await db.transaction(function (txn) {
+
+            let where=' 1 = 1 ';
+            const query = `SELECT * FROM ${TABLE.ORDER} where  ${where}`;
+            txn.executeSql(
+                query,
+                [],
+                function (tx, res) {
+                    for (let i = 0; i < res.rows.length; ++i) {
+                        items.push(JSON.parse(res.rows.item(i).data))
+                    }
+                }
+            );
+        });
+        appLog('items.length',items.length)
+        return items
+    } catch (e) {
+        appLog('get orders', e)
     }
     db.close().then()
 }

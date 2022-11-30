@@ -138,9 +138,8 @@ export const cartData = createSlice({
                 updatecart: !state.updatecart
             }
         },
-        resetCart: () => {
-
-            return clone(intialState);
+        resetCart: (state:any) => {
+            return clone({...intialState,ordertype:state.ordertype});
         }
     },
 });

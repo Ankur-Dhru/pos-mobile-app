@@ -691,8 +691,8 @@ export const filterArray = (array: any, fields: any, searchText: any, multilevel
     }
 }
 
-export const backButton: any = <ProIcon align={'left'} name={'chevron-left'}/>;
-export const chevronRight: any = <ProIcon name={'chevron-right'} align={'right'} color={'#bbb'} size={16}/>;
+
+export const chevronRight: any = <ProIcon name={'chevron-right'} align={'right'} color={'#bbb'} size={20}/>;
 
 
 export const toCurrency = (value: any, code?: any, decimal?: any) => {
@@ -949,12 +949,9 @@ export const saveTempLocalOrder = (order?: any, config?: any) => {
 export const deleteTempLocalOrder = (tableorderid: any) => {
     return new Promise<any>(async (resolve) => {
         await deleteTable(TABLE.TEMPORDER, `tableorderid = '${tableorderid}'`).then(() => {
-            //store.dispatch(deleteOrder(tableorderid))
             store.dispatch(resetCart())
             resolve('Delete Temp Order')
         })
-        //await getTempOrders().then(() => {})
-
     })
 }
 
@@ -1009,7 +1006,6 @@ export const saveLocalOrder = (order?: any) => {
         deleteTempLocalOrder(order.tableorderid).then((msg:any) => {
             appLog('msg',msg)
             insertOrder(order).then(()=>{
-                //getTempOrders().then(()=>{})
                 resolve('Save Order')
             });
         })

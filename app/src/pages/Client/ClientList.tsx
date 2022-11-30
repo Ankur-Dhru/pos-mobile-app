@@ -15,6 +15,7 @@ import {useNavigation} from "@react-navigation/native";
 
 import store from "../../redux-store/store";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
+import Avatar from "../../components/Avatar";
 
 
 const Item = memo(({client}: any) => {
@@ -24,8 +25,11 @@ const Item = memo(({client}: any) => {
          store.dispatch(updateCartField({clientid: client.clientid,clientname: client.displayname}));
         navigation.goBack()
     }} style={[styles.noshadow]}>
-        <View style={[styles.p_4]}>
+        <View style={[styles.p_4,styles.grid,styles.noWrap,styles.middle]}>
             <View>
+                <Avatar label={client.displayname} value={client.clientid} fontsize={12} size={40}/>
+            </View>
+            <View style={[styles.ml_2]}>
                 <Paragraph style={[styles.paragraph,styles.text_sm]}>{client.displayname}</Paragraph>
             </View>
         </View>

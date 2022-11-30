@@ -27,7 +27,7 @@ const Index = ({clientid, clientname}: any) => {
 
             <View style={[styles.grid, styles.justifyContent, {paddingTop: 8, paddingBottom: 8}]}>
                 <View style={[styles.grid, styles.justifyContent, styles.noWrap]}>
-                    <Avatar label={client.label} value={client.value} fontsize={12} size={30}/>
+                    <Avatar label={client.label} value={client.value} fontsize={12} size={40}/>
                     <View style={[styles.ml_2]}><Paragraph
                         style={[styles.paragraph, styles.bold]}> {client.label}</Paragraph></View>
                 </View>

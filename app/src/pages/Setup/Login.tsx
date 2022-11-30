@@ -1,16 +1,19 @@
-import React, {useEffect, useState} from "react";
+import React, {useRef, useState} from "react";
 
 
-import {Image, Linking, ScrollView, Text, TouchableOpacity, View} from "react-native";
-import {Card, Paragraph, Title,TextInput as TI,} from "react-native-paper";
+import {Image, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import {Paragraph, TextInput as TI, Title,} from "react-native-paper";
 import {styles} from "../../theme";
 import Container from "../../components/Container";
 import {Field, Form} from "react-final-form";
 import {
-    ACTIONS, APP_NAME,
-    composeValidators, device, grecaptcharesponse,
+    ACTIONS,
+    composeValidators,
+    device,
+    grecaptcharesponse,
     isDevelopment,
-    isEmail, localredux,
+    isEmail,
+    localredux,
     loginUrl,
     METHOD,
     required,
@@ -19,8 +22,7 @@ import {
 import InputBox from "../../components/InputBox";
 import Button from "../../components/Button";
 import apiService from "../../libs/api-service";
-import {appLog, isEmpty} from "../../libs/function";
-import KeyboardScroll from "../../components/KeyboardScroll";
+import {isEmpty} from "../../libs/function";
 import KAccessoryView from "../../components/KAccessoryView";
 
 
@@ -28,7 +30,9 @@ const Index = (props: any) => {
 
     const {navigation}: any = props;
 
-    const [passwordVisible,setPasswordVisible]:any = useState(true)
+    const [passwordVisible, setPasswordVisible]: any = useState(true)
+
+    let secondTextInput:any = useRef()
 
     const initdata: any = isDevelopment ? {
         //email: 'ankur9090_132@dhrusoft.com',
@@ -43,7 +47,7 @@ const Index = (props: any) => {
 
         values = {
             ...values,
-            deviceid:'asdfadsf',
+            deviceid: 'asdfadsf',
             "g-recaptcha-response": grecaptcharesponse
         }
         await apiService({
@@ -54,23 +58,22 @@ const Index = (props: any) => {
         }).then((response: any) => {
 
 
-            const {email_verified,mobile_verified,whatsapp_verified,phone_number_verified} = response.data;
+            const {email_verified, mobile_verified, whatsapp_verified, phone_number_verified} = response.data;
 
             if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
-                localredux.licenseData = {...values,...response.data}
+                localredux.licenseData = {...values, ...response.data}
                 localredux.authData = {...response.data, token: response.token}
                 device.token = response.token;
-                if(!email_verified){
-                    navigation.replace('Verification',{userdetail: response.data});
-                }
-                else {
+                if (!email_verified) {
+                    navigation.replace('Verification', {userdetail: response.data});
+                } else {
                     navigation.replace('Workspaces');
                 }
             }
         })
     }
 
-    return  <Container>
+    return <Container>
 
 
         <Form
@@ -79,81 +82,87 @@ const Index = (props: any) => {
             initialValues={initdata}
             render={({handleSubmit, submitting, values, ...more}: any) => (
                 <>
-                <View style={[styles.middle,]}>
-                    <View style={[styles.middleForm,{maxWidth:380,}]}>
+                    <View style={[styles.middle,]}>
+                        <View style={[styles.middleForm, {maxWidth: 380,}]}>
 
-                    <ScrollView>
+                            <ScrollView>
 
-                        <View style={[styles.px_6]}>
-                            <View style={[styles.middle, {marginBottom: 30,marginTop:30}]}>
-                                <Image
-                                    style={[{width: 70, height: 70}]}
-                                    source={require('../../assets/dhru-logo-22.png')}
-                                />
-                                <Title style={[styles.mt_5]}>Login with email </Title>
-                                <Text style={[styles.muted]}>account.dhru.com</Text>
-                            </View>
+                                <View style={[styles.px_6]}>
+                                    <View style={[styles.middle, {marginBottom: 30, marginTop: 30}]}>
+                                        <Image
+                                            style={[{width: 70, height: 70}]}
+                                            source={require('../../assets/dhru-logo-22.png')}
+                                        />
+                                        <Title style={[styles.mt_5]}>Login with email </Title>
+                                        <Text style={[styles.muted]}>account.dhru.com</Text>
+                                    </View>
 
-                            <View style={[styles.py_5]}>
-                                <View style={[styles.mb_5]}>
-                                    <Field name="email" validate={composeValidators(required, isEmail)}>
-                                        {props => (
-                                            <InputBox
-                                                {...props}
-                                                value={props.input.value}
-                                                label={'Email'}
-                                                autoFocus={false}
-                                                autoCapitalize='none'
-                                                keyboardType='email-address'
-                                                onChange={props.input.onChange}
-                                            />
-                                        )}
-                                    </Field>
+                                    <View style={[styles.py_5]}>
+                                        <View style={[styles.mb_5]}>
+                                            <Field name="email" validate={composeValidators(required, isEmail)}>
+                                                {props => (
+                                                    <InputBox
+                                                        {...props}
+                                                        value={props.input.value}
+                                                        label={'Email'}
+                                                        autoFocus={false}
+                                                        returnKeyType={'next'}
+                                                        autoCapitalize='none'
+                                                        keyboardType='email-address'
+                                                        onChange={props.input.onChange}
+                                                    />
+                                                )}
+                                            </Field>
+                                        </View>
+
+                                        <View>
+                                            <Field name="password" validate={required}>
+                                                {props => (
+                                                    <InputBox
+                                                        ref={(input:any) => { secondTextInput = input; }}
+                                                        value={props.input.value}
+                                                        label={'Password'}
+                                                        onSubmitEditing={(e: any) => {
+                                                            handleSubmit(values)
+                                                        }}
+                                                        right={<TI.Icon name={passwordVisible ? "eye" : "eye-off"}
+                                                                        onPress={() => setPasswordVisible(!passwordVisible)}/>}
+                                                        returnKeyType={'go'}
+                                                        autoCapitalize='none'
+                                                        secureTextEntry={passwordVisible}
+                                                        onChange={props.input.onChange}
+                                                    />
+                                                )}
+                                            </Field>
+                                        </View>
+
+
+                                    </View>
+
+                                    <View style={[styles.middle, styles.mt_5, {marginBottom: 20}]}>
+                                        <TouchableOpacity onPress={() => navigation.navigate('Register')}><Paragraph
+                                            style={[styles.paragraph, styles.mt_5]}>New User? <Text
+                                            style={[{color: styles.primary.color}]}> Create an account </Text>
+                                        </Paragraph></TouchableOpacity>
+                                    </View>
                                 </View>
 
-                                <View>
-                                    <Field name="password" validate={required}>
-                                        {props => (
-                                            <InputBox
-                                                value={props.input.value}
-                                                label={'Password'}
-                                                onSubmitEditing={(e: any) => {
-                                                    handleSubmit(values)
-                                                }}
-                                                right={<TI.Icon name={passwordVisible ? "eye" : "eye-off"}  onPress={() =>  setPasswordVisible(!passwordVisible)}/>}
-                                                returnKeyType={'go'}
-                                                autoCapitalize='none'
-                                                secureTextEntry={passwordVisible}
-                                                onChange={props.input.onChange}
-                                            />
-                                        )}
-                                    </Field>
+                            </ScrollView>
+
+                            <KAccessoryView>
+                                <View style={[styles.submitbutton, styles.mb_5]}>
+                                    <Button more={{color: 'white'}} disable={more.invalid} secondbutton={more.invalid}
+                                            onPress={() => {
+                                                handleSubmit(values)
+                                            }}> Login
+                                    </Button>
                                 </View>
 
+                            </KAccessoryView>
 
-                            </View>
-
-                            <View style={[styles.middle,styles.mt_5, {marginBottom: 20}]}>
-                                <TouchableOpacity onPress={()=> navigation.navigate('Register') }><Paragraph style={[styles.paragraph,styles.mt_5]}>New User? <Text style={[{color:styles.primary.color}]}> Create an account </Text> </Paragraph></TouchableOpacity>
-                            </View>
                         </View>
-
-                    </ScrollView>
-
-                    <KAccessoryView>
-                        <View style={[styles.submitbutton,styles.mb_5]}>
-                            <Button more={{color:'white'}} disable={more.invalid} secondbutton={more.invalid}
-                                    onPress={() => {
-                                        handleSubmit(values)
-                                    }}> Login
-                            </Button>
-                        </View>
-
-                    </KAccessoryView>
 
                     </View>
-
-                </View>
 
                 </>
 
@@ -166,4 +175,4 @@ const Index = (props: any) => {
 
 }
 
-export default  Index;
+export default Index;

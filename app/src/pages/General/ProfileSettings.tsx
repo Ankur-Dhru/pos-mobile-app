@@ -19,6 +19,8 @@ const ProfileSettings = () => {
     const {avatar_url, companyname, email: aemail, firstname, lastname} = localredux.authData;
     const {password, email,data:{terminal_name}} = localredux.licenseData;
 
+    const {role}:any = localredux.authData
+
     const {workspace} = localredux.initData
 
     const windowHeight = Dimensions.get('window').height;
@@ -140,17 +142,34 @@ const ProfileSettings = () => {
                     <View>
                         <View>
 
+
+
                             <List.Section>
+
+                                <List.Subheader>Reports</List.Subheader>
+
+                                <List.Item
+                                    title={'Sales Invoices'}
+                                    onPress={() => {
+                                        navigation.goBack()
+                                        navigation.navigate("SalesReportNavigator");
+                                    }}
+                                    left={() =>  <List.Icon icon="newspaper-variant-outline"/>}
+                                    right={() =>  <List.Icon icon="chevron-right"/>}
+                                />
+
+                                <Divider/>
 
 
                             <List.Subheader>Create a New</List.Subheader>
 
                             <List.Item
 
-                                title={'+ Item Category'}
+                                title={'Item Category'}
                                 onPress={async () => {
                                     navigation.navigate("AddEditCategory");
                                 }}
+                                left={() =>  <List.Icon icon="plus"/>}
                                 right={() =>  <List.Icon icon="chevron-right"/>}
                             />
 
@@ -158,10 +177,11 @@ const ProfileSettings = () => {
 
                             <List.Item
 
-                                title={'+ Item'}
+                                title={'Item'}
                                 onPress={async () => {
                                     navigation.navigate("AddEditItemNavigator");
                                 }}
+                                left={() =>  <List.Icon icon="plus"/>}
                                 right={() =>  <List.Icon icon="chevron-right"/>}
                             />
 
@@ -169,10 +189,11 @@ const ProfileSettings = () => {
 
                             <List.Item
 
-                                title={'+ Client'}
+                                title={'Client'}
                                 onPress={async () => {
                                     navigation.navigate("AddEditClient");
                                 }}
+                                left={() =>  <List.Icon icon="plus"/>}
                                 right={() =>  <List.Icon icon="chevron-right"/>}
                             />
 
@@ -180,19 +201,7 @@ const ProfileSettings = () => {
                             <Divider/>
 
 
-                                <List.Subheader>Reports</List.Subheader>
 
-                            <List.Item
-
-                                title={'Sales Invoices'}
-                                onPress={() => {
-                                    navigation.goBack()
-                                    navigation.navigate("SalesReportNavigator");
-                                }}
-                                right={() =>  <List.Icon icon="chevron-right"/>}
-                            />
-
-                            <Divider/>
 
 
                                 <List.Subheader>Settings</List.Subheader>
@@ -203,6 +212,7 @@ const ProfileSettings = () => {
                                 onPress={() => {
                                     navigation.navigate('PrinterSettings', {type: {name: 'Invoice', departmentid: PRINTER.INVOICE}})
                                 }}
+                                left={() =>  <List.Icon icon="printer"/>}
                                 right={() =>  <List.Icon icon="chevron-right"/>}
                             />
 
@@ -213,6 +223,7 @@ const ProfileSettings = () => {
                                     onPress={() => {
                                         navigation.navigate("KOTPrinter");
                                     }}
+                                    left={() =>  <List.Icon icon="printer"/>}
                                     right={() =>  <List.Icon icon="chevron-right"/>}
                                 />}
 
@@ -224,6 +235,7 @@ const ProfileSettings = () => {
                                 onPress={() => {
                                     navigation.navigate("InputOpenSetting");
                                 }}
+                                left={() =>  <List.Icon icon="scale-balance"/>}
                                 right={() =>  <List.Icon icon="chevron-right"/>}
                             />
 
@@ -235,6 +247,7 @@ const ProfileSettings = () => {
                                 onPress={() => {
                                     navigation.navigate("DefaultInputValues");
                                 }}
+                                left={() =>  <List.Icon icon="dollar"/>}
                                 right={() =>  <List.Icon icon="chevron-right"/>}
                             />
 
@@ -246,14 +259,14 @@ const ProfileSettings = () => {
                             <Divider/>
 
 
-                            <View style={[styles.mt_5]}>
+                            {role === 'admin' && <View style={[styles.mt_5]}>
 
                                 <View style={[styles.mb_5]}>
                                     <DeleteButton
                                         options={['Reset','Cancel']}
                                         title={'Reset Terminal'}
                                         buttonTitle={'Reset Terminal'}
-                                        message={`Are you sure want to reset Terminal?`}
+                                        message={`Are you sure want to reset Terminal? All data will be deleted...`}
                                         render={()=>{
                                             return (
                                                 <PButton
@@ -285,7 +298,7 @@ const ProfileSettings = () => {
                                     />
                                 </View>
 
-                            </View>
+                            </View>}
 
                             <View style={{height: 50}}>
 

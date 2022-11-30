@@ -25,6 +25,8 @@ const Index = (props: any) => {
 
     const {currentLocation} = localredux.localSettingsData;
 
+    appLog('currentLocation',currentLocation)
+
 
     const dispatch = useDispatch();
     const [refreshing, setRefreshing]: any = useState(false);
@@ -268,6 +270,7 @@ const Index = (props: any) => {
     );
 
     navigation.setOptions({
+        headerTitle:currentLocation?.locationname,
         headerLeft: () =>  <Appbar.Action icon="menu" onPress={() => navigation.navigate('ProfileSettingsNavigator')}/> ,
         headerRight: () => {
             return <View>
@@ -404,8 +407,6 @@ const Index = (props: any) => {
             </>
         )
     }
-
-    appLog('render table')
 
     return (
         <>

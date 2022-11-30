@@ -14,7 +14,6 @@ import SearchItem from "../Items/SearchItem";
 import store from "../../redux-store/store";
 import {setDialog} from "../../redux-store/reducer/component";
 import Paxes from "../Tables/Paxes";
-import {setTableOrders} from "../../redux-store/reducer/table-orders-data";
 
 const Index = (props: any) => {
 
@@ -94,8 +93,6 @@ const Index = (props: any) => {
             }}/>
         })
     }
-
-
 
     return <Cart tabledetails={tabledetails}/>
 }

@@ -25,7 +25,7 @@ export default class Index extends React.Component<any> {
         return (
             <>
                 {value !== '0' && value !== 'Unassigned' && Boolean(value) ? <View style={[styles.bg_global, {
-                    borderRadius: 5,
+                    borderRadius: 20,
                     width: size,
                     height: size,
                     justifyContent: 'center',

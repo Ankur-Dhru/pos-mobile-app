@@ -17,7 +17,7 @@ import SearchItem from "../Items/SearchItem";
 import GroupHeading from "../Items/GroupHeading";
 import ClientDetail from "../Client/ClientDetail";
 import {useNavigation} from "@react-navigation/native";
-import {cancelOrder, isRestaurant} from "../../libs/function";
+import {cancelOrder, isRestaurant, saveTempLocalOrder} from "../../libs/function";
 import NumPad from "../Items/NumPad";
 import ItemListMobile from "../Items/ItemListMobile";
 import ItemListTablet from "../Items/ItemListTablet";
@@ -46,6 +46,7 @@ const Index = (props: any) => {
 
                     <View style={[styles.grid, styles.justifyContent, styles.w_100]}>
                         {hasrestaurant ? <View style={{marginRight: 5}}><Card style={[styles.noshadow]} onPress={() => {
+                            saveTempLocalOrder().then(() => {})
                             navigation.goBack();
                         }}>
                             <View style={[styles.grid, styles.middle, styles.w_auto, {

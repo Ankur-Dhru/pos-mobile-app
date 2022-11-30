@@ -67,7 +67,7 @@ const Index = ({
                         <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
                                     onPress={() => generateKOT().then(() => {
-                                        appLog('generate KOT')
+
                                         saveTempLocalOrder().then((msg:any) => {
                                             appLog('msg',msg)
                                             dispatch(hideLoader())

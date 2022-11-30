@@ -27,9 +27,10 @@ const Index = (props: any) => {
         <TabBar
             {...props}
             style={{ backgroundColor: 'white'}}
-            labelStyle={{color:'black',}}
+            labelStyle={{color:'black',textTransform:'capitalize'}}
             indicatorStyle={{backgroundColor:styles.accent.color}}
             scrollEnabled={scrollable}
+            tabStyle={{width:'auto'}}
         />
     );
 

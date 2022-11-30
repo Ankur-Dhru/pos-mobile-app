@@ -16,14 +16,14 @@ const Paxes = () => {
         dispatch(setDialog({visible: false}))
     }
 
-    const paxes = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+    const paxes = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
 
     return <>
         <View style={[styles.grid]}>
             {
                  paxes.map((number:any)=>{
                      return <>
-                         <Card style={[styles.m_2,styles.flexGrow,{minWidth:70}]} onPress={()=>{
+                         <Card style={[styles.m_2,styles.flexGrow,{minWidth:70,maxWidth:100}]} onPress={()=>{
                              onClickPax(number);
                          }}>
                              <Card.Content>

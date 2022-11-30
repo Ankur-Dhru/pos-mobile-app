@@ -47,7 +47,6 @@ const Index = (props: any) => {
         setLoading(false)
 
         await getClientsByWhere({search: search, start: 0}).then((clients) => {
-            appLog('clients',clients)
             setClients(clients);
             setLoading(true)
         });

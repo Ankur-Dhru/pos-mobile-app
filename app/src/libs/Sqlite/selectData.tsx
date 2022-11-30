@@ -154,7 +154,7 @@ export const getOrdersByWhere = async () => {
                 }
             );
         });
-        appLog('items.length',items.length)
+
         return items
     } catch (e) {
         appLog('get orders', e)

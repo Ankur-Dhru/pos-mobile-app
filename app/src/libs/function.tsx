@@ -1024,12 +1024,12 @@ export const saveLocalOrder = (order?: any) => {
 
 
 export const saveLocalSettings = async (key: any, setting?: any) => {
+
     await retrieveData('fusion-pro-pos-mobile-settings').then(async (data: any) => {
         data = {
             ...data,
             [key]: setting
         }
-        appLog('data',data)
         await storeData('fusion-pro-pos-mobile-settings', data).then(async () => {
             await store.dispatch(setSettings(clone(data)));
         });
@@ -1365,6 +1365,7 @@ export const generateKOT = async () => {
                         tableorderid,
                         tableid,
                         tablename,
+                        clientname,
                         ordertype,
                         kots,
                         commonkotnote,
@@ -1523,7 +1524,7 @@ export const generateKOT = async () => {
                                     print: 0,
                                     commonkotnote: commonkotnote,
                                     status: "pending",
-                                    table: tablename,
+                                    table: `${tablename} (${clientname})`,
                                     departmentid: k,
                                     departmentname: department?.name,
                                     staffid: adminid,
@@ -1774,7 +1775,7 @@ export const printKOT = async (kot?: any) => {
             return new Promise(async (resolve) => {
                 if (Boolean(printer?.host)) {
                     const template: any = getPrintTemplate('KOT');
-                    sendDataToPrinter(printJson, getTemplate(defaultKOTTemplate), printer).then((msg) => {
+                    sendDataToPrinter(printJson, getTemplate(template), printer).then((msg) => {
                         resolve(msg)
                     });
                 } else {
@@ -1960,9 +1961,7 @@ export const getOrders = (refresh = false) => {
 
 export const gePhonebook = async (force?: any) => {
 
-    const synccontact: any = await getLocalSettings('synccontact');
-
-    appLog('synccontact', synccontact)
+    const synccontact: any = store.getState().localSettings?.synccontact;
 
     if (!Boolean(synccontact) || force) {
 

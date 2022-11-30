@@ -15,6 +15,7 @@ import store from "../../redux-store/store";
 import KAccessoryView from "../../components/KAccessoryView"
 import KeyboardScroll from "../../components/KeyboardScroll";
 import {Container} from "../../components";
+import {getClientsByWhere} from "../../libs/Sqlite/selectData";
 
 
 const ClientAndSource = (props: any) => {
@@ -70,13 +71,15 @@ const ClientAndSource = (props: any) => {
 
     const onClientSearch = () => {
 
-        let findClient: any = Object.values(localredux?.clientsData).find((client: any) => client?.phone?.includes(clientSearch));
+        getClientsByWhere({phone: clientSearch, start: 0}).then((clients) => {
+            let client = clients[0];
+            if (isEmpty(client) || (clientSearch.length < 10)) {
+                errorAlert("Phone number not found!");
+                client = defaultClientData;
+            }
+            setSelectedClient({...client, phone: clientSearch})
+        });
 
-        if (isEmpty(findClient) || (clientSearch.length < 10)) {
-            errorAlert("Phone number not found!");
-            findClient = defaultClientData;
-        }
-        setSelectedClient({...findClient, phone: clientSearch})
     }
 
 

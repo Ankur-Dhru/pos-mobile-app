@@ -48,6 +48,7 @@ const Index = (props: any) => {
                         }}
                         onPress={(index: any) => {
                             if (index === 0) {
+                                closeMenu();
                                 cancelOrder(navigation).then(r => {})
                             }
                         }}

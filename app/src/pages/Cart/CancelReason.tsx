@@ -8,7 +8,15 @@ import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
 import Button from "../../components/Button";
 import {setAlert, setDialog} from "../../redux-store/reducer/component";
-import {appLog, getTicketStatus, objToArray, printKOT, saveLocalOrder, voucherTotal} from "../../libs/function";
+import {
+    appLog,
+    deleteTempLocalOrder,
+    getTicketStatus,
+    objToArray,
+    printKOT,
+    saveLocalOrder,
+    voucherTotal
+} from "../../libs/function";
 import {localredux, PRINTER, TICKET_STATUS} from "../../libs/static";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
 import store from "../../redux-store/store";
@@ -43,13 +51,16 @@ const Index = (props: any) => {
                 cancelreasonid: cancelreasonid,
             }));
 
-            const {kots}: any = store.getState().cartData;
+            const {kots,tableorderid}: any = store.getState().cartData;
             kots.map((kot: any) => {
                 printKOT({...kot, cancelreason: cancelreason, cancelled: true, adminid: adminid,});
             })
-            await saveLocalOrder().then(async () => {
+
+            deleteTempLocalOrder(tableorderid).then();
+
+            /*await saveLocalOrder().then(async () => {
                 store.dispatch(setAlert({visible: true, message: 'Order cancelled'}))
-            })
+            })*/
 
             navigation.dispatch(
                 CommonActions.reset({

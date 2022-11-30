@@ -35,7 +35,7 @@ import {
 import {setSettings} from "../redux-store/reducer/local-settings-data";
 import React from "react";
 import {Alert, PermissionsAndroid, Platform, Text} from "react-native";
-import {setTableOrdersData} from "../redux-store/reducer/table-orders-data";
+import {deleteOrder, setTableOrders, setTableOrdersData} from "../redux-store/reducer/table-orders-data";
 import {v4 as uuid} from "uuid";
 import SyncingInfo from "../pages/Pin/SyncingInfo";
 import {setSyncDetail} from "../redux-store/reducer/sync-data";
@@ -901,12 +901,9 @@ export const setItemRowData = (data: any) => {
 
 export const saveTempLocalOrder = (order?: any, config?: any) => {
 
-    appLog('1')
-
     return new Promise<any>(async (resolve) => {
         try {
 
-            appLog('2')
             if (!Boolean(order)) {
                 order = await store.getState().cartData
             }
@@ -919,6 +916,7 @@ export const saveTempLocalOrder = (order?: any, config?: any) => {
                     tableorderid: uuid(),
                 }
             }
+
             if (!Boolean(order.tableid)) {
                 order = {
                     ...order,
@@ -933,22 +931,14 @@ export const saveTempLocalOrder = (order?: any, config?: any) => {
                 }
             }
 
-            appLog('3')
-
             order = {
                 ...order,
                 terminalid: localredux?.licenseData?.data?.terminal_id
             }
-
-            appLog('4')
-            await insertTempOrder(order).then(() => {
-                appLog('5')
-                // await getTempOrders().then(() => {})
-                resolve('Save Temp Order')
+            insertTempOrder(order).then((msg) => {
+                store.dispatch(setCartData(order));
+                resolve(msg)
             })
-
-
-
 
         } catch (e) {
             appLog('e', e)
@@ -958,30 +948,13 @@ export const saveTempLocalOrder = (order?: any, config?: any) => {
 
 export const deleteTempLocalOrder = (tableorderid: any) => {
     return new Promise<any>(async (resolve) => {
-        await deleteTable(TABLE.TEMPORDER, `tableorderid = '${tableorderid}'`).then(async () => {})
-        await getTempOrders().then(() => {})
-        store.dispatch(resetCart())
-        resolve('Delete Temp Order')
-    })
-}
+        await deleteTable(TABLE.TEMPORDER, `tableorderid = '${tableorderid}'`).then(() => {
+            //store.dispatch(deleteOrder(tableorderid))
+            store.dispatch(resetCart())
+            resolve('Delete Temp Order')
+        })
+        //await getTempOrders().then(() => {})
 
-
-export const saveLocalSettings = async (key: any, setting?: any) => {
-    await retrieveData('fusion-pro-pos-mobile-settings').then(async (data: any) => {
-        data = {
-            ...data,
-            [key]: setting
-        }
-        await storeData('fusion-pro-pos-mobile-settings', data).then(async () => {
-            await store.dispatch(setSettings(clone(data)));
-        });
-    })
-}
-
-
-export const getLocalSettings = async (key: any) => {
-    await retrieveData('fusion-pro-pos-mobile-settings').then(async (data: any) => {
-        return data[key];
     })
 }
 
@@ -1031,14 +1004,14 @@ export const saveLocalOrder = (order?: any) => {
         }
         ///////// CREATE LOCALORDER ID //////////
 
+
+
         deleteTempLocalOrder(order.tableorderid).then((msg:any) => {
             appLog('msg',msg)
             insertOrder(order).then(()=>{
-                getTempOrders().then(()=>{})
+                //getTempOrders().then(()=>{})
                 resolve('Save Order')
             });
-
-
         })
     })
 
@@ -1046,6 +1019,28 @@ export const saveLocalOrder = (order?: any) => {
 
 
 
+}
+
+
+
+export const saveLocalSettings = async (key: any, setting?: any) => {
+    await retrieveData('fusion-pro-pos-mobile-settings').then(async (data: any) => {
+        data = {
+            ...data,
+            [key]: setting
+        }
+        appLog('data',data)
+        await storeData('fusion-pro-pos-mobile-settings', data).then(async () => {
+            await store.dispatch(setSettings(clone(data)));
+        });
+    })
+}
+
+
+export const getLocalSettings = async (key: any) => {
+    await retrieveData('fusion-pro-pos-mobile-settings').then(async (data: any) => {
+        return data[key];
+    })
 }
 
 
@@ -1736,7 +1731,7 @@ export const printInvoice = async (order?: any) => {
 
             const template: any = getPrintTemplate('Thermal');
 
-            if (Boolean(printer?.host)) {
+            if (Boolean(printer?.host) || Boolean(printer.bluetoothdetail)) {
                 setTimeout(() => {
                     sendDataToPrinter(printJson, getTemplate(template), {
                         ...printer,
@@ -1779,7 +1774,7 @@ export const printKOT = async (kot?: any) => {
             return new Promise(async (resolve) => {
                 if (Boolean(printer?.host)) {
                     const template: any = getPrintTemplate('KOT');
-                    sendDataToPrinter(printJson, getTemplate(template), printer).then((msg) => {
+                    sendDataToPrinter(printJson, getTemplate(defaultKOTTemplate), printer).then((msg) => {
                         resolve(msg)
                     });
                 } else {
@@ -1823,7 +1818,7 @@ export const cancelOrder = async (navigation: any) => {
         const {kots, tableorderid, invoiceitems}: any = cartData;
 
         if (kots?.length === 0 || (kots?.length > 0 && invoiceitems?.length === 0)) {
-            store.dispatch(resetCart())
+
 
             navigation.dispatch(
                 CommonActions.reset({
@@ -1835,9 +1830,10 @@ export const cancelOrder = async (navigation: any) => {
             );
 
             if (tableorderid) {
-                deleteTempLocalOrder(tableorderid).then(() => {
-
-                })
+                deleteTempLocalOrder(tableorderid).then(() => {})
+            }
+            else{
+                store.dispatch(resetCart())
             }
         } else {
             navigation.navigate('CancelReason', {type: 'ordercancelreason'})
@@ -1942,16 +1938,23 @@ export const getAddons = async (refresh = false) => {
     });
 }
 
-export const getTempOrders = async (refresh = false) => {
-    await getTempOrdersByWhere().then((orders: any) => {
-        store.dispatch(setTableOrdersData(orders));
-    });
+export const getTempOrders = (refresh = false) => {
+    return new Promise((resolve)=>{
+        getTempOrdersByWhere().then((orders: any) => {
+            //store.dispatch(setTableOrdersData(orders));
+            resolve(orders)
+        });
+    })
+
 }
 
-export const getOrders = async (refresh = false) => {
-    await getOrdersByWhere().then((orders: any) => {
-        store.dispatch(setOrdersData(orders));
-    });
+export const getOrders = (refresh = false) => {
+    return new Promise((resolve)=> {
+        getOrdersByWhere().then((orders: any) => {
+            store.dispatch(setOrdersData(orders));
+            resolve('get Orders')
+        });
+    })
 }
 
 

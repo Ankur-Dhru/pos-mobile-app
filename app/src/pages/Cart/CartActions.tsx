@@ -66,9 +66,9 @@ const Index = ({
 
                         <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
-                                    onPress={() => generateKOT().then(async () => {
+                                    onPress={() => generateKOT().then(() => {
                                         appLog('generate KOT')
-                                        await saveTempLocalOrder('', {print: Boolean(status)}).then((msg:any) => {
+                                        saveTempLocalOrder().then((msg:any) => {
                                             appLog('msg',msg)
                                             dispatch(hideLoader())
                                         })
@@ -83,9 +83,9 @@ const Index = ({
 
                                         await generateKOT().then(() => {
                                             appLog('generate KOT')
-                                            printInvoice().then(async (status: any) => {
+                                            printInvoice().then((status: any) => {
                                                 appLog('invoice print success', status)
-                                                await saveTempLocalOrder('', {print: Boolean(status)}).then((msg:any) => {
+                                                saveTempLocalOrder('', {print: Boolean(status)}).then((msg:any) => {
                                                     appLog('msg',msg)
                                                     dispatch(hideLoader())
                                                 })

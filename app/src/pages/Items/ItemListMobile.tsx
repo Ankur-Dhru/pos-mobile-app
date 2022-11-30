@@ -14,8 +14,6 @@ import {AddItem} from "./ItemListTablet";
 import {useNavigation} from "@react-navigation/native";
 
 
-let sGroup: any = '';
-
 const Item = memo(({item}: any) => {
     //item = JSON.parse(item?.data);
 

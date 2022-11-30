@@ -15,9 +15,7 @@ export const deleteTable = (tablename:any,condition?:any) => {
                 if (Boolean(condition)) {
                     where += ` and ${condition} `;
                 }
-                const query = `DELETE
-                               FROM ${tablename}
-                               where ${where}`;
+                const query = `DELETE FROM ${tablename} where ${where}`;
 
                 appLog('query', query)
 
@@ -27,7 +25,7 @@ export const deleteTable = (tablename:any,condition?:any) => {
                     appLog('ERROR', query)
                     appLog('DELETE  e', e)
                 }
-                appLog('16')
+
             });
 
         } catch (e) {

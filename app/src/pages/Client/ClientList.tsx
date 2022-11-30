@@ -5,7 +5,7 @@ import {Card, Divider, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
 import {Container, SearchBox} from "../../components";
 
-import {gePhonebook} from "../../libs/function";
+import {appLog, gePhonebook} from "../../libs/function";
 
 
 import {getClientsByWhere} from "../../libs/Sqlite/selectData";
@@ -47,9 +47,11 @@ const Index = (props: any) => {
         setLoading(false)
 
         await getClientsByWhere({search: search, start: 0}).then((clients) => {
+            appLog('clients',clients)
             setClients(clients);
             setLoading(true)
         });
+
 
     }
 

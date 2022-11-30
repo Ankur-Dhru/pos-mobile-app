@@ -1,6 +1,6 @@
 import {current, device, localredux} from "../../libs/static";
 import React, {memo, useCallback, useEffect, useState} from "react";
-import {dateFormat, isEmpty, saveTempLocalOrder, toCurrency} from "../../libs/function";
+import {appLog, dateFormat, getTempOrders, isEmpty, saveTempLocalOrder, toCurrency} from "../../libs/function";
 import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
 import {Appbar, Card, FAB, Menu, Paragraph, Title, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
@@ -16,12 +16,9 @@ import {setSelected} from "../../redux-store/reducer/selected-data";
 import Button from "../../components/Button";
 import ReserveList from "./ReserveList";
 import Tabs from "../../components/TabView";
-import {Button as IButton} from "react-native-paper"
 
 
 const Index = (props: any) => {
-
-    const {tableorders} = props;
 
 
     const navigation = useNavigation()
@@ -35,6 +32,7 @@ const Index = (props: any) => {
     const [shifttable, setShifttable] = useState(false);
     const [shiftingFromtable, setShiftingFromtable] = useState<any>();
     const [shiftingTotable, setShiftingTotable] = useState<any>();
+
 
 
     const getOriginalTablesData = () => {
@@ -52,7 +50,14 @@ const Index = (props: any) => {
 
     useEffect(() => {
         getOrder().then()
-    }, [tableorders, currentLocation.tables])
+    }, [currentLocation.tables])
+
+
+    useEffect(() => {
+        navigation.addListener('focus', (e) => {
+            getOrder().then()
+        })
+    }, [navigation])
 
 
     const resetTables = async () => {
@@ -91,20 +96,26 @@ const Index = (props: any) => {
 
 
     const getOrder = async () => {
-        setRefreshing(true)
+
         let newtables = getOriginalTablesData();
         let newothertables: any = [];
-        Object.values(tableorders).map((table: any) => {
-            let findTableIndex = tables?.findIndex((t: any) => t.tableid == table.tableid)
-            if (findTableIndex != -1) {
-                newtables[findTableIndex] = table;
-            } else {
-                newothertables.push(table)
-            }
-        });
-        newtables = newtables.concat(newothertables);
-        await setTables(newtables);
-        setRefreshing(false)
+
+
+        getTempOrders().then(async (tableorders:any)=>{
+            Object.values(tableorders).map((table: any) => {
+                let findTableIndex = tables?.findIndex((t: any) => t.tableid == table.tableid)
+                if (findTableIndex != -1) {
+                    newtables[findTableIndex] = table;
+                } else {
+                    newothertables.push(table)
+                }
+            });
+            newtables = newtables.concat(newothertables);
+            await setTables(newtables);
+
+        })
+
+
     }
 
 
@@ -168,7 +179,7 @@ const Index = (props: any) => {
             const shiftFrom = (tableorderid: any) => {
                 setShiftingFromtable(tableorderid);
             }
-            const shiftTo = async (tabledetail: any) => {
+            /*const shiftTo = async (tabledetail: any) => {
                 dispatch(showLoader())
                 const {tableid, tablename}: any = tabledetail.item;
                 tableorders[shiftingFromtable] = {
@@ -177,6 +188,21 @@ const Index = (props: any) => {
                     tablename
                 }
                 await saveTempLocalOrder(tableorders[shiftingFromtable]).then(() => {
+                    dispatch(hideLoader())
+                    resetTables()
+                })
+            }*/
+
+
+            const shiftTo = async (tabledetail: any) => {
+                dispatch(showLoader())
+                const {tableid, tablename}: any = tabledetail.item;
+                tables[shiftingFromtable] = {
+                    ...tables[shiftingFromtable],
+                    tableid,
+                    tablename
+                }
+                await saveTempLocalOrder(tables[shiftingFromtable]).then(() => {
                     dispatch(hideLoader())
                     resetTables()
                 })
@@ -323,12 +349,7 @@ const Index = (props: any) => {
                     renderItem={renderItem}
                     keyboardDismissMode={'on-drag'}
                     keyboardShouldPersistTaps={'always'}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={() => getOrder()}
-                        />
-                    }
+
                     numColumns={device.tablet ? 4 : 2}
                     getItemLayout={(data, index) => {
                         return {length: 100, offset: 100 * index, index};
@@ -384,9 +405,11 @@ const Index = (props: any) => {
         )
     }
 
+    appLog('render table')
 
     return (
         <>
+
             <Tabs
                 scenes={{
                     all: AllTable,
@@ -404,6 +427,7 @@ const Index = (props: any) => {
                 ]}
                 scrollable={true}
             />
+
             <FAB.Group
                 open={floating}
                 fabStyle={{backgroundColor: 'black', marginBottom: 10}}
@@ -464,7 +488,6 @@ const Index = (props: any) => {
 }
 
 const mapStateToProps = (state: any) => ({
-    tableorders: state.tableOrdersData || {},
     ordertype: state.selectedData.ordertype,
 })
 

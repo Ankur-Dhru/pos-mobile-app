@@ -14,6 +14,7 @@ import SearchItem from "../Items/SearchItem";
 import store from "../../redux-store/store";
 import {setDialog} from "../../redux-store/reducer/component";
 import Paxes from "../Tables/Paxes";
+import {setTableOrders} from "../../redux-store/reducer/table-orders-data";
 
 const Index = (props: any) => {
 
@@ -52,11 +53,9 @@ const Index = (props: any) => {
             navigation.addListener('beforeRemove', (e) => {
                 if (e.data?.action?.type === 'POP') {
                     e.preventDefault();
-                    const {ordertype}: any = store.getState().cartData;
+                    const {cartData:{ordertype}}: any = store.getState();
                     if(ordertype !== 'qsr') {
-                        saveTempLocalOrder().then(() => {
-                            /*getTempOrders().then(()=>{})*/
-                        })
+                        saveTempLocalOrder().then(() => {})
                     }
                     navigation.dispatch(e.data.action)
                 }

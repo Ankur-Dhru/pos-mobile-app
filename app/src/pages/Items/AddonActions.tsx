@@ -48,6 +48,7 @@ const Index = ({product }: any) => {
                     <View style={{width:'45%'}}>
                         <View>
                             <Button
+                                more={{color:'white'}}
                                 secondbutton={true}
                                 onPress={async () => {
 

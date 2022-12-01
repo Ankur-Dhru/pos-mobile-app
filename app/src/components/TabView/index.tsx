@@ -26,25 +26,23 @@ const Index = (props: any) => {
     const renderTabBar = (props:any) => (
         <TabBar
             {...props}
-            style={{ backgroundColor: 'white'}}
-            labelStyle={{color:'black',textTransform:'capitalize'}}
+            style={[styles.noshadow,{ backgroundColor: 'white',marginBottom:5,}]}
+            labelStyle={[{color:'black',textTransform:'capitalize'}]}
             indicatorStyle={{backgroundColor:styles.accent.color}}
             scrollEnabled={scrollable}
-            tabStyle={{width:'auto'}}
+            tabStyle={{width:'auto',minWidth:80}}
         />
     );
 
     return (
-        <Container>
-            <TabView
-                overScrollMode={'always'}
-                navigationState={state}
-                renderScene={renderScene}
-                onIndexChange={ (index) => selectTab(index) }
-                initialLayout={{ width: Dimensions.get('window').width, height : Dimensions.get('window').height }}
-                renderTabBar={renderTabBar}
-            />
-        </Container>
+        <TabView
+            overScrollMode={'always'}
+            navigationState={state}
+            renderScene={renderScene}
+            onIndexChange={ (index) => selectTab(index) }
+            initialLayout={{ width: Dimensions.get('window').width, height : Dimensions.get('window').height }}
+            renderTabBar={renderTabBar}
+        />
     );
 }
 

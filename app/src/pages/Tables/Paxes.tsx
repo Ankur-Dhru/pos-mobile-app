@@ -1,4 +1,4 @@
-import {FlatList, TouchableOpacity, View} from "react-native";
+import {FlatList, ScrollView, TouchableOpacity, View} from "react-native";
 import {Card, Divider, Paragraph, Text} from "react-native-paper";
 import {setDialog} from "../../redux-store/reducer/component";
 import React from "react";
@@ -16,24 +16,22 @@ const Paxes = () => {
         dispatch(setDialog({visible: false}))
     }
 
-    const paxes = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+    const paxes = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
 
     return <>
-        <View style={[styles.grid]}>
-            {
-                 paxes.map((number:any)=>{
-                     return <>
-                         <Card style={[styles.m_2,styles.flexGrow,{minWidth:70,maxWidth:100}]} onPress={()=>{
-                             onClickPax(number);
-                         }}>
-                             <Card.Content>
-                                 <Paragraph style={[{textAlign:'center',textAlignVertical:'center',height:30}]}>{number}</Paragraph>
-                             </Card.Content>
-                         </Card>
-                     </>
-                 })
-            }
-        </View>
+        <ScrollView>
+            <View style={[styles.grid]}>
+                {
+                     paxes.map((number:any)=>{
+                         return <>
+                             <TouchableOpacity  style={[styles.m_2,styles.p_5,styles.flexGrow,styles.bg_light,{borderRadius:10,width:'25%'}]} onPress={()=>{ onClickPax(number);}}>
+                                 <Paragraph style={[styles.bold,{textAlign:'center',textAlignVertical:'center',height:35}]}>{number}</Paragraph>
+                             </TouchableOpacity>
+                         </>
+                     })
+                }
+            </View>
+        </ScrollView>
     </>
 }
 

@@ -16,6 +16,7 @@ import {setSelected} from "../../redux-store/reducer/selected-data";
 import Button from "../../components/Button";
 import ReserveList from "./ReserveList";
 import Tabs from "../../components/TabView";
+import {Container} from "../../components";
 
 
 const Index = (props: any) => {
@@ -25,15 +26,13 @@ const Index = (props: any) => {
 
     const {currentLocation} = localredux.localSettingsData;
 
-    appLog('currentLocation',currentLocation)
-
-
     const dispatch = useDispatch();
     const [refreshing, setRefreshing]: any = useState(false);
     const [floating, setFloating] = useState(false);
     const [shifttable, setShifttable] = useState(false);
     const [shiftingFromtable, setShiftingFromtable] = useState<any>();
     const [shiftingTotable, setShiftingTotable] = useState<any>();
+    const [tableorders,setTableOrders]:any = useState()
 
 
 
@@ -64,6 +63,7 @@ const Index = (props: any) => {
 
     const resetTables = async () => {
         shiftStart(false);
+        getOrder().then()
     }
 
     const shiftStart = (value: any) => {
@@ -104,6 +104,7 @@ const Index = (props: any) => {
 
 
         getTempOrders().then(async (tableorders:any)=>{
+            setTableOrders(tableorders);
             Object.values(tableorders).map((table: any) => {
                 let findTableIndex = tables?.findIndex((t: any) => t.tableid == table.tableid)
                 if (findTableIndex != -1) {
@@ -177,11 +178,10 @@ const Index = (props: any) => {
                 shiftingFromtable,
             } = props
 
-
             const shiftFrom = (tableorderid: any) => {
                 setShiftingFromtable(tableorderid);
             }
-            /*const shiftTo = async (tabledetail: any) => {
+            const shiftTo = async (tabledetail: any) => {
                 dispatch(showLoader())
                 const {tableid, tablename}: any = tabledetail.item;
                 tableorders[shiftingFromtable] = {
@@ -193,22 +193,8 @@ const Index = (props: any) => {
                     dispatch(hideLoader())
                     resetTables()
                 })
-            }*/
-
-
-            const shiftTo = async (tabledetail: any) => {
-                dispatch(showLoader())
-                const {tableid, tablename}: any = tabledetail.item;
-                tables[shiftingFromtable] = {
-                    ...tables[shiftingFromtable],
-                    tableid,
-                    tablename
-                }
-                await saveTempLocalOrder(tables[shiftingFromtable]).then(() => {
-                    dispatch(hideLoader())
-                    resetTables()
-                })
             }
+
 
             let shiftstart = Boolean((shifttable && Boolean(item.tableorderid) && (item.ordertype === 'tableorder'))) && !Boolean(shiftingFromtable);
             let shifting = Boolean((shifttable && !Boolean(item.tableorderid))) && Boolean(shiftingFromtable);
@@ -217,7 +203,7 @@ const Index = (props: any) => {
             return (
                 <Card style={[styles.m_2, styles.noshadow, {
                     maxWidth: '100%', minWidth: 150,
-                    backgroundColor: Boolean(item.kots?.length) ? styles.yellow.color : Boolean(item.invoiceitems?.length) ? styles.secondary.color : styles.light.color,
+                    backgroundColor: Boolean(item.kots?.length) ? styles.yellow.color : Boolean(item.invoiceitems?.length) ? styles.secondary.color : styles.white.color,
                     borderRadius: 5
                 }, styles.flexGrow,]} key={item.tableid}>
                     {<TouchableOpacity
@@ -283,9 +269,11 @@ const Index = (props: any) => {
                     }}/>  }>
                     <Menu.Item onPress={onClickAddTable} title="Add Table"/>
                     {!shifttable && <Menu.Item onPress={() => {
+                        closeMenu()
                         setShifttable(true)
                     }} title="Shift Table"/>}
                     {shifttable && <Menu.Item onPress={() => {
+                        closeMenu()
                         setShifttable(false)
                     }} title="Disable Shift"/>}
                     <Menu.Item onPress={onClickReserveTable} title="Reserve Tables"/>
@@ -340,7 +328,7 @@ const Index = (props: any) => {
     const TableFlatlist = ({type}: any) => {
 
         return (
-            <>
+            <View style={[styles.px_2]}>
                 <FlatList
                     data={tables?.filter((table: any) => {
                         if (type === 'all') {
@@ -404,13 +392,13 @@ const Index = (props: any) => {
 
                 />
 
-            </>
+            </View>
         )
     }
 
+
     return (
         <>
-
             <Tabs
                 scenes={{
                     all: AllTable,

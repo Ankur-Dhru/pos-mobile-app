@@ -48,14 +48,9 @@ const Index = (props: any) => {
     const navigation = useNavigation()
 
     const handleSearch = async (search?: any) => {
-        setLoading(false)
-
         await getClientsByWhere({search: search, start: 0}).then((clients) => {
             setClients(clients);
-            setLoading(true)
         });
-
-
     }
 
     useEffect(()=>{
@@ -80,16 +75,16 @@ const Index = (props: any) => {
 
 
     return (
-        <Container>
+        <Container style={{padding:0,backgroundColor:'white'}}>
             <View style={[styles.h_100, styles.flex, styles.w_100, {flexDirection: 'column'}]}>
 
-                <View style={[{marginTop: 10}]}>
+                <View style={[{padding: 10}]}>
                     <SearchBox handleSearch={handleSearch} onIconPress={() => navigation.goBack()}
                                icon={{ source: 'arrow-left', direction: 'auto' }} autoFocus={false}  placeholder="Search Client..."/>
                 </View>
 
                 <Card style={[styles.h_100, styles.flex]}>
-                    <Card.Content style={[styles.cardContent]}>
+                    <Card.Content style={[styles.cardContent,{paddingHorizontal:5}]}>
 
                         {loading && <FlatList
                             data={clients}

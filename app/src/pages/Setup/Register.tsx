@@ -4,7 +4,7 @@ import {ScrollView, TouchableOpacity, View} from "react-native";
 import Container from "../../components/Container";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
-import {Paragraph, Text, TextInput as TI, Title} from "react-native-paper";
+import {Card, Paragraph, Text, TextInput as TI, Title} from "react-native-paper";
 import {
     ACTIONS,
     composeValidators,
@@ -126,9 +126,12 @@ const Register = (props: any) => {
                     <View style={[styles.middleForm]}>
                         <KeyboardScroll>
 
-                            <View style={[styles.p_6]}>
+                            <View>
 
                                 <View>
+
+                                    <Card style={[styles.mb_3]}>
+                                        <Card.Content>
 
                                     <View>
                                         <Field name="email" validate={composeValidators(required, isEmail)}>
@@ -183,13 +186,20 @@ const Register = (props: any) => {
                                         </Field>
                                     </View>
 
+                                        </Card.Content>
+
+                                    </Card>
+
+
+                                    <Card>
+                                        <Card.Content>
 
                                     <View>
                                         <Field name="country" validate={required}>
                                             {props => (
                                                 <InputField
                                                     {...props}
-                                                    label={'Select Country'}
+                                                    label={'Country'}
                                                     selectedValue={props.input.value}
                                                     selectedLabel={"Select Country"}
                                                     displaytype={'pagelist'}
@@ -280,6 +290,10 @@ const Register = (props: any) => {
                                             </View>
                                         </View>
                                     </View>
+
+                                        </Card.Content>
+
+                                    </Card>
 
                                 </View>
 

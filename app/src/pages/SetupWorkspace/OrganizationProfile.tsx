@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {Keyboard, View} from "react-native";
 import {styles} from "../../theme";
 import {Button, Container} from "../../components";
-import {Title, withTheme} from "react-native-paper";
+import {Card, Title, withTheme} from "react-native-paper";
 import {appLog, assignOption, errorAlert, getStateList, log} from "../../libs/function";
 import {Field, Form} from "react-final-form";
 import InputField from "../../components/InputField";
@@ -297,7 +297,8 @@ class Index extends Component<any, any> {
                                 <KeyboardScroll>
 
 
-                                    <View style={[styles.p_6]}>
+                                    <Card>
+                                        <Card.Content>
 
                                         <View>
 
@@ -519,7 +520,8 @@ class Index extends Component<any, any> {
                                             </View>
                                         </View>
 
-                                    </View>
+                                        </Card.Content>
+                                    </Card>
 
                                 </KeyboardScroll>
                                 <KAccessoryView>

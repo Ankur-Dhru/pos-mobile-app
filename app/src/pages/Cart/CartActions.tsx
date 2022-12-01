@@ -1,7 +1,7 @@
 import React, {memo, useEffect} from "react";
 import {appLog, generateKOT, isRestaurant, printInvoice, saveTempLocalOrder} from "../../libs/function";
 import {View} from "react-native";
-import {withTheme} from "react-native-paper";
+import {Card, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {useNavigation} from "@react-navigation/native";
@@ -31,10 +31,10 @@ const Index = ({
     }, [])
 
 
-    return <View style={[!device.tablet && styles.p_3]}>
+    return <View>
 
-        {<View>
-            <View>
+        {<Card style={{marginLeft:-10,marginRight:-10,marginBottom:-10,marginTop:5}}>
+            <Card.Content style={[{paddingHorizontal: 10,paddingVertical:10,paddingTop:5}]}>
                 <View style={[styles.grid, styles.justifyContent, styles.noWrap]}>
 
 
@@ -64,7 +64,7 @@ const Index = ({
                             >Save </Button>
                         </View>*/}
 
-                        <View style={[styles.w_auto, styles.ml_1]}>
+                        <View style={[styles.w_auto]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
                                     onPress={() => generateKOT().then(() => {
 
@@ -73,7 +73,7 @@ const Index = ({
                                             dispatch(hideLoader())
                                         })
                                     })}
-                                    more={{backgroundColor: styles.yellow.color, color: 'black'}}
+                                    more={{backgroundColor: styles.yellow.color, color: 'black',height:50}}
                             >Print KOT </Button>
                         </View>
                         {ordertype !== 'qsr' && <View style={[styles.w_auto, styles.ml_1]}>
@@ -97,7 +97,7 @@ const Index = ({
                                     }
                                     }
 
-                                    more={{backgroundColor: styles.accent.color, color: 'white'}}
+                                    more={{backgroundColor: styles.accent.color, color: 'white',height:50}}
                             >Print Bill {`${printcounter ? '(' + printcounter + ')' : ''}`}</Button>
                         </View>}
                     </>}
@@ -116,7 +116,7 @@ const Index = ({
                                         component: () => <HoldOrders/>
                                     }))
                                 }}
-                                more={{backgroundColor: styles.yellow.color, color: 'black'}}
+                                more={{backgroundColor: styles.yellow.color, color: 'black',height:50}}
                             > Recall </Button>
                         </View>}
                         <View style={[styles.w_auto, styles.ml_1]}>
@@ -134,7 +134,7 @@ const Index = ({
                                         })
                                     }
                                     }
-                                    more={{backgroundColor: styles.yellow.color, color: 'black'}}
+                                    more={{backgroundColor: styles.yellow.color, color: 'black',height:50}}
                             > On Hold </Button>
                         </View></>}
 
@@ -155,14 +155,14 @@ const Index = ({
                                 }
                             }}
 
-                            more={{backgroundColor: styles.green.color, color: 'white'}}
+                            more={{backgroundColor: styles.green.color, color: 'white',height:50}}
                         > Payment Received
                         </Button>
                     </View>
                 </View>
-            </View>
+            </Card.Content>
 
-        </View>}
+        </Card>}
 
     </View>
 }

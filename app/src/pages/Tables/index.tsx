@@ -3,6 +3,7 @@ import Container from "../../components/Container";
 import Tables from "./Tables";
 
 import PageLoader from "../../components/PageLoader";
+import {Card} from "react-native-paper";
 
 
 const Index = (props: any) => {
@@ -46,7 +47,7 @@ const Index = (props: any) => {
     );*/
 
 
-    return <Container>
+    return <Container style={{padding:0}}>
         <Tables/>
     </Container>
 }

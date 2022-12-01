@@ -39,7 +39,7 @@ const Index = (props: any) => {
                             {
                                 Boolean(staff) && Object.values(staff).map((stf: any, index: any) => {
                                     return (
-                                        <View style={[styles.flexGrow,{width: 150}]} key={stf.adminid}>
+                                        <View style={[styles.flexGrow,{width: '50%',maxWidth:200}]} key={stf.adminid}>
                                             <TouchableOpacity onPress={() => selectedStaff(stf)} style={[styles.p_5,styles.m_2, ]}>
                                                 <View style={[{
                                                     justifyContent: 'center',

@@ -1,6 +1,6 @@
 import React from "react";
 import {View,} from "react-native";
-import {Paragraph} from "react-native-paper";
+import {Caption, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
 
 import {connect} from "react-redux";
@@ -11,8 +11,8 @@ const Index = (props: any) => {
     const {itemgroup} = localredux.initData
     const {selectedgroup} = props;
 
-    return <View style={[styles.p_4,styles.bg_light,{paddingLeft:15}]}>
-        <Paragraph style={[styles.paragraph,styles.text_sm,styles.bold]}> Category > {itemgroup[selectedgroup]?.itemgroupname}</Paragraph>
+    return <View>
+        <Caption style={[]}>  {itemgroup[selectedgroup]?.itemgroupname}</Caption>
     </View>
 }
 

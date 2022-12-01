@@ -182,9 +182,9 @@ const Index = (props: any) => {
 
     return (
 
-        <Container>
+        <Container style={{backgroundColor:'white'}}>
 
-            <View style={{marginTop:15}}><Search autoFocus={false} label={label} onIconPress={() => navigation.goBack()}
+            <View><Search autoFocus={false} label={label} onIconPress={() => navigation.goBack()}
                           icon={{ source: 'arrow-left', direction: 'auto' }} placeholder={`Search ${label}...`}
                           handleSearch={handleSearch}/></View>
 

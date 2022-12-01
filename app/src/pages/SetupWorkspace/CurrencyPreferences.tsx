@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {Keyboard, View} from "react-native";
 import {styles} from "../../theme";
 import {Button, Container} from "../../components";
-import {Paragraph, Title, withTheme} from "react-native-paper";
+import {Card, Paragraph, Title, withTheme} from "react-native-paper";
 import {Field, Form} from "react-final-form";
 import InputField from "../../components/InputField";
 import {CommonActions} from "@react-navigation/native";
@@ -87,7 +87,8 @@ class Index extends Component<any> {
                                 <View style={[styles.middleForm]}>
                                     <KeyboardScroll>
 
-                                        <View style={[styles.p_6]}>
+                                        <Card>
+                                            <Card.Content>
 
 
                                         <View>
@@ -105,7 +106,7 @@ class Index extends Component<any> {
                                                             {...props}
                                                             label={'Currency'}
                                                             selectedValue={props.input.value}
-                                                            selectLabel={'Select Currency'}
+                                                            selectlabel={'Currency'}
                                                             displaytype={'pagelist'}
                                                             inputtype={'dropdown'}
                                                             showlabel={false}
@@ -127,7 +128,9 @@ class Index extends Component<any> {
 
                                         </View>
 
-                                        </View>
+                                            </Card.Content>
+
+                                        </Card>
                                     </KeyboardScroll>
 
                                     <KAccessoryView>

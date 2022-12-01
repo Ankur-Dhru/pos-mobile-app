@@ -1,5 +1,5 @@
 import {TouchableOpacity, View} from "react-native";
-import {Paragraph} from "react-native-paper";
+import {Caption, Card, Paragraph} from "react-native-paper";
 import {useDispatch} from "react-redux";
 import {hideLoader, showLoader} from "../../redux-store/reducer/component";
 import {styles} from "../../theme";
@@ -132,20 +132,19 @@ const ClientAndSource = (props: any) => {
 
 
                     <View
-                        style={[styles.grid, styles.justifyContent, styles.top, styles.px_6, styles.h_100, styles.flex]}>
+                        style={[styles.grid, styles.justifyContent, styles.top,  styles.h_100, styles.flex]}>
 
-                        {hasLeft && <View style={[styles.noshadow, styles.w_auto, {
+                        {hasLeft && <View style={[styles.noshadow, styles.w_auto,styles.mb_3, {
                             minWidth: 360, maxWidth: '100%',
                         }]}>
                             <View>
                                 {
-                                    isReserveTable && <View>
-                                        <Paragraph style={[styles.caption]}>Select Table</Paragraph>
+                                    isReserveTable && <Card><Card.Content>
                                         <View style={[styles.grid]}>
                                             {
                                                 currentLocation?.tables?.map((t: any) => {
                                                     return <TouchableOpacity
-                                                        style={[styles.flexGrow, {minWidth: 100, borderRadius: 5}]}
+                                                        style={[styles.flexGrow, {minWidth: 110,maxWidth:120, borderRadius: 5}]}
                                                         onPress={() => {
                                                             setTableData('tableid', t.tableid)
                                                         }}><Paragraph style={[styles.paragraph, styles.p_5, styles.m_1, {
@@ -194,17 +193,18 @@ const ClientAndSource = (props: any) => {
                                                 />
                                             </View>
                                         </View>
-
-                                    </View>
+                                    </Card.Content>
+                                    </Card>
                                 }
                                 {
-                                    isSource && <View>
-                                        <Paragraph style={[styles.caption]}>Select Source</Paragraph>
+                                    isSource && <Card>
+                                    <Card.Content>
+                                        <Caption  style={[styles.caption]}>Sources</Caption>
                                         <View style={[styles.grid]}>
                                             {
                                                 Object.values(localredux?.initData?.sources).map((source: any) => {
                                                     return <TouchableOpacity
-                                                        style={[styles.flexGrow, {minWidth: 100, borderRadius: 5}]}
+                                                        style={[styles.flexGrow, {minWidth: 100,maxWidth:120, borderRadius: 5}]}
                                                         onPress={() => {
                                                             setOrderSource(source);
                                                         }}><Paragraph style={[styles.paragraph, styles.p_5, styles.m_1, {
@@ -215,12 +215,15 @@ const ClientAndSource = (props: any) => {
                                                 })
                                             }
                                         </View>
-
-                                    </View>
+                                    </Card.Content>
+                                    </Card>
                                 }
                                 {isAdvanceorder && <>
 
-                                    <Paragraph style={[styles.caption]}>Delivery On</Paragraph>
+                                    <Card>
+                                        <Card.Content>
+
+                                    <Caption style={[styles.caption]}>Delivery On</Caption>
 
                                     <View style={[styles.grid, styles.justifyContent]}>
                                         <View style={[styles.flexGrow, {marginRight: 12}]}>
@@ -261,14 +264,18 @@ const ClientAndSource = (props: any) => {
                                             />
                                         </View>
                                     </View>
+
+                                        </Card.Content>
+                                    </Card>
                                 </>}
                             </View>
                         </View>}
 
 
-                        <View style={[styles.w_auto, styles.h_100, {minWidth: 360, maxWidth: '100%'}]}>
+                        <Card style={[styles.w_auto, styles.h_100,  {minWidth: 360, maxWidth: '100%'}]}>
+                            <Card.Content>
                             {<>
-                                <Paragraph style={[styles.caption]}>Client Information</Paragraph>
+                                <Caption style={[styles.caption]}>Client Information</Caption>
                                 <View style={[styles.grid, styles.justifyContent]}>
                                     <View style={[styles.flexGrow, styles.w_auto, {marginRight: 12}]}>
                                         <InputField
@@ -338,7 +345,8 @@ const ClientAndSource = (props: any) => {
                                     </View>
                                 </View>
                             </>}
-                        </View>
+                            </Card.Content>
+                        </Card>
 
                     </View>
 

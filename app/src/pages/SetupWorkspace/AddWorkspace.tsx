@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Keyboard, ScrollView, View} from 'react-native';
 import {styles} from "../../theme";
 
-import {Paragraph, Title, withTheme} from "react-native-paper";
+import {Card, Paragraph, Title, withTheme} from "react-native-paper";
 
 import {Button, Container, InputBox} from "../../components";
 import {Field, Form} from 'react-final-form';
@@ -69,7 +69,8 @@ class AddWorkspace extends Component<any> {
 
                                     <ScrollView>
 
-                                        <View style={[styles.p_6]}>
+                                        <Card>
+                                            <Card.Content>
 
 
                                         <View>
@@ -100,7 +101,10 @@ class AddWorkspace extends Component<any> {
 
                                         </View>
 
-                                        </View>
+                                            </Card.Content>
+                                        </Card>
+
+
 
                                     </ScrollView>
 

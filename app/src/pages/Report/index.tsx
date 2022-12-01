@@ -2,12 +2,12 @@ import React, {useEffect, useState} from "react";
 import {FlatList, TouchableOpacity, View} from "react-native";
 import {Divider, Paragraph} from "react-native-paper"
 import {
-    appLog, dateFormat,
-    getDateWithFormat, getItem, getLeftRight, getPrintTemplate, getTemplate, getTrimChar,
+    appLog, CheckConnectivity, dateFormat,
+    getDateWithFormat, getItem, getLeftRight, getOrders, getPrintTemplate, getTemplate, getTempOrders, getTrimChar,
     isEmpty, numberFormat, objToArray, printInvoice,
 
     retrieveData,
-    storeData,
+    storeData, syncInvoice,
     toCurrency
 } from "../../libs/function";
 import Container from "../../components/Container";
@@ -28,43 +28,33 @@ import apiService from "../../libs/api-service";
 import ProIcon from "../../components/ProIcon";
 
 
-const Index = ({ordersData}: any) => {
+const Index = ({ordersData}:any) => {
 
     let {
         initData,
         licenseData,
-
-
     }: any = localredux;
 
 
-    const [data, setData] = useState<any>([]);
+    const [data, setData] = useState<any>({});
 
 
     useEffect(() => {
-        Boolean(ordersData) && setData((prev: any) => ({...prev, ...ordersData}))
-    }, [ordersData])
-
-    useEffect(() => {
-        apiService({
-            method: METHOD.GET,
-            action: ACTIONS.REPORT_SALES,
-            workspace: initData.workspace,
-            token: licenseData?.token,
-            queryString: {terminalid: licenseData?.data?.terminal_id},
-            hideLoader: true,
-            hidealert: true,
-            other: {url: posUrl},
-        }).then((response: any) => {
-
-            if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
-                setData((prev: any) => {
-                    return {...prev, ...response.data}
-                })
-            }
-        }).catch(() => {
+        getOrders().then((orders:any)=>{
+            apiService({
+                method: METHOD.GET,
+                action: ACTIONS.REPORT_SALES,
+                workspace: initData.workspace,
+                token: licenseData?.token,
+                queryString: {terminalid: licenseData?.data?.terminal_id},
+                hideLoader: true,
+                hidealert: true,
+                other: {url: posUrl},
+            }).then((response: any) => {
+                setData({...orders, ...response?.data})
+            })
         })
-    }, [])
+    }, [ordersData])
 
 
     const printData = async (invoice: any) => {
@@ -121,7 +111,7 @@ const Index = ({ordersData}: any) => {
 
                         <View style={[styles.ml_2]}>
                             <Paragraph
-                                style={[styles.bold, styles.paragraph]}>{getDateWithFormat(item?.date, dateFormat())}</Paragraph>
+                                style={[styles.bold, styles.paragraph]}>{getDateWithFormat(item?.date, dateFormat(true))}</Paragraph>
                             <Paragraph style={[styles.bold, styles.paragraph]}>{name}</Paragraph>
                         </View>
                     </View>
@@ -136,8 +126,8 @@ const Index = ({ordersData}: any) => {
                 {<View style={{width: 100}}>
                     <Paragraph
                         style={[styles.paragraph, styles.text_xs, {textAlign: 'right'}]}>{toCurrency(item?.vouchertotaldisplay)}</Paragraph>
-                    {
-                        Boolean(item?.synced) && <Paragraph
+                    {Boolean(item?.voucherdisplayid) &&
+                        <Paragraph
                             style={[styles.paragraph, styles.text_xs, {
                                 textAlign: 'right',
                                 color: styles.green.color
@@ -151,9 +141,7 @@ const Index = ({ordersData}: any) => {
         </TouchableOpacity>
     }
 
-    return <Container config={{
-        title: "Sales Report",
-    }}>
+    return <Container>
         <FlatList
             data={Object.values(data).reverse()}
             keyboardDismissMode={'on-drag'}
@@ -163,6 +151,7 @@ const Index = ({ordersData}: any) => {
     </Container>
 
 }
+
 
 const mapStateToProps = (state: any) => ({
     ordersData: state.ordersData,

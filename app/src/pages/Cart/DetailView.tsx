@@ -8,7 +8,7 @@ import {device} from "../../libs/static";
 import CartActions from "./CartActions";
 import CartSummary from "./CartSummary";
 import {useNavigation} from "@react-navigation/native";
-import {Appbar, Menu} from "react-native-paper";
+import {Appbar, Card, Menu} from "react-native-paper";
 import {TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
 import ProIcon from "../../components/ProIcon";
@@ -62,9 +62,13 @@ const Index = (props: any) => {
     })
 
 
-    return <Container>
+    return <Container style={[styles.h_100,styles.flex,{padding:0}]}>
         {!device.tablet && <ClientDetail/>}
-        <CartItems/>
+        <Card style={[styles.mt_3,styles.flex,styles.h_100]}>
+            <Card.Content style={[{paddingHorizontal: 5,paddingVertical:5}]}>
+                <CartItems/>
+            </Card.Content>
+        </Card>
         <CartSummary navigation={navigation}/>
         {!device.tablet && <CartActions/>}
     </Container>

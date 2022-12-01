@@ -37,7 +37,7 @@ const Search = (props: any) => {
     const {colors}: any = props.theme;
 
     return (
-        <View style={[styles.px_5,styles.mb_3]}>
+        <View>
             <Searchbar
                 ref={(ref)=> {
                     searchRf = ref

@@ -4,7 +4,7 @@ import {ScrollView, View} from "react-native";
 import Container from "../../components/Container";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
-import {Text, Title} from "react-native-paper";
+import {Card, Text, Title} from "react-native-paper";
 import {
     ACTIONS,
     composeValidators,
@@ -139,8 +139,10 @@ const Terminal = (props: any) => {
 
                             <ScrollView>
 
-                                <View style={[styles.px_6]}>
-                                    <Title style={[styles.mt_5]}>Terminal <Text
+                                <Card>
+                                    <Card.Content>
+                                <View>
+                                    <Title>Terminal <Text
                                         style={[styles.muted, styles.text_sm]}>({initData.workspace})</Text></Title>
                                     <View style={[styles.mt_3]}>
                                         <View style={[styles.mb_5]}>
@@ -162,7 +164,7 @@ const Terminal = (props: any) => {
                                             <Field name="locationid">
                                                 {props => (
                                                     <InputField
-                                                        label={'Select Location'}
+                                                        label={'Location'}
                                                         mode={'flat'}
                                                         list={locationList}
                                                         value={props.input.value}
@@ -182,7 +184,7 @@ const Terminal = (props: any) => {
                                             <Field name="timezone">
                                                 {props => (
                                                     <InputField
-                                                        label={'Select Time Zone'}
+                                                        label={'Time Zone'}
                                                         mode={'flat'}
                                                         list={itemList}
                                                         value={props.input.value}
@@ -201,6 +203,11 @@ const Terminal = (props: any) => {
 
                                     </View>
                                 </View>
+
+                                    </Card.Content>
+                                </Card>
+
+
                             </ScrollView>
 
 

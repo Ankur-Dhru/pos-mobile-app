@@ -201,8 +201,7 @@ export const screenOptionStyle: any = {
     headerTopInsetEnabled: false,
     headerHideShadow: true,
     headerLargeTitleHideShadow: true,
-
-
+    headerShadowVisible:false,
     headerStyle: {
         /*shadowOpacity: 0,
         elevation: 0,*/

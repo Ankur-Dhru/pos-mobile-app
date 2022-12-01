@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {ScrollView, TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
 import {Button, Container} from "../../components";
-import {Paragraph, Text, Title, withTheme} from "react-native-paper";
+import {Card, Paragraph, Text, Title, withTheme} from "react-native-paper";
 import {Field, Form} from "react-final-form";
 
 import InputField from "../../components/InputField";
@@ -87,7 +87,8 @@ class Index extends Component<any> {
 
                                     <ScrollView>
 
-                                        <View style={[styles.p_6]}>
+                                        <Card>
+                                            <Card.Content>
 
                                         <View>
                                             <Paragraph style={[styles.paragraph]}>Your Registered Email </Paragraph>
@@ -139,7 +140,8 @@ class Index extends Component<any> {
                                             </TouchableOpacity>
                                         </View>
 
-                                        </View>
+                                            </Card.Content>
+                                        </Card>
 
                                     </ScrollView>
 
@@ -153,7 +155,8 @@ class Index extends Component<any> {
                                         </View>
                                     </KAccessoryView>
 
-                                </View></View>
+                                </View>
+                            </View>
 
                         </>
                     )}

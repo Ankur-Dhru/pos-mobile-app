@@ -52,15 +52,15 @@ const Index = (props: any) => {
 
     return (
         <>
-            {Boolean(kots?.length > 0) &&  <View>
-                <View style={[styles.grid,styles.justifyContent,styles.p_4]}>
+            {Boolean(kots?.length > 0) &&  <View style={[styles.mb_3]}>
+                <View style={[styles.grid,styles.justifyContent]}>
 
-                    <Button style={[styles.w_auto]} more={{color:'white'}} compact={true}  onPress={() => {
+                    <Button style={[styles.w_auto]} more={{color:'white',height:40}} compact={true}  onPress={() => {
                         updateComponent(cartListRef,'display','flex')
                         updateComponent(kotListRef,'display','none')
 
                     }} secondbutton={true} >Items</Button>
-                    <Button style={[styles.ml_2,styles.w_auto]} more={{color:'white'}}  compact={true}  onPress={() => {
+                    <Button style={[styles.ml_1,styles.w_auto]} more={{color:'black',backgroundColor:styles.secondary.color,height:40}}  compact={true}  onPress={() => {
                         updateComponent(cartListRef,'display','none')
                         updateComponent(kotListRef,'display','flex')
 
@@ -87,15 +87,18 @@ const Index = (props: any) => {
                     getItemLayout={(data, index) => {
                         return { length: 80, offset: 80 * index, index };
                     }}
+                    ListFooterComponent={() => {
+                        return  <View style={{height:80}}></View>
+                    }}
                     renderItem={renderItem}
                     ListEmptyComponent={()=>{
                         return (
-                            <Card>
-                                <Card.Content>
+                            <View>
+                                <View>
                                     <View style={{marginTop:50}}><Paragraph style={[styles.paragraph,{textAlign:'center'}]}>No any item(s) added</Paragraph></View>
-                                    <View  style={{marginTop:20}}><Paragraph  style={[styles.paragraph,{textAlign:'center'}]}><ProIcon name={'utensils'} size={25}/></Paragraph></View>
-                                </Card.Content>
-                            </Card>
+                                    <View  style={{marginTop:20,marginBottom:50}}><Paragraph  style={[styles.paragraph,{textAlign:'center'}]}><ProIcon name={'utensils'} size={25}/></Paragraph></View>
+                                </View>
+                            </View>
                         )
                     }}
 

@@ -23,7 +23,7 @@ const Index = ({clientid, clientname}: any) => {
         navigation.navigate('ClientList');
     }}>
 
-        <View style={[styles.px_5]}>
+        <Card.Content style={[styles.cardContent]}>
 
             <View style={[styles.grid, styles.justifyContent, {paddingTop: 8, paddingBottom: 8}]}>
                 <View style={[styles.grid, styles.justifyContent, styles.noWrap]}>
@@ -34,7 +34,7 @@ const Index = ({clientid, clientname}: any) => {
                 <View><Text>{chevronRight}</Text></View>
             </View>
 
-        </View>
+        </Card.Content>
 
     </Card>
 

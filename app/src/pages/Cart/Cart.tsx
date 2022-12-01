@@ -123,13 +123,8 @@ const Index = (props: any) => {
                         <GroupHeading/>
 
                         <Card style={[styles.h_100, styles.flex]}>
+
                             <ItemListMobile navigation={navigation}/>
-
-                            <View>
-                                <GroupListMobile/>
-                            </View>
-
-                            <CartTotal/>
 
                         </Card>
                     </View>

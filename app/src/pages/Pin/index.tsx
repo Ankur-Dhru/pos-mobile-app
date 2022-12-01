@@ -91,32 +91,31 @@ const Index = (props: any) => {
     navigation.setOptions({headerShown: !params.onlyone})
 
 
-    return <Container hideappbar={true}>
+    return <Container style={{padding:0}}>
 
         <Card>
 
             <View style={[styles.center, styles.h_100, styles.middle]}>
 
-                <View style={{width: 300}}>
+                <View style={{width: 230}}>
 
                     <View style={[styles.grid, styles.center,]}>
                         <Image
-                            style={[{width: 45, height: 45, margin: 'auto', marginBottom: 5}]}
+                            style={[{width: 60, height: 60, margin: 'auto', marginBottom: 5}]}
                             source={require('../../assets/dhru-logo-22.png')}
                         />
                     </View>
 
                     {params.onlyone && <View>
-                        <Paragraph style={[styles.paragraph, {textAlign: 'center'}]}>{params.username} </Paragraph>
+                        <Paragraph style={[styles.paragraph,styles.bold, {textAlign: 'center'}]}>{params.username} </Paragraph>
                         <Paragraph
                             style={[styles.paragraph, styles.text_sm, {textAlign: 'center'}]}>{params.loginpin === 'b0baee9d279d34fa1dfd71aadb908c3f' &&
-                            <Text style={[styles.paragraph, styles.muted, {textAlign: 'center'}]}>Default PIN is
+                            <Text style={[styles.paragraph, styles.muted,styles.text_xs, {textAlign: 'center'}]}>Default PIN is
                                 11111</Text>}</Paragraph>
                     </View>}
 
                     <ReactNativePinView
-                        inputSize={15}
-
+                        inputSize={12}
                         ref={pinView}
                         pinLength={5}
                         onValueChange={value => value.length === 5 && setEnteredPin(value)}
@@ -126,18 +125,22 @@ const Index = (props: any) => {
                             borderColor: "#ccc",
                         }}
                         inputViewFilledStyle={{
-                            backgroundColor: "#000",
+                            backgroundColor: "#222",
                         }}
                         buttonViewStyle={{
                             borderWidth: 0,
-                            backgroundColor: "#eee",
-                            borderColor: "#ccc",
+                            backgroundColor: styles.secondary.color,
+                            borderColor: styles.secondary.color,
+                            width:60,
+                            height:60,
+                            borderRadius:50
                         }}
                         buttonTextStyle={{
-                            color: "#000",
+                            color: "#222",
+                            fontSize:18,
                         }}
                         inputViewStyle={{
-                            marginBottom: 5
+                            marginBottom: 0
                         }}
 
 
@@ -147,7 +150,7 @@ const Index = (props: any) => {
                 <View style={{marginTop: 10}}>
                     <TouchableOpacity onPress={() => {
                         syncData().then()
-                    }}><Text>Sync</Text></TouchableOpacity>
+                    }}><Paragraph style={[styles.paragraph]}>Sync Data</Paragraph></TouchableOpacity>
                 </View>
 
 

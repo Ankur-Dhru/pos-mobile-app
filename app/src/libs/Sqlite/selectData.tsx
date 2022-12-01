@@ -113,7 +113,7 @@ export const getTempOrdersByWhere = async () => {
     const db = await getDBConnection();
 
     try {
-        let items:any=[];
+        let items:any={};
         await db.transaction(function (txn) {
 
             let where=' 1 = 1 ';
@@ -123,7 +123,8 @@ export const getTempOrdersByWhere = async () => {
                 [],
                 function (tx, res) {
                     for (let i = 0; i < res.rows.length; ++i) {
-                        items.push(JSON.parse(res.rows.item(i).data))
+                        const {tableorderid,data}:any = res.rows.item(i);
+                        items[tableorderid] = JSON.parse(data)
                     }
                 }
             );
@@ -139,7 +140,7 @@ export const getOrdersByWhere = async () => {
     const db = await getDBConnection();
 
     try {
-        let items:any=[];
+        let items:any={};
         await db.transaction(function (txn) {
 
             let where=' 1 = 1 ';
@@ -149,7 +150,8 @@ export const getOrdersByWhere = async () => {
                 [],
                 function (tx, res) {
                     for (let i = 0; i < res.rows.length; ++i) {
-                        items.push(JSON.parse(res.rows.item(i).data))
+                        const {orderid,data}:any = res.rows.item(i);
+                        items[orderid] = JSON.parse(data)
                     }
                 }
             );

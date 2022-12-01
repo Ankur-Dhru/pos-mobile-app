@@ -73,7 +73,7 @@ const Index = (props: any) => {
         })
     }
 
-    return <Container>
+    return <Container style={[styles.bg_white]}>
 
 
         <Form
@@ -83,11 +83,11 @@ const Index = (props: any) => {
             render={({handleSubmit, submitting, values, ...more}: any) => (
                 <>
                     <View style={[styles.middle,]}>
-                        <View style={[styles.middleForm, {maxWidth: 380,}]}>
+                        <View style={[styles.middleForm, {maxWidth: 400,}]}>
 
                             <ScrollView>
 
-                                <View style={[styles.px_6]}>
+                                <View style={[styles.px_5]}>
                                     <View style={[styles.middle, {marginBottom: 30, marginTop: 30}]}>
                                         <Image
                                             style={[{width: 70, height: 70}]}
@@ -150,7 +150,7 @@ const Index = (props: any) => {
                             </ScrollView>
 
                             <KAccessoryView>
-                                <View style={[styles.submitbutton, styles.mb_5]}>
+                                <View style={[styles.submitbutton]}>
                                     <Button more={{color: 'white'}} disable={more.invalid} secondbutton={more.invalid}
                                             onPress={() => {
                                                 handleSubmit(values)

@@ -14,12 +14,12 @@ import Tables from "../Tables";
 import Cart from "../Cart";
 import {
     appLog,
-    CheckConnectivity,
+    CheckConnectivity, getOrders,
     getTempOrders,
     isEmpty,
     isRestaurant,
     retrieveData,
-    storeData
+    storeData, syncInvoice
 } from "../../libs/function";
 import DetailView from "../Cart/DetailView";
 import Payment from "../Cart/Payment";
@@ -72,57 +72,13 @@ const MainStackNavigator = () => {
     const dispatch = useDispatch();
 
     let interval: any = null;
-
-
-    const syncInvoice = (invoiceData: any) => {
-        return new Promise((resolve) => {
-            let {
-                initData,
-                licenseData,
-            }: any = localredux;
-            apiService({
-                method: METHOD.POST,
-                action: ACTIONS.INVOICE,
-                body: invoiceData,
-                workspace: initData.workspace,
-                token: licenseData?.token,
-                hideLoader: true,
-                hidealert: true,
-                other: {url: posUrl},
-            }).then((response: any) => {
-
-                if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
-
-                    appLog('invoiceData',invoiceData)
-
-                    deleteTable(TABLE.ORDER,`orderid = '${invoiceData?.orderid}'`).then(async ()=>{
-                        dispatch(setOrder({...invoiceData, synced: true}))
-                    })
-
-                    /*retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
-                        let localOrder: any = data?.orders
-                        delete localOrder[invoiceData?.orderid];
-                        storeData('fusion-pro-pos-mobile', data).then(async () => {
-                            dispatch(setOrder({...invoiceData, synced: true}))
-                        });
-                    })*/
-                } else {
-                    resolve({status: "ERROR"})
-                }
-            }).catch(() => {
-                resolve({status: "TRY CATCH ERROR"})
-            })
-        })
-    }
-
     useEffect(() => {
         if (!interval) {
             interval = setInterval(() => {
-                retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
-                    if (!isEmpty(data.orders)) {
-                        let invoice: any = Object.values(data.orders)[0]
-                        let response = await syncInvoice(invoice)
-                        appLog("invoice data call", response);
+                getOrders().then((orders:any)=>{
+                    if (!isEmpty(orders)) {
+                        let invoice: any = Object.values(orders)[0]
+                        syncInvoice(invoice).then()
                     }
                 })
             }, 60000);

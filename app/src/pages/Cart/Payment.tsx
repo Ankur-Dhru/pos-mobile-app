@@ -138,18 +138,11 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
             ////////// SAVE FINAL DATA //////////
             dispatch(showLoader())
 
-            saveLocalOrder(clone(cartData)).then((msg:any) => {
-
-                appLog('msg',msg)
-
+            saveLocalOrder(clone(cartData)).then(async (msg:any) => {
                 if (config?.print) {
-                    printInvoice(cartData).then(() => {
-                        redirectTo()
-                    });
-                } else {
-                    redirectTo()
+                    printInvoice(cartData).then(() => {});
                 }
-
+                redirectTo()
                 dispatch(setAlert({visible: true, message: 'Order Save Successfully'}))
                 dispatch(hideLoader())
             })

@@ -76,11 +76,11 @@ const Index = ({navigation}: any) => {
     };
 
     return (
-        <Container>
+        <Container style={{backgroundColor:'white',padding:0}}>
             <View style={[styles.h_100, styles.flex, styles.w_100, {flexDirection: 'column'}]}>
 
 
-                <View style={[{marginTop: 10}]}>
+                <View style={[{padding: 10}]}>
                     <SearchBox handleSearch={handleSearch} autoFocus={true}  onIconPress={() => navigation.goBack()}
                                icon={{ source: 'arrow-left', direction: 'auto' }} placeholder="Search Item..."/>
                 </View>
@@ -96,16 +96,13 @@ const Index = ({navigation}: any) => {
                             ListEmptyComponent={Boolean(search.length > 0) ? <View>
                                 <View style={[styles.p_6]}>
                                     <Text
-                                        style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> No
-                                        result found</Text>
+                                        style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> No result found</Text>
                                     <Text
-                                        style={[styles.paragraph, styles.text_xs, styles.muted, {textAlign: 'center'}]}> Tap
-                                        to Create New Item.</Text>
+                                        style={[styles.paragraph, styles.text_xs, styles.muted, {textAlign: 'center'}]}> Tap  to Create New Item.</Text>
                                 </View>
                                 <AddItem navigation={navigation}/>
                             </View> : <View style={[styles.p_6]}>
-                                <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>Search
-                                    Item from here</Text>
+                                <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>Search Item from here</Text>
                             </View>}
                             keyExtractor={item => item.itemid}
                         />}

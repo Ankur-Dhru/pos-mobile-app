@@ -12,6 +12,7 @@ import AddEditClient from "../Client/AddEditClient";
 import DeleteButton from "../../components/Button/DeleteButton";
 import {Container, ProIcon} from "../../components";
 import {Button as PButton} from 'react-native-paper';
+import Icon from "react-native-fontawesome-pro";
 
 
 const ProfileSettings = () => {
@@ -94,17 +95,19 @@ const ProfileSettings = () => {
     }
 
 
-    return <Container>
+    return <Container style={{padding:0}}>
 
-        <ScrollView keyboardShouldPersistTaps='handled' style={[styles.h_100]}>
+
 
             <View style={[styles.middle]}>
 
                 <View style={[styles.middleForm]}>
 
-                    <View style={[styles.px_4]}>
+                    <ScrollView keyboardShouldPersistTaps='handled' style={[styles.h_100]}>
 
-                    <View style={[styles.mt_5,styles.mb_5]}>
+                    <View style={[styles.px_3]}>
+
+                    <View style={[styles.mt_5]}>
                         <View>
 
                             <View style={[{justifyContent: 'center', alignItems: 'center',}]}>
@@ -125,12 +128,12 @@ const ProfileSettings = () => {
 
                             <View style={[styles.grid, styles.justifyContent]}>
                                 <Button style={[styles.w_auto, styles.noshadow]}
-                                        more={{backgroundColor: styles.accent.color,color:'white'}} onPress={() => {
+                                        more={{backgroundColor: styles.accent.color,color:'white',height:40}} onPress={() => {
                                     navigation.goBack();
                                     syncData().then()
                                 }}>Sync</Button>
-                                <Button style={[styles.ml_2, styles.w_auto, styles.noshadow]}
-                                        more={{backgroundColor: styles.red.color,color:'white'}} onPress={() => {
+                                <Button  style={[styles.ml_1, styles.w_auto, styles.noshadow]}
+                                        more={{backgroundColor: styles.red.color,color:'white',height:40}} onPress={() => {
                                     logoutUser();
                                 }}>Logout</Button>
                             </View>
@@ -149,51 +152,52 @@ const ProfileSettings = () => {
                                 <List.Subheader>Reports</List.Subheader>
 
                                 <List.Item
-                                    title={'Sales Invoices'}
+                                    style={[styles.listitem]}
+                                    title={'Sales Report'}
                                     onPress={() => {
                                         navigation.goBack()
                                         navigation.navigate("SalesReportNavigator");
                                     }}
-                                    left={() =>  <List.Icon icon="newspaper-variant-outline"/>}
+                                    left={() =>  <List.Icon icon="point-of-sale"/>}
                                     right={() =>  <List.Icon icon="chevron-right"/>}
                                 />
 
                                 <Divider/>
 
 
-                            <List.Subheader>Create a New</List.Subheader>
+                            <List.Subheader >Create a New</List.Subheader>
 
                             <List.Item
-
+                                style={[styles.listitem]}
                                 title={'Item Category'}
                                 onPress={async () => {
                                     navigation.navigate("AddEditCategory");
                                 }}
-                                left={() =>  <List.Icon icon="plus"/>}
+                                left={() =>  <List.Icon icon="playlist-plus"/>}
                                 right={() =>  <List.Icon icon="chevron-right"/>}
                             />
 
                             <Divider/>
 
                             <List.Item
-
+                                style={[styles.listitem]}
                                 title={'Item'}
                                 onPress={async () => {
                                     navigation.navigate("AddEditItemNavigator");
                                 }}
-                                left={() =>  <List.Icon icon="plus"/>}
+                                left={() =>  <List.Icon icon="card-plus-outline"/>}
                                 right={() =>  <List.Icon icon="chevron-right"/>}
                             />
 
                             <Divider/>
 
                             <List.Item
-
+                                style={[styles.listitem]}
                                 title={'Client'}
                                 onPress={async () => {
                                     navigation.navigate("AddEditClient");
                                 }}
-                                left={() =>  <List.Icon icon="plus"/>}
+                                left={() =>  <List.Icon icon="account-plus"/>}
                                 right={() =>  <List.Icon icon="chevron-right"/>}
                             />
 
@@ -207,30 +211,31 @@ const ProfileSettings = () => {
                                 <List.Subheader>Settings</List.Subheader>
 
                             <List.Item
-
+                                style={[styles.listitem]}
                                 title="Invoice Printer"
                                 onPress={() => {
                                     navigation.navigate('PrinterSettings', {type: {name: 'Invoice', departmentid: PRINTER.INVOICE}})
                                 }}
-                                left={() =>  <List.Icon icon="printer"/>}
+                                left={() =>  <List.Icon icon="printer-outline"/>}
                                 right={() =>  <List.Icon icon="chevron-right"/>}
                             />
 
                                 <Divider/>
 
                                 {isRestaurant() && <List.Item
+                                    style={[styles.listitem]}
                                     title="KOT Printer"
                                     onPress={() => {
                                         navigation.navigate("KOTPrinter");
                                     }}
-                                    left={() =>  <List.Icon icon="printer"/>}
+                                    left={() =>  <List.Icon icon="printer-outline"/>}
                                     right={() =>  <List.Icon icon="chevron-right"/>}
                                 />}
 
                                 <Divider/>
 
                             <List.Item
-
+                                style={[styles.listitem]}
                                 title="Quick Quantity Unit"
                                 onPress={() => {
                                     navigation.navigate("InputOpenSetting");
@@ -242,12 +247,12 @@ const ProfileSettings = () => {
                                 <Divider/>
 
                             <List.Item
-
+                                style={[styles.listitem]}
                                 title="Quick Quantity & Amount"
                                 onPress={() => {
                                     navigation.navigate("DefaultInputValues");
                                 }}
-                                left={() =>  <List.Icon icon="dollar"/>}
+                                left={() =>  <List.Icon icon="currency-inr"/>}
                                 right={() =>  <List.Icon icon="chevron-right"/>}
                             />
 
@@ -313,10 +318,12 @@ const ProfileSettings = () => {
                     </View>
 
                     </View>
+
+                    </ScrollView>
                 </View>
             </View>
 
-        </ScrollView>
+
 
 
     </Container>

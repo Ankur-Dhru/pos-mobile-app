@@ -47,15 +47,19 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
     return (<>
 
         {isRestaurant() &&
-            <View style={[styles.px_5]}>
-                <InputBox
-                    defaultValue={commonkotnote}
-                    label={'Common KOT Notes'}
-                    onChange={(value:any)=>{
-                        dispatch(updateCartField({commonkotnote:value}))
-                    }}
-                />
-            </View>}
+            <Card style={[{marginVertical:5}]}>
+                <Card.Content style={[styles.cardContent,{paddingBottom:10}]}>
+                    <InputBox
+                        defaultValue={commonkotnote}
+                        label={'Common KOT Notes'}
+                        onChange={(value:any)=>{
+                            dispatch(updateCartField({commonkotnote:value}))
+                        }}
+                    />
+                </Card.Content>
+            </Card>}
+
+
 
         {Boolean(advanceorder?.date) &&
             <Card style={[styles.dottedBorder, styles.noshadow, styles.p_5, styles.m_3, {borderRadius: 5}]}
@@ -66,9 +70,12 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
                     : {moment(advanceorder.date).format(dateFormat())} {moment(advanceorder.time).format('HH:mm A')}</Paragraph>
                 {Boolean(advanceorder.notes) && <Paragraph>{advanceorder.notes}</Paragraph>}
             </Card>}
+
+
+
         <Card onPress={() => {
             viewSummary()
-        }} style={[styles.mt_3, styles.m_2, styles.noshadow, styles.bg_light]}>
+        }}>
             <Card.Content>
 
                 <View><Paragraph style={[styles.absolute, {top: 0, left: '50%', marginLeft: -10}]}><ProIcon
@@ -76,7 +83,7 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
 
                 <View ref={moreSummaryRef}><CartSummaryMore/></View>
 
-                <View style={[styles.grid, styles.justifyContent]}>
+                <View style={[styles.grid, styles.justifyContent,styles.middle]}>
                     <View style={{width: '40%'}}><Paragraph
                         style={[styles.paragraph, styles.bold]}>Total </Paragraph></View>
                     <View style={{width: '40%'}}><Paragraph

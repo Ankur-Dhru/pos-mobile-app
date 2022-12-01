@@ -12,6 +12,9 @@ import AddButton from "./AddButton";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 import {AddItem} from "./ItemListTablet";
 import {useNavigation} from "@react-navigation/native";
+import GroupListMobile from "./GroupListMobile";
+import CartTotal from "../Cart/CartTotal";
+import Avatar from "../../components/Avatar";
 
 
 const Item = memo(({item}: any) => {
@@ -28,9 +31,13 @@ const Item = memo(({item}: any) => {
     }} style={[styles.noshadow]}>
         <View>
             <View>
-                <View style={[styles.grid, styles.top, styles.noWrap, styles.p_4, styles.px_6]}>
+                <View style={[styles.grid, styles.middle, styles.noWrap, styles.p_4]}>
 
-                    <View style={[styles.w_auto,]}>
+                    <View>
+                        <Avatar label={item.itemname} value={item.itemid} fontsize={12} size={35}/>
+                    </View>
+
+                    <View style={[styles.w_auto,styles.ml_2]}>
                         <Paragraph style={[styles.paragraph, styles.text_sm, styles.bold]}>{item.itemname}</Paragraph>
 
                         <View style={[styles.grid, styles.middle]}>
@@ -155,6 +162,13 @@ const Index = (props: any) => {
                     <AddItem navigation={navigation}/>
                 </View>}
             />
+
+            <View>
+                <GroupListMobile/>
+            </View>
+
+            <CartTotal/>
+
         </>
     )
 }

@@ -1099,15 +1099,6 @@ export const getCurrencySign = () => {
 }
 
 
-export const syncInvoice = () => {
-
-    retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
-
-        appLog("invoice data", data);
-    })
-}
-
-
 export const groupBy = (arr: any, property: any) => {
     try {
         return arr.reduce(function (memo: any, x: any) {
@@ -1948,8 +1939,8 @@ export const getTempOrders = (refresh = false) => {
 export const getOrders = (refresh = false) => {
     return new Promise((resolve)=> {
         getOrdersByWhere().then((orders: any) => {
-            store.dispatch(setOrdersData(orders));
-            resolve('get Orders')
+            //store.dispatch(setOrdersData(orders));
+            resolve(orders)
         });
     })
 }
@@ -2039,4 +2030,39 @@ export const loadContacts = async () => {
         });
     Contacts.checkPermission().then();
 
+}
+
+
+export const syncInvoice = (invoiceData: any) => {
+    return new Promise((resolve) => {
+        let {
+            initData,
+            licenseData,
+        }: any = localredux;
+        apiService({
+            method: METHOD.POST,
+            action: ACTIONS.INVOICE,
+            body: invoiceData,
+            workspace: initData.workspace,
+            token: licenseData?.token,
+            hideLoader: true,
+            hidealert: true,
+            other: {url: posUrl},
+        }).then((response: any) => {
+
+
+            if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
+
+                deleteTable(TABLE.ORDER,`orderid = '${invoiceData?.orderid}'`).then(async ()=>{
+                    store.dispatch(setOrder({...invoiceData, synced: true}))
+                    resolve('synced')
+                })
+
+            } else {
+                resolve({status: "ERROR"})
+            }
+        }).catch(() => {
+            resolve({status: "TRY CATCH ERROR"})
+        })
+    })
 }

@@ -4,7 +4,7 @@ import {styles} from "../../theme";
 
 import {Button, Container} from "../../components";
 import {useDispatch} from "react-redux";
-import {Paragraph,} from "react-native-paper";
+import {Caption, Card, Paragraph,} from "react-native-paper";
 import {appLog, assignOption, getDefaultCurrency, getStateList, syncData, updateComponent} from "../../libs/function";
 import {Field, Form} from "react-final-form";
 
@@ -204,8 +204,8 @@ const Index = (props: any) => {
 
                                 <ScrollView>
 
-                                    <View style={[styles.px_6]}>
-                                        <View>
+                                    <Card style={[styles.card]}>
+                                        <Card.Content style={[styles.cardContent]}>
                                             <View>
 
                                                 <View>
@@ -288,22 +288,24 @@ const Index = (props: any) => {
 
                                             </View>
 
-                                        </View>
+                                        </Card.Content>
 
 
-                                        <View>
-                                            <View>
+                                    </Card>
+
+                                        <Card  style={[styles.card]}>
+                                            <Card.Content style={[styles.cardContent]}>
                                                 <View>
                                                     <TouchableOpacity onPress={() => {
                                                         moredetail = !moredetail;
                                                         updateComponent(moreDetailRef, 'display', moredetail ? 'flex' : 'none')
                                                     }} style={[styles.grid, styles.middle, styles.justifyContent]}>
-                                                        <Paragraph style={[styles.paragraph, styles.caption]}>
+                                                        <Caption style={[styles.caption]}>
                                                             More Detail
-                                                        </Paragraph>
+                                                        </Caption>
                                                         <Paragraph>
                                                             <ProIcon name={!moredetail ? 'chevron-down' : 'chevron-up'}
-                                                                     action_type={'text'} size={16}/>
+                                                                     />
                                                         </Paragraph>
                                                     </TouchableOpacity>
                                                 </View>
@@ -616,12 +618,10 @@ const Index = (props: any) => {
 
                                                 </View>}
 
-                                            </View>
+                                            </Card.Content>
 
-                                        </View>
+                                        </Card>
 
-
-                                    </View>
 
                                 </ScrollView>
 

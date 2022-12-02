@@ -25,7 +25,7 @@ const Paxes = () => {
                      paxes.map((number:any)=>{
                          return <>
                              <TouchableOpacity  style={[styles.m_2,styles.p_5,styles.flexGrow,styles.bg_light,{borderRadius:10,width:'25%'}]} onPress={()=>{ onClickPax(number);}}>
-                                 <Paragraph style={[styles.bold,{textAlign:'center',textAlignVertical:'center',height:35}]}>{number}</Paragraph>
+                                 <Paragraph style={[styles.bold,{textAlign:'center',textAlignVertical:'center'}]}>{number}</Paragraph>
                              </TouchableOpacity>
                          </>
                      })

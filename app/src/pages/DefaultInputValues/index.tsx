@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {FlatList, TouchableOpacity, View} from "react-native";
-import {Divider, Paragraph, Text} from "react-native-paper"
+import {Card, Divider, Paragraph, Text} from "react-native-paper"
 import {clone, isEmpty, saveLocalSettings} from "../../libs/function";
 import Container from "../../components/Container";
 import {styles} from "../../theme";
@@ -8,6 +8,7 @@ import {connect, useDispatch} from "react-redux";
 import Button from "../../components/Button";
 import InputField from "../../components/InputField";
 import {ProIcon} from "../../components";
+import {ItemDivider} from "../../libs/static";
 
 const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
 
@@ -63,7 +64,7 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
                     </TouchableOpacity>
                 </View>
             </TouchableOpacity>
-            <Divider/>
+
         </>
     }
 
@@ -74,10 +75,14 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
 
         <View style={[styles.middle]}>
 
-            <View style={[styles.middleForm,styles.px_6]}>
+            <View style={[styles.middleForm]}>
+
+                <Card style={[styles.card]}>
+                    <Card.Content  style={[styles.cardContent]}>
+
                 <View>
-                    <View style={[styles.grid, styles.justifyContent,styles.mt_5]}>
-                        <Button more={{color:'white'}}  style={[styles.w_auto]}  onPress={() => {
+                    <View style={[styles.grid, styles.justifyContent]}>
+                        <Button more={{color:'black',backgroundColor:styles.secondary.color}}  style={[styles.w_auto]}  onPress={() => {
                             setSelectedTab("num")
 
 
@@ -90,7 +95,7 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
                     </View>
                 </View>
 
-                <View style={[styles.grid, styles.justifyContent, styles.middle, styles.px_5]}>
+                <View style={[styles.grid, styles.justifyContent, styles.middle, styles.mt_5]}>
                     <View style={[styles.w_auto]}>
                         <InputField
                             value={inputValues}
@@ -107,13 +112,19 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
                     </View>
                 </View>
 
+
+
                 <FlatList
                     data={selectedTab === 'num' ? isEmpty(defaultInputValues) ? [] : defaultInputValues : isEmpty(defaultInputAmounts) ? [] : defaultInputAmounts}
                     renderItem={renderitem}
                     keyboardDismissMode={'on-drag'}
                     keyboardShouldPersistTaps={'always'}
+                    ItemSeparatorComponent={ItemDivider}
                     initialNumToRender={5}
                 />
+
+                    </Card.Content>
+                </Card>
 
             </View>
 

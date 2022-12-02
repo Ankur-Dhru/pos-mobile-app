@@ -2,6 +2,7 @@ import * as React from 'react';
 import {TextInput, withTheme, Text, Paragraph,Divider} from 'react-native-paper';
 import {styles} from "../../theme";
 import {View} from "react-native";
+import {ItemDivider} from "../../libs/static";
 
 
 
@@ -29,7 +30,7 @@ class Index extends React.Component<any> {
                     {...this.props}
                     label={<Text style={labelstyle}>{label}</Text>}
                 />
-                <Divider style={[styles.divider,{borderBottomColor:colors.divider}]}/>
+                <ItemDivider/>
             </View>
         );
     }

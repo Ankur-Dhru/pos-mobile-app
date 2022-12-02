@@ -13,6 +13,7 @@ import {v4 as uuid} from "uuid";
 import KAccessoryView from '../../components/KAccessoryView';
 import {Container} from "../../components";
 import {useNavigation} from "@react-navigation/native";
+import { Card } from "react-native-paper";
 
 
 const AddTable = (props: any) => {
@@ -70,11 +71,11 @@ const AddTable = (props: any) => {
 
                             <KeyboardScroll>
 
-                                <View style={[styles.p_6]}>
-                                    <View>
+                                <Card style={[styles.card]}>
+                                    <Card.Content style={[styles.cardContent]}>
 
-                                        <View style={[styles.mt_3]}>
-                                            <View style={[styles.mb_5]}>
+                                        <View>
+                                            <View>
                                                 <Field name="tablename" validate={composeValidators(required)}>
                                                     {props => (
                                                         <InputField
@@ -92,7 +93,7 @@ const AddTable = (props: any) => {
                                                 </Field>
                                             </View>
 
-                                            <View style={[styles.mb_5]}>
+                                            <View>
                                                 <Field name="paxes" validate={composeValidators(required)}>
                                                     {props => (
                                                         <InputField
@@ -113,8 +114,8 @@ const AddTable = (props: any) => {
                                         </View>
 
 
-                                    </View>
-                                </View>
+                                    </Card.Content>
+                                </Card>
 
 
                             </KeyboardScroll>

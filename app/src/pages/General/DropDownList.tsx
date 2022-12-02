@@ -7,7 +7,7 @@ import {styles as theme, styles} from "../../theme";
 
 
 import Search from "../../components/SearchBox"
-import {device} from "../../libs/static";
+import {device, ItemDivider} from "../../libs/static";
 import Avatar from "../../components/Avatar/PhoneAvatar";
 import ProIcon from "../../components/ProIcon";
 import Button from "../../components/Button";
@@ -85,15 +85,14 @@ const Index = (props: any) => {
 
         return (
             <>
-                <View style={[styles.px_5, {paddingLeft: 5}]}>
+                <View>
                     {listtype === 'staff' && <TouchableOpacity onPress={() => {
                         selectItem(item);
                     }}>
                         <List.Item title={item.label}
                                    titleStyle={{textTransform: 'capitalize'}}
                                    left={() => <Avatar label={item.label}   value={item.value}/>}
-                                   right={() => +item.value === +selected &&
-                                       <View style={{marginTop: 10}}><ProIcon action_type={'text'}  name={'check'}/></View>}
+                                   right={() => +item.value === +selected && <List.Icon icon="chevron-right"/>}
                         />
                     </TouchableOpacity>}
 
@@ -104,8 +103,7 @@ const Index = (props: any) => {
                             style={[styles.flexwidth, {backgroundColor: item.color, borderRadius: 3}]}><Paragraph
                             style={[styles.paragraph, {color: 'white'}]}>  {item.label}  </Paragraph></View>}
                                    titleStyle={{textTransform: 'capitalize'}}
-                                   right={() => item.value === selected &&
-                                       <View style={{marginTop: 10}}><ProIcon action_type={'text'}  name={'check'}/></View>}
+                                   right={() => item.value === selected && <List.Icon icon="chevron-right"/>}
                         />
                     </TouchableOpacity>}
 
@@ -114,16 +112,14 @@ const Index = (props: any) => {
                         selectItem(item);
                     }}>
                         <List.Item
-                            title={() => <View><Paragraph style={[styles.paragraph]}>{item.label}</Paragraph></View>}
+                            title={item.label}
                             titleStyle={{textTransform: 'capitalize'}}
                             left={() => <View style={{marginTop: 3}}>
                                 <ProIcon color={theme[item.value].color}
                                          name={`${item.value === 'highest' ? 'chevron-double-up' : item.value === 'high' ? 'chevron-up' : item.value === 'low' ? 'chevron-down' : item.value === 'lowest' ? 'chevron-double-down' : 'equals'}`}
                                          size={15}/>
                             </View>}
-                            right={() => item.value === selected &&
-                                <View style={{marginTop: 10}}><ProIcon action_type={'text'}
-                                                                       name={'check'}/></View>}
+                            right={() => item.value === selected && <List.Icon icon="chevron-right"/>}
                         />
                     </TouchableOpacity>}
 
@@ -131,11 +127,9 @@ const Index = (props: any) => {
                         selectItem(item);
                     }}>
                         <List.Item
-                            title={() => <View><Paragraph style={[styles.paragraph]}>{item.label}</Paragraph></View>}
+                            title={item.label}
                             titleStyle={{textTransform: 'capitalize'}}
-                            right={() => (item.value === selected) &&
-                                <View style={{marginTop: 10}}><ProIcon action_type={'text'}
-                                                                       name={'check'}/></View>}
+                            right={() => (item.value === selected) && <List.Icon icon="chevron-right"/>}
                         />
                     </TouchableOpacity>}
 
@@ -143,16 +137,12 @@ const Index = (props: any) => {
                         selectItem(item);
                     }}>
                         <List.Item
-                            title={() => <View><Paragraph
-                                style={[styles.paragraph]}>{item.label}</Paragraph></View>}
+                            title={item.label}
                             titleStyle={{textTransform: 'capitalize'}}
-                            right={() => item.selected &&
-                                <View style={{marginTop: 10}}><ProIcon action_type={'text'}
-                                                                       name={'check'}/></View>}
+                            right={() => item.selected && <List.Icon icon="chevron-right"/>}
                         />
                     </TouchableOpacity>}
                 </View>
-                <Divider style={[styles.divider]}/>
             </>
         );
     };
@@ -202,6 +192,7 @@ const Index = (props: any) => {
 
                             </View>
                         }}
+                        ItemSeparatorComponent={ItemDivider}
                         ListEmptyComponent={<View>
                             <View style={[styles.p_6]}>
                                 <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> No

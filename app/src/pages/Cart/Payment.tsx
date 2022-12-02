@@ -10,15 +10,16 @@ import {
     toCurrency
 } from "../../libs/function";
 import {ScrollView, TouchableOpacity, View} from "react-native";
-import {Paragraph, TextInput, withTheme,} from "react-native-paper";
+import {Card, Divider, Paragraph, TextInput, withTheme,} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {Button, Container} from "../../components";
 import {CommonActions, useNavigation} from "@react-navigation/native";
-import {device, localredux} from "../../libs/static";
+import {device, ItemDivider, localredux} from "../../libs/static";
 import store from "../../redux-store/store";
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
 import {setCartData} from "../../redux-store/reducer/cart-data";
+import ProIcon from "../../components/ProIcon";
 
 
 const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: any) => {
@@ -195,150 +196,133 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
     }*/
 
 
-    return <Container config={{title: 'Payment'}}>
+    return <Container>
+
 
         <ScrollView>
 
-            <View style={[styles.grid, styles.middle, styles.justifyContent, styles.px_6]}>
-                {Boolean(vouchertotaldisplay) && <View>
-
-                    <Paragraph style={[styles.paragraph, styles.green, {
-                        textAlign: 'center',
-                        fontSize: 15,
-                        height: 40,
-                        paddingTop: 20,
-                        fontWeight: 'bold'
-                    }]}>{"Voucher Total"} : {toCurrency(vouchertotaldisplay)}</Paragraph>
-                </View>}
+            <Card>
+                <Card.Content>
 
 
-                {Boolean(paidamount) && <View>
-
-                    <Paragraph style={[styles.paragraph, styles.green, {
-                        textAlign: 'center',
-                        fontSize: 15,
-                        height: 40,
-                        paddingTop: 20,
-                        fontWeight: 'bold'
-                    }]}>{"Advance Pay"} : {toCurrency(paidamount)}</Paragraph>
-                </View>}
+                    {<View style={[styles.grid,styles.justifyContent,styles.p_5]}>
+                        <Paragraph style={[styles.paragraph, styles.bold,{color:styles.green.color}]}>{"Voucher Total"} </Paragraph>
+                        <Paragraph style={[styles.paragraph,styles.bold,{color:styles.green.color}]}> {toCurrency(vouchertotaldisplay)}</Paragraph>
+                    </View>}
 
 
-                <View>
-
-                    <Paragraph style={[styles.paragraph, styles.red, {
-                        textAlign: 'center',
-                        fontSize: 15,
-                        height: 40,
-                        paddingTop: 20,
-                        fontWeight: 'bold'
-                    }]}>{"Remaining"} : {toCurrency(remainingAmount || '0')}</Paragraph>
-                </View>
-
-
-            </View>
-
-
-            <View style={[styles.p_5]}>
-
-                <View style={[styles.mb_5, styles.border, {
-                    borderRadius: 5,
-                    backgroundColor: activePayLater ? styles.secondary.color : 'white'
-                }]}>
-                    <TouchableOpacity onPress={() => {
-                        let newDA = paymentMethods.map((pm: any) => ({...pm, paymentAmount: 0}))
-                        setPaymentMethods(newDA);
-                        dispatch(setCartData({
-                            payment: [{
-                                paymentby: "Pay Later",
-                                paymentAmount: vouchertotaldisplay
-                            }]
-                        }));
-                    }} style={[styles.p_6]}>
-                        <View style={[styles.grid, styles.justifyContent]}>
-                            <View><Paragraph style={[styles.paragraph, styles.bold]}>Pay later</Paragraph></View>
+                    {Boolean(paidamount) && <View>
+                        <View style={[styles.grid,styles.justifyContent,styles.p_5]}>
+                            <Paragraph style={[styles.paragraph, styles.bold,{color:styles.green.color}]}>{"Advance Pay"}</Paragraph>
+                            <Paragraph style={[styles.paragraph,styles.bold,{color:styles.green.color}]}> {toCurrency(paidamount)}</Paragraph>
                         </View>
-                    </TouchableOpacity>
-                </View>
+                    </View>}
+
+                    <ItemDivider/>
+
+            <View style={[styles.py_5]}>
+
+
                 {
                     paymentMethods?.map((pm: any, key: any) => {
-                        return (<View key={key} style={[styles.mb_5, styles.border, {
-                            borderRadius: 5,
-                            backgroundColor: Boolean(paymentMethods[key]?.paymentAmount) ? styles.secondary.color : 'white'
-                        }]}>
+                        return (<View key={key}>
 
 
-                            <View style={[styles.grid, styles.justifyContent,styles.mb_3]}>
-                                <TouchableOpacity onPress={() => {
-                                    if (remainingAmount > 0) {
-                                        paymentMethods[key] = {
-                                            ...pm,
-                                            paymentAmount: remainingAmount
+                            <View style={[styles.grid, styles.justifyContent]}>
+
+
+
+                                <View style={{width:30}}>
+                                    <TouchableOpacity>
+                                        {
+                                            Boolean(paymentMethods[key]?.paymentAmount) ?
+                                            <ProIcon name={'circle-check'}   color={styles.green.color}></ProIcon> :
+                                            <ProIcon name={'circle'} ></ProIcon>
                                         }
-                                        setPaymentMethods(clone(paymentMethods));
-                                    } else {
-                                        let newData = [...paymentMethods.map((data: any) => ({
-                                            ...data,
-                                            paymentAmount: 0
-                                        }))];
-                                        newData[key] = {
-                                            ...pm,
-                                            paymentAmount: vouchertotaldisplay
-                                        }
-                                        setPaymentMethods(clone(newData));
-                                    }
-                                }} style={[styles.w_auto, styles.p_6]}>
+                                    </TouchableOpacity>
+                                </View>
 
-                                    <View><Paragraph
-                                        style={[styles.paragraph, styles.bold]}>{pm.label}</Paragraph></View>
 
-                                </TouchableOpacity>
 
-                                {<>
-                                    {Boolean(paymentMethods[key]?.paymentAmount) && <View style={{width: 100}}>
+                                <View style={[styles.w_auto]}>
+                                    <View style={[styles.grid,styles.px_5, styles.justifyContent]}>
 
-                                        <TextInput
-                                            label=""
-                                            placeholder={'Amount'}
-                                            mode={'outlined'}
 
-                                            keyboardType='numeric'
-                                            defaultValue={pm?.paymentAmount + ''}
-                                            onChangeText={(value) => {
-                                                paymentMethods[key].paymentAmount = value
+
+                                        <TouchableOpacity onPress={() => {
+                                            if (remainingAmount > 0) {
+                                                paymentMethods[key] = {
+                                                    ...pm,
+                                                    paymentAmount: remainingAmount
+                                                }
                                                 setPaymentMethods(clone(paymentMethods));
-                                            }
-                                            }
-                                        />
-
-                                    </View>}
-                                    {/*{Boolean(paymentMethods[key]?.paymentAmount) &&
-                                        <View style={{width: 140, marginLeft: 5}}>
-
-                                            <TextInput
-                                                label=""
-                                                placeholder={'Bank Charges'}
-
-                                                mode={'outlined'}
-                                                keyboardType='numeric'
-                                                onChangeText={(value) => {
-                                                    paymentMethods[key].bankCharges = value
-                                                    setPaymentMethods(clone(paymentMethods));
+                                            } else {
+                                                let newData = [...paymentMethods.map((data: any) => ({
+                                                    ...data,
+                                                    paymentAmount: 0
+                                                }))];
+                                                newData[key] = {
+                                                    ...pm,
+                                                    paymentAmount: vouchertotaldisplay
                                                 }
-                                                }
-                                            />
+                                                setPaymentMethods(clone(newData));
+                                            }
+                                        }} style={[styles.w_auto]}>
+                                            <View style={{paddingVertical:20}}><Paragraph  style={[styles.paragraph, styles.bold,{color:Boolean(paymentMethods[key]?.paymentAmount)?styles.green.color:'black'}]}>{pm.label}</Paragraph></View>
+                                        </TouchableOpacity>
 
-                                        </View>}*/}
-                                    {Boolean(paymentMethods[key]?.paymentAmount) && <View style={[styles.p_6]}>
+                                        {<>
+                                            {Boolean(paymentMethods[key]?.paymentAmount) && <View style={{width: 100,paddingBottom:5}}>
+
+                                                <TextInput
+                                                    label=""
+                                                    placeholder={'Amount'}
+                                                    mode={'outlined'}
+                                                    style={{height:40}}
+                                                    keyboardType='numeric'
+                                                    defaultValue={pm?.paymentAmount + ''}
+                                                    onChangeText={(value) => {
+                                                        paymentMethods[key].paymentAmount = value
+                                                        setPaymentMethods(clone(paymentMethods));
+                                                    }
+                                                    }
+                                                />
+
+                                            </View>}
+                                            {/*{Boolean(paymentMethods[key]?.paymentAmount) &&
+                                                <View style={{width: 140, marginLeft: 5}}>
+
+                                                    <TextInput
+                                                        label=""
+                                                        placeholder={'Bank Charges'}
+
+                                                        mode={'outlined'}
+                                                        keyboardType='numeric'
+                                                        onChangeText={(value) => {
+                                                            paymentMethods[key].bankCharges = value
+                                                            setPaymentMethods(clone(paymentMethods));
+                                                        }
+                                                        }
+                                                    />
+
+                                                </View>}*/}
+                                        </>}
+
+                                    </View>
+                                </View>
+
+                                <View style={{width:50}}>
+                                    {Boolean(paymentMethods[key]?.paymentAmount) &&
                                         <TouchableOpacity onPress={() => {
                                             paymentMethods[key].paymentAmount = 0;
                                             paymentMethods[key].bankCharges = 0;
                                             setPaymentMethods(clone(paymentMethods));
                                         }}>
-                                            <Paragraph style={[styles.paragraph, styles.red]}>X</Paragraph>
+                                            <ProIcon name={'circle-xmark'}></ProIcon>
                                         </TouchableOpacity>
-                                    </View>}
-                                </>}
+                                    }
+                                </View>
+
                             </View>
 
 
@@ -347,7 +331,55 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
                 }
 
 
+                <View style={[styles.grid, styles.justifyContent]} >
+
+                    <View style={{width:30}}>
+                        <TouchableOpacity>
+                            {
+                                Boolean(activePayLater) ?
+                                    <ProIcon name={'circle-check'}   color={styles.green.color}></ProIcon> :
+                                    <ProIcon name={'circle'} ></ProIcon>
+                            }
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={[styles.w_auto]}>
+                        <TouchableOpacity onPress={() => {
+                            let newDA = paymentMethods.map((pm: any) => ({...pm, paymentAmount: 0}))
+                            setPaymentMethods(newDA);
+                            dispatch(setCartData({
+                                payment: [{
+                                    paymentby: "Pay Later",
+                                    paymentAmount: vouchertotaldisplay
+                                }]
+                            }));
+                        }} style={[styles.px_5]}>
+                            <View style={[styles.grid, styles.justifyContent,{paddingVertical:20}]}>
+                                <View><Paragraph style={[styles.paragraph, styles.bold,{color:Boolean(activePayLater)?styles.green.color:'black'}]}>Pay later</Paragraph></View>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View></View>
+
+                </View>
+
             </View>
+
+
+                    <ItemDivider/>
+
+                <View>
+                    {<View style={[styles.grid,styles.justifyContent,styles.p_5]}>
+                        <Paragraph style={[styles.paragraph, styles.bold,{color:styles.red.color}]}> Remaining </Paragraph>
+                        <Paragraph style={[styles.paragraph,styles.bold,{color:styles.red.color}]}>  {toCurrency(remainingAmount || '0')}</Paragraph>
+                    </View>}
+                </View>
+
+
+                </Card.Content>
+            </Card>
+
 
         </ScrollView>
 
@@ -355,20 +387,23 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
         <View>
 
 
-            {<View style={[styles.grid, styles.justifyContent, styles.p_5]}>
-                <View style={[styles.w_auto]}>
-                    <Button more={{color:'white'}} onPress={() => {
-                        validatePayment().then()
-                    }}> Generate Invoice </Button>
-                </View>
+            {<View style={[styles.grid, styles.justifyContent]}>
 
-                <View style={[styles.w_auto, styles.ml_2]}>
+                <View style={[styles.w_auto]}>
                     <Button
-                        more={{backgroundColor: styles.yellow.color, color: 'black'}}
+                        more={{backgroundColor: styles.secondary.color, color: 'black',height:50}}
                         onPress={() => {
                             validatePayment({print: true}).then()
                         }}>Print & Generate Invoice</Button>
                 </View>
+
+                <View style={[styles.w_auto, styles.ml_1]}>
+                    <Button more={{color:'white',height:50}} onPress={() => {
+                        validatePayment().then()
+                    }}> Generate Invoice </Button>
+                </View>
+
+
 
             </View>}
 

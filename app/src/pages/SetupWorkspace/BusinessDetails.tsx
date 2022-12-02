@@ -104,9 +104,9 @@ class Index extends Component<any> {
                                     <KeyboardScroll>
 
 
-                                        <Card>
+                                        <Card style={[styles.card]}>
 
-                                            <Card.Content>
+                                            <Card.Content style={[styles.cardContent]}>
 
 
                                             {

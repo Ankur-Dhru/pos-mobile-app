@@ -14,7 +14,7 @@ import {chevronRight, findObject, getType, isEmpty} from "../../libs/function";
 
 //import {PERMISSIONS, requestMultiple} from "react-native-permissions";
 import ToggleSwitch from "./Switch";
-import {device, localredux} from "../../libs/static";
+import {device, ItemDivider, localredux} from "../../libs/static";
 
 
 class Index extends React.Component<any, any> {
@@ -255,7 +255,7 @@ class Index extends React.Component<any, any> {
                                         </View>
                                     </View>
                                     {divider &&
-                                        <Divider style={[styles.divider, {borderBottomColor: colors.divider}]}/>}
+                                        <ItemDivider/>}
                                 </View>
                             }</View>
                         </TouchableWithoutFeedback>
@@ -297,7 +297,7 @@ class Index extends React.Component<any, any> {
                                         }]}
                                         {...this.props}
                                     />
-                                    <Divider style={[styles.divider, {borderBottomColor: colors.divider}]}/>
+                                    <ItemDivider/>
                                 </View> :
 
                                 <InputBox
@@ -359,7 +359,7 @@ class Index extends React.Component<any, any> {
                             }]}
                             {...this.props}
                         />
-                        <Divider style={[styles.divider, {borderBottomColor: colors.divider}]}/>
+                        <ItemDivider/>
                     </View>
                 }
 
@@ -394,7 +394,7 @@ class Index extends React.Component<any, any> {
                                             <Paragraph style={[{height: 26}]}>{}</Paragraph>}</View>
                                     </View>
                                     {divider &&
-                                        <Divider style={[styles.divider, {borderBottomColor: colors.divider}]}/>}
+                                        <ItemDivider/>}
                                 </View>
                             }
                         </TouchableOpacity>

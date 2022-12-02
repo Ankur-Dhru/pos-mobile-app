@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import {FlatList, TouchableOpacity, View} from "react-native";
-import {Divider, Paragraph} from "react-native-paper"
+import {Card, Divider, Paragraph} from "react-native-paper"
 import {appLog, arraySome, clone, isEmpty, objToArray, saveLocalSettings} from "../../libs/function";
 import Container from "../../components/Container";
 import {styles} from "../../theme";
@@ -49,7 +49,6 @@ const Index = ({defaultAmountOpen}: any) => {
                 <View style={[styles.grid, styles.middle, styles.bg_white, {
                     width: 'auto',
                     padding: 16,
-                    borderRadius: 5,
                 }]}>
                     <Paragraph style={[styles.grid, styles.middle, styles.bg_white, {
                         marginRight: 6
@@ -58,19 +57,23 @@ const Index = ({defaultAmountOpen}: any) => {
                     <Paragraph style={[styles.paragraph, styles.bold]}>  {text}</Paragraph>
                 </View>
             </TouchableOpacity>
-            <Divider/>
+
         </>
     }
 
 
     return <Container>
-        <FlatList
-            data={objToArray(units)?.filter((u: any) => Boolean(u?.data?.isdecimal))}
-            renderItem={renderitem}
-            keyboardDismissMode={'on-drag'}
-            keyboardShouldPersistTaps={'always'}
-            initialNumToRender={5}
-        />
+        <Card style={[styles.card]}>
+            <Card.Content  style={[styles.cardContent]}>
+                <FlatList
+                    data={objToArray(units)?.filter((u: any) => Boolean(u?.data?.isdecimal))}
+                    renderItem={renderitem}
+                    keyboardDismissMode={'on-drag'}
+                    keyboardShouldPersistTaps={'always'}
+                    initialNumToRender={5}
+                />
+            </Card.Content>
+        </Card>
     </Container>
 
 }

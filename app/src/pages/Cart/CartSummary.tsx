@@ -1,7 +1,7 @@
 import React, {memo, useEffect} from "react";
-import {appLog, clone, dateFormat, isRestaurant, toCurrency, updateComponent} from "../../libs/function";
-import {View} from "react-native";
-import {Card, Paragraph, withTheme} from "react-native-paper";
+import {appLog, chevronRight, clone, dateFormat, isRestaurant, toCurrency, updateComponent} from "../../libs/function";
+import {TouchableOpacity, View} from "react-native";
+import {Caption, Card, Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {itemTotalCalculation} from "../../libs/item-calculation";
@@ -47,37 +47,53 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
     return (<>
 
         {isRestaurant() &&
-            <Card style={[{marginVertical:5}]}>
-                <Card.Content style={[styles.cardContent,{paddingBottom:10}]}>
-                    <InputBox
-                        defaultValue={commonkotnote}
-                        label={'Common KOT Notes'}
-                        onChange={(value:any)=>{
-                            dispatch(updateCartField({commonkotnote:value}))
-                        }}
-                    />
+            <Card  style={[styles.card]}>
+                <Card.Content style={[styles.cardContent]}>
+                    <TouchableOpacity onPress={() => {
+                        navigation.navigate('KotNote',{commonkotnote:commonkotnote})
+                    }}>
+                        {Boolean(commonkotnote) && <Caption>Common KOT Note</Caption>}
+                        <View style={[styles.grid, styles.justifyContent, styles.middle,styles.noWrap]}>
+                            <Paragraph
+                                style={[styles.paragraph, styles.head]}>{commonkotnote? commonkotnote:'Common KOT Note'}</Paragraph>
+                            <View>
+                                {chevronRight}
+                            </View>
+                        </View>
+                    </TouchableOpacity>
                 </Card.Content>
             </Card>}
 
 
 
         {Boolean(advanceorder?.date) &&
-            <Card style={[styles.dottedBorder, styles.noshadow, styles.p_5, styles.m_3, {borderRadius: 5}]}
-                  onPress={() => {
-                      navigation.navigate('ClientAndSource', {title: 'Advance Order', edit: true,});
-                  }}>
-                <Paragraph>Delivery on
-                    : {moment(advanceorder.date).format(dateFormat())} {moment(advanceorder.time).format('HH:mm A')}</Paragraph>
-                {Boolean(advanceorder.notes) && <Paragraph>{advanceorder.notes}</Paragraph>}
-            </Card>}
+            <Card style={[styles.card]}>
+                <Card.Content style={[styles.cardContent]}>
+                    <TouchableOpacity style={[styles.dottedBorder, styles.noshadow]}
+                          onPress={() => {
+                              navigation.navigate('ClientAndSource', {title: 'Advance Order', edit: true,});
+                          }}>
+
+                        <View style={[styles.grid, styles.justifyContent, styles.middle,styles.noWrap]}>
+                            <View>
+                                <Paragraph style={[{color:styles.red.color}]}>Delivery on : {moment(advanceorder.date).format(dateFormat())} {moment(advanceorder.time).format('HH:mm A')}</Paragraph>
+                                {Boolean(advanceorder.notes) && <Paragraph style={{fontStyle:'italic'}}>{advanceorder.notes}</Paragraph>}
+                            </View>
+                            <View>
+                                {chevronRight}
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                </Card.Content>
+            </Card>
+        }
 
 
 
-        <Card onPress={() => {
-            viewSummary()
-        }}>
-            <Card.Content>
-
+        <View style={[styles.marginOver,styles.bg_white,styles.p_6,{marginTop:0}]}>
+            <TouchableOpacity  onPress={() => {
+                viewSummary()
+            }}>
                 <View><Paragraph style={[styles.absolute, {top: 0, left: '50%', marginLeft: -10}]}><ProIcon
                     name={'chevron-up'} action_type={'text'} size={15}/></Paragraph></View>
 
@@ -87,10 +103,10 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
                     <View style={{width: '40%'}}><Paragraph
                         style={[styles.paragraph, styles.bold]}>Total </Paragraph></View>
                     <View style={{width: '40%'}}><Paragraph
-                        style={[styles.paragraph, styles.bold, styles.text_lg, styles.green, {textAlign: 'right'}]}>{toCurrency(vouchertotaldisplay || '0')} </Paragraph></View>
+                        style={[styles.paragraph, styles.bold, styles.text_lg, styles.green, {textAlign: 'right'}]}>{toCurrency(vouchertotaldisplay || '0')}</Paragraph></View>
                 </View>
-            </Card.Content>
-        </Card></>)
+            </TouchableOpacity>
+        </View></>)
 }
 
 const mapStateToProps = (state: any) => ({

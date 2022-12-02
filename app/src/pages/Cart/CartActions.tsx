@@ -33,8 +33,8 @@ const Index = ({
 
     return <View>
 
-        {<Card style={{marginLeft:-10,marginRight:-10,marginBottom:-10,marginTop:5}}>
-            <Card.Content style={[{paddingHorizontal: 10,paddingVertical:10,paddingTop:5}]}>
+        {<View style={[styles.marginOver,{backgroundColor:'white',padding:8,marginTop:0}]}>
+            <View>
                 <View style={[styles.grid, styles.justifyContent, styles.noWrap]}>
 
 
@@ -160,9 +160,9 @@ const Index = ({
                         </Button>
                     </View>
                 </View>
-            </Card.Content>
+            </View>
 
-        </Card>}
+        </View>}
 
     </View>
 }

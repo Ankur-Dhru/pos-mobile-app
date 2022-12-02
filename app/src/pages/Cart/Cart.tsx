@@ -45,7 +45,7 @@ const Index = (props: any) => {
                 device.tablet ? <>
 
                     <View style={[styles.grid, styles.justifyContent, styles.w_100]}>
-                        {hasrestaurant ? <View style={{marginRight: 5}}><Card style={[styles.noshadow]} onPress={() => {
+                        {hasrestaurant ? <View style={{marginRight: 5}}><Card style={[styles.card,styles.noshadow]} onPress={() => {
                             saveTempLocalOrder().then(() => {})
                             navigation.goBack();
                         }}>
@@ -58,7 +58,7 @@ const Index = (props: any) => {
                                 <Paragraph
                                     style={[styles.paragraph, styles.bold]}> {tabledetails?.tablename} </Paragraph>
                             </View>
-                        </Card></View> : <Card style={[styles.noshadow, {marginRight: 5}]}>
+                        </Card></View> : <Card style={[styles.card,styles.noshadow, {marginRight: 5}]}>
                             <TouchableOpacity  onPress={() => navigation.navigate('ProfileSettingsNavigator')}
                                               style={[styles.p_6]}>
                                 <ProIcon name={'bars'} action_type={'text'}/>
@@ -91,11 +91,11 @@ const Index = (props: any) => {
                         style={[styles.grid, styles.justifyContent, styles.noWrap, styles.h_100, styles.flex, styles.py_4]}>
 
 
-                        <Card style={[styles.h_100, styles.w_auto, {minWidth: 120}]}>
+                        <Card style={[styles.card,styles.h_100, styles.w_auto, {minWidth: 120}]}>
                             <GroupList navigation={navigation}/>
                         </Card>
 
-                        <Card style={[styles.flexGrow, styles.noshadow, styles.w_auto, {
+                        <Card style={[styles.card,styles.flexGrow, styles.noshadow, styles.w_auto, {
                             marginLeft: 5,
                             marginRight: 5,
                             minWidth: '40%'
@@ -118,15 +118,15 @@ const Index = (props: any) => {
 
                 </> : <Container>
 
-                    <View style={[styles.h_100, styles.flex, {flexDirection: 'column', paddingTop: 5}]}>
+                    <View style={[styles.h_100, styles.flex, {flexDirection: 'column'}]}>
 
                         <GroupHeading/>
 
-                        <Card style={[styles.h_100, styles.flex]}>
+
 
                             <ItemListMobile navigation={navigation}/>
 
-                        </Card>
+
                     </View>
                 </Container>
             }

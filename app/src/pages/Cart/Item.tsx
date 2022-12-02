@@ -43,12 +43,11 @@ const Index = memo((props: any) => {
             marginBottom:5,
             backgroundColor: haskot ? styles.yellow.color : '',
             borderRadius: 5,
-            paddingHorizontal:5,
         }]}>
 
 
             <View>
-                <View style={[{borderRadius:5,marginBottom:5}]}>
+                <View style={[styles.p_4,{borderRadius:5}]}>
                     <View>
 
                         <TouchableOpacity onPress={async () => {
@@ -57,140 +56,140 @@ const Index = memo((props: any) => {
 
                             <View style={[styles.grid,]}>
 
-                                <View style={[styles.cell, {marginTop: 3}]}>
-                                    <Text style={[styles.paragraph, styles.text_xs, styles.bold, styles.ellipse]}>{index + 1}</Text>
-                                </View>
 
                                 <View style={[styles.cell, styles.w_auto, {paddingLeft: 0}]}>
 
 
                                     <Paragraph
                                         style={[styles.paragraph, styles.text_xs, styles.bold, styles.ellipse]}
-                                        numberOfLines={1}>{item?.itemname || item?.productdisplayname}</Paragraph>
+                                        numberOfLines={1}>{index + 1})  {item?.itemname || item?.productdisplayname}</Paragraph>
 
 
 
+                                    <View style={{marginLeft:15}}>
 
-                                    <View style={[styles.wrap, styles.py_2]}>
-                                        {Boolean(item.notes) && <Text
-                                            style={[styles.muted, styles.text_xs, {fontStyle: 'italic'}]}
-                                            numberOfLines={1}>{item.notes} </Text>}
+                                        <View style={[styles.wrap, styles.py_2]}>
+                                            {Boolean(item.notes) && <Text
+                                                style={[styles.muted, styles.text_xs, {fontStyle: 'italic'}]}
+                                                numberOfLines={1}>{item.notes} </Text>}
 
-                                        {Boolean(item?.itemtags) && <>
-                                            {
-                                                item?.itemtags.map((tags: any) => {
-                                                    {
-                                                        return tags?.taglist.map((list: any, key: any) => {
-                                                            if (list.selected) {
+                                            {Boolean(item?.itemtags) && <>
+                                                {
+                                                    item?.itemtags.map((tags: any) => {
+                                                        {
+                                                            return tags?.taglist.map((list: any, key: any) => {
+                                                                if (list.selected) {
+                                                                    return (
+                                                                        <Text
+                                                                            key={key}
+                                                                            style={[styles.muted, styles.text_xs, {fontStyle: 'italic'}]}
+                                                                            numberOfLines={1}>{tags.taggroupname} {list.name} </Text>
+                                                                    )
+                                                                }
+                                                            })
+                                                        }
+                                                    })
+                                                }
+                                            </>}
+                                        </View>
+
+                                        {!isRestaurant && <>
+
+                                            {Boolean(item.hsn) && <Paragraph
+                                                style={[styles.paragraph, styles.muted, styles.text_xs]}>{item.itemtype === 'service' ? 'SAC Code' : 'HSN Code'} : {item.hsn}</Paragraph>}
+                                            {Boolean(item.sku) &&
+                                                <Paragraph style={[styles.paragraph, styles.muted, styles.text_xs]}>SKU
+                                                    : {item.sku}</Paragraph>}
+
+
+                                            <View style={[styles.grid, styles.middle]}>
+
+                                                {Boolean(item.serial) && <View style={[styles.w_auto]}>
+                                                    <View>
+                                                        {
+                                                            Object.keys(item.serial).map((key: any) => {
                                                                 return (
-                                                                    <Text
-                                                                        key={key}
-                                                                        style={[styles.muted, styles.text_xs, {fontStyle: 'italic'}]}
-                                                                        numberOfLines={1}>{tags.taggroupname} {list.name} </Text>
+                                                                    <Paragraph>
+                                                                        <Paragraph
+                                                                            style={[styles.paragraph, styles.muted, styles.text_xs, styles.mr_2]}>Serial
+                                                                            No
+                                                                            : {getType(item.serial[key]) === 'object' ? item.serial[key].serialno : item.serial[key]}</Paragraph>
+                                                                        {Boolean(item.serial[key].mfdno) && <Paragraph
+                                                                            style={[styles.paragraph, styles.muted, styles.text_xs]}> MFD
+                                                                            No : {item.serial[key].mfdno}</Paragraph>}
+                                                                    </Paragraph>
                                                                 )
-                                                            }
-                                                        })
-                                                    }
-                                                })
-                                            }
+                                                            })
+                                                        }
+                                                    </View>
+                                                </View>}
+
+
+                                            </View>
+
                                         </>}
-                                    </View>
-
-                                    {!isRestaurant && <>
-
-                                        {Boolean(item.hsn) && <Paragraph
-                                            style={[styles.paragraph, styles.muted, styles.text_xs]}>{item.itemtype === 'service' ? 'SAC Code' : 'HSN Code'} : {item.hsn}</Paragraph>}
-                                        {Boolean(item.sku) &&
-                                            <Paragraph style={[styles.paragraph, styles.muted, styles.text_xs]}>SKU
-                                                : {item.sku}</Paragraph>}
-
-
-                                        <View style={[styles.grid, styles.middle]}>
-
-                                            {Boolean(item.serial) && <View style={[styles.w_auto]}>
-                                                <View>
-                                                    {
-                                                        Object.keys(item.serial).map((key: any) => {
-                                                            return (
-                                                                <Paragraph>
-                                                                    <Paragraph
-                                                                        style={[styles.paragraph, styles.muted, styles.text_xs, styles.mr_2]}>Serial
-                                                                        No
-                                                                        : {getType(item.serial[key]) === 'object' ? item.serial[key].serialno : item.serial[key]}</Paragraph>
-                                                                    {Boolean(item.serial[key].mfdno) && <Paragraph
-                                                                        style={[styles.paragraph, styles.muted, styles.text_xs]}> MFD
-                                                                        No : {item.serial[key].mfdno}</Paragraph>}
-                                                                </Paragraph>
-                                                            )
-                                                        })
-                                                    }
-                                                </View>
-                                            </View>}
-
-
-                                        </View>
-
-                                    </>}
-
-                                    <View>
-
-                                        <View style={[styles.grid]}>
-                                            <View>
-                                                <View style={[styles.grid]}>
-                                                    <Paragraph style={[styles.paragraph, styles.text_xs]}>
-                                                        {item.productqnt} {!isRestaurant && unit[item.itemunit] && unit[item.itemunit].unitcode} x {toCurrency(item.productratedisplay || '0')}  =
-                                                    </Paragraph>
-
-                                                </View>
-                                            </View>
-
-                                            <View style={{marginLeft:3}}>
-                                                <Paragraph
-                                                    style={[styles.paragraph, styles.text_xs, styles.textRight, Boolean(item.itemdiscountvalue !== '0' && item.itemdiscountvalue) && {
-                                                        textDecorationLine: 'line-through',
-                                                        color: styles.red.color
-                                                    }]}>
-                                                     {toCurrency((item.productratedisplay * item.productqnt) || '0')}
-                                                </Paragraph>
-                                            </View>
-                                        </View>
-
 
                                         <View>
-                                            {
-                                                item?.itemaddon?.map((addon: any, index: any) => {
 
-                                                    const pricingtype = addon.pricing?.type;
-                                                    const baseprice = addon.pricing?.price?.default[0][pricingtype]?.baseprice || 0;
+                                            <View style={[styles.grid]}>
+                                                <View>
+                                                    <View style={[styles.grid]}>
+                                                        <Paragraph style={[styles.paragraph, styles.text_xs]}>
+                                                            {item.productqnt} {!isRestaurant && unit[item.itemunit] && unit[item.itemunit].unitcode} x {toCurrency(item.productratedisplay || '0')}  =
+                                                        </Paragraph>
 
-                                                    return (
-                                                        <View key={index}>
-                                                            <View style={[styles.grid]}>
+                                                    </View>
+                                                </View>
+
+                                                <View style={{marginLeft:3}}>
+                                                    <Paragraph
+                                                        style={[styles.paragraph, styles.text_xs, styles.textRight, Boolean(item.itemdiscountvalue !== '0' && item.itemdiscountvalue) && {
+                                                            textDecorationLine: 'line-through',
+                                                            color: styles.red.color
+                                                        }]}>
+                                                         {toCurrency((item.productratedisplay * item.productqnt) || '0')}
+                                                    </Paragraph>
+                                                </View>
+                                            </View>
+
+
+                                            <View>
+                                                {
+                                                    item?.itemaddon?.map((addon: any, index: any) => {
+
+                                                        const pricingtype = addon.pricing?.type;
+                                                        const baseprice = addon.pricing?.price?.default[0][pricingtype]?.baseprice || 0;
+
+                                                        return (
+                                                            <View key={index}>
                                                                 <View style={[styles.grid]}>
-                                                                    <Paragraph style={[styles.paragraph, styles.text_xs]}>
-                                                                        {addon.productqnt} {!isRestaurant && unit[addon?.itemunit] && unit[addon?.itemunit].unitcode} {addon?.itemname} x
-                                                                    </Paragraph>
+                                                                    <View style={[styles.grid]}>
+                                                                        <Paragraph style={[styles.paragraph, styles.text_xs]}>
+                                                                            {addon.productqnt} {!isRestaurant && unit[addon?.itemunit] && unit[addon?.itemunit].unitcode} {addon?.itemname} x
+                                                                        </Paragraph>
 
-                                                                    <Paragraph
-                                                                        style={[styles.paragraph, styles.text_xs, {paddingLeft: 5}]}>{toCurrency(baseprice || '0')} = </Paragraph>
+                                                                        <Paragraph
+                                                                            style={[styles.paragraph, styles.text_xs, {paddingLeft: 5}]}>{toCurrency(baseprice || '0')} = </Paragraph>
+
+                                                                    </View>
+
+                                                                    <View>
+                                                                        <Paragraph
+                                                                            style={[styles.paragraph, styles.text_xs, styles.textRight]}>
+                                                                            {toCurrency(baseprice * addon.productqnt)}
+                                                                        </Paragraph>
+                                                                    </View>
 
                                                                 </View>
 
-                                                                <View>
-                                                                    <Paragraph
-                                                                        style={[styles.paragraph, styles.text_xs, styles.textRight]}>
-                                                                        {toCurrency(baseprice * addon.productqnt)}
-                                                                    </Paragraph>
-                                                                </View>
 
                                                             </View>
 
+                                                        )
+                                                    })
+                                                }
+                                            </View>
 
-                                                        </View>
-
-                                                    )
-                                                })
-                                            }
                                         </View>
 
                                     </View>

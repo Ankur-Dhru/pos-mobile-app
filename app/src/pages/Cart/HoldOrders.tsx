@@ -17,6 +17,7 @@ const Index = (props: any) => {
 
     const renderitem = ({item}: any) => {
         return <List.Item
+            style={[styles.listitem]}
             title={item.clientname}
             description={item.localdatetime}
             left={(props: any) => <List.Icon {...props} icon="folder"/>}

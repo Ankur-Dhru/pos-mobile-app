@@ -4,7 +4,16 @@ import {Dimensions, Image, ScrollView, View} from "react-native";
 import {Caption, Card, Divider, List, Title,Text} from "react-native-paper";
 import {styles} from "../../theme";
 import {CommonActions, useNavigation} from "@react-navigation/native";
-import {ACTIONS, grecaptcharesponse, localredux, loginUrl, METHOD, PRINTER, STATUS} from "../../libs/static";
+import {
+    ACTIONS,
+    grecaptcharesponse,
+    ItemDivider,
+    localredux,
+    loginUrl,
+    METHOD,
+    PRINTER,
+    STATUS
+} from "../../libs/static";
 import apiService from "../../libs/api-service";
 import Button from "../../components/Button";
 import AddEditCategory from "../Items/AddEditCategory";
@@ -95,7 +104,7 @@ const ProfileSettings = () => {
     }
 
 
-    return <Container style={{padding:0}}>
+    return <Container style={{padding:0,backgroundColor:'white'}}>
 
 
 
@@ -162,7 +171,7 @@ const ProfileSettings = () => {
                                     right={() =>  <List.Icon icon="chevron-right"/>}
                                 />
 
-                                <Divider/>
+                                <ItemDivider/>
 
 
                             <List.Subheader >Create a New</List.Subheader>
@@ -177,7 +186,7 @@ const ProfileSettings = () => {
                                 right={() =>  <List.Icon icon="chevron-right"/>}
                             />
 
-                            <Divider/>
+                                <ItemDivider/>
 
                             <List.Item
                                 style={[styles.listitem]}
@@ -189,7 +198,7 @@ const ProfileSettings = () => {
                                 right={() =>  <List.Icon icon="chevron-right"/>}
                             />
 
-                            <Divider/>
+                                <ItemDivider/>
 
                             <List.Item
                                 style={[styles.listitem]}
@@ -202,7 +211,7 @@ const ProfileSettings = () => {
                             />
 
 
-                            <Divider/>
+                                <ItemDivider/>
 
 
 
@@ -220,7 +229,7 @@ const ProfileSettings = () => {
                                 right={() =>  <List.Icon icon="chevron-right"/>}
                             />
 
-                                <Divider/>
+                                <ItemDivider/>
 
                                 {isRestaurant() && <List.Item
                                     style={[styles.listitem]}
@@ -232,7 +241,7 @@ const ProfileSettings = () => {
                                     right={() =>  <List.Icon icon="chevron-right"/>}
                                 />}
 
-                                <Divider/>
+                                <ItemDivider/>
 
                             <List.Item
                                 style={[styles.listitem]}
@@ -244,7 +253,7 @@ const ProfileSettings = () => {
                                 right={() =>  <List.Icon icon="chevron-right"/>}
                             />
 
-                                <Divider/>
+                                <ItemDivider/>
 
                             <List.Item
                                 style={[styles.listitem]}
@@ -261,7 +270,7 @@ const ProfileSettings = () => {
 
 
 
-                            <Divider/>
+                            <ItemDivider/>
 
 
                             {role === 'admin' && <View style={[styles.mt_5]}>

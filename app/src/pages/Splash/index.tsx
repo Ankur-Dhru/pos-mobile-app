@@ -101,12 +101,12 @@ const Index = (props: any) => {
         navigation.replace(screen)
     })
 
-    return <Container hideappbar={true}><Card><View style={[styles.center, styles.h_100, styles.middle]}>
+    return <Container style={{padding:0}}><View style={[styles.center, styles.h_100, styles.middle]}>
         <Image
             style={[{width: 150, height: 150}]}
             source={require('../../assets/dhru-logo-22.png')}
         />
-    </View></Card></Container>
+    </View></Container>
 }
 
 export default Index;

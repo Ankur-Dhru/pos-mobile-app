@@ -1,7 +1,7 @@
 import React, {useEffect} from "react";
 import {appLog, arraySome, isRestaurant, removeItem} from "../../libs/function";
 import {TouchableOpacity, View} from "react-native";
-import {Paragraph, withTheme} from "react-native-paper";
+import {List, Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {ProIcon} from "../../components";
 import {connect, useDispatch} from "react-redux";
@@ -37,15 +37,7 @@ const Index = (props: any) => {
     }
 
     if (!item.productqnt) {
-        return (<View style={[styles.grid, styles.middle, {
-            minWidth: 50,
-            borderRadius: 5,
-            padding: 5,
-            backgroundColor: styles.secondary.color
-        }]}>
-            <Paragraph
-                style={[styles.paragraph, styles.caption, styles.flexGrow, styles.textCenter, styles.px_6, {color: styles.primary.color}]}> Add </Paragraph>
-        </View>)
+        return (<List.Icon icon="plus"/>)
     }
 
     const onPressNumberIN = () => {

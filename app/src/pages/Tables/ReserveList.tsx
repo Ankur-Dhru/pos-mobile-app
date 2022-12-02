@@ -6,7 +6,7 @@ import {connect, useDispatch} from "react-redux";
 import {appLog, dateFormat, isEmpty} from "../../libs/function";
 import {styles} from "../../theme";
 import {Button} from "../../components";
-import {current} from "../../libs/static";
+import {current, ItemDivider} from "../../libs/static";
 import moment from "moment";
 
 const ReserveList = (props: any) => {
@@ -34,10 +34,11 @@ const ReserveList = (props: any) => {
                         <View><Text style={[styles.bold]}>{data?.item?.clientname}</Text></View>
                         <View style={[styles.grid]}><Text>{data?.item?.tablename} </Text><Text> {moment(data?.item?.date).format(dateFormat())}</Text><Text> {moment(data?.item?.time).format('HH:mm')}</Text></View>
                     </View>
-                    <Divider/>
+
                 </TouchableOpacity>
             }}
             initialNumToRender={5}
+            ItemSeparatorComponent={ItemDivider}
             keyboardDismissMode={'on-drag'}
             keyboardShouldPersistTaps={'always'}
             ListEmptyComponent={() => {

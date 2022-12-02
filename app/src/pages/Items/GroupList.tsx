@@ -8,6 +8,7 @@ import {styles} from "../../theme";
 import {Divider, List} from "react-native-paper";
 
 import {setSelected} from "../../redux-store/reducer/selected-data";
+import {ItemDivider} from "../../libs/static";
 
 
 const GroupItem = (props: any) => {
@@ -23,11 +24,12 @@ const GroupItem = (props: any) => {
     return <TouchableOpacity onPress={() => selectGroup(item)}
                              style={[selected ? styles.bg_accent : '', {borderRadius: 5}]}>
         <List.Item
+            style={[styles.listitem]}
             title={item.label}
             titleNumberOfLines={3}
             titleStyle={[styles.text_sm, {color: selected ? 'white' : 'black'}]}
         />
-        <Divider/>
+
     </TouchableOpacity>
 }
 
@@ -54,7 +56,7 @@ const Index = (props: any) => {
             getItemLayout={(data, index) => {
                 return {length: 50, offset: 50 * index, index};
             }}
-
+            ItemSeparatorComponent={ItemDivider}
             initialNumToRender={5}
             maxToRenderPerBatch={10}
             keyExtractor={item => item.itemgroupid}

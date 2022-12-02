@@ -4,7 +4,7 @@ import {styles} from "../../theme";
 
 import {Button, Container, ProIcon} from "../../components";
 import {useDispatch} from "react-redux";
-import {Divider, Paragraph, TextInput as TI,} from "react-native-paper";
+import {Caption, Card, Divider, Paragraph, TextInput as TI,} from "react-native-paper";
 import {
     appLog,
     assignOption,
@@ -231,14 +231,15 @@ const Index = (props: any) => {
                                 <KeyboardScroll>
 
 
-                                    <View style={[styles.px_6,styles.mb_5]}>
+                                    <View>
                                         <View>
-                                            <View>
-                                                <View>
+                                            <Card style={[styles.card]}>
+                                                <Card.Content style={[styles.cardContent]}>
+                                                    <View>
 
-                                                    <Paragraph style={[styles.paragraph, styles.caption, styles.mt_5]}>
+                                                    <Caption style={[styles.caption]}>
                                                         Basic
-                                                    </Paragraph>
+                                                    </Caption>
 
 
                                                     {!isRetailIndustry &&
@@ -526,11 +527,13 @@ const Index = (props: any) => {
                                                     }
 
                                                 </View>
-                                            </View>
+                                                </Card.Content>
+                                            </Card>
 
 
-                                            {isTypeProduct && <View>
-                                                <View>
+                                            {isTypeProduct && <Card style={[styles.card]}>
+                                                <Card.Content style={[styles.cardContent]}>
+                                                    <View>
 
                                                     {<View style={[styles.fieldspace]}>
                                                         <Field name={'trackinventory'}>
@@ -545,8 +548,7 @@ const Index = (props: any) => {
                                                                     props.input.onChange(value);
                                                                 }}/></View>)}
                                                         </Field>
-                                                        <Divider
-                                                            style={[styles.divider]}/>
+
                                                     </View>}
 
 
@@ -661,10 +663,11 @@ const Index = (props: any) => {
 
                                                     </>}
                                                 </View>
-                                            </View>}
+                                                </Card.Content>
+                                            </Card>}
 
-                                            <View>
-                                                <View>
+                                            <Card style={[styles.card]}>
+                                                <Card.Content style={[styles.cardContent]}>
 
 
                                                     <TouchableOpacity
@@ -673,12 +676,11 @@ const Index = (props: any) => {
                                                             isShow = !isShow;
                                                             updateComponent(advanceRef, 'display', isShow ? 'flex' : 'none')
                                                         }}>
-                                                        <Paragraph style={[styles.paragraph, styles.caption]}>
+                                                        <Caption style={[styles.caption]}>
                                                             Advance
-                                                        </Paragraph>
+                                                        </Caption>
                                                         <Paragraph>
-                                                            <ProIcon name={!isShow ? 'chevron-down' : 'chevron-up'}
-                                                                     action_type={'text'} size={16}/>
+                                                            <ProIcon name={!isShow ? 'chevron-down' : 'chevron-up'} />
                                                         </Paragraph>
                                                     </TouchableOpacity>
 
@@ -896,8 +898,8 @@ const Index = (props: any) => {
 
                                                     </View>
 
-                                                </View>
-                                            </View>
+                                                </Card.Content>
+                                            </Card>
 
                                         </View>
                                     </View>

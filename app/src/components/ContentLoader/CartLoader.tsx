@@ -21,10 +21,10 @@ class Index extends React.Component<any> {
 
                     </View>
                     <View style={[styles.flexGrow,{paddingLeft:6,paddingRight:6}]}>
-                        <Card style={[styles.grid, styles.justifyContent,{height:45}]}></Card>
+                        <Card style={[styles.card,styles.grid, styles.justifyContent,{height:45}]}></Card>
                     </View>
                     <View style={{width:385}}>
-                        <Card style={[styles.grid, styles.justifyContent,{height:45}]}></Card>
+                        <Card style={[styles.card,styles.grid, styles.justifyContent,{height:45}]}></Card>
                     </View>
                 </View>
 
@@ -38,13 +38,13 @@ class Index extends React.Component<any> {
                                 minWidth: 150,
                                 maxWidth: 150
                             }]}>
-                                <Card style={[styles.w_100]}>
+                                <Card style={[styles.card,styles.w_100]}>
                                     <View style={[styles.bg_light,styles.m_2,{height:40,borderRadius: 5}]}></View>
                                     <View style={[styles.bg_light,styles.m_2,{height:40,borderRadius: 5}]}></View>
                                     <View style={[styles.bg_light,styles.m_2,{height:40,borderRadius: 5}]}></View>
                                 </Card>
                             </View>
-                            <Card style={[styles.flexGrow,{maxWidth:500,marginLeft: 5,marginRight:5}]}>
+                            <Card style={[styles.card,styles.flexGrow,{maxWidth:500,marginLeft: 5,marginRight:5}]}>
                                 <View style={[styles.grid,styles.flex,{padding:2}]}>
                                     <View style={[styles.m_2,styles.flexGrow,{backgroundColor:styles.secondary.color,height:100,borderRadius: 5}]}></View>
                                     <View style={[styles.m_2,styles.flexGrow,{backgroundColor:styles.secondary.color,height:100,borderRadius: 5}]}></View>
@@ -57,7 +57,7 @@ class Index extends React.Component<any> {
                     </View>
 
                     <View style={[styles.flexGrow, {width: 200}]}>
-                        <Card style={[styles.w_100,styles.h_100]}>
+                        <Card style={[styles.card,styles.w_100,styles.h_100]}>
                             <View style={[styles.bg_light,styles.m_2,{height:40,borderRadius: 5}]}></View>
                         </Card>
                     </View>
@@ -65,7 +65,7 @@ class Index extends React.Component<any> {
                 </View>
 
 
-                <Card>
+                <Card style={[styles.card]}>
 
                     {<View>
                         <View>

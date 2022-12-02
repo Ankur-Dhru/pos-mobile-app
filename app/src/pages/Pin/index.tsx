@@ -93,7 +93,7 @@ const Index = (props: any) => {
 
     return <Container style={{padding:0}}>
 
-        <Card>
+        <Card style={[styles.card,{marginBottom:0}]}>
 
             <View style={[styles.center, styles.h_100, styles.middle]}>
 

@@ -48,26 +48,26 @@ const index = (props: any) => {
 
     return <View>
         <View style={[styles.grid, styles.justifyContent,styles.mb_5]}>
-            <Button style={[styles.w_auto]} compact={true} onPress={() => {
+            <Button style={[styles.w_auto]}  more={{color:'white'}} onPress={() => {
                 setNumPadValue("")
                 setSelectedTab("num")
                 updateComponent(qntRef, 'display', 'flex')
                 updateComponent(amtRef, 'display', 'none')
 
-            }} secondbutton={true}><Text style={{color: 'black'}}>Quick Quantity</Text></Button>
-            <Button style={[styles.ml_2, styles.w_auto]} compact={true} onPress={() => {
+            }} secondbutton={true}>Quick Quantity</Button>
+            <Button style={[styles.ml_2, styles.w_auto]} more={{backgroundColor:styles.secondary.color,color:'black'}}  onPress={() => {
                 setNumPadValue("")
                 setSelectedTab("amt")
                 updateComponent(qntRef, 'display', 'none')
                 updateComponent(amtRef, 'display', 'flex')
 
-            }} secondbutton={true}><Text style={{color: 'black'}}>Quick Amount</Text></Button>
+            }} >Quick Amount</Button>
         </View>
-        <View style={[styles.border, styles.mb_5, styles.p_4]}>
+        <View style={[styles.border,   styles.p_4,{marginHorizontal:5}]}>
             <Text style={[{fontSize: 24}]}>{numPadValue}</Text>
         </View>
 
-        <View ref={qntRef} style={[styles.grid, styles.justifyContent, styles.mb_4, {marginLeft: -4, marginRight: -4}]}>
+        <View ref={qntRef} style={[styles.grid, styles.justifyContent, styles.mb_4, ]}>
             {
                 defaultInputValues?.map((num: string) => {
                     return <TouchableOpacity
@@ -85,13 +85,14 @@ const index = (props: any) => {
         </View>
 
         <View ref={amtRef}
-              style={[styles.grid, styles.justifyContent, {marginLeft: -4, marginRight: -4,display:'none'}]}>
+              style={[styles.grid, styles.justifyContent, {display:'none'}]}>
             {
                 defaultInputAmounts?.map((num: string) => {
                     return <TouchableOpacity
                         onPress={() => onPressDefaultNum(num)}
                         style={[styles.flexGrow, styles.p_5, styles.m_2, {
                             width: "30%",
+                            borderRadius:5,
                             backgroundColor: "#fafafa"
                         }]}>
                         <Paragraph style={[styles.textCenter, styles.bold]}>
@@ -104,7 +105,7 @@ const index = (props: any) => {
 
 
         <View
-              style={[styles.grid, styles.justifyContent, {marginLeft: -4, marginRight: -4}]}>
+              style={[styles.grid, styles.justifyContent, ]}>
             {
                 numbers.map((num: string) => {
                     let okButton = Boolean(num === numbers[13])
@@ -112,6 +113,7 @@ const index = (props: any) => {
                         onPress={() => onPressNumKey(num)}
                         style={[styles.flexGrow, styles.p_5, styles.m_2, {
                             width: "30%",
+                            borderRadius:5,
                             backgroundColor: okButton ? styles.accent.color : "#f3f3f3"
                         }]}>
                         <Paragraph style={[styles.textCenter, styles.bold, {color: okButton ? "white" : "#333"}]}>
@@ -122,11 +124,12 @@ const index = (props: any) => {
             }
         </View>
 
-        <View style={[styles.grid, styles.justifyContent, {marginLeft: -4, marginRight: -4}]}>
+        <View style={[styles.grid, styles.justifyContent,styles.mt_5,]}>
             <TouchableOpacity
                 onPress={() => onPressNumKey("Cancel")}
                 style={[styles.flexGrow, styles.p_5, styles.m_2, {
                     width: "30%",
+                    borderRadius:8,
                     backgroundColor: "#f3f3f3"
                 }]}>
                 <Paragraph style={[styles.textCenter, styles.bold,]}>
@@ -137,6 +140,7 @@ const index = (props: any) => {
                 onPress={() => onPressNumKey("OK")}
                 style={[styles.flexGrow, styles.p_5, styles.m_2, {
                     width: "30%",
+                    borderRadius:8,
                     backgroundColor: styles.accent.color
                 }]}>
                 <Paragraph style={[styles.textCenter, styles.bold, {color: "white"}]}>

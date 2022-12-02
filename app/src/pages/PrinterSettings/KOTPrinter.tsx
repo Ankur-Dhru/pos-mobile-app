@@ -1,11 +1,12 @@
 import React, {useEffect} from "react";
-import {Divider, List} from "react-native-paper"
+import {Card, Divider, List} from "react-native-paper"
 import {appLog} from "../../libs/function";
 import Container from "../../components/Container";
 import {connect, useDispatch} from "react-redux";
-import {localredux} from "../../libs/static";
+import {ItemDivider, localredux} from "../../libs/static";
 import EscPosPrinter from 'react-native-esc-pos-printer';
 import {useNavigation} from "@react-navigation/native";
+import {styles} from "../../theme";
 
 const KOTPrinter = ({printers}: any) => {
 
@@ -27,27 +28,31 @@ const KOTPrinter = ({printers}: any) => {
 
 
     return <Container>
-        <List.Section>
+        <Card style={[styles.card]}>
+            <Card.Content  style={[styles.cardContent]}>
+
 
             {
                 departments.map((department: any, index: any) => {
-                    const detail = printers[department.departmentid];
                     return <><List.Item
+                        style={[styles.listitem]}
                         key={index}
                         title={department.name}
-                        description={Boolean(detail?.host) && detail.host}
                         onPress={() => {
                             setPrinter({name: department.name, departmentid: department.departmentid})
                         }}
-                        left={() => <List.Icon icon="printer"/>}
                         right={() =>  <List.Icon icon="chevron-right"/>}
                     />
-                        <Divider/>
+                        <ItemDivider/>
                     </>
                 })
             }
 
-        </List.Section>
+
+
+
+            </Card.Content>
+        </Card>
     </Container>
 
 }

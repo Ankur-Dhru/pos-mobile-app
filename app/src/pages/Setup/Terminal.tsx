@@ -139,8 +139,8 @@ const Terminal = (props: any) => {
 
                             <ScrollView>
 
-                                <Card>
-                                    <Card.Content>
+                                <Card style={[styles.card]}>
+                                    <Card.Content style={[styles.cardContent]}>
                                 <View>
                                     <Title>Terminal <Text
                                         style={[styles.muted, styles.text_sm]}>({initData.workspace})</Text></Title>

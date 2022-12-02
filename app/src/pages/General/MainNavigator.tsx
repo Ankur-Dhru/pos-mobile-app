@@ -39,7 +39,7 @@ import OrganizationProfile from "../SetupWorkspace/OrganizationProfile";
 import BusinessDetails from "../SetupWorkspace/BusinessDetails";
 import CurrencyPreferences from "../SetupWorkspace/CurrencyPreferences";
 
-import InvoicePrinter from "../PrinterSettings/InvoicePrinter";
+
 import KOTPrinter from "../PrinterSettings/KOTPrinter";
 import AddEditClient from "../Client/AddEditClient";
 import AddEditItem from "../Items/AddEditItem";
@@ -58,6 +58,7 @@ import {deleteTable} from "../../libs/Sqlite/deleteData";
 import {TABLE} from "../../libs/Sqlite/config";
 import store from "../../redux-store/store";
 import {resetCart} from "../../redux-store/reducer/cart-data";
+import KotNote from "../Cart/KotNote";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -185,6 +186,7 @@ const ClientAreaStackNavigator = (props:any) => {
 
             <Stack.Screen name={'ClientAndSource'} {...params}   component={ClientAndSource}  options={{headerTitle:'Order Source'}}  />
 
+            <Stack.Screen name={'KotNote'} component={KotNote} options={{headerTitle: 'KOT Note'}}/>
 
             <Stack.Screen name={'Payment'} component={Payment} options={{headerTitle: 'Payment'}}/>
 
@@ -217,7 +219,6 @@ const ProfileSettingsNavigator = (props:any) => {
 
 
             <Stack.Screen name={'KOTPrinter'} component={KOTPrinter} options={{title: 'KOT Printer'}}/>
-            <Stack.Screen name={'InvoicePrinter'} component={InvoicePrinter} options={{title: 'Invoice Printer'}}/>
             <Stack.Screen name={'InputOpenSetting'} component={InputOpenSetting} options={{title: 'Quick Quantity Unit'}}/>
             <Stack.Screen name={'DefaultInputValues'} component={DefaultInputValues} options={{title: 'Quick Quantity & Amount'}}/>
             <Stack.Screen name={'PrinterSettings'} component={PrinterSettings} options={{title: ''}}/>

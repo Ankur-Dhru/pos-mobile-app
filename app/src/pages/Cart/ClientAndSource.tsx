@@ -1,12 +1,12 @@
-import {TouchableOpacity, View} from "react-native";
-import {Caption, Card, Paragraph} from "react-native-paper";
+import {ScrollView, TouchableOpacity, View} from "react-native";
+import {Caption, Card, List, Paragraph} from "react-native-paper";
 import {useDispatch} from "react-redux";
 import {hideLoader, showLoader} from "../../redux-store/reducer/component";
 import {styles} from "../../theme";
 import InputField from "../../components/InputField";
 import Button from "../../components/Button";
 import React, {useState} from "react";
-import {localredux} from "../../libs/static";
+import {ItemDivider, localredux} from "../../libs/static";
 import {appLog, errorAlert, isEmpty, saveTempLocalOrder} from "../../libs/function";
 
 import moment from "moment";
@@ -16,6 +16,8 @@ import KAccessoryView from "../../components/KAccessoryView"
 import KeyboardScroll from "../../components/KeyboardScroll";
 import {Container} from "../../components";
 import {getClientsByWhere} from "../../libs/Sqlite/selectData";
+import ProIcon from "../../components/ProIcon";
+import Tabs from "../../components/TabView";
 
 
 const ClientAndSource = (props: any) => {
@@ -121,240 +123,280 @@ const ClientAndSource = (props: any) => {
         headerTitle: tabledetails.tablename,
     })
 
-    return (<Container>
 
 
-        <View style={[styles.middle,]}>
-            <View style={[styles.middleForm]}>
+    const AllTable = () => (
+        <View style={[styles.flex,styles.px_3]}>
+            <ScrollView>
+            {
+                isReserveTable && <Card style={[styles.card]}><Card.Content style={[styles.cardContent]}>
+                    {/*<Caption style={[styles.caption]}>Tables</Caption>*/}
+                    <View>
+                        {
+                            currentLocation?.tables?.map((t: any,index:any) => {
+                                return <>
+                                    <List.Item
+                                        style={[styles.listitem]}
+                                        key={index}
+                                        title={t.tablename}
+                                        onPress={() => {
+                                            setTableData('tableid', t.tableid)
+                                        }}
+                                        left={() => <List.Icon icon={t.tableid === table.tableid?'check-circle-outline':'checkbox-blank-circle-outline'}></List.Icon>}
+                                    />
+                                </>
+                            })
+                        }
+                    </View>
 
 
-                <KeyboardScroll>
+                </Card.Content>
+                </Card>
+            }
+            </ScrollView>
+        </View>
+    );
 
-
-                    <View
-                        style={[styles.grid, styles.justifyContent, styles.top,  styles.h_100, styles.flex]}>
-
-                        {hasLeft && <View style={[styles.noshadow, styles.w_auto,styles.mb_3, {
-                            minWidth: 360, maxWidth: '100%',
-                        }]}>
-                            <View>
-                                {
-                                    isReserveTable && <Card><Card.Content>
-                                        <View style={[styles.grid]}>
-                                            {
-                                                currentLocation?.tables?.map((t: any) => {
-                                                    return <TouchableOpacity
-                                                        style={[styles.flexGrow, {minWidth: 110,maxWidth:120, borderRadius: 5}]}
-                                                        onPress={() => {
-                                                            setTableData('tableid', t.tableid)
-                                                        }}><Paragraph style={[styles.paragraph, styles.p_5, styles.m_1, {
-                                                        borderRadius: 5,
-                                                        textAlign: 'center',
-                                                        backgroundColor: t.tableid === table.tableid ? styles.secondary.color : '#eee'
-                                                    }]}>{t.tablename}</Paragraph></TouchableOpacity>
-                                                })
-                                            }
-                                        </View>
-
-
-                                        <InputField
-                                            value={table.paxes}
-                                            label={'Paxes'}
-                                            inputtype={'textbox'}
-                                            keyboardType='numeric'
-                                            onChange={(value: any) => {
-                                                setTableData('paxes', value)
+    const Sources = () => (
+        <View style={[styles.flex,styles.px_3]}>
+            {
+                isSource && <Card style={[styles.card]}>
+                    <Card.Content style={[styles.cardContent]}>
+                        {/*<Caption  style={[styles.caption]}>Sources</Caption>*/}
+                        <View>
+                            {
+                                Object.values(localredux?.initData?.sources).map((source: any,index:any) => {
+                                    return (<>
+                                        <List.Item
+                                            style={[styles.listitem]}
+                                            key={index}
+                                            title={source}
+                                            onPress={() => {
+                                                setOrderSource(source);
                                             }}
+                                            left={() => <List.Icon icon={source === ordersource?'check-circle-outline':'checkbox-blank-circle-outline'}></List.Icon>}
                                         />
 
-                                        <View style={[styles.grid, styles.justifyContent]}>
-                                            <View style={[styles.flexGrow, {marginRight: 12}]}>
-                                                <InputField
-                                                    label={"Date"}
-                                                    displaytype={'bottomlist'}
-                                                    inputtype={'datepicker'}
-                                                    mode={'date'}
-                                                    selectedValue={table.date}
-                                                    onChange={(value: any) => {
-                                                        setTableData("date", value);
-                                                    }}
-                                                />
-                                            </View>
-                                            <View style={[styles.flexGrow, {marginRight: 12}]}>
-                                                <InputField
-                                                    label={"Time"}
-                                                    displaytype={'bottomlist'}
-                                                    inputtype={'datepicker'}
-                                                    mode={'time'}
-                                                    selectedValue={table.time}
-                                                    onChange={(value: any) => {
-                                                        setTableData("time", value);
-                                                    }}
-                                                />
-                                            </View>
-                                        </View>
-                                    </Card.Content>
-                                    </Card>
-                                }
-                                {
-                                    isSource && <Card>
-                                    <Card.Content>
-                                        <Caption  style={[styles.caption]}>Sources</Caption>
-                                        <View style={[styles.grid]}>
-                                            {
-                                                Object.values(localredux?.initData?.sources).map((source: any) => {
-                                                    return <TouchableOpacity
-                                                        style={[styles.flexGrow, {minWidth: 100,maxWidth:120, borderRadius: 5}]}
-                                                        onPress={() => {
-                                                            setOrderSource(source);
-                                                        }}><Paragraph style={[styles.paragraph, styles.p_5, styles.m_1, {
-                                                        borderRadius: 5,
-                                                        textAlign: 'center',
-                                                        backgroundColor: source === ordersource ? styles.secondary.color : '#eee'
-                                                    }]}>{source}</Paragraph></TouchableOpacity>
-                                                })
-                                            }
-                                        </View>
-                                    </Card.Content>
-                                    </Card>
-                                }
-                                {isAdvanceorder && <>
+                                    </>)
+                                })
+                            }
+                        </View>
+                    </Card.Content>
+                </Card>
+            }
+        </View>
+    );
 
-                                    <Card>
-                                        <Card.Content>
+    const DeliveryOn = () => (
+        <View style={[styles.flex,styles.px_3]}>
+            {isAdvanceorder && <>
 
-                                    <Caption style={[styles.caption]}>Delivery On</Caption>
+                <Card style={[styles.card]}>
+                    <Card.Content style={[styles.cardContent]}>
 
-                                    <View style={[styles.grid, styles.justifyContent]}>
-                                        <View style={[styles.flexGrow, {marginRight: 12}]}>
-                                            <InputField
-                                                label={"Date"}
-                                                displaytype={'bottomlist'}
-                                                inputtype={'datepicker'}
-                                                mode={'date'}
-                                                selectedValue={advance.date}
-                                                onChange={(value: any) => {
-                                                    setAdvanceData("date", value);
-                                                }}
-                                            />
-                                        </View>
-                                        <View style={[styles.flexGrow, {marginRight: 12}]}>
-                                            <InputField
-                                                label={"Time"}
-                                                displaytype={'bottomlist'}
-                                                inputtype={'datepicker'}
-                                                mode={'time'}
-                                                selectedValue={advance.time}
-                                                onChange={(value: any) => {
-                                                    setAdvanceData("time", value);
-                                                }}
-                                            />
-                                        </View>
-                                    </View>
-                                    <View style={[styles.grid, styles.justifyContent]}>
-                                        <View style={[styles.flexGrow]}>
-                                            <InputField
-                                                value={advance?.notes}
-                                                label={'Notes'}
-                                                multiline={true}
-                                                inputtype={'textbox'}
-                                                onChange={(value: any) => {
-                                                    setAdvanceData("notes", value);
-                                                }}
-                                            />
-                                        </View>
-                                    </View>
+                        {/*<Caption style={[styles.caption]}>Delivery On</Caption>*/}
 
-                                        </Card.Content>
-                                    </Card>
-                                </>}
+                        <View style={[styles.grid, styles.justifyContent]}>
+                            <View style={[styles.flexGrow, {marginRight: 12}]}>
+                                <InputField
+                                    label={"Date"}
+                                    displaytype={'bottomlist'}
+                                    inputtype={'datepicker'}
+                                    mode={'date'}
+                                    selectedValue={advance.date}
+                                    onChange={(value: any) => {
+                                        setAdvanceData("date", value);
+                                    }}
+                                />
+                            </View>
+                            <View style={[styles.flexGrow, {marginRight: 12}]}>
+                                <InputField
+                                    label={"Time"}
+                                    displaytype={'bottomlist'}
+                                    inputtype={'datepicker'}
+                                    mode={'time'}
+                                    selectedValue={advance.time}
+                                    onChange={(value: any) => {
+                                        setAdvanceData("time", value);
+                                    }}
+                                />
+                            </View>
+                        </View>
+                        <View style={[styles.grid, styles.justifyContent]}>
+                            <View style={[styles.flexGrow]}>
+                                <InputField
+                                    value={advance?.notes}
+                                    label={'Notes'}
+                                    multiline={true}
+                                    inputtype={'textbox'}
+                                    onChange={(value: any) => {
+                                        setAdvanceData("notes", value);
+                                    }}
+                                />
+                            </View>
+                        </View>
+
+                    </Card.Content>
+                </Card>
+            </>}
+        </View>
+    );
+
+    const ClientInformation = () => (
+        <View style={[styles.flex,styles.px_3]}>
+            <Card style={[styles.card,styles.w_auto,  {minWidth: 360, maxWidth: '100%'}]}>
+                <Card.Content style={[styles.cardContent]}>
+                    {<>
+                        {/*<Caption style={[styles.caption]}>Client Information</Caption>*/}
+                        <View style={[styles.grid, styles.justifyContent]}>
+                            <View style={[styles.flexGrow, styles.w_auto, {marginRight: 12}]}>
+                                <InputField
+                                    minLength={10}
+                                    value={clientSearch}
+                                    label={'Mobile'}
+                                    inputtype={'textbox'}
+                                    keyboardType='numeric'
+                                    onChange={(value: any) => {
+                                        setClientSearch(value)
+                                    }}
+                                />
+                            </View>
+                            <View style={[]}>
+                                <Button onPress={onClientSearch} more={{
+                                    backgroundColor: styles.secondary.color,
+                                    color: 'black',
+                                    height:40
+                                }}>Search</Button>
+                            </View>
+                        </View>
+                        <View style={[styles.grid, styles.justifyContent]}>
+                            <View style={[styles.flexGrow, {marginRight: 12}]}>
+                                <InputField
+                                    value={selectedClient?.displayname}
+                                    label={'Display Name'}
+                                    inputtype={'textbox'}
+                                    onChange={(value: any) => {
+                                        setClientData("displayname", value);
+                                    }}
+                                />
+                            </View>
+                        </View>
+                        <View style={[styles.grid, styles.justifyContent]}>
+                            <View style={[styles.flexGrow, {width: 200, marginRight: 12}]}>
+                                <InputField
+                                    value={selectedClient?.address1}
+                                    label={'Address1'}
+                                    inputtype={'textbox'}
+                                    onChange={(value: any) => {
+                                        setClientData("address1", value);
+                                    }}
+                                />
+                            </View>
+                        </View>
+                        <View style={[styles.grid, styles.justifyContent]}>
+                            <View style={[styles.flexGrow, {width: 200, marginRight: 12}]}>
+                                <InputField
+                                    value={selectedClient?.address2}
+                                    label={'Address2'}
+                                    inputtype={'textbox'}
+                                    onChange={(value: any) => {
+                                        setClientData("address2", value);
+                                    }}
+                                />
+                            </View>
+                        </View>
+                        <View style={[styles.grid, styles.justifyContent]}>
+                            <View style={[styles.flexGrow, {marginRight: 12}]}>
+                                <InputField
+                                    value={selectedClient?.city}
+                                    label={'City'}
+                                    inputtype={'textbox'}
+                                    onChange={(value: any) => {
+                                        setClientData("city", value);
+                                    }}
+                                />
+                            </View>
+                        </View>
+
+                        {isReserveTable && <View>
+                            <InputField
+                                value={table.paxes}
+                                label={'Paxes'}
+                                inputtype={'textbox'}
+                                keyboardType='numeric'
+                                onChange={(value: any) => {
+                                    setTableData('paxes', value)
+                                }}
+                            />
+
+                            <View style={[styles.grid, styles.justifyContent]}>
+                                <View style={[styles.flexGrow, {marginRight: 12}]}>
+                                    <InputField
+                                        label={"Date"}
+                                        displaytype={'bottomlist'}
+                                        inputtype={'datepicker'}
+                                        mode={'date'}
+                                        selectedValue={table.date}
+                                        onChange={(value: any) => {
+                                            setTableData("date", value);
+                                        }}
+                                    />
+                                </View>
+                                <View style={[styles.flexGrow, {marginRight: 12}]}>
+                                    <InputField
+                                        label={"Time"}
+                                        displaytype={'bottomlist'}
+                                        inputtype={'datepicker'}
+                                        mode={'time'}
+                                        selectedValue={table.time}
+                                        onChange={(value: any) => {
+                                            setTableData("time", value);
+                                        }}
+                                    />
+                                </View>
                             </View>
                         </View>}
 
+                    </>}
+                </Card.Content>
+            </Card>
+        </View>
+    );
 
-                        <Card style={[styles.w_auto, styles.h_100,  {minWidth: 360, maxWidth: '100%'}]}>
-                            <Card.Content>
-                            {<>
-                                <Caption style={[styles.caption]}>Client Information</Caption>
-                                <View style={[styles.grid, styles.justifyContent]}>
-                                    <View style={[styles.flexGrow, styles.w_auto, {marginRight: 12}]}>
-                                        <InputField
-                                            minLength={10}
-                                            value={clientSearch}
-                                            label={'Mobile'}
-                                            inputtype={'textbox'}
-                                            keyboardType='numeric'
-                                            onChange={(value: any) => {
-                                                setClientSearch(value)
-                                            }}
-                                        />
-                                    </View>
-                                    <View style={[]}>
-                                        <Button onPress={onClientSearch} more={{
-                                            backgroundColor: styles.secondary.color,
-                                            color: 'black'
-                                        }}>Search</Button>
-                                    </View>
-                                </View>
-                                <View style={[styles.grid, styles.justifyContent]}>
-                                    <View style={[styles.flexGrow, {marginRight: 12}]}>
-                                        <InputField
-                                            value={selectedClient?.displayname}
-                                            label={'Display Name'}
-                                            inputtype={'textbox'}
-                                            onChange={(value: any) => {
-                                                setClientData("displayname", value);
-                                            }}
-                                        />
-                                    </View>
-                                </View>
-                                <View style={[styles.grid, styles.justifyContent]}>
-                                    <View style={[styles.flexGrow, {width: 200, marginRight: 12}]}>
-                                        <InputField
-                                            value={selectedClient?.address1}
-                                            label={'Address1'}
-                                            inputtype={'textbox'}
-                                            onChange={(value: any) => {
-                                                setClientData("address1", value);
-                                            }}
-                                        />
-                                    </View>
-                                </View>
-                                <View style={[styles.grid, styles.justifyContent]}>
-                                    <View style={[styles.flexGrow, {width: 200, marginRight: 12}]}>
-                                        <InputField
-                                            value={selectedClient?.address2}
-                                            label={'Address2'}
-                                            inputtype={'textbox'}
-                                            onChange={(value: any) => {
-                                                setClientData("address2", value);
-                                            }}
-                                        />
-                                    </View>
-                                </View>
-                                <View style={[styles.grid, styles.justifyContent]}>
-                                    <View style={[styles.flexGrow, {marginRight: 12}]}>
-                                        <InputField
-                                            value={selectedClient?.city}
-                                            label={'City'}
-                                            inputtype={'textbox'}
-                                            onChange={(value: any) => {
-                                                setClientData("city", value);
-                                            }}
-                                        />
-                                    </View>
-                                </View>
-                            </>}
-                            </Card.Content>
-                        </Card>
 
-                    </View>
+    let tabs:any = {}
+    let routes = []
 
-                </KeyboardScroll>
+    if(isReserveTable){
+        tabs = {...tabs, tables: AllTable}
+        routes.push({key: 'tables', title: 'Tables'})
+    }
+    else if(isSource){
+        tabs = {...tabs,sources:  Sources}
+        routes.push({key: 'sources', title: 'Sources'})
+    }
+    else if(isAdvanceorder){
+        tabs = {...tabs,deliveryon:  DeliveryOn}
+        routes.push({key: 'deliveryon', title: 'Delivery On'})
+    }
+
+    tabs =  {...tabs,clientinformation: ClientInformation}
+    routes.push({key: 'clientinformation', title: 'Client Information'})
+
+
+    return (<Container  style={{padding:0}}>
+
+                    <Tabs
+                        scenes={tabs}
+                        routes={routes}
+                        scrollable={false}
+                        style={{minWidth:190,width:'50%'}}
+                    />
+
 
                 <KAccessoryView>
 
-                    <View style={[styles.submitbutton]}>
+                    <View style={[styles.submitbutton,styles.px_3]}>
                         <Button more={{color:'white'}}  onPress={() => {
 
                             let clientDisplayName = selectedClient?.displayname?.trim();
@@ -419,8 +461,6 @@ const ClientAndSource = (props: any) => {
                     </View>
                 </KAccessoryView>
 
-            </View>
-        </View>
 
     </Container>)
 

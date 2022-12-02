@@ -202,7 +202,7 @@ export const styles: any = StyleSheet.create({
     autoGrid: {flexGrow: 1, flexDirection: 'row',},
     noWrap: {flexWrap: 'nowrap'},
     flexGrow: {flexGrow: 1},
-    coverScreen: {height: '100%', width: '100%',flex:1,backgroundColor:'white',padding:5},
+    coverScreen: {height: '100%', width: '100%',flex:1,backgroundColor:'white',padding:hp('1%')},
 
     overflow: {overflow: 'scroll'},
     overflowy: {overflow: 'scroll'},
@@ -389,9 +389,10 @@ export const styles: any = StyleSheet.create({
         fontSize: 14
     },
     caption: {
-        fontSize: 13,
+        fontSize: 15,
         fontWeight: 'bold',
-
+        marginBottom:10,
+        color:'black'
     },
 
     white: {color: 'white'},
@@ -445,14 +446,15 @@ export const styles: any = StyleSheet.create({
 
     card: {
         elevation: 0,
-        borderRadius: 12,
-        marginBottom: hp('1.5%')
+        borderRadius: 7,
+        marginBottom: hp('1%')
     },
     overdue:{
         backgroundColor:'#ffe8dc'
     },
 
-    cardContent: {paddingHorizontal: hp('1.5%'), paddingVertical: 0},
+    cardContent: {paddingHorizontal: hp('1.2%'),paddingVertical: hp('1.2%')},
+    marginOver:{margin:hp('-1%')},
 
     buttonBottom: {
         position: 'absolute',

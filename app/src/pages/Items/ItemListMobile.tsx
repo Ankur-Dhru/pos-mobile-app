@@ -6,7 +6,7 @@ import {connect} from "react-redux";
 
 import {styles} from "../../theme";
 import {appLog, isRestaurant, selectItem, toCurrency} from "../../libs/function";
-import {Divider, Paragraph} from "react-native-paper";
+import {Card, Divider, List, Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
 import AddButton from "./AddButton";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
@@ -15,6 +15,9 @@ import {useNavigation} from "@react-navigation/native";
 import GroupListMobile from "./GroupListMobile";
 import CartTotal from "../Cart/CartTotal";
 import Avatar from "../../components/Avatar";
+import {ItemDivider} from "../../libs/static";
+import store from "../../redux-store/store";
+import {updateCartField} from "../../redux-store/reducer/cart-data";
 
 
 const Item = memo(({item}: any) => {
@@ -25,13 +28,43 @@ const Item = memo(({item}: any) => {
     const hasRestaurant = isRestaurant();
     const hasKot = Boolean(item?.kotid);
 
+    return (
+        <List.Item
+
+            key={item.itemid}
+            title={item.itemname}
+            titleStyle={{textTransform: 'capitalize'}}
+            titleNumberOfLines={2}
+            description={()=>{
+                return <View style={[styles.grid, styles.middle]}>
+                    {hasRestaurant && <View style={[styles.mr_1]}>
+                        <VegNonVeg type={item.veg}/>
+                    </View>}
+                    <Paragraph style={[styles.paragraph, styles.text_xs]}>
+                        {toCurrency(baseprice)}
+                    </Paragraph>
+                </View>
+            }}
+            onPress={() => {
+                !Boolean(item?.productqnt) && selectItem(item)
+            }}
+            left={() => <Avatar label={item.itemname} value={item.itemid} fontsize={14} size={40}/>}
+            right={() => {
+
+                if(Boolean(item?.productqnt) && !hasKot){
+                    return <View><AddButton item={item} page={'itemlist'}/></View>
+                }
+                return  <List.Icon icon="plus"/>
+            }}
+        />
+    )
 
     return (<TouchableOpacity onPress={() => {
         !Boolean(item?.productqnt) && selectItem(item)
     }} style={[styles.noshadow]}>
         <View>
             <View>
-                <View style={[styles.grid, styles.middle, styles.noWrap, styles.p_4]}>
+                <View style={[styles.grid, styles.top, styles.noWrap, styles.p_4]}>
 
                     <View>
                         <Avatar label={item.itemname} value={item.itemid} fontsize={12} size={35}/>
@@ -71,8 +104,6 @@ const Item = memo(({item}: any) => {
             </View>
 
         </View>
-
-        <Divider/>
 
     </TouchableOpacity>)
 }, (r1, r2) => {
@@ -138,6 +169,7 @@ const Index = (props: any) => {
 
     return (
         <>
+            <Card style={[styles.card,styles.h_100, styles.flex]}>
             <FlatList
                 data={dataSource}
                 keyboardDismissMode={'on-drag'}
@@ -146,6 +178,7 @@ const Index = (props: any) => {
                 getItemLayout={(data, index) => {
                     return {length: 100, offset: 100 * index, index};
                 }}
+                ItemSeparatorComponent={ItemDivider}
                 /*onMomentumScrollEnd={onEndReached}
                 onEndReachedThreshold={0.5}*/
 
@@ -166,6 +199,8 @@ const Index = (props: any) => {
             <View>
                 <GroupListMobile/>
             </View>
+
+            </Card>
 
             <CartTotal/>
 

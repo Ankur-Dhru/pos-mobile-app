@@ -87,8 +87,8 @@ class Index extends Component<any> {
                                 <View style={[styles.middleForm]}>
                                     <KeyboardScroll>
 
-                                        <Card>
-                                            <Card.Content>
+                                        <Card style={[styles.card]}>
+                                            <Card.Content style={[styles.cardContent]}>
 
 
                                         <View>

@@ -69,8 +69,8 @@ class AddWorkspace extends Component<any> {
 
                                     <ScrollView>
 
-                                        <Card>
-                                            <Card.Content>
+                                        <Card style={[styles.card]}>
+                                            <Card.Content style={[styles.cardContent]}>
 
 
                                         <View>

@@ -1,6 +1,6 @@
 import React, {memo, useState} from "react";
 import {View} from "react-native";
-import {Divider, Text, withTheme} from "react-native-paper";
+import {Divider, Paragraph, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {Button} from "../../components";
 import {connect, useDispatch} from "react-redux";
@@ -9,6 +9,7 @@ import {clone, printKOT} from "../../libs/function";
 import store from "../../redux-store/store";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
+import {ItemDivider} from "../../libs/static";
 
 
 const Index = memo((props: any) => {
@@ -52,10 +53,9 @@ const Index = memo((props: any) => {
                     <View style={[styles.grid, styles.justifyContentSpaceBetween, styles.noWrap]}>
                         <View>
                             {Boolean(kot.cancelreason) &&
-                                <View style={[styles.mb_2]}><Text style={[styles.paragraph, {color: styles.red.color}]}>Cancel
-                                    : {kot.cancelreason}</Text></View>}
-                            <View style={[styles.mb_2]}><Text
-                                style={[styles.bold]}>#{tablename}-{kotid}</Text><Text>{tickettime}</Text></View>
+                                <View style={[styles.mb_2]}><Paragraph style={[styles.paragraph, {color: styles.red.color}]}>Cancel
+                                    : {kot.cancelreason}</Paragraph></View>}
+                            <View style={[styles.grid,styles.mb_2]}><Paragraph style={[styles.bold]}>#{tablename}-{kotid} </Paragraph><Paragraph style={[styles.ml_1]}> ({tickettime})</Paragraph></View>
                         </View>
                     </View>
 
@@ -63,13 +63,15 @@ const Index = memo((props: any) => {
                         {
                             ticketitems.map((item: any, index: any) => {
                                 return <View key={index}>
-                                    <Text>{item.productqnt} x {item.productdisplayname} {Boolean(item.cancelled) && `(Cancelled - ${item.reasonname})`}</Text>
+                                    <Paragraph>{item.productqnt} x {item.productdisplayname} {Boolean(item.cancelled) && `(Cancelled - ${item.reasonname})`}</Paragraph>
                                 </View>
                             })
                         }
                         {Boolean(commonkotnote) && <View><Text>{commonkotnote}</Text></View>}
-                        <View style={[styles.mt_2]}><Text>Kitchen : {departmentname}</Text></View>
-                        {Boolean(staffname) && <View><Text>Staff : {staffname}</Text></View>}
+
+                        <View style={[styles.mt_2,styles.grid]}><Paragraph>Kitchen : {departmentname}</Paragraph>
+                        {Boolean(staffname) && <Paragraph  style={[styles.ml_1]}>({staffname})</Paragraph>}
+                        </View>
                     </View>
 
                     <View style={[styles.grid, styles.justifyContentSpaceBetween, styles.mt_4]}>
@@ -86,7 +88,7 @@ const Index = memo((props: any) => {
                     </View>
 
                 </View>
-                {!hasLast && <Divider style={[styles.divider, {borderBottomColor: colors.divider}]}/>}
+                {!hasLast && <ItemDivider/>}
             </View>
         </View>
     );

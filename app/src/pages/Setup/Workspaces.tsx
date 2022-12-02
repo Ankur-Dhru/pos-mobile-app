@@ -4,7 +4,7 @@ import React from "react";
 import {FlatList, TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
 import {Card, Divider, Paragraph} from "react-native-paper";
-import {localredux} from "../../libs/static";
+import {ItemDivider, localredux} from "../../libs/static";
 import Container from "../../components/Container";
 import {chevronRight, selectWorkspace} from "../../libs/function";
 import AddWorkspace from "../SetupWorkspace/AddWorkspace";
@@ -28,7 +28,6 @@ const Workspaces = (props: any) => {
                     </View>
                 </View>
 
-                <Divider/>
             </TouchableOpacity>
         );
     };
@@ -39,15 +38,15 @@ const Workspaces = (props: any) => {
 
     return <Container>
 
-        <Card>
-            <Card.Content>
+        <Card style={[styles.card]}>
+            <Card.Content style={[styles.cardContent]}>
                 <FlatList
                     data={workspaces}
                     renderItem={renderitems}
                     keyboardShouldPersistTaps={'handled'}
                     scrollIndicatorInsets={{right: 1}}
                     initialNumToRender={50}
-
+                    ItemSeparatorComponent={ItemDivider}
                     stickyHeaderIndices={[0]}
                     stickyHeaderHiddenOnScroll={true}
                     invertStickyHeaders={false}

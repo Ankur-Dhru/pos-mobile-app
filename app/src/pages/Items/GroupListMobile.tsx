@@ -33,7 +33,7 @@ const Index = (props: any) => {
             divider={true}
             displaytype={'pagelist'}
             inputtype={'dropdown'}
-            render={() => <View style={[styles.grid, styles.center, styles.mb_5]}>
+            render={() => <View style={[styles.grid, styles.center, styles.mb_3]}>
                 <View
                     style={[styles.badge, styles.px_5, styles.py_5, styles.grid, styles.noWrap, styles.middle, {
                         backgroundColor: '#000',

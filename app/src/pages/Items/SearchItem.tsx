@@ -1,11 +1,11 @@
-import {device} from "../../libs/static";
+import {device, ItemDivider} from "../../libs/static";
 import React, {memo, useEffect, useRef, useState} from "react";
 import {FlatList, Text, TouchableOpacity, View} from "react-native";
-import {Card, Divider, Paragraph} from "react-native-paper";
+import {Card, Divider, List, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
 import {Container, SearchBox} from "../../components";
 
-import {selectItem} from "../../libs/function";
+import {selectItem, toCurrency} from "../../libs/function";
 
 import AddButton from "./AddButton";
 import {connect, useDispatch} from "react-redux";
@@ -14,27 +14,31 @@ import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 import {AddItem} from "./ItemListTablet";
 import {useNavigation} from "@react-navigation/native";
 import Search from "../../components/SearchBox";
+import VegNonVeg from "./VegNonVeg";
+import Avatar from "../../components/Avatar";
 
 
 const Item = memo(({item}: any) => {
 
     const navigation = useNavigation();
-    return (<TouchableOpacity onPress={() => {
-        selectItem(item).then();
-        navigation.goBack()
-    }} style={[styles.noshadow]}>
-        <View style={[styles.grid, styles.noWrap, styles.top, styles.p_4]}>
-            <View style={[{width: '62%'}]}>
-                <Paragraph style={[styles.paragraph, styles.bold, styles.text_xs]}>{item.itemname}</Paragraph>
-            </View>
-            {<View style={[styles.ml_auto]}>
-                <AddButton item={item}/>
-            </View>}
-        </View>
 
-        <Divider/>
+    return (
+        <List.Item
+            style={[styles.listitem]}
+            key={item.itemid}
+            title={item.itemname}
+            titleStyle={{textTransform: 'capitalize'}}
+            onPress={() => {
+                selectItem(item).then();
+                navigation.goBack()
+            }}
 
-    </TouchableOpacity>)
+            right={() => {
+                return  <AddButton item={item}/>
+            }}
+        />
+    )
+
 }, (r1, r2) => {
     return ((r1.item.productqnt === r2.item.productqnt) && (r1.item.itemid === r2.item.itemid));
 })
@@ -85,14 +89,15 @@ const Index = ({navigation}: any) => {
                                icon={{ source: 'arrow-left', direction: 'auto' }} placeholder="Search Item..."/>
                 </View>
 
-                <Card style={[styles.h_100, styles.flex]}>
-                    <Card.Content style={[styles.cardContent]}>
+                <Card style={[styles.card,styles.h_100, styles.flex]}>
+                    <Card.Content style={[styles.cardContent,{paddingVertical:0}]}>
 
                         {loading && <FlatList
                             data={items}
                             keyboardDismissMode={'on-drag'}
                             keyboardShouldPersistTaps={'always'}
                             renderItem={renderitems}
+                            ItemSeparatorComponent={ItemDivider}
                             ListEmptyComponent={Boolean(search.length > 0) ? <View>
                                 <View style={[styles.p_6]}>
                                     <Text

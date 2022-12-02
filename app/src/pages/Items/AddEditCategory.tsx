@@ -17,6 +17,7 @@ import {setGroup} from "../../redux-store/reducer/group-list";
 import {setSelected} from "../../redux-store/reducer/selected-data";
 import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
+import {Card} from "react-native-paper";
 
 
 const Index = (props: any) => {
@@ -98,9 +99,9 @@ const Index = (props: any) => {
                     <View style={[styles.middle]}>
                         <View style={[styles.middleForm]}>
                             <ScrollView>
-                                <View style={[styles.px_6]}>
+                                <Card style={[styles.card]}>
 
-                                    <View>
+                                    <Card.Content style={[styles.cardContent]}>
                                         <View>
 
                                             <Field name="itemgroupname" validate={required}>
@@ -138,9 +139,9 @@ const Index = (props: any) => {
 
                                         </View>
 
-                                    </View>
+                                    </Card.Content>
 
-                                </View>
+                                </Card>
                             </ScrollView>
 
                             <KAccessoryView>

@@ -72,8 +72,8 @@ const Index = (props: any) => {
                 renderItem={renderItem}
                 ListEmptyComponent={()=>{
                     return (
-                        <Card>
-                            <Card.Content>
+                        <Card style={[styles.card]}>
+                            <Card.Content style={[styles.cardContent]}>
                                 <View style={{marginTop:50}}><Paragraph style={[styles.paragraph,{textAlign:'center'}]}>No any item(s) added</Paragraph></View>
                                 <View  style={{marginTop:20}}><Paragraph  style={[styles.paragraph,{textAlign:'center'}]}><ProIcon name={'utensils'} size={25}/></Paragraph></View>
                             </Card.Content>

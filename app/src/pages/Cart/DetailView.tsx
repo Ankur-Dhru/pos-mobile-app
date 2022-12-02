@@ -64,8 +64,8 @@ const Index = (props: any) => {
 
     return <Container style={[styles.h_100,styles.flex,{padding:0}]}>
         {!device.tablet && <ClientDetail/>}
-        <Card style={[styles.mt_3,styles.flex,styles.h_100]}>
-            <Card.Content style={[{paddingHorizontal: 5,paddingVertical:5}]}>
+        <Card style={[styles.card,styles.flex,styles.h_100]}>
+            <Card.Content style={[styles.cardContent]}>
                 <CartItems/>
             </Card.Content>
         </Card>

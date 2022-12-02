@@ -3,6 +3,7 @@ import {assignOption} from "./function";
 import {Appbar} from "react-native-paper";
 import React from "react";
 import Icon from "react-native-fontawesome-pro";
+import {View} from "react-native";
 
 
 export const isDevelopment = process.env.NODE_ENV === "development";
@@ -1701,7 +1702,7 @@ export  const  defaultKOTTemplate = `<align mode="center">
 {{{predefinenotes}}}
 </text>
 {{#cancelled}}<bold><text>**Cancelled**
-</text></bold>{{/cancelled}}
+</text></bold>{{/cancelled}} 
 </text>
 {{/ticketitems}}
 {{{line}}}`
@@ -1903,5 +1904,15 @@ export const testInvoiceData = {
 };
 
 
-
+export const ItemDivider = () => {
+    return (
+        <View
+            style={{
+                height: 1,
+                width: "100%",
+                backgroundColor: "#efefef",
+            }}
+        />
+    );
+}
 

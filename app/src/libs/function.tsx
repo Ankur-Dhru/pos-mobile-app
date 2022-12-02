@@ -1719,7 +1719,8 @@ export const printInvoice = async (order?: any) => {
 
             const template: any = getPrintTemplate('Thermal');
 
-            if (Boolean(printer?.host) || Boolean(printer.bluetoothdetail)) {
+            if (Boolean(printer?.host) || Boolean(printer?.bluetoothdetail)) {
+
                 setTimeout(() => {
                     sendDataToPrinter(printJson, getTemplate(template), {
                         ...printer,
@@ -1731,6 +1732,7 @@ export const printInvoice = async (order?: any) => {
                 }, 200)
 
             } else {
+
                 setTimeout(() => {
                     store.dispatch(setAlert({visible: true, message: 'Invoice Printer not set'}))
                 }, 200)

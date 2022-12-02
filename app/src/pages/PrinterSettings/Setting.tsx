@@ -3,7 +3,7 @@ import React from "react";
 import {SafeAreaView, View} from "react-native";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
-import {Caption, Paragraph, Title} from "react-native-paper";
+import {Caption, Card, Paragraph, Title} from "react-native-paper";
 import {
     composeValidators,
     defaultInvoiceTemplate,
@@ -63,6 +63,9 @@ const Index = (props: any) => {
         ...printers[type.departmentid]
     }
 
+    navigation.setOptions({
+        headerTitle:`${type.departmentid === PRINTER.INVOICE ? 'Invoice' : 'KOT'} Printer`
+    })
 
     //{value: 'shared', label: 'Shared Printer'},
 
@@ -75,12 +78,14 @@ const Index = (props: any) => {
                     <View style={[styles.middle]}>
                         <View style={[styles.middleForm]}>
                             <KeyboardScroll>
-                                <View style={[styles.px_6]}>
-
-                                    <Title
-                                        style={[styles.mt_5]}>{type.departmentid === PRINTER.INVOICE ? 'Invoice' : 'KOT'} Printer </Title>
+                                <View>
 
                                     <View>
+
+                                        <Card style={[styles.card]}>
+                                            <Card.Content style={[styles.cardContent]}>
+
+
 
                                         <View>
                                             <Field name="printertype">
@@ -248,37 +253,46 @@ const Index = (props: any) => {
                                                 </View>
                                             </View>}
 
+                                            </Card.Content>
+                                        </Card>
+
 
                                         {type.departmentid === PRINTER.INVOICE &&
-                                            <View style={[styles.mb_5, styles.grid, styles.justifyContent]}>
-                                                <View style={[styles.flexGrow]}>
-                                                    <Field name="upiid">
-                                                        {props => (
-                                                            <InputField
-                                                                {...props}
-                                                                value={props.input.value}
-                                                                label={'UPI ID'}
-                                                                inputtype={'textbox'}
-                                                                onChange={props.input.onChange}
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                </View>
 
-                                                <View style={[styles.ml_2, {width: '50%'}]}>
-                                                    <Field name="upiname">
-                                                        {props => (
-                                                            <InputField
-                                                                {...props}
-                                                                value={props.input.value}
-                                                                label={'UPI Name'}
-                                                                inputtype={'textbox'}
-                                                                onChange={props.input.onChange}
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                </View>
-                                            </View>}
+                                            <Card style={[styles.card]}>
+                                                <Card.Content style={[styles.cardContent]}>
+                                                    <View style={[styles.grid, styles.justifyContent]}>
+                                                        <View style={[styles.flexGrow]}>
+                                                            <Field name="upiid">
+                                                                {props => (
+                                                                    <InputField
+                                                                        {...props}
+                                                                        value={props.input.value}
+                                                                        label={'UPI ID'}
+                                                                        inputtype={'textbox'}
+                                                                        onChange={props.input.onChange}
+                                                                    />
+                                                                )}
+                                                            </Field>
+                                                        </View>
+
+                                                        <View style={[styles.ml_2, {width: '50%'}]}>
+                                                            <Field name="upiname">
+                                                                {props => (
+                                                                    <InputField
+                                                                        {...props}
+                                                                        value={props.input.value}
+                                                                        label={'UPI Name'}
+                                                                        inputtype={'textbox'}
+                                                                        onChange={props.input.onChange}
+                                                                    />
+                                                                )}
+                                                            </Field>
+                                                        </View>
+                                                    </View>
+                                                </Card.Content>
+                                            </Card>
+                                                    }
 
 
 
@@ -288,10 +302,10 @@ const Index = (props: any) => {
                             </KeyboardScroll>
                             <View style={[styles.submitbutton]}>
 
-                                {<View style={[styles.grid, styles.justifyContent, styles.p_5]}>
+                                {<View style={[styles.grid, styles.justifyContent]}>
                                     <View style={[styles.w_auto]}>
                                         <Button disable={more.invalid}
-                                                more={{color: 'white'}}
+                                                more={{color: 'black',backgroundColor:styles.secondary.color}}
                                                 secondbutton={true} onPress={() => {
                                             testPrint(values).then(r => {
                                                 //handleSubmit(values)

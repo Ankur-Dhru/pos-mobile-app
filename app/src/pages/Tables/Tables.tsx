@@ -201,13 +201,13 @@ const Index = (props: any) => {
 
 
             return (
-                <Card style={[styles.m_2, styles.noshadow, {
-                    maxWidth: '100%', minWidth: 150,
+                <Card style={[styles.card,styles.m_2,  styles.noshadow, {
+                    maxWidth: '100%', minWidth: 150,marginBottom:5,
                     backgroundColor: Boolean(item.kots?.length) ? styles.yellow.color : Boolean(item.invoiceitems?.length) ? styles.secondary.color : styles.white.color,
                     borderRadius: 5
                 }, styles.flexGrow,]} key={item.tableid}>
                     {<TouchableOpacity
-                        style={{minHeight: 100}}
+                        style={{minHeight: 120}}
                         onPress={() => {
                             current.table = {invoiceitems: [], kots: [], ...item};
                             !shifttable ? navigation.navigate('CartStackNavigator', current.table) : Boolean(shifting) ? shiftTo(props) : shiftFrom(item.tableorderid)

@@ -12,7 +12,7 @@ import Avatar from "../Avatar";
 
 import Search from "../SearchBox";
 
-import {device} from "../../libs/static";
+import {device, ItemDivider} from "../../libs/static";
 
 class ListView extends Component<any> {
 
@@ -102,6 +102,7 @@ class ListView extends Component<any> {
                         this.selectItem(item);
                     }}>
                         <List.Item title={item.label}
+                                   style={[styles.listitem]}
                                    titleStyle={{textTransform: 'capitalize'}}
                                    left={() => <Avatar label={item.label} size={30} value={item.value}/>}
                                    right={() => +item.value === +selected &&
@@ -115,6 +116,7 @@ class ListView extends Component<any> {
                         this.selectItem(item);
                     }}>
                         <List.Item title={() => <View
+                            style={[styles.listitem]}
                             style={[styles.flexwidth, {backgroundColor: item.color, borderRadius: 3}]}><Paragraph
                             style={[styles.paragraph, {color: 'white'}]}>  {item.label}  </Paragraph></View>}
                                    titleStyle={{textTransform: 'capitalize'}}
@@ -131,6 +133,7 @@ class ListView extends Component<any> {
                         this.selectItem(item);
                     }}>
                         <List.Item
+                            style={[styles.listitem]}
                             title={() => <View><Paragraph style={[styles.paragraph]}>{item.label}</Paragraph></View>}
                             titleStyle={{textTransform: 'capitalize'}}
                             left={() => <View style={{marginTop: 3}}>
@@ -148,6 +151,7 @@ class ListView extends Component<any> {
                         this.selectItem(item);
                     }}>
                         <List.Item
+                            style={[styles.listitem]}
                             title={() => <View><Paragraph style={[styles.paragraph]}>{item.label}</Paragraph></View>}
                             titleStyle={{textTransform: 'capitalize'}}
                             right={() => (item.value === selected) &&
@@ -160,6 +164,7 @@ class ListView extends Component<any> {
                         this.selectItem(item);
                     }}>
                         <List.Item
+                            style={[styles.listitem]}
                             title={() => <View><Paragraph
                                 style={[styles.paragraph]}>{item.label}</Paragraph></View>}
                             titleStyle={{textTransform: 'capitalize'}}
@@ -169,7 +174,7 @@ class ListView extends Component<any> {
                         />
                     </TouchableOpacity>}
                 </View>
-                <Divider style={[styles.divider, {borderBottomColor: colors.divider}]}/>
+                <ItemDivider/>
             </>
         );
     };

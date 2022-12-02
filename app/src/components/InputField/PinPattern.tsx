@@ -67,7 +67,7 @@ class PinPattern extends Component<any, any> {
                                         </View>
                                     </View>
                                 </TouchableOpacity>
-                                <Divider style={[styles.divider, {borderBottomColor: colors.divider}]}/>
+                                <ItemDivider/>
                             </View>
                         }
                     </View>

@@ -32,7 +32,7 @@ const Index = (props: any) => {
 
     return <Container>
 
-                <Card style={[styles.h_100]}>
+                <Card style={[styles.card,styles.h_100]}>
 
                     <KeyboardScroll>
                         <View style={[styles.grid]}>

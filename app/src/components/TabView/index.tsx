@@ -8,7 +8,7 @@ import {styles} from "../../theme";
 
 const Index = (props: any) => {
 
-    const {routes,scenes,scrollable} = props
+    const {routes,scenes,scrollable,style} = props
 
 
 
@@ -30,7 +30,7 @@ const Index = (props: any) => {
             labelStyle={[{color:'black',textTransform:'capitalize'}]}
             indicatorStyle={{backgroundColor:styles.accent.color}}
             scrollEnabled={scrollable}
-            tabStyle={{width:'auto',minWidth:80}}
+            tabStyle={{minWidth:80,width:'auto',...style}}
         />
     );
 

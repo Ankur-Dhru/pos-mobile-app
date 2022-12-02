@@ -15,7 +15,7 @@ const Index = (props:any) => {
     return <View  style={styles.loader}>
         {<View  style={[styles.screenCenter,styles.h_100,styles.transparent]}>
             <View style={{borderRadius:50}}>
-                <ActivityIndicator style={styles.m_1} animating={true}   />
+                <ActivityIndicator style={styles.m_1} color={'#016EFE'} size='large' animating={true}/>
             </View>
         </View> }
     </View>

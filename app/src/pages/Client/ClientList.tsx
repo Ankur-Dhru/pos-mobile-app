@@ -1,7 +1,7 @@
-import {device} from "../../libs/static";
+import {device, ItemDivider} from "../../libs/static";
 import React, {memo, useEffect,  useState} from "react";
 import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
-import {Card, Divider, Paragraph} from "react-native-paper";
+import {Card, Divider, List, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
 import {Container, SearchBox} from "../../components";
 
@@ -21,6 +21,22 @@ import Avatar from "../../components/Avatar";
 const Item = memo(({client}: any) => {
 
     const navigation = useNavigation();
+
+    return (
+        <List.Item
+
+            key={client.clientid}
+            title={client.displayname}
+            description={client.phone}
+            onPress={() => {
+                store.dispatch(updateCartField({clientid: client.clientid,clientname: client.displayname}));
+                navigation.goBack()
+            }}
+            left={() => <Avatar label={client.displayname} value={client.clientid} fontsize={14} size={40}/>}
+
+        />
+    )
+
     return (<TouchableOpacity onPress={() => {
          store.dispatch(updateCartField({clientid: client.clientid,clientname: client.displayname}));
         navigation.goBack()
@@ -33,7 +49,7 @@ const Item = memo(({client}: any) => {
                 <Paragraph style={[styles.paragraph,styles.text_sm]}>{client.displayname}</Paragraph>
             </View>
         </View>
-        <Divider/>
+
     </TouchableOpacity>)
 }, (r1, r2) => {
     return ((r1.client.clientid === r2.client.clientid));
@@ -83,8 +99,8 @@ const Index = (props: any) => {
                                icon={{ source: 'arrow-left', direction: 'auto' }} autoFocus={false}  placeholder="Search Client..."/>
                 </View>
 
-                <Card style={[styles.h_100, styles.flex]}>
-                    <Card.Content style={[styles.cardContent,{paddingHorizontal:5}]}>
+                <Card style={[styles.card,styles.h_100, styles.flex,{marginBottom:0}]}>
+                    <Card.Content style={[styles.cardContent,{paddingHorizontal:5,paddingVertical:0}]}>
 
                         {loading && <FlatList
                             data={clients}
@@ -97,6 +113,7 @@ const Index = (props: any) => {
                                 />
                             }
                             renderItem={renderclients}
+                            ItemSeparatorComponent={ItemDivider}
                             ListEmptyComponent={Boolean(search.length > 0) ? <View>
                                 <View style={[styles.p_6]}>
                                     <Text

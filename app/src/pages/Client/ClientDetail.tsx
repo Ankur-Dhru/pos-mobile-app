@@ -19,13 +19,13 @@ const Index = ({clientid, clientname}: any) => {
         setClient({label: clientname, value: clientid})
     }, [clientid])
 
-    return <Card style={[styles.noshadow]} onPress={() => {
+    return <Card style={[styles.card]} onPress={() => {
         navigation.navigate('ClientList');
     }}>
 
         <Card.Content style={[styles.cardContent]}>
 
-            <View style={[styles.grid, styles.justifyContent, {paddingTop: 8, paddingBottom: 8}]}>
+            <View style={[styles.grid, styles.justifyContent]}>
                 <View style={[styles.grid, styles.justifyContent, styles.noWrap]}>
                     <Avatar label={client.label} value={client.value} fontsize={12} size={40}/>
                     <View style={[styles.ml_2]}><Paragraph
@@ -39,7 +39,7 @@ const Index = ({clientid, clientname}: any) => {
     </Card>
 
 
-    /*return <Card style={[styles.noshadow]}>
+    /*return <Card style={[styles.card,styles.noshadow]}>
 
         <View style={[styles.px_5]}>
 

@@ -130,8 +130,8 @@ const Register = (props: any) => {
 
                                 <View>
 
-                                    <Card style={[styles.mb_3]}>
-                                        <Card.Content>
+                                    <Card style={[styles.card]}>
+                                        <Card.Content style={[styles.cardContent]}>
 
                                     <View>
                                         <Field name="email" validate={composeValidators(required, isEmail)}>
@@ -191,8 +191,8 @@ const Register = (props: any) => {
                                     </Card>
 
 
-                                    <Card>
-                                        <Card.Content>
+                                    <Card style={[styles.card]}>
+                                        <Card.Content style={[styles.cardContent]}>
 
                                     <View>
                                         <Field name="country" validate={required}>

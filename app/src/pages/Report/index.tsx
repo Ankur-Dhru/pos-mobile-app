@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {FlatList, TouchableOpacity, View} from "react-native";
-import {Divider, Paragraph} from "react-native-paper"
+import {Card, Divider, Paragraph} from "react-native-paper"
 import {
     appLog, CheckConnectivity, dateFormat,
     getDateWithFormat, getItem, getLeftRight, getOrders, getPrintTemplate, getTemplate, getTempOrders, getTrimChar,
@@ -16,7 +16,7 @@ import {connect} from "react-redux";
 import {
     ACTIONS,
     adminUrl,
-    defaultInvoiceTemplate,
+    defaultInvoiceTemplate, ItemDivider,
     localredux,
     METHOD,
     posUrl,
@@ -103,13 +103,13 @@ const Index = ({ordersData}:any) => {
             name = `${item?.voucherprefix}${item?.voucherdisplayid} ${name}`
         }
 
-        return <TouchableOpacity style={[styles.noshadow]}>
+        return <TouchableOpacity style={[styles.p_5]}>
             <View
-                style={[styles.grid, styles.p_4, styles.noWrap, styles.top, styles.justifyContentSpaceBetween]}>
+                style={[styles.grid, styles.noWrap, styles.middle, styles.justifyContentSpaceBetween]}>
                 <View style={[styles.w_auto]}>
                     <View style={[styles.grid, styles.noWrap, styles.top]}>
 
-                        <View style={[styles.ml_2]}>
+                        <View>
                             <Paragraph
                                 style={[styles.bold, styles.paragraph]}>{getDateWithFormat(item?.date, dateFormat(true))}</Paragraph>
                             <Paragraph style={[styles.bold, styles.paragraph]}>{name}</Paragraph>
@@ -136,18 +136,25 @@ const Index = ({ordersData}:any) => {
                 </View>}
             </View>
 
-            <Divider/>
 
         </TouchableOpacity>
     }
 
     return <Container>
-        <FlatList
-            data={Object.values(data).reverse()}
-            keyboardDismissMode={'on-drag'}
-            keyboardShouldPersistTaps={'always'}
-            renderItem={renderItem}
-        />
+        <Card style={[styles.card]}>
+            <Card.Content style={[styles.cardContent]}>
+
+
+                <FlatList
+                    data={Object.values(data).reverse()}
+                    keyboardDismissMode={'on-drag'}
+                    keyboardShouldPersistTaps={'always'}
+                    renderItem={renderItem}
+                    ItemSeparatorComponent={ItemDivider}
+                />
+
+            </Card.Content>
+        </Card>
     </Container>
 
 }

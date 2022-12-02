@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {FlatList, SafeAreaView, View} from "react-native";
-import {Divider, List, Title, withTheme} from "react-native-paper";
+import {Card, Divider, List, Title, withTheme} from "react-native-paper";
 import {useDispatch} from "react-redux";
 
 import InputBox from "../../components/InputBox";
@@ -17,12 +17,13 @@ import {
     saveLocalOrder,
     voucherTotal
 } from "../../libs/function";
-import {localredux, PRINTER, TICKET_STATUS} from "../../libs/static";
+import {ItemDivider, localredux, PRINTER, TICKET_STATUS} from "../../libs/static";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
 import store from "../../redux-store/store";
 import {CommonActions} from "@react-navigation/native";
 import Container from "../../components/Container";
 import KeyboardScroll from "../../components/KeyboardScroll";
+import Icon from "react-native-fontawesome-pro";
 
 
 const Index = (props: any) => {
@@ -130,13 +131,14 @@ const Index = (props: any) => {
 
     const renderitem = ({item}: any) => {
         return <><List.Item
+            style={[styles.listitem]}
             title={item.data}
-
             onPress={async () => {
                 setCancelReason(item)
             }}
+            right={() =>  <List.Icon icon="chevron-right"/>}
         />
-            <Divider/>
+
         </>
     }
 
@@ -158,34 +160,41 @@ const Index = (props: any) => {
             render={({handleSubmit, submitting, values, ...more}: any) => (
                 <View style={[styles.middle]}>
                     <View style={[styles.middleForm]}>
-                        <KeyboardScroll>
+                        <View style={[styles.h_100,styles.flex]}>
                             <View>
 
-                                <View style={[styles.mb_5,styles.px_5]}>
-                                    <Field name="cancelreason">
-                                        {props => (
-                                            <InputBox
-                                                {...props}
-                                                value={props.input.value}
-                                                label={'Cancel Reason'}
-                                                autoFocus={false}
-                                                onChange={props.input.onChange}
-                                            />
-                                        )}
-                                    </Field>
-                                </View>
+                                <Card style={[styles.card]}>
+                                    <Card.Content style={[styles.cardContent]}>
+                                        <Field name="cancelreason">
+                                            {props => (
+                                                <InputBox
+                                                    {...props}
+                                                    value={props.input.value}
+                                                    label={'Cancel Reason'}
+                                                    autoFocus={true}
+                                                    onChange={props.input.onChange}
+                                                />
+                                            )}
+                                        </Field>
+                                    </Card.Content>
+                                </Card>
 
 
-                                <FlatList
-                                    data={objToArray(reasonlist)}
-                                    keyboardDismissMode={'on-drag'}
-                                    keyboardShouldPersistTaps={'always'}
-                                    renderItem={renderitem}
-                                    initialNumToRender={5}
-                                />
+                                <Card style={[styles.card]}>
+                                    <Card.Content style={[styles.cardContent]}>
+                                        <FlatList
+                                            data={objToArray(reasonlist)}
+                                            keyboardDismissMode={'on-drag'}
+                                            keyboardShouldPersistTaps={'always'}
+                                            renderItem={renderitem}
+                                            ItemSeparatorComponent={ItemDivider}
+                                            initialNumToRender={5}
+                                        />
+                                    </Card.Content>
+                                </Card>
 
                             </View>
-                        </KeyboardScroll>
+                        </View>
 
 
                         <View style={[styles.submitbutton]}>

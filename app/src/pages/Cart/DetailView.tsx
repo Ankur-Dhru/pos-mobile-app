@@ -12,9 +12,12 @@ import {Appbar, Card, Menu} from "react-native-paper";
 import {TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
 import ProIcon from "../../components/ProIcon";
-import {cancelOrder} from "../../libs/function";
+import {cancelOrder, isRestaurant} from "../../libs/function";
 import Button from "../../components/Button";
 import DeleteButton from "../../components/Button/DeleteButton";
+import {setBottomSheet} from "../../redux-store/reducer/component";
+import {useDispatch} from "react-redux";
+import HoldOrders from "./HoldOrders";
 
 const Index = (props: any) => {
 
@@ -22,7 +25,7 @@ const Index = (props: any) => {
     const [visible, setVisible] = React.useState(false);
     const openMenu = () => setVisible(true);
     const closeMenu = () => setVisible(false);
-
+    const dispatch = useDispatch()
 
 
 
@@ -53,6 +56,14 @@ const Index = (props: any) => {
                             }
                         }}
                     />
+
+                    {!isRestaurant() && <Menu.Item onPress={async () => {
+                        await dispatch(setBottomSheet({
+                            visible: true,
+                            height: '50%',
+                            component: () => <HoldOrders/>
+                        }))
+                    }} title="Holding Orders"/>}
 
 
 

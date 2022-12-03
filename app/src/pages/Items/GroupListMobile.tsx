@@ -26,7 +26,7 @@ const Index = (props: any) => {
     })
 
 
-    return <View style={[{marginTop: -55}]}>
+    return <View style={[{marginTop: -75}]}>
         <InputField
             removeSpace={true}
             label={'Category'}

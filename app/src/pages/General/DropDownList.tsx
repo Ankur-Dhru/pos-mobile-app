@@ -92,7 +92,7 @@ const Index = (props: any) => {
                         <List.Item title={item.label}
                                    titleStyle={{textTransform: 'capitalize'}}
                                    left={() => <Avatar label={item.label}   value={item.value}/>}
-                                   right={() => +item.value === +selected && <List.Icon icon="chevron-right"/>}
+                                   right={() => +item.value === +selected && <List.Icon icon="check"/>}
                         />
                     </TouchableOpacity>}
 
@@ -103,7 +103,7 @@ const Index = (props: any) => {
                             style={[styles.flexwidth, {backgroundColor: item.color, borderRadius: 3}]}><Paragraph
                             style={[styles.paragraph, {color: 'white'}]}>  {item.label}  </Paragraph></View>}
                                    titleStyle={{textTransform: 'capitalize'}}
-                                   right={() => item.value === selected && <List.Icon icon="chevron-right"/>}
+                                   right={() => item.value === selected && <List.Icon icon="check"/>}
                         />
                     </TouchableOpacity>}
 
@@ -119,7 +119,7 @@ const Index = (props: any) => {
                                          name={`${item.value === 'highest' ? 'chevron-double-up' : item.value === 'high' ? 'chevron-up' : item.value === 'low' ? 'chevron-down' : item.value === 'lowest' ? 'chevron-double-down' : 'equals'}`}
                                          size={15}/>
                             </View>}
-                            right={() => item.value === selected && <List.Icon icon="chevron-right"/>}
+                            right={() => item.value === selected && <List.Icon icon="check"/>}
                         />
                     </TouchableOpacity>}
 
@@ -129,7 +129,7 @@ const Index = (props: any) => {
                         <List.Item
                             title={item.label}
                             titleStyle={{textTransform: 'capitalize'}}
-                            right={() => (item.value === selected) && <List.Icon icon="chevron-right"/>}
+                            right={() => (item.value === selected) && <List.Icon icon="check"/>}
                         />
                     </TouchableOpacity>}
 
@@ -139,7 +139,7 @@ const Index = (props: any) => {
                         <List.Item
                             title={item.label}
                             titleStyle={{textTransform: 'capitalize'}}
-                            right={() => item.selected && <List.Icon icon="chevron-right"/>}
+                            right={() => item.selected && <List.Icon icon="check"/>}
                         />
                     </TouchableOpacity>}
                 </View>

@@ -936,8 +936,9 @@ export const saveTempLocalOrder = (order?: any, config?: any) => {
                 terminalid: localredux?.licenseData?.data?.terminal_id
             }
             insertTempOrder(order).then((msg) => {
+                appLog('msg',msg)
                 store.dispatch(setCartData(order));
-                resolve(msg)
+                resolve(order)
             })
 
         } catch (e) {
@@ -1004,7 +1005,6 @@ export const saveLocalOrder = (order?: any) => {
 
 
         deleteTempLocalOrder(order.tableorderid).then((msg:any) => {
-            appLog('msg',msg)
             insertOrder(order).then(()=>{
                 resolve('Save Order')
             });
@@ -1077,7 +1077,7 @@ export const removeItem = async (unique: any) => {
             await store.dispatch(updateCartItems(clone(filtered)));
         } else {
             //await store.dispatch(setBottomSheet({visible: false}))
-            Boolean(current.table?.tableorderid) && await deleteTempLocalOrder(current.table?.tableorderid);
+           // Boolean(current.table?.tableorderid) && await deleteTempLocalOrder(current.table?.tableorderid);
             await store.dispatch(updateCartField({invoiceitems: []}))
         }
     } catch (e) {
@@ -1931,7 +1931,6 @@ export const getAddons = async (refresh = false) => {
 export const getTempOrders = (refresh = false) => {
     return new Promise((resolve)=>{
         getTempOrdersByWhere().then((orders: any) => {
-            //store.dispatch(setTableOrdersData(orders));
             resolve(orders)
         });
     })

@@ -76,7 +76,7 @@ export const styles: any = StyleSheet.create({
     mt_4: {marginTop: hp('1%')},
     mt_5: {marginTop: hp('2%')},
     mb_2: {marginBottom: hp('0.5%')},
-    mb_3: {marginBottom: 5},
+    mb_3: {marginBottom: hp('1%')},
     mb_4: {marginBottom: hp('1.5%')},
     mb_5: {marginBottom: hp('2%')},
     mb_6: {marginBottom: hp('2.5%')},
@@ -447,7 +447,7 @@ export const styles: any = StyleSheet.create({
     card: {
         elevation: 0,
         borderRadius: 7,
-        marginBottom: hp('1%')
+        marginBottom: hp('1%'),
     },
     overdue:{
         backgroundColor:'#ffe8dc'

@@ -3,7 +3,6 @@ import Container from "../../components/Container";
 import Tables from "./Tables";
 
 import PageLoader from "../../components/PageLoader";
-import {Card} from "react-native-paper";
 
 
 const Index = (props: any) => {
@@ -23,28 +22,6 @@ const Index = (props: any) => {
     if (!loaded) {
         return <PageLoader page={'table'}/>
     }
-
-
-
-    /*React.useEffect(
-        () =>
-            navigation.addListener('beforeRemove', (e) => {
-                e.preventDefault();
-                Alert.alert(
-                    'Alert',
-                    'Want to exit app?',
-                    [
-                        { text: "Don't exit", style: 'cancel', onPress: () => {} },
-                        {
-                            text: 'Discard',
-                            style: 'destructive',
-                            onPress: () => navigation.dispatch(e.data.action),
-                        },
-                    ]
-                );
-            }),
-        [navigation]
-    );*/
 
 
     return <Container style={{padding:0}}>

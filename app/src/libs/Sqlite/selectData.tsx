@@ -110,30 +110,37 @@ export const getClientsByWhere = async ({displayname,phone,search,start}:any) =>
 }
 
 export const getTempOrdersByWhere = async () => {
-    const db = await getDBConnection();
 
-    try {
+    return new Promise<any>(async (resolve, reject)=>{
+        const db = await getDBConnection();
         let items:any={};
-        await db.transaction(function (txn) {
 
-            let where=' 1 = 1 ';
-            const query = `SELECT * FROM ${TABLE.TEMPORDER} where  ${where}`;
-            txn.executeSql(
-                query,
-                [],
-                function (tx, res) {
-                    for (let i = 0; i < res.rows.length; ++i) {
-                        const {tableorderid,data}:any = res.rows.item(i);
-                        items[tableorderid] = JSON.parse(data)
+        try {
+            await db.transaction(function (txn) {
+
+                let where=' 1 = 1 ';
+                const query = `SELECT * FROM ${TABLE.TEMPORDER} where  ${where}`;
+                txn.executeSql(
+                    query,
+                    [],
+                    function (tx, res) {
+                        for (let i = 0; i < res.rows.length; ++i) {
+                            const {tableorderid,data}:any = res.rows.item(i);
+                            items[tableorderid] = JSON.parse(data)
+                        }
                     }
-                }
-            );
-        });
-        return items
-    } catch (e) {
-        appLog('get temp orders', e)
-    }
-    db.close().then()
+                );
+            });
+
+        } catch (e) {
+            appLog('get temp orders', e)
+        }
+
+        db.close().then()
+        resolve(items)
+    })
+
+
 }
 
 export const getOrdersByWhere = async () => {

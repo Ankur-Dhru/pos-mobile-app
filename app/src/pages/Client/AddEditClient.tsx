@@ -30,6 +30,8 @@ import {hideLoader, showLoader} from "../../redux-store/reducer/component";
 import ProIcon from "../../components/ProIcon";
 import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
+import store from "../../redux-store/store";
+import {updateCartField} from "../../redux-store/reducer/cart-data";
 
 let moredetail: any = false
 const Index = (props: any) => {
@@ -39,7 +41,7 @@ const Index = (props: any) => {
     const {workspace}: any = localredux.initData;
     const {token}: any = localredux.authData;
 
-    const callback = props?.route?.params?.callback;
+    const search = props?.route?.params?.search;
 
     const {pricingtemplate, currency, paymentterms, general} = localredux.initData;
     const [loading, setLoading]: any = useState(false);
@@ -63,7 +65,7 @@ const Index = (props: any) => {
         clienttype: 0,
         country: general.country,
         currency: getDefaultCurrency(),
-        displayname: device.searchlist ? device.searchlist : '',
+        displayname: search || '',
         state: general.state
     }
 
@@ -83,6 +85,7 @@ const Index = (props: any) => {
                 workspace: workspace,
                 token: token,
                 other: {url: adminUrl},
+                hideLoader:true,
                 queryString: {country: initdata.country}
             }).then((result) => {
                 let taxtypelist = []
@@ -163,8 +166,8 @@ const Index = (props: any) => {
 
                     await syncData(false).then()
 
-                    if (Boolean(callback)) {
-                        await callback(client)
+                    if (Boolean(search)) {
+                        store.dispatch(updateCartField({clientid: client.clientid,clientname: client.displayname}));
                         navigation.goBack()
                     }
 

@@ -14,7 +14,7 @@ import Button from "../../components/Button";
 const hasRestaurant = isRestaurant()
 let sGroup: any = '';
 
-export const AddItem = ({navigation}: any) => {
+export const AddItem = ({navigation,search}: any) => {
 
     const dispatch = useDispatch()
 
@@ -23,9 +23,10 @@ export const AddItem = ({navigation}: any) => {
 
             <View style={[styles.grid, styles.center]}>
                 <Button
+                    more={{color:'white'}}
                     secondbutton={true}
                     onPress={async () => {
-                        navigation.navigate("AddEditItemNavigator");
+                        navigation.navigate("AddEditItemNavigator",{search:search});
                     }}> + Create Item
                 </Button>
             </View>

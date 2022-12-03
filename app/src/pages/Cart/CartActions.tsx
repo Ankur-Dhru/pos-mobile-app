@@ -69,7 +69,6 @@ const Index = ({
                                     onPress={() => generateKOT().then(() => {
 
                                         saveTempLocalOrder().then((msg:any) => {
-                                            appLog('msg',msg)
                                             dispatch(hideLoader())
                                         })
                                     })}
@@ -82,11 +81,8 @@ const Index = ({
                                     onPress={async () => {
 
                                         await generateKOT().then(() => {
-                                            appLog('generate KOT')
                                             printInvoice().then((status: any) => {
-                                                appLog('invoice print success', status)
                                                 saveTempLocalOrder('', {print: Boolean(status)}).then((msg:any) => {
-                                                    appLog('msg',msg)
                                                     dispatch(hideLoader())
                                                 })
 
@@ -106,7 +102,7 @@ const Index = ({
                     </View>*/}
 
                     {(!hasRestaurant) && <>
-                        {<View style={[styles.w_auto, styles.ml_1]}>
+                        {/*{<View style={[styles.w_auto, styles.ml_1]}>
                             <Button
                                 secondbutton={Boolean(vouchertotaldisplay)}
                                 onPress={async () => {
@@ -118,14 +114,14 @@ const Index = ({
                                 }}
                                 more={{backgroundColor: styles.yellow.color, color: 'black',height:50}}
                             > Recall </Button>
-                        </View>}
+                        </View>}*/}
                         <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
                                     secondbutton={!Boolean(vouchertotaldisplay)}
                                     onPress={() => {
                                         dispatch(showLoader());
                                         saveTempLocalOrder().then((msg:any) => {
-                                            appLog('msg',msg)
+
                                             dispatch(resetCart())
                                             dispatch(hideLoader());
                                             if (!device.tablet) {
@@ -148,7 +144,6 @@ const Index = ({
                                 if (Boolean(vouchertotaldisplay)) {
                                     dispatch(showLoader())
                                     saveTempLocalOrder().then((msg:any) => {
-                                        appLog('msg',msg)
                                         dispatch(hideLoader())
                                         navigation.navigate('Payment');
                                     })

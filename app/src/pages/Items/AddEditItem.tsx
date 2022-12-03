@@ -58,6 +58,7 @@ let otherlanguage = false
 const Index = (props: any) => {
 
     const {item, pageKey} = props;
+    const search = props?.route?.params?.search;
 
     let isShow: any = false;
     const dispatch = useDispatch()
@@ -77,7 +78,7 @@ const Index = (props: any) => {
         itemdepartmentid: PRODUCTCATEGORY.DEPARTMENT,
         itemgroupid:PRODUCTCATEGORY.DEFAULT, // store.getState()?.selectedData?.group?.value
         itemhsncode: '',
-        itemname: Boolean(device.search) ? device.search : '',
+        itemname: search? search : '',
         itemstatus: "active",
         itemtaxgroupid: PRODUCTCATEGORY.TAXGROUPID,
         itemtype: "product",
@@ -178,16 +179,18 @@ const Index = (props: any) => {
                     const item = {...values, ...result.data, groupname: grouplist[values?.itemgroupid].itemgroupname};
                     await insertItems([item], 'onebyone').then(async () => {
 
-
-                        await selectItem(item);
-
+                        if(search) {
+                            await selectItem(item);
+                            navigation?.goBack()
+                        }
                         const selectedGroup = store.getState().selectedData.group?.value;
                         await dispatch(setSelected({value: '', field: 'group'}))
                         setTimeout(async () => {
                             await dispatch(setSelected({value: selectedGroup, field: 'group'}))
-                            dispatch(hideLoader())
+                            dispatch(hideLoader());
                             navigation?.goBack()
                         }, 100)
+
 
                     });
                 } catch (e) {

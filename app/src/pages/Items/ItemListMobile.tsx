@@ -18,6 +18,7 @@ import Avatar from "../../components/Avatar";
 import {ItemDivider} from "../../libs/static";
 import store from "../../redux-store/store";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
+import GroupHeading from "./GroupHeading";
 
 
 const Item = memo(({item}: any) => {
@@ -30,7 +31,7 @@ const Item = memo(({item}: any) => {
 
     return (
         <List.Item
-
+            style={[styles.listitem,{paddingTop:5}]}
             key={item.itemid}
             title={item.itemname}
             titleStyle={{textTransform: 'capitalize'}}
@@ -48,7 +49,7 @@ const Item = memo(({item}: any) => {
             onPress={() => {
                 !Boolean(item?.productqnt) && selectItem(item)
             }}
-            left={() => <Avatar label={item.itemname} value={item.itemid} fontsize={14} size={40}/>}
+            left={() => <View><Avatar label={item.itemname} value={item.itemid} fontsize={14} size={42}/></View>}
             right={() => {
 
                 if(Boolean(item?.productqnt) && !hasKot){
@@ -169,36 +170,43 @@ const Index = (props: any) => {
 
     return (
         <>
-            <Card style={[styles.card,styles.h_100, styles.flex]}>
-            <FlatList
-                data={dataSource}
-                keyboardDismissMode={'on-drag'}
-                keyboardShouldPersistTaps={'always'}
-                renderItem={renderItem}
-                getItemLayout={(data, index) => {
-                    return {length: 100, offset: 100 * index, index};
-                }}
-                ItemSeparatorComponent={ItemDivider}
-                /*onMomentumScrollEnd={onEndReached}
-                onEndReachedThreshold={0.5}*/
+            <Card style={[styles.card,styles.h_100, styles.flex,{marginBottom:0}]}>
 
-                ListFooterComponent={() => {
-                    return <View style={{height: 100}}></View>
-                }}
-                ListEmptyComponent={<View>
-                    <View style={[styles.p_6]}>
-                        <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> Start
-                            building your item library.</Text>
-                        <Text style={[styles.paragraph, styles.text_xs, styles.muted, {textAlign: 'center'}]}> Tap
-                            Create Item to begin.</Text>
-                    </View>
-                    <AddItem navigation={navigation}/>
-                </View>}
-            />
+                <Card.Content style={[styles.cardContent]}>
 
-            <View>
-                <GroupListMobile/>
-            </View>
+                <GroupHeading/>
+
+                    <FlatList
+                        data={dataSource}
+                        keyboardDismissMode={'on-drag'}
+                        keyboardShouldPersistTaps={'always'}
+                        renderItem={renderItem}
+                        getItemLayout={(data, index) => {
+                            return {length: 100, offset: 100 * index, index};
+                        }}
+                        ItemSeparatorComponent={ItemDivider}
+                        /*onMomentumScrollEnd={onEndReached}
+                        onEndReachedThreshold={0.5}*/
+
+                        ListFooterComponent={() => {
+                            return <View style={{height: 100}}></View>
+                        }}
+                        ListEmptyComponent={<View>
+                            <View style={[styles.p_6]}>
+                                <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> Start
+                                    building your item library.</Text>
+                                <Text style={[styles.paragraph, styles.text_xs, styles.muted, {textAlign: 'center'}]}> Tap
+                                    Create Item to begin.</Text>
+                            </View>
+                            <AddItem navigation={navigation}/>
+                        </View>}
+                    />
+
+                <View>
+                    <GroupListMobile/>
+                </View>
+
+                </Card.Content>
 
             </Card>
 

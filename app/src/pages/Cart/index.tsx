@@ -8,12 +8,12 @@ import {setSelected} from "../../redux-store/reducer/selected-data";
 import {refreshCartData, setCartData} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
-import {TouchableOpacity, View} from "react-native";
-import ProIcon from "../../components/ProIcon";
+
 import SearchItem from "../Items/SearchItem";
 import store from "../../redux-store/store";
 import {setDialog} from "../../redux-store/reducer/component";
 import Paxes from "../Tables/Paxes";
+import {setTableOrders} from "../../redux-store/reducer/table-orders-data";
 
 const Index = (props: any) => {
 
@@ -33,7 +33,7 @@ const Index = (props: any) => {
             navigation.navigate('DetailViewNavigator')
         }
 
-        if(tabledetails.invoiceitems.length === 0 && (tabledetails.ordertype === 'tableorder')){
+        if(tabledetails?.invoiceitems.length === 0 && (tabledetails?.ordertype === 'tableorder')){
             dispatch(setDialog({
                 visible: true,
                 title: "Paxes",
@@ -50,11 +50,15 @@ const Index = (props: any) => {
     React.useEffect(
         () =>
             navigation.addListener('beforeRemove', (e) => {
-                if (e.data?.action?.type === 'POP') {
+                if ((e.data?.action?.type === 'POP') || (e.data?.action?.type === 'GO_BACK')) {
                     e.preventDefault();
-                    const {cartData:{ordertype}}: any = store.getState();
+                    const {cartData:{ordertype,invoiceitems}}: any = store.getState();
                     if(ordertype !== 'qsr') {
-                        saveTempLocalOrder().then(() => {})
+                        if(Boolean(invoiceitems.length)) {
+                            saveTempLocalOrder().then((order: any) => {
+                                dispatch(setTableOrders(order))
+                            })
+                        }
                     }
                     navigation.dispatch(e.data.action)
                 }

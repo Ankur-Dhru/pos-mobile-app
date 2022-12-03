@@ -1,6 +1,14 @@
 import {current, device, localredux} from "../../libs/static";
 import React, {memo, useCallback, useEffect, useState} from "react";
-import {appLog, dateFormat, getTempOrders, isEmpty, saveTempLocalOrder, toCurrency} from "../../libs/function";
+import {
+    appLog,
+    dateFormat,
+    getTempOrders,
+    isEmpty,
+    isRestaurant,
+    saveTempLocalOrder,
+    toCurrency
+} from "../../libs/function";
 import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
 import {Appbar, Card, FAB, Menu, Paragraph, Title, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
@@ -9,17 +17,17 @@ import {connect, useDispatch} from "react-redux";
 import ProIcon from "../../components/ProIcon";
 import {refreshCartData} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
-import {hideLoader, setAlert, setDialog, showLoader} from "../../redux-store/reducer/component";
+import {hideLoader, setAlert, setBottomSheet, setDialog, showLoader} from "../../redux-store/reducer/component";
 import ClientAndSource from "../Cart/ClientAndSource";
 import moment from "moment";
 import {setSelected} from "../../redux-store/reducer/selected-data";
 import Button from "../../components/Button";
 import ReserveList from "./ReserveList";
 import Tabs from "../../components/TabView";
-import {Container} from "../../components";
+import HoldOrders from "../Cart/HoldOrders";
 
 
-const Index = (props: any) => {
+const Index = ({tableorders}: any) => {
 
 
     const navigation = useNavigation()
@@ -32,7 +40,7 @@ const Index = (props: any) => {
     const [shifttable, setShifttable] = useState(false);
     const [shiftingFromtable, setShiftingFromtable] = useState<any>();
     const [shiftingTotable, setShiftingTotable] = useState<any>();
-    const [tableorders,setTableOrders]:any = useState()
+
 
 
 
@@ -50,20 +58,16 @@ const Index = (props: any) => {
 
 
     useEffect(() => {
-        getOrder().then()
-    }, [currentLocation.tables])
+        getOrder().then(()=>{
 
-
-    useEffect(() => {
-        navigation.addListener('focus', (e) => {
-            getOrder().then()
         })
-    }, [navigation])
+    }, [tableorders,currentLocation.tables])
 
-
-    const resetTables = async () => {
+    const resetTables = () => {
         shiftStart(false);
-        getOrder().then()
+        getOrder().then(()=>{
+
+        })
     }
 
     const shiftStart = (value: any) => {
@@ -80,11 +84,9 @@ const Index = (props: any) => {
 
     const onClickReserveTable = () => {
         closeMenu();
-        dispatch(setDialog({
+        dispatch(setBottomSheet({
             visible: true,
-            title: "Reserved Tables",
-            hidecancel: true,
-            width: '90%',
+            height: '50%',
             component: () => <ReserveList navigation={navigation}/>
         }))
     }
@@ -97,25 +99,29 @@ const Index = (props: any) => {
     }
 
 
-    const getOrder = async () => {
+    const getOrder =  () => {
 
-        let newtables = getOriginalTablesData();
-        let newothertables: any = [];
+        return new Promise(async (resolve)=>{
+            let newtables = getOriginalTablesData();
+            let newothertables: any = [];
 
+            await getTempOrders().then(async (tableorders:any)=>{
 
-        getTempOrders().then(async (tableorders:any)=>{
-            setTableOrders(tableorders);
-            Object.values(tableorders).map((table: any) => {
-                let findTableIndex = tables?.findIndex((t: any) => t.tableid == table.tableid)
-                if (findTableIndex != -1) {
-                    newtables[findTableIndex] = table;
-                } else {
-                    newothertables.push(table)
-                }
-            });
-            newtables = newtables.concat(newothertables);
-            await setTables(newtables);
+                Object.values(tableorders).map((table: any) => {
+                    let findTableIndex = tables?.findIndex((t: any) => t.tableid == table.tableid)
+                    if (findTableIndex != -1) {
+                        newtables[findTableIndex] = table;
+                    } else {
+                        newothertables.push(table)
+                    }
+                });
+                newtables = newtables.concat(newothertables);
 
+                await setTables(newtables);
+
+                resolve(newtables)
+
+            })
         })
 
 
@@ -201,8 +207,9 @@ const Index = (props: any) => {
 
 
             return (
-                <Card style={[styles.card,styles.m_2,  styles.noshadow, {
-                    maxWidth: '100%', minWidth: 150,marginBottom:5,
+                <Card style={[styles.card,styles.m_2,styles.mb_3,  styles.noshadow, {
+                    marginTop:0,
+                    maxWidth: '100%', minWidth: 150,
                     backgroundColor: Boolean(item.kots?.length) ? styles.yellow.color : Boolean(item.invoiceitems?.length) ? styles.secondary.color : styles.white.color,
                     borderRadius: 5
                 }, styles.flexGrow,]} key={item.tableid}>
@@ -224,14 +231,14 @@ const Index = (props: any) => {
 
                                 {Boolean(item?.advanceorder?.date) && <>
                                     <Paragraph style={[styles.paragraph, styles.text_xs]}>Delivery on </Paragraph>
-                                    <Text
-                                        style={[styles.paragraph]}>{moment(item?.advanceorder.date).format(dateFormat())} {moment(item?.advanceorder.time).format('HH:mm')}</Text>
+                                    <Paragraph
+                                        style={[styles.paragraph]}>{moment(item?.advanceorder.date).format(dateFormat())} {moment(item?.advanceorder.time).format('HH:mm')}</Paragraph>
                                 </>}
 
 
                                 <View style={[styles.mt_3]}>
-                                    <Text
-                                        style={[styles.paragraph, styles.text_lg, styles.bold, {color: 'black'}]}>{toCurrency(item.vouchertotaldisplay)}</Text>
+                                    <Paragraph
+                                        style={[styles.paragraph, styles.text_lg, styles.bold, {color: 'black'}]}>{toCurrency(item.vouchertotaldisplay)}</Paragraph>
                                 </View>
 
                             </>}
@@ -277,6 +284,13 @@ const Index = (props: any) => {
                         setShifttable(false)
                     }} title="Disable Shift"/>}
                     <Menu.Item onPress={onClickReserveTable} title="Reserve Tables"/>
+                    {/*{!isRestaurant() && <Menu.Item onPress={async () => {
+                        await dispatch(setBottomSheet({
+                            visible: true,
+                            height: '50%',
+                            component: () => <HoldOrders/>
+                        }))
+                    }} title="Holding Orders"/>}*/}
                 </Menu>
 
             </View>
@@ -340,7 +354,12 @@ const Index = (props: any) => {
                     renderItem={renderItem}
                     keyboardDismissMode={'on-drag'}
                     keyboardShouldPersistTaps={'always'}
-
+                    /*refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={() => getOrder()}
+                        />
+                    }*/
                     numColumns={device.tablet ? 4 : 2}
                     getItemLayout={(data, index) => {
                         return {length: 100, offset: 100 * index, index};
@@ -397,6 +416,8 @@ const Index = (props: any) => {
     }
 
 
+    //return <AllTable/>
+
     return (
         <>
             <Tabs
@@ -414,6 +435,7 @@ const Index = (props: any) => {
                     {key: 'takeaway', title: 'TakeAway'},
                     {key: 'advanceorder', title: 'AdvanceOrder'},
                 ]}
+
                 scrollable={true}
             />
 
@@ -478,6 +500,7 @@ const Index = (props: any) => {
 
 const mapStateToProps = (state: any) => ({
     ordertype: state.selectedData.ordertype,
+    tableorders:state.tableOrdersData
 })
 
 export default connect(mapStateToProps)(withTheme(Index));

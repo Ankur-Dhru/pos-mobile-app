@@ -23,7 +23,7 @@ const Index = ({vouchertotaldisplay, invoiceitems, theme: {colors}}: any) => {
 
     return (
         <TouchableOpacity onPress={() => navigation.navigate('DetailViewNavigator')}>
-            <View style={[styles.grid, styles.justifyContent, styles.p_5, {
+            <View style={[styles.grid, styles.justifyContent, styles.p_5,styles.mt_4, {
                 backgroundColor: colors.primary,
                 borderRadius: 7
             }]}>

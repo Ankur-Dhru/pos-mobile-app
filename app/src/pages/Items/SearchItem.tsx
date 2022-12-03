@@ -105,7 +105,7 @@ const Index = ({navigation}: any) => {
                                     <Text
                                         style={[styles.paragraph, styles.text_xs, styles.muted, {textAlign: 'center'}]}> Tap  to Create New Item.</Text>
                                 </View>
-                                <AddItem navigation={navigation}/>
+                                <AddItem navigation={navigation} search={search}/>
                             </View> : <View style={[styles.p_6]}>
                                 <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>Search Item from here</Text>
                             </View>}

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {FlatList, TouchableOpacity, View} from "react-native";
+import {FlatList, Text, TouchableOpacity, View} from "react-native";
 import {Card, Divider, Paragraph} from "react-native-paper"
 import {
     appLog, CheckConnectivity, dateFormat,
@@ -26,6 +26,7 @@ import {
 } from "../../libs/static";
 import apiService from "../../libs/api-service";
 import ProIcon from "../../components/ProIcon";
+import {AddItem} from "../Items/ItemListTablet";
 
 
 const Index = ({ordersData}:any) => {
@@ -111,8 +112,8 @@ const Index = ({ordersData}:any) => {
 
                         <View>
                             <Paragraph
-                                style={[styles.bold, styles.paragraph]}>{getDateWithFormat(item?.date, dateFormat(true))}</Paragraph>
-                            <Paragraph style={[styles.bold, styles.paragraph]}>{name}</Paragraph>
+                                style={[styles.paragraph,styles.bold]}>{getDateWithFormat(item?.date, dateFormat(true))}</Paragraph>
+                            <Paragraph style={[styles.paragraph]}>{name}</Paragraph>
                         </View>
                     </View>
                 </View>
@@ -123,7 +124,7 @@ const Index = ({ordersData}:any) => {
                         <ProIcon name={'print'} type={'solid'} size={15}/>
                     </TouchableOpacity>}
                 </View>
-                {<View style={{width: 100}}>
+                {<View style={{width: 80}}>
                     <Paragraph
                         style={[styles.paragraph, styles.text_xs, {textAlign: 'right'}]}>{toCurrency(item?.vouchertotaldisplay)}</Paragraph>
                     {Boolean(item?.voucherdisplayid) &&
@@ -150,6 +151,15 @@ const Index = ({ordersData}:any) => {
                     keyboardDismissMode={'on-drag'}
                     keyboardShouldPersistTaps={'always'}
                     renderItem={renderItem}
+
+                    ListEmptyComponent={<View>
+                        <View style={[styles.p_6]}>
+                            <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>No any items found</Text>
+
+                        </View>
+
+                    </View>}
+
                     ItemSeparatorComponent={ItemDivider}
                 />
 

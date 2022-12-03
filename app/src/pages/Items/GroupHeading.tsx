@@ -12,7 +12,7 @@ const Index = (props: any) => {
     const {selectedgroup} = props;
 
     return <View>
-        <Caption style={[]}>  {itemgroup[selectedgroup]?.itemgroupname}</Caption>
+        <Caption style={[styles.caption]}>  {itemgroup[selectedgroup]?.itemgroupname}</Caption>
     </View>
 }
 

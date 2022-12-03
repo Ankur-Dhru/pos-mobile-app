@@ -16,6 +16,7 @@ import {useNavigation} from "@react-navigation/native";
 import store from "../../redux-store/store";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
 import Avatar from "../../components/Avatar";
+import Button from "../../components/Button";
 
 
 const Item = memo(({client}: any) => {
@@ -60,12 +61,14 @@ const Index = (props: any) => {
     let [clients, setClients] = useState([]);
     let [search, setSearch] = useState('');
     const [refreshing, setRefreshing]: any = useState(false);
-    const [loading, setLoading]: any = useState(true);
+    const [loading, setLoading]: any = useState(false);
     const navigation = useNavigation()
 
     const handleSearch = async (search?: any) => {
         await getClientsByWhere({search: search, start: 0}).then((clients) => {
             setClients(clients);
+            setSearch(search)
+            setLoading(true)
         });
     }
 
@@ -78,10 +81,6 @@ const Index = (props: any) => {
         force && handleSearch().then()
     }
 
-
-    useEffect(() => {
-        device.search = search
-    }, [search])
 
     const renderclients = (i: any) => {
         return (
@@ -122,6 +121,17 @@ const Index = (props: any) => {
                                     <Text
                                         style={[styles.paragraph, styles.text_xs, styles.muted, {textAlign: 'center'}]}> Tap
                                         to Create New Client.</Text>
+
+                                    <View style={[styles.grid, styles.center,styles.mt_3]}>
+                                        <Button
+                                            more={{color:'white'}}
+                                            secondbutton={true}
+                                            onPress={async () => {
+                                                navigation.navigate("AddEditClient",{search:search});
+                                            }}> + Create Client
+                                        </Button>
+                                    </View>
+
                                 </View>
 
                             </View> : <View style={[styles.p_6]}>

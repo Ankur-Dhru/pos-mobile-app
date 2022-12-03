@@ -104,7 +104,7 @@ const ProfileSettings = () => {
     }
 
 
-    return <Container style={{padding:0,backgroundColor:'white'}}>
+    return <Container>
 
 
 
@@ -114,10 +114,14 @@ const ProfileSettings = () => {
 
                     <ScrollView keyboardShouldPersistTaps='handled' style={[styles.h_100]}>
 
-                    <View style={[styles.px_3]}>
+                    <View>
 
-                    <View style={[styles.mt_5]}>
-                        <View>
+                    <View>
+
+                        <Card style={[styles.card]}>
+                            <Card.Content  style={[styles.cardContent]}>
+
+                                <View>
 
                             <View style={[{justifyContent: 'center', alignItems: 'center',}]}>
                                 <Image
@@ -149,6 +153,9 @@ const ProfileSettings = () => {
 
 
                         </View>
+
+                            </Card.Content>
+                        </Card>
                     </View>
 
                     <View>
@@ -156,7 +163,8 @@ const ProfileSettings = () => {
 
 
 
-                            <List.Section>
+                            <Card style={[styles.card]}>
+                                <Card.Content  style={[styles.cardContent]}>
 
                                 <List.Subheader>Reports</List.Subheader>
 
@@ -171,9 +179,12 @@ const ProfileSettings = () => {
                                     right={() =>  <List.Icon icon="chevron-right"/>}
                                 />
 
-                                <ItemDivider/>
+                                </Card.Content>
+                            </Card>
 
 
+                            <Card style={[styles.card]}>
+                                <Card.Content  style={[styles.cardContent]}>
                             <List.Subheader >Create a New</List.Subheader>
 
                             <List.Item
@@ -211,11 +222,11 @@ const ProfileSettings = () => {
                             />
 
 
-                                <ItemDivider/>
+                                </Card.Content>
+                            </Card>
 
-
-
-
+                            <Card style={[styles.card]}>
+                                <Card.Content  style={[styles.cardContent]}>
 
                                 <List.Subheader>Settings</List.Subheader>
 
@@ -266,14 +277,15 @@ const ProfileSettings = () => {
                             />
 
 
-                            </List.Section>
+
+                                </Card.Content>
+                            </Card>
 
 
+                            {role === 'admin' && <View>
 
-                            <ItemDivider/>
-
-
-                            {role === 'admin' && <View style={[styles.mt_5]}>
+                                <Card style={[styles.card,{marginBottom:0}]}>
+                                    <Card.Content  style={[styles.cardContent,]}>
 
                                 <View style={[styles.mb_5]}>
                                     <DeleteButton
@@ -298,7 +310,7 @@ const ProfileSettings = () => {
                                     />
                                 </View>
 
-                                <View style={[styles.mb_5]}>
+                                <View>
                                     <DeleteButton
                                         options={['Delete Account','Cancel']}
                                         title={'Close & Delete Account'}
@@ -312,11 +324,11 @@ const ProfileSettings = () => {
                                     />
                                 </View>
 
+                                    </Card.Content>
+                                </Card>
+
                             </View>}
 
-                            <View style={{height: 50}}>
-
-                            </View>
 
 
                             <View style={{marginTop: 'auto'}}>

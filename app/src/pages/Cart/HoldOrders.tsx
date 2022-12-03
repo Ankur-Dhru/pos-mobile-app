@@ -1,12 +1,13 @@
 import React from "react";
 import {FlatList, Text, View} from "react-native";
-import {Caption, List, withTheme} from "react-native-paper";
+import {Caption, List, Paragraph, withTheme} from "react-native-paper";
 import {connect, useDispatch} from "react-redux";
 import {setBottomSheet} from "../../redux-store/reducer/component";
-import {current} from "../../libs/static";
+import {current, ItemDivider} from "../../libs/static";
 import {styles} from "../../theme";
 import {setCartData} from "../../redux-store/reducer/cart-data";
-import {toCurrency} from "../../libs/function";
+import {dateFormat, toCurrency} from "../../libs/function";
+import moment from "moment";
 
 
 const Index = (props: any) => {
@@ -18,10 +19,11 @@ const Index = (props: any) => {
     const renderitem = ({item}: any) => {
         return <List.Item
             style={[styles.listitem]}
-            title={item.clientname}
-            description={item.localdatetime}
-            left={(props: any) => <List.Icon {...props} icon="folder"/>}
-            right={(props: any) => <View><Text>{toCurrency(item.vouchertotaldisplay)}</Text></View>}
+            title={`${item.clientname}`}
+            description={moment(item.localdatetime).format(dateFormat(true))}
+            left={(props: any) => <List.Icon {...props} icon="newspaper-variant-multiple-outline"/>}
+            right={() =>  <List.Icon icon="chevron-right"/>}
+
             onPress={async () => {
                 current.table = item;
                 await dispatch(setBottomSheet({visible: false}))
@@ -31,11 +33,12 @@ const Index = (props: any) => {
     }
 
 
-    return <View style={[styles.p_5, styles.w_100, styles.h_100]}>
-        <Caption style={[styles.paragraph, styles.ml_2]}>{'On Hold List'}</Caption>
+    return <View style={[styles.p_6, styles.w_100, styles.h_100]}>
+        <Caption style={[styles.caption]}>{'Holding List'}</Caption>
         <FlatList
             data={Object.values(tableorders)}
             renderItem={renderitem}
+            ItemSeparatorComponent={ItemDivider}
             keyboardDismissMode={'on-drag'}
             keyboardShouldPersistTaps={'always'}
             initialNumToRender={5}

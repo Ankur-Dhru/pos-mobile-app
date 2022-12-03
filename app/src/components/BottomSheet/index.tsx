@@ -87,19 +87,13 @@ class Index extends React.Component<any> {
                     propagateSwipe={true}
                 >
                     <View style={[styles.noshadow,{height: height,marginTop: 'auto',borderRadius: 20,backgroundColor:colors.surface}]}>
-                        <View style={{
+                        <View style={[styles.noshadow,{
                             height:'100%',
                             borderRadius: 20,
                             paddingTop: 15,
                             alignItems: "center",
-                            shadowColor: "#fff",
-                            shadowOffset: {
-                                width: 0,
-                                height: 0
-                            },
-                            shadowOpacity: 0,
-                            elevation:0
-                        }}>
+                            backgroundColor:'white'
+                        }]}>
                             <Content/>
                         </View>
                     </View>

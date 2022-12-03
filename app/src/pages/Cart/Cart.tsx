@@ -120,7 +120,7 @@ const Index = (props: any) => {
 
                     <View style={[styles.h_100, styles.flex, {flexDirection: 'column'}]}>
 
-                        <GroupHeading/>
+
 
 
 

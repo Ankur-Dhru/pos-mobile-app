@@ -4,7 +4,15 @@ import {Image, TouchableOpacity, View} from "react-native";
 import Container from "../../components/Container";
 import ReactNativePinView from "react-native-pin-view"
 import {useDispatch} from "react-redux";
-import {getAddons, getClients, getOrders, getTempOrders, retrieveData, syncData} from "../../libs/function";
+import {
+    gePhonebook,
+    getAddons,
+    getClients,
+    getOrders,
+    getTempOrders,
+    retrieveData,
+    syncData
+} from "../../libs/function";
 
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
 import {Card, Paragraph, Text} from "react-native-paper";
@@ -14,6 +22,8 @@ import {localredux} from "../../libs/static";
 import {setSettings} from "../../redux-store/reducer/local-settings-data";
 
 import {setGroupList} from "../../redux-store/reducer/group-list";
+import store from "../../redux-store/store";
+import {setTableOrdersData} from "../../redux-store/reducer/table-orders-data";
 
 
 const md5 = require('md5');
@@ -59,7 +69,9 @@ const Index = (props: any) => {
 
                                 await getClients().then()
                                 await getAddons().then()
-                                await getTempOrders().then()
+                                await getTempOrders().then((orders)=>{
+                                    dispatch(setTableOrdersData(orders));
+                                })
                                 await getOrders().then()
 
                                 const {itemgroup}: any = localredux.initData;
@@ -71,6 +83,8 @@ const Index = (props: any) => {
                                 await retrieveData('fusion-pro-pos-mobile-settings').then(async (data: any) => {
                                     await dispatch(setSettings(data));
                                 })
+
+                                await gePhonebook();
 
                             }
                         }

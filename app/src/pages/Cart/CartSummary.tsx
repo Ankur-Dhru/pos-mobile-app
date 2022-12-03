@@ -69,7 +69,7 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
         {Boolean(advanceorder?.date) &&
             <Card style={[styles.card]}>
                 <Card.Content style={[styles.cardContent]}>
-                    <TouchableOpacity style={[styles.dottedBorder, styles.noshadow]}
+                    <TouchableOpacity
                           onPress={() => {
                               navigation.navigate('ClientAndSource', {title: 'Advance Order', edit: true,});
                           }}>

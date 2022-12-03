@@ -19,6 +19,7 @@ const Index = (props: any) => {
         routes: routes,
     })
 
+
     function selectTab ( index:any ) {
         return setState({...state,index: index});
     }
@@ -26,10 +27,11 @@ const Index = (props: any) => {
     const renderTabBar = (props:any) => (
         <TabBar
             {...props}
-            style={[styles.noshadow,{ backgroundColor: 'white',marginBottom:5,}]}
+            style={[styles.noshadow,styles.mb_3,{ backgroundColor: 'white',}]}
             labelStyle={[{color:'black',textTransform:'capitalize'}]}
             indicatorStyle={{backgroundColor:styles.accent.color}}
             scrollEnabled={scrollable}
+
             tabStyle={{minWidth:80,width:'auto',...style}}
         />
     );

@@ -72,10 +72,15 @@ const Index = (props: any) => {
         }
     })
 
+    let tablet:any;
 
-    return <Container style={[styles.h_100,styles.flex,{padding:0}]}>
+    if(device.tablet){
+        tablet = {padding:0}
+    }
+
+    return <Container style={{...tablet, paddingBottom: 0}}>
         {!device.tablet && <ClientDetail/>}
-        <Card style={[styles.card,styles.flex,styles.h_100]}>
+        <Card style={[styles.card,styles.flex]}>
             <Card.Content style={[styles.cardContent]}>
                 <CartItems/>
             </Card.Content>

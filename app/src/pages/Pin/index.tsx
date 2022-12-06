@@ -84,7 +84,7 @@ const Index = (props: any) => {
                                     await dispatch(setSettings(data));
                                 })
 
-                                await gePhonebook();
+                                await gePhonebook(true);
 
                             }
                         }

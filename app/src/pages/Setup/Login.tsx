@@ -73,7 +73,7 @@ const Index = (props: any) => {
         })
     }
 
-    return <Container style={[styles.bg_white]}>
+    return <Container style={{backgroundColor:'white'}}>
 
 
         <Form

@@ -176,6 +176,7 @@ const Index = (props: any) => {
 
                 <GroupHeading/>
 
+                    <View style={[styles.h_100]}>
                     <FlatList
                         data={dataSource}
                         keyboardDismissMode={'on-drag'}
@@ -201,8 +202,9 @@ const Index = (props: any) => {
                             <AddItem navigation={navigation}/>
                         </View>}
                     />
+                    </View>
 
-                <View>
+                <View style={[styles.mt_auto]}>
                     <GroupListMobile/>
                 </View>
 

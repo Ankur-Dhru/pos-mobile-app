@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {chevronRight} from "../../libs/function";
 import {View} from "react-native";
-import {Card, Paragraph, Text} from "react-native-paper";
+import {Card, List, Paragraph, Text} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect} from "react-redux";
 import Avatar from "../../components/Avatar";
@@ -19,23 +19,10 @@ const Index = ({clientid, clientname}: any) => {
         setClient({label: clientname, value: clientid})
     }, [clientid])
 
-    return <Card style={[styles.card]} onPress={() => {
+    return <Card style={[styles.card,{minWidth:360,paddingLeft:10}]} onPress={() => {
         navigation.navigate('ClientList');
     }}>
-
-        <Card.Content style={[styles.cardContent]}>
-
-            <View style={[styles.grid, styles.justifyContent]}>
-                <View style={[styles.grid, styles.justifyContent, styles.noWrap]}>
-                    <Avatar label={client.label} value={client.value} fontsize={12} size={40}/>
-                    <View style={[styles.ml_2]}><Paragraph
-                        style={[styles.paragraph, styles.bold]}> {client.label}</Paragraph></View>
-                </View>
-                <View><Text>{chevronRight}</Text></View>
-            </View>
-
-        </Card.Content>
-
+        <List.Item style={[styles.listitem]} titleStyle={[styles.bold]}  title={client.label}   right={()=> <List.Icon icon="chevron-right"/>  }/>
     </Card>
 
 

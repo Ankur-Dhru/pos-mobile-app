@@ -312,7 +312,7 @@ const Register = (props: any) => {
                         <KAccessoryView>
                             <View style={[styles.submitbutton]}>
                                 <Button disable={more.invalid} secondbutton={more.invalid}
-
+                                        more={{color:'white'}}
                                         onPress={() => {
                                             handleSubmit(values)
                                         }}> Continue

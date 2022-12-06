@@ -328,6 +328,8 @@ class Index extends Component<any, any> {
                                         </View>
 
 
+
+
                                         {
                                             this.update && <View>
                                                 <View>
@@ -347,6 +349,13 @@ class Index extends Component<any, any> {
                                                 </View>
                                             </View>
                                         }
+
+
+                                        </Card.Content>
+                                    </Card>
+
+                                    <Card style={[styles.card]}>
+                                        <Card.Content style={[styles.cardContent]}>
 
                                         <View>
 
@@ -454,74 +463,83 @@ class Index extends Component<any, any> {
                                                     </Field>
                                                 </View>
 
-
-                                                <View>
-                                                    {
-
-                                                        (Boolean(values.country) && Boolean(taxtypelist)) &&
-                                                        taxtypelist.map(({name, types}: any, index: any) => {
-
-                                                            return (
-                                                                <>
-
-                                                                    <InputField
-                                                                        selectedValue={this.initdata.taxregtype[index]}
-                                                                        label={'Tax Registration Type'}
-                                                                        displaytype={'pagelist'}
-                                                                        selectedLabel={"Select Tax Registration Type"}
-                                                                        inputtype={'dropdown'}
-                                                                        showlabel={false}
-                                                                        appbar={true}
-                                                                        search={false}
-                                                                        key={uuidv4()}
-                                                                        listtype={'other'}
-                                                                        list={Object.keys(types).filter((k) => types[k].company).map((k) => assignOption(types[k].name, k))}
-                                                                        onChange={(value: any) => {
-                                                                            this.initdata.taxregtype[index] = value;
-                                                                            this.forceUpdate()
-                                                                        }}
-                                                                    />
-
-                                                                    {
-                                                                        this.initdata.taxregtype[index] &&
-                                                                        types[this.initdata.taxregtype[index]]?.fields?.map(
-                                                                            ({name, required: req}: any, k: number) => {
-                                                                                let value;
-
-                                                                                if (this.initdata?.taxid[index] && this.initdata?.taxid[index][k]) {
-                                                                                    value = this.initdata?.taxid[index][k]
-                                                                                }
-
-                                                                                return <>
-
-                                                                                    <InputField
-                                                                                        defaultValue={value}
-                                                                                        label={name}
-                                                                                        inputtype={'textbox'}
-                                                                                        onChange={(value: any) => {
-                                                                                            if (!Boolean(this.initdata.taxid[index])) {
-                                                                                                this.initdata.taxid[index] = []
-                                                                                            }
-                                                                                            this.initdata.taxid[index][k] = value;
-
-                                                                                        }}
-                                                                                    />
-
-                                                                                </>
-                                                                            })
-                                                                    }
-                                                                </>
-                                                            )
-                                                        })
-                                                    }
-
-
-                                                </View>
                                             </View>
+
                                         </View>
+                                        </Card.Content>
+                                    </Card>
+
+
+                                    <Card style={[styles.card]}>
+                                        <Card.Content style={[styles.cardContent]}>
+                                    <View>
+                                        {
+
+                                            (Boolean(values.country) && Boolean(taxtypelist)) &&
+                                            taxtypelist.map(({name, types}: any, index: any) => {
+
+                                                return (
+                                                    <>
+
+                                                        <InputField
+                                                            selectedValue={this.initdata.taxregtype[index]}
+                                                            label={'Tax Registration Type'}
+                                                            displaytype={'pagelist'}
+                                                            selectedLabel={"Select Tax Registration Type"}
+                                                            inputtype={'dropdown'}
+                                                            showlabel={false}
+                                                            appbar={true}
+                                                            search={false}
+                                                            key={uuidv4()}
+                                                            listtype={'other'}
+                                                            list={Object.keys(types).filter((k) => types[k].company).map((k) => assignOption(types[k].name, k))}
+                                                            onChange={(value: any) => {
+                                                                this.initdata.taxregtype[index] = value;
+                                                                this.forceUpdate()
+                                                            }}
+                                                        />
+
+                                                        {
+                                                            this.initdata.taxregtype[index] &&
+                                                            types[this.initdata.taxregtype[index]]?.fields?.map(
+                                                                ({name, required: req}: any, k: number) => {
+                                                                    let value;
+
+                                                                    if (this.initdata?.taxid[index] && this.initdata?.taxid[index][k]) {
+                                                                        value = this.initdata?.taxid[index][k]
+                                                                    }
+
+                                                                    return <>
+
+                                                                        <InputField
+                                                                            defaultValue={value}
+                                                                            label={name}
+                                                                            autoCapitalize = {"characters"}
+                                                                            inputtype={'textbox'}
+                                                                            onChange={(value: any) => {
+                                                                                if (!Boolean(this.initdata.taxid[index])) {
+                                                                                    this.initdata.taxid[index] = []
+                                                                                }
+                                                                                this.initdata.taxid[index][k] = value;
+
+                                                                            }}
+                                                                        />
+
+                                                                    </>
+                                                                })
+                                                        }
+                                                    </>
+                                                )
+                                            })
+                                        }
+
+
+                                    </View>
 
                                         </Card.Content>
                                     </Card>
+
+
 
                                 </KeyboardScroll>
                                 <KAccessoryView>

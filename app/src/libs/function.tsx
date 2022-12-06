@@ -1949,7 +1949,9 @@ export const getOrders = (refresh = false) => {
 
 export const gePhonebook = async (force?: any) => {
 
-    const synccontact: any = store.getState().localSettings?.synccontact;
+    const synccontact: any = store.getState()?.localSettings?.synccontact;
+
+    appLog('synccontact',synccontact)
 
     if (!Boolean(synccontact) || force) {
 

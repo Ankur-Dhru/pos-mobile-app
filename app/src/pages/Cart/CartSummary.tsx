@@ -13,6 +13,7 @@ import store from "../../redux-store/store";
 import moment from "moment";
 import ClientAndSource from "./ClientAndSource";
 import InputBox from "../../components/InputBox";
+import {device} from "../../libs/static";
 
 
 const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: any) => {
@@ -90,9 +91,9 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
 
 
 
-        <View style={[styles.marginOver,styles.bg_white,styles.p_6,{marginTop:0}]}>
+        <Card style={[styles.card,styles.p_6,{marginTop:0},!device.tablet && styles.marginOver,{marginBottom:device.tablet? 7 :0}]}>
             <TouchableOpacity  onPress={() => {
-                viewSummary()
+                viewSummary().then()
             }}>
                 <View><Paragraph style={[styles.absolute, {top: 0, left: '50%', marginLeft: -10}]}><ProIcon
                     name={'chevron-up'} action_type={'text'} size={15}/></Paragraph></View>
@@ -106,7 +107,7 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
                         style={[styles.paragraph, styles.bold, styles.text_lg, styles.green, {textAlign: 'right'}]}>{toCurrency(vouchertotaldisplay || '0')}</Paragraph></View>
                 </View>
             </TouchableOpacity>
-        </View></>)
+        </Card></>)
 }
 
 const mapStateToProps = (state: any) => ({

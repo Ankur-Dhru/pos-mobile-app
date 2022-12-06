@@ -24,7 +24,7 @@ const GroupItem = (props: any) => {
     return <TouchableOpacity onPress={() => selectGroup(item)}
                              style={[selected ? styles.bg_accent : '', {borderRadius: 5}]}>
         <List.Item
-            style={[styles.listitem]}
+
             title={item.label}
             titleNumberOfLines={3}
             titleStyle={[styles.text_sm, {color: selected ? 'white' : 'black'}]}

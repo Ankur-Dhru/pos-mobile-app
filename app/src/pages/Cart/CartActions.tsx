@@ -33,7 +33,7 @@ const Index = ({
 
     return <View>
 
-        {<View style={[styles.marginOver,{backgroundColor:'white',padding:8,marginTop:0}]}>
+        {<View style={[styles.marginOver,{backgroundColor:'white',marginTop:0,marginBottom:0,paddingVertical:5, paddingHorizontal: device.tablet? 10:5}]}>
             <View>
                 <View style={[styles.grid, styles.justifyContent, styles.noWrap]}>
 
@@ -102,7 +102,7 @@ const Index = ({
                     </View>*/}
 
                     {(!hasRestaurant) && <>
-                        {/*{<View style={[styles.w_auto, styles.ml_1]}>
+                        {<View style={[styles.w_auto]}>
                             <Button
                                 secondbutton={Boolean(vouchertotaldisplay)}
                                 onPress={async () => {
@@ -114,7 +114,7 @@ const Index = ({
                                 }}
                                 more={{backgroundColor: styles.yellow.color, color: 'black',height:50}}
                             > Recall </Button>
-                        </View>}*/}
+                        </View>}
                         <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
                                     secondbutton={!Boolean(vouchertotaldisplay)}

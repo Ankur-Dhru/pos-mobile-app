@@ -41,7 +41,7 @@ const Index = (props: any) => {
                                 <InputBox
                                     value={props.input.value}
                                     label={'Item Price'}
-                                    autoFocus={true}
+                                    autoFocus={false}
                                     keyboardType={'numeric'}
                                     onSubmitEditing={(e: any) => {
                                         handleSubmit(props.values)

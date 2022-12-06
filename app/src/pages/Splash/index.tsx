@@ -89,7 +89,7 @@ const Index = (props: any) => {
             }
         }
 
-       // screen = 'Sample';
+        //screen = 'Sample';
 
         await retrieveData('fusion-pro-pos-mobile-settings').then(async (data: any) => {
             await dispatch(setSettings(data));

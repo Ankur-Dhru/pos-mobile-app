@@ -109,7 +109,7 @@ const Index = (props: any) => {
                                                     <InputField
                                                         {...props}
                                                         value={props.input.value}
-                                                        autoFocus={false}
+                                                        autoFocus={true}
                                                         label={'Category Name'}
                                                         inputtype={'textbox'}
                                                         onChange={props.input.onChange}

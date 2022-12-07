@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {FlatList, Text, View} from "react-native";
 import {Caption, List, Paragraph, withTheme} from "react-native-paper";
 import {connect, useDispatch} from "react-redux";
@@ -6,15 +6,24 @@ import {setBottomSheet} from "../../redux-store/reducer/component";
 import {current, ItemDivider} from "../../libs/static";
 import {styles} from "../../theme";
 import {setCartData} from "../../redux-store/reducer/cart-data";
-import {dateFormat, toCurrency} from "../../libs/function";
+import {dateFormat, getTempOrders, toCurrency} from "../../libs/function";
 import moment from "moment";
 
 
 const Index = (props: any) => {
 
-    const {tableorders} = props;
+    const [tableorders,setTableOrders]:any = useState({})
+
+    useEffect(()=>{
+        getTempOrders().then((orders:any)=>{
+            setTableOrders(orders)
+        })
+    },[])
 
     const dispatch = useDispatch()
+
+
+
 
     const renderitem = ({item}: any) => {
         return <List.Item
@@ -47,9 +56,7 @@ const Index = (props: any) => {
 }
 
 
-const mapStateToProps = (state: any) => ({
-    tableorders: state.tableOrdersData || {}
-})
 
-export default connect(mapStateToProps)(withTheme(Index));
+
+export default  Index;
 

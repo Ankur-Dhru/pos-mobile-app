@@ -9,6 +9,8 @@ import {styles} from "../../theme";
 import Button from "../../components/Button";
 import {setDialog} from "../../redux-store/reducer/component";
 import {appLog, selectItem} from "../../libs/function";
+import store from "../../redux-store/store";
+import {onPressNumber} from "./AddButton";
 
 
 const Index = (props: any) => {
@@ -40,7 +42,7 @@ const Index = (props: any) => {
                             {props => (
                                 <InputBox
                                     value={props.input.value}
-                                    label={'Item Price'}
+                                    label={`${item.itemname} Price`}
                                     autoFocus={false}
                                     keyboardType={'numeric'}
                                     onSubmitEditing={(e: any) => {
@@ -58,7 +60,7 @@ const Index = (props: any) => {
                     <View style={[styles.mt_5]}>
                         <Button onPress={() => {
                             handleSubmit(values)
-                        }}>Done</Button>
+                        }}>OK</Button>
                     </View>
 
                 </>

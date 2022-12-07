@@ -10,7 +10,7 @@ import {
     assignOption,
     findObject,
     getCurrencySign, isEmpty,
-    isRestaurant,
+    isRestaurant, nextFocus,
     selectItem, selectItemObject,
     updateComponent
 } from "../../libs/function";
@@ -64,6 +64,8 @@ const Index = (props: any) => {
     const dispatch = useDispatch()
     const navigation = useNavigation()
     const otherlanguageRef = React.useRef<View>(null);
+
+    let inputRef=[useRef(),useRef(),useRef(),useRef(),useRef(),useRef(),useRef(),useRef(),useRef(),useRef(),useRef()];
 
     let initdata: any = {
         veg:'veg',
@@ -329,6 +331,9 @@ const Index = (props: any) => {
                                                                     <InputField
                                                                         {...props}
                                                                         value={props.input.value}
+                                                                        autoFocus={true}
+                                                                        onSubmitEditing={()=> nextFocus(inputRef[1])}
+                                                                        returnKeyType={'next'}
                                                                         label={'Name'}
                                                                         inputtype={'textbox'}
                                                                         onChange={props.input.onChange}
@@ -366,6 +371,10 @@ const Index = (props: any) => {
                                                             {props => (
                                                                 <InputField
                                                                     value={props.input.value}
+                                                                    customRef={inputRef[1]}
+                                                                    onSubmitEditing={()=> nextFocus(inputRef[2])}
+                                                                    returnKeyType={'next'}
+                                                                    autoCapitalize = {"characters"}
                                                                     label={'SKU or Item Code'}
                                                                     inputtype={'textbox'}
                                                                     onChange={props.input.onChange}
@@ -382,6 +391,9 @@ const Index = (props: any) => {
                                                                 {props => (
                                                                     <InputField
                                                                         {...props}
+                                                                        customRef={inputRef[2]}
+                                                                        onSubmitEditing={()=> nextFocus(inputRef[3])}
+                                                                        returnKeyType={'next'}
                                                                         value={props.input.value}
                                                                         label={'Selling Price  '}
                                                                         keyboardType='numeric'
@@ -428,6 +440,8 @@ const Index = (props: any) => {
                                                             {props => (
                                                                 <InputField
                                                                     {...props}
+                                                                    customRef={inputRef[3]}
+
                                                                     value={props.input.value}
                                                                     keyboardType='numeric'
                                                                     label={`${isTypeService ? "SAC" : "HSN"} Code `}

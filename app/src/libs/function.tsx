@@ -1184,12 +1184,23 @@ export const selectItem = async (item: any) => {
             store.dispatch(setDialog({visible: false}))
         })
     } else if (!Boolean(baseprice)) {
-        store.dispatch(setDialog({
+
+        onPressNumber(item, (price: any) => {
+            const pricingtype = item?.pricing?.type;
+            item.pricing.price.default[0] = {[pricingtype]:{baseprice:price}};
+            selectItem(item).then(()=>{
+                store.dispatch(setDialog({visible: false}))
+            });
+        })
+
+
+
+        /*store.dispatch(setDialog({
             visible: true,
             hidecancel: true,
             width: 360,
             component: () => <ZeroPriceAlert item={item}/>
-        }))
+        }))*/
     } else {
         setItemQnt(item).then()
     }
@@ -1951,7 +1962,6 @@ export const gePhonebook = async (force?: any) => {
 
     const synccontact: any = store.getState()?.localSettings?.synccontact;
 
-    appLog('synccontact',synccontact)
 
     if (!Boolean(synccontact) || force) {
 
@@ -1968,12 +1978,15 @@ export const gePhonebook = async (force?: any) => {
                         buttonPositive: "OK"
                     }
                 );
+
                 if (granted === PermissionsAndroid.RESULTS.GRANTED) {
                     await loadContacts()
                 } else {
+
                     appLog("Contact permission denied");
                 }
             } catch (err) {
+
                 console.warn(err);
             }
         }
@@ -1989,6 +2002,8 @@ export const gePhonebook = async (force?: any) => {
 }
 
 export const loadContacts = async () => {
+
+
 
     function compare(a: any, b: any) {
         if (a.displayname < b.displayname) {
@@ -2013,7 +2028,7 @@ export const loadContacts = async () => {
                         displayname: (contact.displayName || contact.givenName + ' ' + contact.familyName).replace(regx2, " "),
                         phone: contact.phoneNumbers[0].number,
                         clientid: contact.phoneNumbers[0].number?.replace(regx, ""),
-                        phonebook: true,
+                        phonebook: 1,
                         clienttype: 0,
                         taxregtype: '',
                         thumbnailPath: contact.thumbnailPath
@@ -2023,6 +2038,7 @@ export const loadContacts = async () => {
             clients.sort(compare);
 
             await insertClients(clients, 'all').then(async () => {
+
                 await saveLocalSettings('synccontact', true).then(() => {
                     store.dispatch(hideLoader())
                 })
@@ -2067,5 +2083,12 @@ export const syncInvoice = (invoiceData: any) => {
         }).catch(() => {
             resolve({status: "TRY CATCH ERROR"})
         })
+    })
+}
+
+
+export const nextFocus = (ref:any) => {
+    setTimeout(()=>{
+        ref?.current?.focus()
     })
 }

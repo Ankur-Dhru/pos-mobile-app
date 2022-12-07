@@ -28,12 +28,27 @@ const Item = memo(({client}: any) => {
 
             key={client.clientid}
             title={client.displayname}
+            titleStyle={[styles.bold]}
             description={client.phone}
             onPress={() => {
-                store.dispatch(updateCartField({clientid: client.clientid,clientname: client.displayname}));
-                navigation.goBack()
+
+                if(client.phonebook === 1){
+                    client.phone = client.clientid;
+                    client.clientid = 0;
+                }
+
+               let clientdetail = {
+                    phone: client?.phone,
+                    displayname: client?.displayname,
+                    clientid:  client.clientid,
+                    clienttype: 0,
+                }
+
+                store.dispatch(updateCartField({newclient: Boolean(client.phonebook),clientid: client.clientid,clientname: client.displayname,client:clientdetail}));
+                navigation.goBack();
+
             }}
-            left={() => <Avatar label={client.displayname} value={client.clientid} fontsize={14} size={40}/>}
+            left={() => <View style={{marginTop:5}}><Avatar label={client.displayname} value={client.clientid} fontsize={14} size={40}/></View>}
 
         />
     )

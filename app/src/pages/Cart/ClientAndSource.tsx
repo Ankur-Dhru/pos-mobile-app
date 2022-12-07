@@ -5,9 +5,9 @@ import {hideLoader, showLoader} from "../../redux-store/reducer/component";
 import {styles} from "../../theme";
 import InputField from "../../components/InputField";
 import Button from "../../components/Button";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {ItemDivider, localredux} from "../../libs/static";
-import {appLog, errorAlert, isEmpty, saveTempLocalOrder} from "../../libs/function";
+import {appLog, errorAlert, isEmpty, nextFocus, saveTempLocalOrder} from "../../libs/function";
 
 import moment from "moment";
 
@@ -278,6 +278,7 @@ const ClientInformation = ({tabledetails}:any) => {
     const [clientSearch, setClientSearch] = useState<any>();
     const [selectedClient, setSelectedClient] = useState<any>({...defaultClientData, ...tabledetails?.client});
 
+    let  inputRef = [useRef(),useRef(),useRef(),useRef(),useRef(),useRef()]
 
     const onClientSearch = () => {
 
@@ -316,6 +317,12 @@ const ClientInformation = ({tabledetails}:any) => {
                                 minLength={10}
                                 value={clientSearch}
                                 label={'Mobile'}
+                                customRef={inputRef[0]}
+                                onSubmitEditing={()=> {
+                                    onClientSearch();
+                                    nextFocus(inputRef[1])
+                                }}
+                                returnKeyType={'search'}
                                 inputtype={'textbox'}
                                 keyboardType='numeric'
                                 onChange={(value: any) => {
@@ -336,6 +343,9 @@ const ClientInformation = ({tabledetails}:any) => {
                             <InputField
                                 value={selectedClient?.displayname}
                                 label={'Display Name'}
+                                customRef={inputRef[1]}
+                                onSubmitEditing={()=> nextFocus(inputRef[2])}
+                                returnKeyType={'next'}
                                 inputtype={'textbox'}
                                 onChange={(value: any) => {
                                     setClientData("displayname", value);
@@ -348,6 +358,9 @@ const ClientInformation = ({tabledetails}:any) => {
                             <InputField
                                 value={selectedClient?.address1}
                                 label={'Address1'}
+                                customRef={inputRef[2]}
+                                onSubmitEditing={()=> nextFocus(inputRef[3])}
+                                returnKeyType={'next'}
                                 inputtype={'textbox'}
                                 onChange={(value: any) => {
                                     setClientData("address1", value);
@@ -360,6 +373,9 @@ const ClientInformation = ({tabledetails}:any) => {
                             <InputField
                                 value={selectedClient?.address2}
                                 label={'Address2'}
+                                customRef={inputRef[3]}
+                                onSubmitEditing={()=> nextFocus(inputRef[4])}
+                                returnKeyType={'next'}
                                 inputtype={'textbox'}
                                 onChange={(value: any) => {
                                     setClientData("address2", value);
@@ -371,6 +387,8 @@ const ClientInformation = ({tabledetails}:any) => {
                         <View style={[styles.flexGrow, {marginRight: 12}]}>
                             <InputField
                                 value={selectedClient?.city}
+                                customRef={inputRef[4]}
+
                                 label={'City'}
                                 inputtype={'textbox'}
                                 onChange={(value: any) => {

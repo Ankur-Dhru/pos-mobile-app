@@ -17,7 +17,7 @@ import {
 } from "../../libs/static";
 import {setSettings} from "../../redux-store/reducer/local-settings-data";
 
-import {getDBConnection} from "../../libs/Sqlite";
+import {createTables, getDBConnection} from "../../libs/Sqlite";
 import {
     CREATE_ADDON_TABLE, CREATE_CLIENT_TABLE, CREATE_INIT_TABLE,
 
@@ -36,18 +36,7 @@ const Index = (props: any) => {
 
     const loadDataCallback = useCallback(async () => {
         try {
-           const db:any = await getDBConnection();
-
-            db.executeSql(CREATE_ITEM_TABLE);
-            db.executeSql(CREATE_ADDON_TABLE);
-            db.executeSql(CREATE_CLIENT_TABLE);
-            db.executeSql(CREATE_ORDER_TABLE);
-            db.executeSql(CREATE_TEMPORDER_TABLE);
-
-            db.executeSql(CREATE_ITEM_INDEX_ITEMGROUPID);
-            db.executeSql(CREATE_ITEM_INDEX_ITEMNAME);
-            db.executeSql(CREATE_ITEM_INDEX_ITEMUNIQUE);
-
+            createTables().then()
         } catch (error) {
             appLog('error',error);
         }

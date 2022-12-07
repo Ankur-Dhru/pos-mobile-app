@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 
 import {ScrollView, TouchableOpacity, View} from "react-native";
 import Container from "../../components/Container";
@@ -21,7 +21,7 @@ import {
     STATUS
 } from "../../libs/static";
 import Button from "../../components/Button";
-import {appLog, isEmpty} from "../../libs/function";
+import {appLog, isEmpty, nextFocus} from "../../libs/function";
 import InputField from "../../components/InputField";
 import apiService from "../../libs/api-service";
 import store from "../../redux-store/store";
@@ -38,6 +38,8 @@ const Register = (props: any) => {
 
     const step1 = React.useRef<View>(null);
     const step2 = React.useRef<View>(null);
+
+    let inputRef = [useRef(),useRef(),useRef(),useRef(),useRef(),useRef()];
 
     const [passwordVisible, setPasswordVisible]: any = useState(true)
     const [cpasswordVisible, setCPasswordVisible]: any = useState(true)
@@ -76,6 +78,8 @@ const Register = (props: any) => {
             }
         })
     }
+
+
 
 
     const initialValues = isDevelopment ? {
@@ -138,6 +142,8 @@ const Register = (props: any) => {
                                             {props => (
                                                 <InputField
                                                     {...props}
+                                                    returnKeyType={'next'}
+                                                    onSubmitEditing={()=> nextFocus(inputRef[0])}
                                                     label={'Email Address'}
                                                     inputtype={'textbox'}
                                                     onChange={(value: any) => {
@@ -148,12 +154,16 @@ const Register = (props: any) => {
                                         </Field>
                                     </View>
 
+
                                     <View>
-                                        <Field name="password"
+                                        <Field  name="password"
                                                validate={composeValidators(required, isValidPassword)}>
                                             {props => (
                                                 <InputField
                                                     {...props}
+                                                    customRef={inputRef[0]}
+                                                    onSubmitEditing={()=> nextFocus(inputRef[1])}
+                                                    returnKeyType={'next'}
                                                     label={'Password'}
                                                     inputtype={'textbox'}
                                                     secureTextEntry={passwordVisible}
@@ -173,8 +183,12 @@ const Register = (props: any) => {
                                             {props => (
                                                 <InputField
                                                     {...props}
+                                                    customRef={inputRef[1]}
+                                                    onSubmitEditing={()=> nextFocus(inputRef[2])}
+                                                    returnKeyType={'next'}
                                                     label={'Confirm Password'}
                                                     inputtype={'textbox'}
+
                                                     secureTextEntry={cpasswordVisible}
                                                     right={<TI.Icon name={cpasswordVisible ? "eye" : "eye-off"}
                                                                     onPress={() => setCPasswordVisible(!cpasswordVisible)}/>}
@@ -230,7 +244,9 @@ const Register = (props: any) => {
                                                 <InputField
                                                     {...props}
                                                     label={'First Name'}
-
+                                                    returnKeyType={'next'}
+                                                    customRef={inputRef[2]}
+                                                    onSubmitEditing={()=> nextFocus(inputRef[3])}
                                                     inputtype={'textbox'}
                                                     onChange={(value: any) => {
                                                         props.input.onChange(value);
@@ -245,6 +261,9 @@ const Register = (props: any) => {
                                             {props => (
                                                 <InputField
                                                     {...props}
+                                                    returnKeyType={'next'}
+                                                    customRef={inputRef[3]}
+                                                    onSubmitEditing={()=> nextFocus(inputRef[4])}
                                                     label={'Last Name'}
                                                     inputtype={'textbox'}
                                                     onChange={(value: any) => {
@@ -263,6 +282,7 @@ const Register = (props: any) => {
                                                 <View>
                                                     <InputField
                                                         {...props}
+
                                                         inputtype={'textbox'}
                                                         editable={false}
                                                         value={'+' + values.code}
@@ -277,9 +297,14 @@ const Register = (props: any) => {
                                                         <View style={[styles.w_auto, styles.ml_2]}>
                                                             <InputField
                                                                 {...props}
+                                                                customRef={inputRef[4]}
                                                                 keyboardType={'number-pad'}
                                                                 label={''}
+                                                                returnKeyType={'go'}
                                                                 inputtype={'textbox'}
+                                                                onSubmitEditing={(e: any) => {
+                                                                    handleSubmit(values)
+                                                                }}
                                                                 onChange={(value: any) => {
                                                                     props.input.onChange(value);
                                                                 }}

@@ -1,11 +1,19 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {SafeAreaView, ScrollView, TouchableOpacity, View} from 'react-native';
 import {styles} from "../../theme";
 
 import {Button, Container} from "../../components";
 import {useDispatch} from "react-redux";
 import {Caption, Card, Paragraph,} from "react-native-paper";
-import {appLog, assignOption, getDefaultCurrency, getStateList, syncData, updateComponent} from "../../libs/function";
+import {
+    appLog,
+    assignOption,
+    getDefaultCurrency,
+    getStateList,
+    nextFocus,
+    syncData,
+    updateComponent
+} from "../../libs/function";
 import {Field, Form} from "react-final-form";
 
 import {
@@ -47,6 +55,8 @@ const Index = (props: any) => {
     const [loading, setLoading]: any = useState(false);
     const [displayname, setDisplayname]: any = useState();
     // const [country,setCountry]:any = useState(general.country);
+
+    let inputRef=[useRef(),useRef(),useRef(),useRef(),useRef(),useRef(),useRef(),useRef(),useRef(),useRef(),useRef()];
 
 
     let statelist: any = [];
@@ -242,7 +252,9 @@ const Index = (props: any) => {
                                                                 {...props}
                                                                 value={props.input.value}
                                                                 label={'Display Name'}
-                                                                returnKeyType={"next"}
+                                                                onSubmitEditing={()=> nextFocus(inputRef[1])}
+                                                                returnKeyType={'next'}
+                                                                autoFocus={true}
                                                                 disabled={initdata.clientid === '1'}
                                                                 inputtype={'textbox'}
                                                                 onChange={(value: any) => {
@@ -260,7 +272,9 @@ const Index = (props: any) => {
                                                                 {...props}
                                                                 value={props.input.value}
                                                                 label={'Email'}
-                                                                returnKeyType={"next"}
+                                                                customRef={inputRef[1]}
+                                                                onSubmitEditing={()=> nextFocus(inputRef[2])}
+                                                                returnKeyType={'next'}
                                                                 keyboardType={'email-address'}
                                                                 inputtype={'textbox'}
 
@@ -277,6 +291,8 @@ const Index = (props: any) => {
                                                         {props => (
                                                             <InputField
                                                                 {...props}
+                                                                customRef={inputRef[2]}
+                                                                onSubmitEditing={()=> handleSubmit(values) }
                                                                 value={props.input.value}
                                                                 label={'Phone'}
                                                                 returnKeyType={"next"}
@@ -322,6 +338,10 @@ const Index = (props: any) => {
                                                                     <InputField
                                                                         value={props.input.value}
                                                                         label={'First Name'}
+
+                                                                        onSubmitEditing={()=> nextFocus(inputRef[3])}
+                                                                        returnKeyType={'next'}
+
                                                                         inputtype={'textbox'}
                                                                         onChange={(value: any) => {
                                                                             props.input.onChange(value);
@@ -339,6 +359,9 @@ const Index = (props: any) => {
                                                                     <InputField
                                                                         value={props.input.value}
                                                                         label={'Last Name'}
+                                                                        customRef={inputRef[3]}
+                                                                        onSubmitEditing={()=> nextFocus(inputRef[4])}
+                                                                        returnKeyType={'next'}
                                                                         inputtype={'textbox'}
                                                                         onChange={(value: any) => {
                                                                             props.input.onChange(value);
@@ -357,6 +380,9 @@ const Index = (props: any) => {
                                                                 <InputField
                                                                     value={props.input.value}
                                                                     label={'Company Name'}
+                                                                    customRef={inputRef[4]}
+                                                                    onSubmitEditing={()=> nextFocus(inputRef[5])}
+                                                                    returnKeyType={'next'}
                                                                     inputtype={'textbox'}
                                                                     onChange={(value: any) => {
                                                                         props.input.onChange(value);
@@ -421,6 +447,9 @@ const Index = (props: any) => {
                                                                 <InputField
                                                                     value={props.input.value}
                                                                     label={'Address 1'}
+                                                                    customRef={inputRef[5]}
+                                                                    onSubmitEditing={()=> nextFocus(inputRef[6])}
+                                                                    returnKeyType={'next'}
                                                                     inputtype={'textbox'}
                                                                     onChange={(value: any) => {
                                                                         props.input.onChange(value);
@@ -436,6 +465,9 @@ const Index = (props: any) => {
                                                                 <InputField
                                                                     value={props.input.value}
                                                                     label={'Address 2'}
+                                                                    customRef={inputRef[6]}
+                                                                    onSubmitEditing={()=> nextFocus(inputRef[7])}
+                                                                    returnKeyType={'next'}
                                                                     inputtype={'textbox'}
                                                                     onChange={(value: any) => {
                                                                         props.input.onChange(value);
@@ -450,6 +482,9 @@ const Index = (props: any) => {
                                                             {props => (
                                                                 <InputField
                                                                     value={props.input.value}
+                                                                    customRef={inputRef[7]}
+                                                                    onSubmitEditing={()=> nextFocus(inputRef[8])}
+                                                                    returnKeyType={'next'}
                                                                     label={'City'}
                                                                     inputtype={'textbox'}
                                                                     onChange={(value: any) => {
@@ -465,6 +500,9 @@ const Index = (props: any) => {
                                                             {props => (
                                                                 <InputField
                                                                     value={props.input.value}
+                                                                    customRef={inputRef[8]}
+                                                                    onSubmitEditing={()=> nextFocus(inputRef[9])}
+                                                                    returnKeyType={'next'}
                                                                     label={'PIN'}
                                                                     inputtype={'textbox'}
                                                                     onChange={(value: any) => {

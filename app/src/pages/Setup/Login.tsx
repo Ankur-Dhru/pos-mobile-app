@@ -22,7 +22,7 @@ import {
 import InputBox from "../../components/InputBox";
 import Button from "../../components/Button";
 import apiService from "../../libs/api-service";
-import {isEmpty} from "../../libs/function";
+import {appLog, isEmpty, nextFocus} from "../../libs/function";
 import KAccessoryView from "../../components/KAccessoryView";
 
 
@@ -32,7 +32,7 @@ const Index = (props: any) => {
 
     const [passwordVisible, setPasswordVisible]: any = useState(true)
 
-    let secondTextInput:any = useRef()
+    let passwordRef:any = useRef()
 
     const initdata: any = isDevelopment ? {
         //email: 'ankur9090_132@dhrusoft.com',
@@ -73,6 +73,7 @@ const Index = (props: any) => {
         })
     }
 
+
     return <Container style={{backgroundColor:'white'}}>
 
 
@@ -106,8 +107,8 @@ const Index = (props: any) => {
                                                         value={props.input.value}
                                                         label={'Email'}
                                                         autoFocus={false}
+                                                        onSubmitEditing={()=> nextFocus(passwordRef)}
                                                         returnKeyType={'next'}
-                                                        autoCapitalize='none'
                                                         keyboardType='email-address'
                                                         onChange={props.input.onChange}
                                                     />
@@ -119,16 +120,15 @@ const Index = (props: any) => {
                                             <Field name="password" validate={required}>
                                                 {props => (
                                                     <InputBox
-                                                        ref={(input:any) => { secondTextInput = input; }}
+
                                                         value={props.input.value}
                                                         label={'Password'}
+                                                        customRef={passwordRef}
                                                         onSubmitEditing={(e: any) => {
                                                             handleSubmit(values)
                                                         }}
-                                                        right={<TI.Icon name={passwordVisible ? "eye" : "eye-off"}
-                                                                        onPress={() => setPasswordVisible(!passwordVisible)}/>}
+                                                        right={<TI.Icon name={passwordVisible ? "eye" : "eye-off"} onPress={() => setPasswordVisible(!passwordVisible)}/>}
                                                         returnKeyType={'go'}
-                                                        autoCapitalize='none'
                                                         secureTextEntry={passwordVisible}
                                                         onChange={props.input.onChange}
                                                     />
@@ -141,8 +141,7 @@ const Index = (props: any) => {
 
                                     <View style={[styles.middle, styles.mt_5, {marginBottom: 20}]}>
                                         <TouchableOpacity onPress={() => navigation.navigate('Register')}><Paragraph
-                                            style={[styles.paragraph, styles.mt_5]}>New User? <Text
-                                            style={[{color: styles.primary.color}]}> Create an account </Text>
+                                            style={[styles.paragraph, styles.mt_5]}>New User? <Text  style={[{color: styles.primary.color}]}> Create an account </Text>
                                         </Paragraph></TouchableOpacity>
                                     </View>
                                 </View>

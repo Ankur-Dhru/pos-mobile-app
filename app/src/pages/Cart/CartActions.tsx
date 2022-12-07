@@ -101,8 +101,8 @@ const Index = ({
                         <Button> Drawer </Button>
                     </View>*/}
 
-                    {(!hasRestaurant) && <>
-                        {<View style={[styles.w_auto]}>
+                    {(!hasRestaurant) &&  <>
+                        {device.tablet && <View style={[styles.w_auto,styles.mr_1]}>
                             <Button
                                 secondbutton={Boolean(vouchertotaldisplay)}
                                 onPress={async () => {
@@ -115,7 +115,7 @@ const Index = ({
                                 more={{backgroundColor: styles.yellow.color, color: 'black',height:50}}
                             > Recall </Button>
                         </View>}
-                        <View style={[styles.w_auto, styles.ml_1]}>
+                        <View style={[styles.w_auto]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
                                     secondbutton={!Boolean(vouchertotaldisplay)}
                                     onPress={() => {

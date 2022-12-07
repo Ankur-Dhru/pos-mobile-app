@@ -9,10 +9,10 @@ import {v4 as uuidv4} from 'uuid';
 import KAccessoryView from "../../components/KAccessoryView"
 import apiService from "../../libs/api-service";
 import {ACTIONS, adminUrl, localredux, METHOD, required, STATUS} from "../../libs/static";
-import {assignOption} from "../../libs/function";
+import {assignOption, nextFocus} from "../../libs/function";
 import KeyboardScroll from "../../components/KeyboardScroll";
 
-
+let inputRef:any = [];
 class Index extends Component<any> {
 
     initdata: any;
@@ -30,6 +30,7 @@ class Index extends Component<any> {
 
         const {location: {industrytype, pin, street1, street2, city}} = localredux.initData;
 
+        inputRef = [React.createRef(),React.createRef(),React.createRef(),React.createRef()]
 
         this.initdata = {
             "industrytype": industrytype || "",
@@ -184,6 +185,8 @@ class Index extends Component<any> {
                                                         <InputField
                                                             {...props}
                                                             label={'Street 1'}
+                                                            onSubmitEditing={()=> nextFocus(inputRef[1])}
+                                                            returnKeyType={'next'}
                                                             inputtype={'textbox'}
                                                             onChange={(value: any) => {
                                                                 props.input.onChange(value);
@@ -199,6 +202,9 @@ class Index extends Component<any> {
                                                         <InputField
                                                             {...props}
                                                             label={'Street 2'}
+                                                            customRef={inputRef[1]}
+                                                            onSubmitEditing={()=> nextFocus(inputRef[2])}
+                                                            returnKeyType={'next'}
                                                             inputtype={'textbox'}
                                                             onChange={(value: any) => {
                                                                 props.input.onChange(value);
@@ -213,6 +219,9 @@ class Index extends Component<any> {
                                                     {props => (
                                                         <InputField
                                                             {...props}
+                                                            customRef={inputRef[2]}
+                                                            onSubmitEditing={()=> nextFocus(inputRef[3])}
+                                                            returnKeyType={'next'}
                                                             label={'City'}
                                                             inputtype={'textbox'}
                                                             onChange={(value: any) => {
@@ -228,6 +237,9 @@ class Index extends Component<any> {
                                                     {props => (
                                                         <InputField
                                                             {...props}
+                                                            customRef={inputRef[3]}
+                                                            onSubmitEditing={()=> handleSubmit(values)}
+                                                            returnKeyType={'go'}
                                                             value={props.input.value + ""}
                                                             label={'Zip/Postal Code'}
                                                             inputtype={'textbox'}

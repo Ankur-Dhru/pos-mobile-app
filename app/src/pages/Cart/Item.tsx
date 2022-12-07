@@ -56,17 +56,20 @@ const Index = memo((props: any) => {
 
                             <View style={[styles.grid,]}>
 
+                                <View>
+                                    <Paragraph style={[styles.paragraph,  styles.bold]}>{index + 1})</Paragraph>
+                                </View>
 
                                 <View style={[styles.cell, styles.w_auto, {paddingLeft: 0}]}>
 
 
                                     <Paragraph
-                                        style={[styles.paragraph, styles.text_xs, styles.bold, styles.ellipse]}
-                                        numberOfLines={1}>{index + 1})  {item?.itemname || item?.productdisplayname}</Paragraph>
+                                        style={[styles.paragraph,  styles.bold,styles.ml_1, {textTransform:'capitalize'}]}
+                                        numberOfLines={2}>{item?.itemname || item?.productdisplayname}</Paragraph>
 
 
 
-                                    <View style={{marginLeft:15}}>
+                                    <View style={[styles.ml_1]}>
 
                                         <View style={[styles.wrap, styles.py_2]}>
                                             {Boolean(item.notes) && <Text

@@ -44,6 +44,9 @@ const Index = (props: any) => {
         setTimeout(async () => {
             if (enteredPin.length === 5) {
                 if (md5(enteredPin) === params.loginpin) {
+
+                    await gePhonebook();
+
                     dispatch(showLoader())
 
                     await retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
@@ -57,7 +60,7 @@ const Index = (props: any) => {
 
 
                         if (Boolean(data) && Boolean(licenseData)) {
-                            const {license: {expired_on, status}} = licenseData.data;
+                            const {license: {expired_on, status}} = licenseData?.data;
                             const today = moment().format('YYYY-MM-DD');
                             if (expired_on >= today && status === 'Active') {
 
@@ -72,7 +75,6 @@ const Index = (props: any) => {
                                 await getTempOrders().then((orders)=>{
                                     dispatch(setTableOrdersData(orders));
                                 })
-                                await getOrders().then()
 
                                 const {itemgroup}: any = localredux.initData;
 
@@ -84,10 +86,11 @@ const Index = (props: any) => {
                                     await dispatch(setSettings(data));
                                 })
 
-                                await gePhonebook(true);
+                                getOrders().then()
 
                             }
                         }
+
                         await dispatch(hideLoader())
                         localredux.loginuserData = params;
                         await navigation.replace('ClientAreaStackNavigator');

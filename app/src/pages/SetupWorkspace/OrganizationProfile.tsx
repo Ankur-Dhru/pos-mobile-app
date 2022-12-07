@@ -3,7 +3,7 @@ import {Keyboard, View} from "react-native";
 import {styles} from "../../theme";
 import {Button, Container} from "../../components";
 import {Card, Title, withTheme} from "react-native-paper";
-import {appLog, assignOption, errorAlert, getStateList, log} from "../../libs/function";
+import {appLog, assignOption, errorAlert, getStateList, log, nextFocus} from "../../libs/function";
 import {Field, Form} from "react-final-form";
 import InputField from "../../components/InputField";
 import {
@@ -24,6 +24,8 @@ import KAccessoryView from "../../components/KAccessoryView"
 import apiService from "../../libs/api-service";
 import {isArray} from "util";
 
+
+
 class Index extends Component<any, any> {
 
     _captchaRef: any;
@@ -35,6 +37,8 @@ class Index extends Component<any, any> {
     constructor(props: any) {
         super(props);
         this._captchaRef = React.createRef();
+
+
 
         this.state = {
             statelist: [],
@@ -278,6 +282,7 @@ class Index extends Component<any, any> {
     }
 
 
+
     render() {
 
         const {navigation,} = this.props;
@@ -315,6 +320,8 @@ class Index extends Component<any, any> {
                                                                 label={'Legal/Organization Name'}
                                                                 value={props.input.value}
                                                                 inputtype={'textbox'}
+                                                                autoFocus={true}
+
                                                                 autoCapitalize={true}
                                                                 onChange={(value: any) => {
                                                                     props.input.onChange(value)

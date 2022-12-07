@@ -34,7 +34,7 @@ const Item = memo(({item}: any) => {
             style={[styles.listitem,{paddingTop:5}]}
             key={item.itemid}
             title={item.itemname}
-            titleStyle={{textTransform: 'capitalize'}}
+            titleStyle={[styles.bold,{textTransform: 'capitalize'}]}
             titleNumberOfLines={2}
             description={()=>{
                 return <View style={[styles.grid, styles.middle]}>
@@ -49,7 +49,7 @@ const Item = memo(({item}: any) => {
             onPress={() => {
                 !Boolean(item?.productqnt) && selectItem(item)
             }}
-            left={() => <View><Avatar label={item.itemname} value={item.itemid} fontsize={14} size={42}/></View>}
+            left={() => <View style={{marginTop:5}}><Avatar label={item.itemname} value={item.itemid} fontsize={14} size={40}/></View>}
             right={() => {
 
                 if(Boolean(item?.productqnt) && !hasKot){

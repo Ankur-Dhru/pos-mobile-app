@@ -268,6 +268,7 @@ class Index extends React.Component<any, any> {
                         <InputBox
                             defaultValue={defaultValue}
                             label={label}
+                            customRef={customRef}
                             labelstyle={labelstyle}
                             editmode={editmode}
                             onChange={(value: any) => {

@@ -58,6 +58,7 @@ const Index = (props: any) => {
                     />
 
                     {!isRestaurant() && <Menu.Item onPress={async () => {
+                        closeMenu();
                         await dispatch(setBottomSheet({
                             visible: true,
                             height: '50%',

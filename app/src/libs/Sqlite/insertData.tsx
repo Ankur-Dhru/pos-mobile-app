@@ -127,13 +127,13 @@ export const insertClients = async (  clientsdata?: any,type:any = 'all') => {
 
         for (const data of clientsdata) {
 
-            let values = `(${data?.clientid}, "${data?.displayname}", "${data?.phone}", "${data?.taxregtype}", '${JSON.stringify(data)}', "${data?.clienttype}")`;
+            let values = `(${data?.clientid}, "${data?.displayname}", "${data?.phone}", "${data?.taxregtype}", '${JSON.stringify(data)}', "${data?.clienttype}", "${Boolean(data?.phonebook)?1:0}")`;
 
             if(type === 'all'){
                 insertQuery.push(values);
             }
             else{
-                insertQuery = `INSERT OR REPLACE INTO tblClient("clientid","displayname","phone","taxregtype","data","clienttype") values ${values}`;
+                insertQuery = `INSERT OR REPLACE INTO tblClient("clientid","displayname","phone","taxregtype","data","clienttype","phonebook") values ${values}`;
                 try {
                     await db.executeSql(insertQuery);
                 }
@@ -144,7 +144,7 @@ export const insertClients = async (  clientsdata?: any,type:any = 'all') => {
         }
 
         if(type === 'all'){
-            const query = `INSERT OR REPLACE INTO tblClient("clientid","displayname","phone","taxregtype","data","clienttype") values ${insertQuery.join(', ')}`;
+            const query = `INSERT OR REPLACE INTO tblClient("clientid","displayname","phone","taxregtype","data","clienttype","phonebook") values ${insertQuery.join(', ')}`;
             appLog('query',query)
             const results = await db.executeSql(query);
 

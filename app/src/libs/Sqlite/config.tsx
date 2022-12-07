@@ -21,7 +21,8 @@ export const CREATE_CLIENT_TABLE = `create table if not exists ${TABLE.CLIENT}
   phone       TEXT   null,
   data        TEXT          null,
   taxregtype  TEXT   null,
-  clienttype  int default 0 null
+  clienttype  int default 0 null,
+  phonebook int default 0 null
 );`;
 
 export const CREATE_ITEM_TABLE = `create table if not exists ${TABLE.ITEM}

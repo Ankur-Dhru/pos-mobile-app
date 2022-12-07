@@ -12,13 +12,14 @@ class Index extends React.Component<any> {
     };
 
     render(){
-        const {label,value,defaultValue,onChange,width,extrastyle,editmode=true,underlineColor='transparent',labelstyle}:any = this.props;
+        const {label,value,defaultValue,onChange,width,extrastyle,customRef,editmode=true,underlineColor='transparent',labelstyle}:any = this.props;
         const {colors} = this.props.theme;
 
         return (
             <View>
                 <TextInput
                     value={value}
+                    ref={customRef}
                     defaultValue={defaultValue}
                     style={[styles.input,{width:width,backgroundColor:colors.backgroundColor,...extrastyle}]}
                     mode={'flat'}

@@ -1,11 +1,12 @@
 import {EscPos} from 'escpos-xml';
 import Mustache from "mustache";
-import {appLog, errorAlert, getTemplate} from "./function";
 import store from "../redux-store/store";
 import {setAlert} from "../redux-store/reducer/component";
 import EscPosPrinter, {getPrinterSeriesByName} from "react-native-esc-pos-printer";
 import BleManager from "react-native-ble-manager";
 import {readyforPrint} from "../pages/PrinterSettings/Setting";
+import apiService from "./api-service";
+import {ACTIONS, METHOD} from "./static";
 
 const net = require('react-native-tcp-socket');
 
@@ -33,6 +34,26 @@ export const sendDataToPrinter = async (input: any, template: string, printer: a
                         });
 
                     })
+                })
+
+            }
+            else if(printer?.printertype === 'broadcast'){
+                apiService({
+                    method: METHOD.POST,
+                    action: input.printinvoice ? ACTIONS.PRINT : ACTIONS.KOT_PRINT,
+                    body:{
+                        buffer: [...buffer],
+                        kot:input,
+                        debugPrint: true,
+                        displayQR: true,
+                        vouchertotaldisplay: input.vouchertotaldisplay,
+                        invoice_display_number: input.invoice_display_number,
+                        terminalname: input.terminalname,
+                    },
+                    other:{url:`http://${printer?.broadcastip}:8081/`},
+                    queryString:{remoteprint:true}
+                }).then((response: any) => {
+                    resolve('Print Successful')
                 })
 
             }

@@ -1034,9 +1034,12 @@ export const saveLocalSettings = async (key: any, setting?: any) => {
 
 
 export const getLocalSettings = async (key: any) => {
-    await retrieveData('fusion-pro-pos-mobile-settings').then(async (data: any) => {
-        return data[key];
+    return new Promise(async resolve => {
+        await retrieveData('fusion-pro-pos-mobile-settings').then(async (data: any) => {
+            resolve(data[key])
+        })
     })
+
 }
 
 
@@ -1126,6 +1129,7 @@ export const selectItem = async (item: any) => {
 
             item = {
                 ...item,
+                added:true,
                 key: uuid()
             }
 
@@ -1364,6 +1368,7 @@ export const generateKOT = async () => {
                         tableid,
                         tablename,
                         clientname,
+                        client,
                         ordertype,
                         kots,
                         commonkotnote,
@@ -1513,7 +1518,7 @@ export const generateKOT = async () => {
                                     ticketstatus: openTicketStatus?.statusid,
                                     ticketstatusname: "Close",
                                     ticketitems: kotitems,
-                                    ticketdate: moment().format("YYYY-MM-DD"),
+                                    ticketdate: moment().format(dateFormat()),
                                     tickettime: moment().format("hh:mm A"),
                                     datetime: moment().unix(),
                                     kotid,
@@ -1522,7 +1527,7 @@ export const generateKOT = async () => {
                                     print: 0,
                                     commonkotnote: commonkotnote,
                                     status: "pending",
-                                    table: `${tablename} (${clientname})`,
+                                    table: `${tablename} (${clientname} ${Boolean(client?.phone) ? client?.phone : ''})`,
                                     departmentid: k,
                                     departmentname: department?.name,
                                     staffid: adminid,
@@ -1546,6 +1551,7 @@ export const generateKOT = async () => {
                                                 item = {
                                                     ...item,
                                                     kotid: find.kotid,
+                                                    added:false,
                                                 }
                                             }
                                             return item
@@ -1680,6 +1686,7 @@ export const printInvoice = async (order?: any) => {
             terminalname: terminal_name,
             firstname,
             lastname,
+            printinvoice:true,
             clientname: cartData?.client || cartData?.clientname,
             isListPayment: Boolean(cartData?.payment?.length > 0),
             isdisplaytaxable: cartData?.vouchersubtotaldisplay != cartData?.vouchertaxabledisplay,
@@ -1730,7 +1737,7 @@ export const printInvoice = async (order?: any) => {
 
             const template: any = getPrintTemplate('Thermal');
 
-            if (Boolean(printer?.host) || Boolean(printer?.bluetoothdetail)) {
+            if (Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip)) {
 
                 setTimeout(() => {
                     sendDataToPrinter(printJson, getTemplate(template), {
@@ -1765,6 +1772,7 @@ export const printKOT = async (kot?: any) => {
         const PRINTERS: any = store.getState().localSettings?.printers || [];
         let printJson = {
             ...kot,
+            printkot:true,
             line: () => "<text>" + getTrimChar(0, "-") + "\n</text>"
         }
 
@@ -1773,7 +1781,7 @@ export const printKOT = async (kot?: any) => {
 
         if ((kot?.cancelled && printer?.printoncancel) || !kot?.cancelled) {
             return new Promise(async (resolve) => {
-                if (Boolean(printer?.host)) {
+                if (Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip)) {
                     const template: any = getPrintTemplate('KOT');
                     sendDataToPrinter(printJson, getTemplate(template), printer).then((msg) => {
                         resolve(msg)

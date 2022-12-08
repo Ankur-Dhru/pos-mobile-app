@@ -7,7 +7,7 @@ import InputField from "../../components/InputField";
 import Button from "../../components/Button";
 import React, {useEffect, useRef, useState} from "react";
 import {ItemDivider, localredux} from "../../libs/static";
-import {appLog, errorAlert, isEmpty, nextFocus, saveTempLocalOrder} from "../../libs/function";
+import {appLog, errorAlert, getLocalSettings, isEmpty, nextFocus, saveTempLocalOrder} from "../../libs/function";
 
 import moment from "moment";
 
@@ -133,7 +133,7 @@ const AllTable = ({tabledetails}:any) => {
 }
 
 const Sources = ({tabledetails}:any) => {
-    const isSource = Boolean(tabledetails?.ordertype == "homedelivery")
+
     const [ordersource, setOrderSource] = useState<any>();
 
     useEffect(()=>{
@@ -142,8 +142,7 @@ const Sources = ({tabledetails}:any) => {
 
     return <View  style={[styles.flex,styles.px_3]}>
         <ScrollView>
-        {
-            isSource && <Card style={[styles.card]}>
+            <Card style={[styles.card]}>
                 <Card.Content style={[styles.cardContent]}>
                     {/*<Caption  style={[styles.caption]}>Sources</Caption>*/}
                     <View>
@@ -166,7 +165,6 @@ const Sources = ({tabledetails}:any) => {
                     </View>
                 </Card.Content>
             </Card>
-        }
         </ScrollView>
     </View>
 }
@@ -415,6 +413,8 @@ const ClientAndSource = (props: any) => {
     const dispatch = useDispatch()
 
     let {tabledetails, placeOrder, title, edit} = params.params;
+    const [loading,setLoading]:any = useState(false);
+    const [asksources,setAsksources]:any = useState({});
 
 
 
@@ -423,7 +423,7 @@ const ClientAndSource = (props: any) => {
     }
 
     const isReserveTable = Boolean(tabledetails?.ordertype == "tableorder");
-    const isSource = Boolean(tabledetails?.ordertype == "homedelivery")
+    const isSource = Boolean(((tabledetails?.ordertype === "homedelivery") && !asksources.homedelivery) || ((tabledetails?.ordertype === "takeaway") && !asksources.takeaway))
     const isAdvanceorder = Boolean(tabledetails?.ordertype == "advanceorder")
 
     globalTable = tabledetails;
@@ -433,6 +433,12 @@ const ClientAndSource = (props: any) => {
         headerTitle: tabledetails.tablename,
     })
 
+    useEffect(()=>{
+        getLocalSettings('asksources').then(r => {
+            setAsksources(r);
+            setLoading(true)
+        });
+    },[])
 
 
 
@@ -456,14 +462,16 @@ const ClientAndSource = (props: any) => {
     routes.push({key: 'clientinformation', title: 'Client Information'})
 
 
+    if(!loading){
+        return <></>
+    }
+
     return (<Container style={{padding:0}}>
 
                     <Tabs
-
                         scenes={tabs}
                         routes={routes}
                         scrollable={false}
-
                         style={{minWidth:190,width:'50%'}}
                     />
 

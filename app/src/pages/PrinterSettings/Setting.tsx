@@ -3,30 +3,21 @@ import React from "react";
 import {SafeAreaView, View} from "react-native";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
-import {Caption, Card, Paragraph, Title} from "react-native-paper";
-import {
-    composeValidators,
-    defaultInvoiceTemplate,
-    PRINTER,
-    required,
-    supportedPrinterList,
-    testInvoiceData
-} from "../../libs/static";
+import {Card} from "react-native-paper";
+import {ACTIONS, composeValidators, METHOD, PRINTER, required, supportedPrinterList} from "../../libs/static";
 import Button from "../../components/Button";
 import {connect} from "react-redux";
-import {appLog, getPrintTemplate, getTemplate, saveLocalSettings} from "../../libs/function";
+import {appLog, saveLocalSettings} from "../../libs/function";
 import InputField from "../../components/InputField";
 import {Container} from "../../components";
 import KeyboardScroll from "../../components/KeyboardScroll";
 import {useNavigation} from "@react-navigation/native";
 import CheckBox from "../../components/CheckBox";
 import BlueToothPrinter from "./BlueToothPrinter";
-import ItemCategoryList from "../Items/ItemCategoryList";
 import BleManager from "react-native-ble-manager";
 import {EscPos} from "escpos-xml";
 import EscPosPrinter, {getPrinterSeriesByName} from "react-native-esc-pos-printer";
-import {sendDataToPrinter} from "../../libs/Network";
-import Mustache from "mustache";
+import apiService from "../../libs/api-service";
 
 
 const Index = (props: any) => {
@@ -55,6 +46,7 @@ const Index = (props: any) => {
         macid: '',
         ip: '',
         host: '',
+        broadcastip:'',
         printername: 'TM-T82',
         port: '9100',
         printsize: '48',
@@ -99,6 +91,9 @@ const Index = (props: any) => {
                                                         }, {
                                                             value: 'bluetooth',
                                                             label: 'Bluetooth Printer'
+                                                        },{
+                                                            value: 'broadcast',
+                                                            label: 'Broadcast Printer'
                                                         }]}
                                                         value={props.input.value}
                                                         selectedValue={props.input.value}
@@ -113,187 +108,228 @@ const Index = (props: any) => {
                                             </Field>
                                         </View>
 
-                                        {values.printertype === 'bluetooth' ? <>
-                                            <Field name="macid">
-                                                {props => (
-                                                    <><BlueToothPrinter values={values} fieldprops={props}/></>
-                                                )}
-                                            </Field>
-                                        </> : <>
-                                            <View style={[styles.mb_5, styles.grid, styles.justifyContent]}>
-                                                <View style={[styles.flexGrow]}>
-
-                                                    <Field name="host" validate={composeValidators(required)}>
-                                                        {props => (
-                                                            <InputField
-                                                                {...props}
-                                                                label={'IP'}
-                                                                value={props.input.value}
-                                                                inputtype={'textbox'}
-
-                                                                onChange={(value: any) => {
-                                                                    props.input.onChange(value)
-                                                                }}
-                                                            />
-                                                        )}
-                                                    </Field>
-
-                                                </View>
-
-                                                <View style={[styles.ml_2, {width: '50%'}]}>
-                                                    <Field name="port">
-                                                        {props => (
-                                                            <InputField
-                                                                {...props}
-                                                                value={props.input.value}
-                                                                label={'Port'}
-                                                                inputtype={'textbox'}
-                                                                onChange={props.input.onChange}
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                </View>
-                                            </View>
 
 
-                                            <View style={[styles.mb_5]}>
-                                                <View>
-                                                    <Field name="printername">
-                                                        {props => (
-                                                            <InputField
-                                                                label={'Printer Name'}
-                                                                mode={'flat'}
-                                                                list={supportedPrinterList.map((item: any) => {
-                                                                    return {label: item, value: item}
-                                                                })}
-                                                                value={props.input.value}
-                                                                selectedValue={props.input.value}
-                                                                displaytype={'pagelist'}
-                                                                inputtype={'dropdown'}
-                                                                listtype={'other'}
-                                                                onChange={(value: any) => {
-                                                                    props.input.onChange(value);
-                                                                }}>
-                                                            </InputField>
-                                                        )}
-                                                    </Field>
-                                                </View>
-
-                                            </View>
-
-                                        </>}
-
-
-                                        <View style={[styles.mb_5, styles.grid, styles.justifyContent]}>
-                                            <View style={[styles.flexGrow]}>
-
-                                                <Field name="printsize">
-                                                    {props => (
-                                                        <InputField
-                                                            label={'Printer Size'}
-                                                            mode={'flat'}
-                                                            list={[
-                                                                {label: '56 mm', value: '32'},
-                                                                {label: '72 mm', value: '42'},
-                                                                {label: '80 mm', value: '48'}
-                                                            ]}
-                                                            value={props.input.value}
-                                                            selectedValue={props.input.value}
-                                                            displaytype={'pagelist'}
-                                                            inputtype={'dropdown'}
-                                                            listtype={'other'}
-                                                            onChange={(value: any) => {
-                                                                props.input.onChange(value);
-                                                            }}>
-                                                        </InputField>
-                                                    )}
-                                                </Field>
-                                            </View>
-
-                                            <View style={[styles.ml_2, {width: '50%'}]}>
-                                                <Field name="noofprint">
-                                                    {props => (
-                                                        <InputField
-                                                            label={'No. of print repeat'}
-                                                            mode={'flat'}
-                                                            list={[{label: '1', value: '1'}, {
-                                                                label: '2',
-                                                                value: '2'
-                                                            }, {label: '3', value: '3'}]}
-                                                            value={props.input.value}
-                                                            selectedValue={props.input.value}
-                                                            displaytype={'pagelist'}
-                                                            inputtype={'dropdown'}
-                                                            listtype={'other'}
-                                                            onChange={(value: any) => {
-                                                                console.log('value', value)
-                                                                props.input.onChange(value);
-                                                            }}>
-                                                        </InputField>
-                                                    )}
-                                                </Field>
-                                            </View>
-
-                                        </View>
-
-                                        {type.departmentid !== PRINTER.INVOICE &&
-                                            <View style={[styles.mb_5]}>
-                                                <View style={[]}>
-                                                    <Field name="printoncancel">
-                                                        {props => (
-                                                            <><CheckBox
-                                                                value={props.input.value}
-                                                                label={'Print on cancel KOT or cancel Order'}
-                                                                onChange={(value: any) => {
-                                                                    values.printoncancel = value;
-                                                                }}
-                                                            /></>
-                                                        )}
-                                                    </Field>
-                                                </View>
-                                            </View>}
 
                                             </Card.Content>
                                         </Card>
 
+                                        {values.printertype === 'broadcast' ? <>
 
-                                        {type.departmentid === PRINTER.INVOICE &&
+                                        <Card style={[styles.card]}>
+                                            <Card.Content style={[styles.cardContent]}>
+                                                <Field name="broadcastip" validate={composeValidators(required)}>
+                                                    {props => (
+                                                        <InputField
+                                                            {...props}
+                                                            label={'Broadcast IP'}
+                                                            value={props.input.value}
+                                                            inputtype={'textbox'}
+
+                                                            onChange={(value: any) => {
+                                                                props.input.onChange(value)
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Field>
+                                            </Card.Content>
+                                        </Card>
+
+                                        </> : <>
 
                                             <Card style={[styles.card]}>
                                                 <Card.Content style={[styles.cardContent]}>
-                                                    <View style={[styles.grid, styles.justifyContent]}>
+
+                                                    {values.printertype === 'bluetooth' ? <>
+                                                        <Field name="macid">
+                                                            {props => (
+                                                                <><BlueToothPrinter values={values} fieldprops={props}/></>
+                                                            )}
+                                                        </Field>
+                                                    </> : <>
+                                                        <View style={[styles.mb_5, styles.grid, styles.justifyContent]}>
+                                                            <View style={[styles.flexGrow]}>
+
+                                                                <Field name="host" validate={composeValidators(required)}>
+                                                                    {props => (
+                                                                        <InputField
+                                                                            {...props}
+                                                                            label={'IP'}
+                                                                            value={props.input.value}
+                                                                            inputtype={'textbox'}
+
+                                                                            onChange={(value: any) => {
+                                                                                props.input.onChange(value)
+                                                                            }}
+                                                                        />
+                                                                    )}
+                                                                </Field>
+
+                                                            </View>
+
+                                                            <View style={[styles.ml_2, {width: '50%'}]}>
+                                                                <Field name="port">
+                                                                    {props => (
+                                                                        <InputField
+                                                                            {...props}
+                                                                            value={props.input.value}
+                                                                            label={'Port'}
+                                                                            inputtype={'textbox'}
+                                                                            onChange={props.input.onChange}
+                                                                        />
+                                                                    )}
+                                                                </Field>
+                                                            </View>
+                                                        </View>
+
+
+                                                        <View style={[styles.mb_5]}>
+                                                            <View>
+                                                                <Field name="printername">
+                                                                    {props => (
+                                                                        <InputField
+                                                                            label={'Printer Name'}
+                                                                            mode={'flat'}
+                                                                            list={supportedPrinterList.map((item: any) => {
+                                                                                return {label: item, value: item}
+                                                                            })}
+                                                                            value={props.input.value}
+                                                                            selectedValue={props.input.value}
+                                                                            displaytype={'pagelist'}
+                                                                            inputtype={'dropdown'}
+                                                                            listtype={'other'}
+                                                                            onChange={(value: any) => {
+                                                                                props.input.onChange(value);
+                                                                            }}>
+                                                                        </InputField>
+                                                                    )}
+                                                                </Field>
+                                                            </View>
+
+                                                        </View>
+
+                                                    </>}
+
+
+                                                </Card.Content>
+                                            </Card>
+
+
+                                            <Card style={[styles.card]}>
+                                                <Card.Content style={[styles.cardContent]}>
+
+                                                    <View style={[styles.mb_5, styles.grid, styles.justifyContent]}>
                                                         <View style={[styles.flexGrow]}>
-                                                            <Field name="upiid">
+
+                                                            <Field name="printsize">
                                                                 {props => (
                                                                     <InputField
-                                                                        {...props}
+                                                                        label={'Printer Size'}
+                                                                        mode={'flat'}
+                                                                        list={[
+                                                                            {label: '56 mm', value: '32'},
+                                                                            {label: '72 mm', value: '42'},
+                                                                            {label: '80 mm', value: '48'}
+                                                                        ]}
                                                                         value={props.input.value}
-                                                                        label={'UPI ID'}
-                                                                        inputtype={'textbox'}
-                                                                        onChange={props.input.onChange}
-                                                                    />
+                                                                        selectedValue={props.input.value}
+                                                                        displaytype={'pagelist'}
+                                                                        inputtype={'dropdown'}
+                                                                        listtype={'other'}
+                                                                        onChange={(value: any) => {
+                                                                            props.input.onChange(value);
+                                                                        }}>
+                                                                    </InputField>
                                                                 )}
                                                             </Field>
                                                         </View>
 
                                                         <View style={[styles.ml_2, {width: '50%'}]}>
-                                                            <Field name="upiname">
+                                                            <Field name="noofprint">
                                                                 {props => (
                                                                     <InputField
-                                                                        {...props}
+                                                                        label={'No. of print repeat'}
+                                                                        mode={'flat'}
+                                                                        list={[{label: '1', value: '1'}, {
+                                                                            label: '2',
+                                                                            value: '2'
+                                                                        }, {label: '3', value: '3'}]}
                                                                         value={props.input.value}
-                                                                        label={'UPI Name'}
-                                                                        inputtype={'textbox'}
-                                                                        onChange={props.input.onChange}
-                                                                    />
+                                                                        selectedValue={props.input.value}
+                                                                        displaytype={'pagelist'}
+                                                                        inputtype={'dropdown'}
+                                                                        listtype={'other'}
+                                                                        onChange={(value: any) => {
+                                                                            console.log('value', value)
+                                                                            props.input.onChange(value);
+                                                                        }}>
+                                                                    </InputField>
                                                                 )}
                                                             </Field>
                                                         </View>
+
                                                     </View>
+
+                                                    {type.departmentid !== PRINTER.INVOICE &&
+                                                        <View style={[styles.mb_5]}>
+                                                            <View style={[]}>
+                                                                <Field name="printoncancel">
+                                                                    {props => (
+                                                                        <><CheckBox
+                                                                            value={props.input.value}
+                                                                            label={'Print on cancel KOT or cancel Order'}
+                                                                            onChange={(value: any) => {
+                                                                                values.printoncancel = value;
+                                                                            }}
+                                                                        /></>
+                                                                    )}
+                                                                </Field>
+                                                            </View>
+                                                        </View>}
+
                                                 </Card.Content>
                                             </Card>
-                                                    }
 
+
+                                            {type.departmentid === PRINTER.INVOICE &&
+
+                                                <Card style={[styles.card]}>
+                                                    <Card.Content style={[styles.cardContent]}>
+                                                        <View style={[styles.grid, styles.justifyContent]}>
+                                                            <View style={[styles.flexGrow]}>
+                                                                <Field name="upiid">
+                                                                    {props => (
+                                                                        <InputField
+                                                                            {...props}
+                                                                            value={props.input.value}
+                                                                            label={'UPI ID'}
+                                                                            inputtype={'textbox'}
+                                                                            onChange={props.input.onChange}
+                                                                        />
+                                                                    )}
+                                                                </Field>
+                                                            </View>
+
+                                                            <View style={[styles.ml_2, {width: '50%'}]}>
+                                                                <Field name="upiname">
+                                                                    {props => (
+                                                                        <InputField
+                                                                            {...props}
+                                                                            value={props.input.value}
+                                                                            label={'UPI Name'}
+                                                                            inputtype={'textbox'}
+                                                                            onChange={props.input.onChange}
+                                                                        />
+                                                                    )}
+                                                                </Field>
+                                                            </View>
+                                                        </View>
+                                                    </Card.Content>
+                                                </Card>
+
+                                            }
+
+                                        </>}
 
 
 
@@ -345,16 +381,11 @@ export default connect(mapStateToProps)(Index);
 
 export const testPrint = async (printer: any) => {
 
-    const {host, printername, printertype, bluetoothdetail}: any = printer
+    const {host, printername,broadcastip, printertype, bluetoothdetail}: any = printer
 
     if (printertype === 'bluetooth') {
         const peripheral = bluetoothdetail.more;
-
         readyforPrint(peripheral).then((findSC: any) => {
-
-            //let xmlData = Mustache.render(getTemplate(defaultInvoiceTemplate), printJson);
-            //const buffer: any = EscPos.getBufferFromXML(xmlData);
-
             const buffer: any = EscPos.getBufferFromXML(`<?xml version="1.0" encoding="UTF-8"?><document><align mode="center"><text size="1:0">Test Print</text></align></document>`);
             BleManager.write(peripheral.id, findSC?.service, findSC?.characteristic, [...buffer]).then(() => {
                 BleManager.disconnect(peripheral.id).then(() => {
@@ -367,7 +398,24 @@ export const testPrint = async (printer: any) => {
             });
         })
 
-    } else {
+    }
+    else if(printertype === 'broadcast'){
+        const buffer: any = EscPos.getBufferFromXML(`<?xml version="1.0" encoding="UTF-8"?><document><align mode="center"><text size="1:0">Test Print</text></align></document>`);
+
+        apiService({
+            method: METHOD.POST,
+            action: ACTIONS.PRINT,
+            body:{
+                buffer: [...buffer],
+            },
+            other:{url:`http://${broadcastip}:8081/`},
+            queryString:{remoteprint:true}
+        }).then((response: any) => {
+            appLog('response',response)
+        })
+
+    }
+    else {
 
 
         await EscPosPrinter.init({

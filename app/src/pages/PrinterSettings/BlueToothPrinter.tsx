@@ -1,36 +1,22 @@
-/**
- * Sample BLE React Native App
- *
- * @format
- * @flow strict-local
- */
-
 import React, {useEffect, useState,} from 'react';
 import {
-    Button,
     FlatList,
     NativeEventEmitter,
     NativeModules,
     PermissionsAndroid,
     Platform,
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
     Text,
-    TouchableHighlight, TouchableOpacity,
+    TouchableOpacity,
     View,
 } from 'react-native';
 
 import BleManager from 'react-native-ble-manager';
-import Mustache from "mustache";
-import {EscPos} from "escpos-xml";
-import {defaultInvoiceTemplate, testInvoiceData} from "../../libs/static";
-import {appLog, getItem, getLeftRight, getTemplate, getTrimChar, numberFormat} from "../../libs/function";
-import {Divider, Paragraph} from "react-native-paper";
+import {ItemDivider} from "../../libs/static";
+import {appLog} from "../../libs/function";
+import {List} from "react-native-paper";
 import {styles} from "../../theme";
-import {v4 as uuidv4} from "uuid";
-import {ProIcon} from "../../components";
-import InputField from "../../components/InputField";
+import Button from "../../components/Button";
+import PageLoader from "../../components/PageLoader";
 
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
@@ -41,17 +27,16 @@ const Index = ({fieldprops, values}: any) => {
 
     const [isScanning, setIsScanning] = useState(false);
     const peripherals = new Map();
-    const [list, setList] = useState<any>([]);
+    const [list, setList] = useState<any>({});
 
     const [selected, setSelected] = useState(fieldprops.input.value)
 
 
     const startScan = () => {
-
         BleManager.enableBluetooth()
             .then(() => {
                 if (!isScanning) {
-                    appLog('isScanning',isScanning)
+                    appLog('isScanning', isScanning)
                     BleManager.scan([], 5, true).then((results) => {
                         setIsScanning(true);
                     }).catch(err => {
@@ -71,13 +56,16 @@ const Index = ({fieldprops, values}: any) => {
     const handleStopScan = () => {
         console.log('Scan is stopped');
         setIsScanning(false);
-       // retrieveConnected()
+        // retrieveConnected()
     }
 
     const handleDisconnectedPeripheral = (data: any) => {
         let peripheral = peripherals.get(data.peripheral);
         if (peripheral) {
             peripheral.connected = false;
+
+            appLog('peripheral', peripheral)
+
             peripherals.set(peripheral.id, peripheral);
             setList(Array.from(peripherals.values()));
         }
@@ -97,7 +85,7 @@ const Index = ({fieldprops, values}: any) => {
             for (var i = 0; i < results.length; i++) {
                 var peripheral: any = results[i];
                 peripheral.connected = true;
-               // devices.push({label: peripheral.name, value: peripheral.id, more: peripheral})
+                // devices.push({label: peripheral.name, value: peripheral.id, more: peripheral})
             }
 
             //setList(devices)
@@ -110,18 +98,18 @@ const Index = ({fieldprops, values}: any) => {
         if (!peripheral.name) {
             peripheral.name = peripheral.id;
         }
-        devices.push({label: peripheral.name, value: peripheral.id, more: peripheral})
-        setList(devices)
+        list[peripheral.id] = {label: peripheral.name, value: peripheral.id, more: peripheral};
+        setList(list)
     }
 
 
     useEffect(() => {
 
 
-        BleManager.start({showAlert: false}).then(()=>{
+        BleManager.start({showAlert: false}).then(() => {
             if (Platform.OS === 'android' && Platform.Version >= 23) {
-                PermissionsAndroid.requestMultiple([PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN]).then((result) => {
-                    appLog('result',result)
+                PermissionsAndroid.requestMultiple([PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT, PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN]).then((result) => {
+                    appLog('result', result)
                     if (result) {
                         startScan()
                         console.log("User accept");
@@ -129,8 +117,7 @@ const Index = ({fieldprops, values}: any) => {
                         console.log("User refuse");
                     }
                 });
-            }
-            else {
+            } else {
                 startScan()
             }
         });
@@ -138,10 +125,6 @@ const Index = ({fieldprops, values}: any) => {
         const BleManagerStopScan = bleManagerEmitter.addListener('BleManagerStopScan', handleStopScan);
         const BleManagerDisconnectPeripheral = bleManagerEmitter.addListener('BleManagerDisconnectPeripheral', handleDisconnectedPeripheral);
         const BleManagerDidUpdateValueForCharacteristic = bleManagerEmitter.addListener('BleManagerDidUpdateValueForCharacteristic', handleUpdateValueForCharacteristic);
-
-
-
-
 
 
         return (() => {
@@ -160,30 +143,89 @@ const Index = ({fieldprops, values}: any) => {
     }, []);
 
 
-    return (
-        <>
-            <InputField
-                label={'Bluetooth Devices'}
-                mode={'flat'}
-                key={uuidv4()}
-                list={list}
-                value={selected}
-                selectedValue={selected}
-                displaytype={'pagelist'}
-                inputtype={'dropdown'}
-                listtype={'other'}
-                addItem={<TouchableOpacity onPress={async () => {
+    const renderdevices = (i: any) => {
+        return (
+            <List.Item
+                style={[styles.listitem]}
+                onPress={() => {
+                    setSelected(i.item.value);
+                    values.bluetoothdetail = i.item;
+                    fieldprops.input.onChange(i.item.value);
+                }}
+                title={i.item.label}
+                left={() => <List.Icon icon="printer-wireless"/>}
+                right={() => i.item.value === selected && <List.Icon icon="check"/>}
+                key={i.item.value}
+            />
+        );
+    };
 
-                }}>
-                    <Paragraph><ProIcon name={'plus'}/></Paragraph></TouchableOpacity>}
-                onChange={(value: any, more: any) => {
-                    setSelected(value);
-                    values.bluetoothdetail = more
-                    fieldprops.input.onChange(value);
-                }}>
-            </InputField>
+    if (!Object.values(list).length) {
+        return <>
+            <View style={[styles.p_6]}>
+                <PageLoader/>
+                <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> Please wait Scanning....</Text>
+            </View>
         </>
-    );
+    }
+
+    return <>
+
+        <FlatList
+            data={Object.values(list)}
+            keyboardDismissMode={'on-drag'}
+            keyboardShouldPersistTaps={'always'}
+            renderItem={renderdevices}
+
+            ItemSeparatorComponent={ItemDivider}
+            ListEmptyComponent={<View>
+                <View style={[styles.p_6]}>
+                    <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> No any devices
+                        found</Text>
+                </View>
+            </View>}
+            keyExtractor={item => item.value}
+        />
+
+        {/*<View style={[styles.mt_3]}>
+            <TouchableOpacity>
+                <Button
+                    more={{color: 'black', backgroundColor: styles.secondary.color}}
+                    secondbutton={true}
+                    onPress={async () => {
+                        //setList({});
+                        startScan()
+                    }}> Scan Again
+                </Button>
+            </TouchableOpacity>
+        </View>*/}
+
+    </>
+
+    /*    return (
+            <>
+                <InputField
+                    label={'Bluetooth Devices'}
+                    mode={'flat'}
+                    key={uuidv4()}
+                    list={list}
+                    value={selected}
+                    selectedValue={selected}
+                    displaytype={'pagelist'}
+                    inputtype={'dropdown'}
+                    listtype={'other'}
+                    addItem={<TouchableOpacity onPress={async () => {
+
+                    }}>
+                        <Paragraph><ProIcon name={'plus'}/></Paragraph></TouchableOpacity>}
+                    onChange={(value: any, more: any) => {
+                        setSelected(value);
+                        values.bluetoothdetail = more
+                        fieldprops.input.onChange(value);
+                    }}>
+                </InputField>
+            </>
+        );*/
 };
 
 

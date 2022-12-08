@@ -278,6 +278,18 @@ const ProfileSettings = () => {
 
                                         <List.Item
                                             style={[styles.listitem]}
+                                            title="General Settings"
+                                            onPress={() => {
+                                                navigation.navigate("GeneralSettings");
+                                            }}
+                                            left={() => <List.Icon icon="cog-outline"/>}
+                                            right={() => <List.Icon icon="chevron-right"/>}
+                                        />
+
+                                        <ItemDivider/>
+
+                                        <List.Item
+                                            style={[styles.listitem]}
                                             title="Quick Quantity Unit"
                                             onPress={() => {
                                                 navigation.navigate("InputOpenSetting");

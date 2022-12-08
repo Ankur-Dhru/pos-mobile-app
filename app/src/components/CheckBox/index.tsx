@@ -2,10 +2,13 @@ import * as React from 'react';
 import {Checkbox, Divider, Paragraph, Text} from 'react-native-paper';
 import {TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
+import {appLog} from "../../libs/function";
 
 const CheckBox = (props:any) => {
     const {editmode=true, description}:any = props;
     const [checked, setChecked] = React.useState(props.value);
+
+
     return (
         <View >
             <TouchableOpacity onPress={() => {

@@ -88,7 +88,7 @@ const Index = memo((props: any) => {
                     </View>
 
                 </View>
-                {!hasLast && <ItemDivider/>}
+
             </View>
         </View>
     );

@@ -47,7 +47,7 @@ const Item = memo(({item}: any) => {
                 </View>
             }}
             onPress={() => {
-                !Boolean(item?.productqnt) && selectItem(item)
+                 selectItem(item).then()
             }}
             left={() => <View style={{marginTop:5}}><Avatar label={item.itemname} value={item.itemid} fontsize={14} size={40}/></View>}
             right={() => {
@@ -60,7 +60,7 @@ const Item = memo(({item}: any) => {
         />
     )
 
-    return (<TouchableOpacity onPress={() => {
+   /* return (<TouchableOpacity onPress={() => {
         !Boolean(item?.productqnt) && selectItem(item)
     }} style={[styles.noshadow]}>
         <View>
@@ -105,8 +105,9 @@ const Item = memo(({item}: any) => {
             </View>
 
         </View>
+    </TouchableOpacity>)*/
 
-    </TouchableOpacity>)
+
 }, (r1, r2) => {
     return ((r1.item.productqnt === r2.item.productqnt) && (r1.item.itemid === r2.item.itemid));
 })
@@ -136,7 +137,7 @@ const Index = (props: any) => {
             if (Boolean(newitems.length > 0)) {
                 newitems = newitems?.map((i: any) => {
                     const find = invoiceitems.filter((ii: any) => {
-                        return +i.itemid === +ii.itemid;
+                        return ((+i.itemid === +ii.itemid) && Boolean(ii.added));
                     })
                     if (Boolean(find) && Boolean(find[0])) {
                         return find[0]

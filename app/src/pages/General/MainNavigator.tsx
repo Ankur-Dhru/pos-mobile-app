@@ -6,29 +6,18 @@ import Terminal from "../Setup/Terminal";
 import Workspaces from "../Setup/Workspaces";
 import Login from "../Setup/Login";
 import Pin from "../Pin";
-import {ACTIONS, device, localredux, METHOD, posUrl, screenOptionStyle, STATUS} from "../../libs/static";
+import {device, screenOptionStyle} from "../../libs/static";
 
 import Splash from "../Splash";
-import {createDrawerNavigator} from "@react-navigation/drawer";
 import Tables from "../Tables";
 import Cart from "../Cart";
-import {
-    appLog,
-    CheckConnectivity, getOrders,
-    getTempOrders,
-    isEmpty,
-    isRestaurant,
-    retrieveData,
-    storeData, syncInvoice
-} from "../../libs/function";
+import {CheckConnectivity, getOrders, isEmpty, isRestaurant, syncInvoice} from "../../libs/function";
 import DetailView from "../Cart/DetailView";
 import Payment from "../Cart/Payment";
 import Report from "../Report";
 
 import InputOpenSetting from "../InputOpenSetting";
 import DefaultInputValues from "../DefaultInputValues";
-import apiService from "../../libs/api-service";
-import {setOrder} from "../../redux-store/reducer/orders-data";
 import {useDispatch} from "react-redux";
 import Register from "../Setup/Register";
 
@@ -54,11 +43,8 @@ import AddTable from "../Tables/AddTable";
 import sample from "../sample";
 import CancelReason from "../Cart/CancelReason";
 import ClientList from "../Client/ClientList";
-import {deleteTable} from "../../libs/Sqlite/deleteData";
-import {TABLE} from "../../libs/Sqlite/config";
-import store from "../../redux-store/store";
-import {resetCart} from "../../redux-store/reducer/cart-data";
 import KotNote from "../Cart/KotNote";
+import GeneralSettings from "../GeneralSettings";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -76,7 +62,7 @@ const MainStackNavigator = () => {
     useEffect(() => {
         if (!interval) {
             interval = setInterval(() => {
-                getOrders().then((orders:any)=>{
+                getOrders().then((orders: any) => {
                     if (!isEmpty(orders)) {
                         let invoice: any = Object.values(orders)[0]
                         syncInvoice(invoice).then()
@@ -105,7 +91,8 @@ const MainStackNavigator = () => {
 
             <Stack.Screen name="ClientAreaStackNavigator" component={ClientAreaStackNavigator}/>
 
-            <Stack.Screen name={'ProfileSettingsNavigator'} component={ProfileSettingsNavigator}   options={{headerShown:false,presentation:'modal',headerTitle:'Settings'}}  />
+            <Stack.Screen name={'ProfileSettingsNavigator'} component={ProfileSettingsNavigator}
+                          options={{headerShown: false, presentation: 'modal', headerTitle: 'Settings'}}/>
 
 
             <Stack.Screen name="Sample" component={sample}/>
@@ -130,23 +117,27 @@ const SetupStackNavigator = () => {
         <Stack.Navigator initialRouteName={'Login'} screenOptions={screenOptions}>
             <Stack.Screen name="Login" component={Login}
                           options={{headerShown: false}}/>
-            <Stack.Screen name="Register" component={Register}  options={{ headerTitle: 'Create an account'}}/>
+            <Stack.Screen name="Register" component={Register} options={{headerTitle: 'Create an account'}}/>
 
-            <Stack.Screen name="Verification" component={Verification}  options={{ headerTitle: 'Verify Email'}}/>
+            <Stack.Screen name="Verification" component={Verification} options={{headerTitle: 'Verify Email'}}/>
 
             <Stack.Screen name="AddWorkspace" component={AddWorkspace} options={{headerTitle: 'Add Workspace'}}/>
 
-            <Stack.Screen name="OrganizationProfile" component={OrganizationProfile}  options={{ headerTitle: 'Organization Profile'}}/>
+            <Stack.Screen name="OrganizationProfile" component={OrganizationProfile}
+                          options={{headerTitle: 'Organization Profile'}}/>
 
-            <Stack.Screen name="BusinessDetails" component={BusinessDetails}  options={{ headerTitle: 'Business Details'}}/>
+            <Stack.Screen name="BusinessDetails" component={BusinessDetails}
+                          options={{headerTitle: 'Business Details'}}/>
 
-            <Stack.Screen name="CurrencyPreferences" component={CurrencyPreferences}  options={{ headerTitle: 'Currency Preferences'}}/>
+            <Stack.Screen name="CurrencyPreferences" component={CurrencyPreferences}
+                          options={{headerTitle: 'Currency Preferences'}}/>
 
-            <Stack.Screen name="Workspaces" component={Workspaces}  options={{headerTitle: 'Workspaces'}}/>
+            <Stack.Screen name="Workspaces" component={Workspaces} options={{headerTitle: 'Workspaces'}}/>
 
-            <Stack.Screen name="Terminal" component={Terminal}  options={{headerShown:false, headerTitle: 'Terminal'}}/>
+            <Stack.Screen name="Terminal" component={Terminal} options={{headerShown: false, headerTitle: 'Terminal'}}/>
 
-            <Stack.Screen name={'DropDownList'} component={DropDownList}  options={{headerShown:false,headerTitle:'Select'}}   />
+            <Stack.Screen name={'DropDownList'} component={DropDownList}
+                          options={{headerShown: false, headerTitle: 'Select'}}/>
 
         </Stack.Navigator>
     );
@@ -165,40 +156,47 @@ const PinStackNavigator = () => {
 };
 
 
-const ClientAreaStackNavigator = (props:any) => {
+const ClientAreaStackNavigator = (props: any) => {
     const {route: {params}}: any = props;
     return (
-        <Stack.Navigator  initialRouteName={isRestaurant() ? 'ClientAreaStackNavigator' : 'CartStackNavigator'} screenOptions={screenOptions}>
-            {isRestaurant() &&  <Stack.Screen name={'ClientAreaStackNavigator'}  component={Tables} options={{headerTitle:'Tables'}}   />}
-            <Stack.Screen name={'CartStackNavigator'} {...params}  component={Cart} options={({route}: any) => ({headerShown:!device.tablet, title: route?.params?.tablename})}   />
+        <Stack.Navigator initialRouteName={isRestaurant() ? 'ClientAreaStackNavigator' : 'CartStackNavigator'}
+                         screenOptions={screenOptions}>
+            {isRestaurant() &&
+                <Stack.Screen name={'ClientAreaStackNavigator'} component={Tables} options={{headerTitle: 'Tables'}}/>}
+            <Stack.Screen name={'CartStackNavigator'} {...params} component={Cart}
+                          options={({route}: any) => ({headerShown: !device.tablet, title: route?.params?.tablename})}/>
 
 
+            <Stack.Screen name={'SearchItem'} component={SearchItem}
+                          options={{headerShown: false, headerTitle: 'Search Item'}}/>
+            <Stack.Screen name={'DetailViewNavigator'} component={DetailView} options={{headerTitle: 'Detail view'}}/>
 
-            <Stack.Screen name={'SearchItem'}   component={SearchItem} options={{headerShown:false,headerTitle:'Search Item'}}   />
-            <Stack.Screen name={'DetailViewNavigator'} component={DetailView}  options={{headerTitle:'Detail view'}}  />
+            <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem} options={{headerTitle: 'Add Item'}}/>
+            <Stack.Screen name={'AddEditCategory'} component={AddEditCategory} options={{headerTitle: 'Add Category'}}/>
+            <Stack.Screen name={'AddEditClient'} component={AddEditClient} options={{headerTitle: 'Add Client'}}/>
+            <Stack.Screen name={'AddTable'} component={AddTable} options={{headerTitle: 'Add Table'}}/>
 
-            <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem}  options={{headerTitle:'Add Item'}}/>
-            <Stack.Screen name={'AddEditCategory'} component={AddEditCategory}  options={{headerTitle:'Add Category'}} />
-            <Stack.Screen name={'AddEditClient'} component={AddEditClient}  options={{headerTitle:'Add Client'}}  />
-            <Stack.Screen name={'AddTable'} component={AddTable}  options={{headerTitle:'Add Table'}}  />
+            <Stack.Screen name={'ClientList'} component={ClientList}
+                          options={{headerShown: false, headerTitle: 'Client List'}}/>
 
-            <Stack.Screen name={'ClientList'} component={ClientList}  options={{headerShown:false,headerTitle:'Client List'}}  />
-
-            <Stack.Screen name={'ClientAndSource'} {...params}   component={ClientAndSource}  options={{headerTitle:'Order Source'}}  />
+            <Stack.Screen name={'ClientAndSource'} {...params} component={ClientAndSource}
+                          options={{headerTitle: 'Order Source'}}/>
 
             <Stack.Screen name={'KotNote'} component={KotNote} options={{headerTitle: 'KOT Note'}}/>
 
             <Stack.Screen name={'Payment'} component={Payment} options={{headerTitle: 'Payment'}}/>
 
-            <Stack.Screen name={'CancelReason'} component={CancelReason} options={{presentation:'modal',headerTitle: 'Cancel Reason'}}/>
+            <Stack.Screen name={'CancelReason'} component={CancelReason}
+                          options={{presentation: 'modal', headerTitle: 'Cancel Reason'}}/>
 
 
-            <Stack.Screen name={'SalesReportNavigator'}  component={Report} options={{title: 'Sales Report'}}   />
+            <Stack.Screen name={'SalesReportNavigator'} component={Report} options={{title: 'Sales Report'}}/>
 
-            <Stack.Screen name={'DropDownList'} component={DropDownList}  options={({route}: any) => ({presentation:route?.params?.presentation,headerShown:false,  title: 'select'})}   />
-
-
-
+            <Stack.Screen name={'DropDownList'} component={DropDownList} options={({route}: any) => ({
+                presentation: route?.params?.presentation,
+                headerShown: false,
+                title: 'select'
+            })}/>
 
 
         </Stack.Navigator>
@@ -206,31 +204,31 @@ const ClientAreaStackNavigator = (props:any) => {
 };
 
 
-
-const ProfileSettingsNavigator = (props:any) => {
+const ProfileSettingsNavigator = (props: any) => {
 
     return (
-        <Stack.Navigator initialRouteName={'ProfileSettingsNavigator'}  screenOptions={screenOptions}>
-            <Stack.Screen name={'ProfileSettingsNavigator'}  component={General} options={{headerShown: false}}/>
+        <Stack.Navigator initialRouteName={'ProfileSettingsNavigator'} screenOptions={screenOptions}>
+            <Stack.Screen name={'ProfileSettingsNavigator'} component={General} options={{headerShown: false}}/>
 
-            <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem}  options={{headerTitle:'Add Item'}}/>
-            <Stack.Screen name={'AddEditCategory'} component={AddEditCategory}  options={{headerTitle:'Add Category'}} />
-            <Stack.Screen name={'AddEditClient'} component={AddEditClient}  options={{headerTitle:'Add Client'}}  />
+            <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem} options={{headerTitle: 'Add Item'}}/>
+            <Stack.Screen name={'AddEditCategory'} component={AddEditCategory} options={{headerTitle: 'Add Category'}}/>
+            <Stack.Screen name={'AddEditClient'} component={AddEditClient} options={{headerTitle: 'Add Client'}}/>
 
 
             <Stack.Screen name={'KOTPrinter'} component={KOTPrinter} options={{title: 'KOT Printer'}}/>
-            <Stack.Screen name={'InputOpenSetting'} component={InputOpenSetting} options={{title: 'Quick Quantity Unit'}}/>
-            <Stack.Screen name={'DefaultInputValues'} component={DefaultInputValues} options={{title: 'Quick Quantity & Amount'}}/>
+            <Stack.Screen name={'InputOpenSetting'} component={InputOpenSetting}
+                          options={{title: 'Quick Quantity Unit'}}/>
+            <Stack.Screen name={'DefaultInputValues'} component={DefaultInputValues}
+                          options={{title: 'Quick Quantity & Amount'}}/>
+
+            <Stack.Screen name={'GeneralSettings'} component={GeneralSettings} options={{title: 'General Settings'}}/>
+
             <Stack.Screen name={'PrinterSettings'} component={PrinterSettings} options={{title: ''}}/>
-            <Stack.Screen name={'DropDownList'} component={DropDownList}   options={{headerShown:false,headerTitle:'Select'}}  />
+            <Stack.Screen name={'DropDownList'} component={DropDownList}
+                          options={{headerShown: false, headerTitle: 'Select'}}/>
         </Stack.Navigator>
     );
 };
-
-
-
-
-
 
 
 /*const ClientAreaStackNavigator = () => {

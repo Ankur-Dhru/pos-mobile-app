@@ -5,7 +5,7 @@ import {hideLoader, showLoader} from "../../redux-store/reducer/component";
 import {styles} from "../../theme";
 import InputField from "../../components/InputField";
 import Button from "../../components/Button";
-import React, {useEffect, useRef, useState} from "react";
+import React, {memo, useEffect, useRef, useState} from "react";
 import {ItemDivider, localredux} from "../../libs/static";
 import {appLog, errorAlert, getLocalSettings, isEmpty, nextFocus, saveTempLocalOrder} from "../../libs/function";
 
@@ -13,16 +13,17 @@ import moment from "moment";
 
 import store from "../../redux-store/store";
 import KAccessoryView from "../../components/KAccessoryView"
-import KeyboardScroll from "../../components/KeyboardScroll";
+
 import {Container} from "../../components";
 import {getClientsByWhere} from "../../libs/Sqlite/selectData";
-import ProIcon from "../../components/ProIcon";
-import Tabs from "../../components/TabView";
+
+import {SceneMap, TabBar, TabView} from "react-native-tab-view";
 
 
-let globalTable:any = {}
+let globalTable:any = {};
+let jump:any;
 
-const AllTable = ({tabledetails}:any) => {
+const AllTable = memo(({tabledetails,jumpTo}:any) => {
 
     const {currentLocation} = localredux.localSettingsData;
     const isReserveTable = Boolean(tabledetails?.ordertype == "tableorder");
@@ -111,6 +112,7 @@ const AllTable = ({tabledetails}:any) => {
                                         key={index}
                                         title={t.tablename}
                                         onPress={() => {
+                                            jumpTo('clientinformation')
                                             setTableData('tableid', t.tableid)
                                         }}
                                         left={() => <List.Icon icon={t.tableid === table.tableid?'check-circle-outline':'checkbox-blank-circle-outline'}></List.Icon>}
@@ -130,9 +132,9 @@ const AllTable = ({tabledetails}:any) => {
 
         </View>
     );
-}
+})
 
-const Sources = ({tabledetails}:any) => {
+const Sources =memo(({tabledetails,jumpTo}:any) => {
 
     const [ordersource, setOrderSource] = useState<any>();
 
@@ -154,6 +156,7 @@ const Sources = ({tabledetails}:any) => {
                                         key={index}
                                         title={source}
                                         onPress={() => {
+                                            jumpTo('clientinformation')
                                             setOrderSource(source);
                                         }}
                                         left={() => <List.Icon icon={source === ordersource?'check-circle-outline':'checkbox-blank-circle-outline'}></List.Icon>}
@@ -167,9 +170,9 @@ const Sources = ({tabledetails}:any) => {
             </Card>
         </ScrollView>
     </View>
-}
+})
 
-const DeliveryOn = ({tabledetails}:any) => {
+const DeliveryOn = memo(({tabledetails}:any) => {
 
     const isAdvanceorder = Boolean(tabledetails?.ordertype == "advanceorder")
 
@@ -248,9 +251,9 @@ const DeliveryOn = ({tabledetails}:any) => {
             </ScrollView>
         </View>}
     </>
-}
+})
 
-const ClientInformation = ({tabledetails}:any) => {
+const ClientInformation = memo(({tabledetails}:any) => {
 
     let defaultClientData = {
         "clientid": "0",
@@ -403,7 +406,7 @@ const ClientInformation = ({tabledetails}:any) => {
         </Card>
     </ScrollView>
     </View>
-}
+})
 
 
 const ClientAndSource = (props: any) => {
@@ -415,7 +418,9 @@ const ClientAndSource = (props: any) => {
     let {tabledetails, placeOrder, title, edit} = params.params;
     const [loading,setLoading]:any = useState(false);
     const [asksources,setAsksources]:any = useState({});
+    const [index,setIndex]:any = useState(0)
 
+    let tabRef = useRef();
 
 
     if (edit) {
@@ -423,7 +428,7 @@ const ClientAndSource = (props: any) => {
     }
 
     const isReserveTable = Boolean(tabledetails?.ordertype == "tableorder");
-    const isSource = Boolean(((tabledetails?.ordertype === "homedelivery") && !asksources.homedelivery) || ((tabledetails?.ordertype === "takeaway") && !asksources.takeaway))
+    const isSource = Boolean(((tabledetails?.ordertype === "homedelivery") && !asksources?.homedelivery) || ((tabledetails?.ordertype === "takeaway") && !asksources?.takeaway))
     const isAdvanceorder = Boolean(tabledetails?.ordertype == "advanceorder")
 
     globalTable = tabledetails;
@@ -441,24 +446,18 @@ const ClientAndSource = (props: any) => {
     },[])
 
 
-
-    let tabs:any = {}
     let routes = []
 
     if(isReserveTable){
-        tabs = {...tabs, tables: ()=> <AllTable tabledetails={tabledetails}/>}
         routes.push({key: 'tables', title: 'Table & Pax'})
     }
     else if(isSource){
-        tabs = {...tabs,sources: ()=>  <Sources tabledetails={tabledetails}/>}
         routes.push({key: 'sources', title: 'Sources'})
     }
     else if(isAdvanceorder){
-        tabs = {...tabs,deliveryon:  ()=> <DeliveryOn tabledetails={tabledetails}/>}
         routes.push({key: 'deliveryon', title: 'Delivery On'})
     }
 
-    tabs =  {...tabs,clientinformation: ()=> <ClientInformation tabledetails={tabledetails}/>}
     routes.push({key: 'clientinformation', title: 'Client Information'})
 
 
@@ -466,14 +465,41 @@ const ClientAndSource = (props: any) => {
         return <></>
     }
 
+    const renderScene = ({ route, jumpTo }:any) => {
+        jump = jumpTo
+        switch (route.key) {
+            case 'tables':
+                return <AllTable tabledetails={tabledetails} jumpTo={jumpTo} />;
+            case 'sources':
+                return <Sources tabledetails={tabledetails}  jumpTo={jumpTo} />;
+            case 'deliveryon':
+                return <DeliveryOn tabledetails={tabledetails}  jumpTo={jumpTo} />;
+            case 'clientinformation':
+                return <ClientInformation tabledetails={tabledetails}  jumpTo={jumpTo} />;
+        }
+    };
+
+    const renderTabBar = (props:any) => (
+        <TabBar
+            {...props}
+            style={[styles.noshadow,styles.mb_3,{ backgroundColor: 'white',}]}
+            labelStyle={[{color:'black',textTransform:'capitalize'}]}
+            indicatorStyle={{backgroundColor:styles.accent.color}}
+            scrollEnabled={true}
+            tabStyle={{minWidth:190,width:'50%'}}
+        />
+    );
+
+
     return (<Container style={{padding:0}}>
 
-                    <Tabs
-                        scenes={tabs}
-                        routes={routes}
-                        scrollable={false}
-                        style={{minWidth:190,width:'50%'}}
-                    />
+
+        <TabView
+            navigationState={{ index, routes }}
+            onIndexChange={setIndex}
+            renderScene={renderScene}
+            renderTabBar={renderTabBar}
+        />
 
 
                 <KAccessoryView>
@@ -525,9 +551,11 @@ const ClientAndSource = (props: any) => {
                             } else {
                                 let message = "";
                                 if (isSource && !Boolean(ordersource)) {
+                                    jump('sources')
                                     message += "Please Select Order Source\n";
                                 }
                                 if (isReserveTable) {
+                                    jump('tables')
                                     if (!selectedTable) {
                                         message += "Please Select Table\n";
                                     }
@@ -536,6 +564,7 @@ const ClientAndSource = (props: any) => {
                                     }
                                 }
                                 if (!Boolean(clientDisplayName)) {
+                                    jump('clientinformation')
                                     message += "Please Enter Display Name"
                                 }
                                 errorAlert(message);

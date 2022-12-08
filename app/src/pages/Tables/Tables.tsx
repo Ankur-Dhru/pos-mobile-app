@@ -25,6 +25,7 @@ import Button from "../../components/Button";
 import ReserveList from "./ReserveList";
 import Tabs from "../../components/TabView";
 import HoldOrders from "../Cart/HoldOrders";
+import {TabBar, TabView} from "react-native-tab-view";
 
 
 const Index = ({tableorders}: any) => {
@@ -79,6 +80,7 @@ const Index = ({tableorders}: any) => {
 
 
     const [visible, setVisible] = React.useState(false);
+    const [index,setIndex]:any = useState(0)
     const openMenu = () => setVisible(true);
     const closeMenu = () => setVisible(false);
 
@@ -308,39 +310,38 @@ const Index = ({tableorders}: any) => {
                                                                  key={index}/>, [shifttable, shiftingFromtable, shiftingTotable]);
 
 
-    const AllTable = () => (
+    const AllTable = memo(() => (
         <View style={[styles.flex]}>
             <TableFlatlist type={'all'}/>
         </View>
-    );
+    ));
 
-    const OnlyTable = () => (
+    const OnlyTable = memo(() => (
         <View style={[styles.flex]}>
             <TableFlatlist type={'tableorder'}/>
         </View>
-    );
+    ));
 
-    const HomeDelivery = () => (
+    const HomeDelivery = memo(() => (
         <View style={[styles.flex]}>
             <TableFlatlist type={'homedelivery'}/>
         </View>
-    );
+    ));
 
-    const TakeAway = () => (
+    const TakeAway = memo(() => (
         <View style={[styles.flex]}>
             <TableFlatlist type={'takeaway'}/>
         </View>
-    );
+    ));
 
-    const AdvanceOrder = () => (
+    const AdvanceOrder = memo(() => (
         <View style={[styles.flex]}>
             <TableFlatlist type={'advanceorder'}/>
         </View>
-    );
+    ));
 
 
-    const TableFlatlist = ({type}: any) => {
-
+    const TableFlatlist = memo(({type}: any) => {
         return (
             <View style={[styles.px_2]}>
                 <FlatList
@@ -413,14 +414,50 @@ const Index = ({tableorders}: any) => {
 
             </View>
         )
-    }
+    })
 
 
-    //return <AllTable/>
+    const renderScene = ({ route, jumpTo }:any) => {
+
+        switch (route.key) {
+            case 'all':
+                return <AllTable  />;
+            case 'tableorder':
+                return <OnlyTable   />;
+            case 'homedelivery':
+                return <HomeDelivery   />;
+            case 'takeaway':
+                return <TakeAway   />;
+            case 'advanceorder':
+                return <AdvanceOrder   />;
+        }
+    };
+
+    const renderTabBar = (props:any) => (
+        <TabBar
+            {...props}
+            style={[styles.noshadow,styles.mb_3,{ backgroundColor: 'white',}]}
+            labelStyle={[{color:'black',textTransform:'capitalize'}]}
+            indicatorStyle={{backgroundColor:styles.accent.color}}
+            scrollEnabled={true}
+            tabStyle={{minWidth:80,width:'auto'}}
+        />
+    );
+
+    let routes = [{key: 'all', title: 'All'},{key: 'tableorder', title: 'Tables'},{key: 'homedelivery', title: 'Homedelivery'},{key: 'takeaway', title: 'Takeaway'},{key: 'advanceorder', title: 'Advance Order'}]
 
     return (
         <>
-            <Tabs
+
+            <TabView
+                navigationState={{ index, routes }}
+                onIndexChange={setIndex}
+                renderScene={renderScene}
+                renderTabBar={renderTabBar}
+            />
+
+
+            {/*<Tabs
                 scenes={{
                     all: AllTable,
                     tableorder: OnlyTable,
@@ -437,7 +474,7 @@ const Index = ({tableorders}: any) => {
                 ]}
 
                 scrollable={true}
-            />
+            />*/}
 
             <FAB.Group
                 open={floating}

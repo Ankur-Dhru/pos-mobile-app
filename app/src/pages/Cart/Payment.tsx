@@ -177,6 +177,7 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
     }
 
 
+
     /*const skipPayment = async () => {
         let cartData:any = store.getState().cartData;
         cartData.payments = [
@@ -278,7 +279,10 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
                                                     label=""
                                                     placeholder={'Amount'}
                                                     mode={'outlined'}
-                                                    style={{height:40}}
+                                                    numberOfLines={1}
+                                                    blurOnSubmit={true}
+                                                    multiline={true}
+                                                    selectTextOnFocus={true}
                                                     keyboardType='numeric'
                                                     defaultValue={pm?.paymentAmount + ''}
                                                     onChangeText={(value) => {

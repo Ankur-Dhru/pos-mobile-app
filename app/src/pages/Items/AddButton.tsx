@@ -146,7 +146,6 @@ export const updateCartItem = async (values: any, action: any) => {
 export const onPressNumber = (item: any, onPressOK: any) => {
     let isRes  = isRestaurant(), directQnt = false;
 
-    appLog("item", item);
 
     let rate =  item?.productratedisplay || item?.pricing?.price?.default[0][item?.pricing?.type].baseprice
 

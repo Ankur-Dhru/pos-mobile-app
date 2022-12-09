@@ -65,9 +65,9 @@ const Index = (props: any) => {
                 localredux.authData = {...response.data, token: response.token}
                 device.token = response.token;
                 if (!email_verified) {
-                    navigation.replace('Verification', {userdetail: response.data});
+                    navigation.navigate('Verification', {userdetail: response.data});
                 } else {
-                    navigation.replace('Workspaces');
+                    navigation.navigate('Workspaces');
                 }
             }
         })

@@ -211,7 +211,7 @@ const Index = ({tableorders}: any) => {
             return (
                 <Card style={[styles.card,styles.m_2,styles.mb_3,  styles.noshadow, {
                     marginTop:0,
-                    maxWidth: '100%', minWidth: 150,
+                    maxWidth: 180, minWidth: 150,
                     backgroundColor: Boolean(item.kots?.length) ? styles.yellow.color : Boolean(item.invoiceitems?.length) ? styles.secondary.color : styles.white.color,
                     borderRadius: 5
                 }, styles.flexGrow,]} key={item.tableid}>
@@ -408,10 +408,7 @@ const Index = ({tableorders}: any) => {
                             </View>
                         </View>
                     </View>}
-
-
                 />
-
             </View>
         )
     })
@@ -437,7 +434,7 @@ const Index = ({tableorders}: any) => {
         <TabBar
             {...props}
             style={[styles.noshadow,styles.mb_3,{ backgroundColor: 'white',}]}
-            labelStyle={[{color:'black',textTransform:'capitalize'}]}
+            labelStyle={[styles.bold,{color:'black',textTransform:'capitalize'}]}
             indicatorStyle={{backgroundColor:styles.accent.color}}
             scrollEnabled={true}
             tabStyle={{minWidth:80,width:'auto'}}

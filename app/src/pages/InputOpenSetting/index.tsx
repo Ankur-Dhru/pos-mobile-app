@@ -37,7 +37,6 @@ const Index = ({defaultAmountOpen}: any) => {
     }
 
     const renderitem = ({item}: any) => {
-        appLog("item", item);
 
         let text = item?.data?.unitname;
         if (item?.data?.unitcode) {

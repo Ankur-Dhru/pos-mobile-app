@@ -37,6 +37,10 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+        <string>Our app uses bluetooth to find, connect and transfer data between different devices</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+    <string>Our app uses bluetooth to find, connect and transfer data between different devices</string>
 	<key>NSContactsUsageDescription</key>
     	<string>Contact Permission</string>
 	<key>UIAppFonts</key>

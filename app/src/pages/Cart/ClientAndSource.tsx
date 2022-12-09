@@ -483,10 +483,10 @@ const ClientAndSource = (props: any) => {
         <TabBar
             {...props}
             style={[styles.noshadow,styles.mb_3,{ backgroundColor: 'white',}]}
-            labelStyle={[{color:'black',textTransform:'capitalize'}]}
+            labelStyle={[styles.bold,{color:'black',textTransform:'capitalize'}]}
             indicatorStyle={{backgroundColor:styles.accent.color}}
             scrollEnabled={true}
-            tabStyle={{minWidth:190,width:'50%'}}
+            tabStyle={{minWidth:190,width:"auto"}}
         />
     );
 

@@ -134,7 +134,7 @@ const SetupStackNavigator = () => {
 
             <Stack.Screen name="Workspaces" component={Workspaces} options={{headerTitle: 'Workspaces'}}/>
 
-            <Stack.Screen name="Terminal" component={Terminal} options={{headerShown: false, headerTitle: 'Terminal'}}/>
+            <Stack.Screen name="Terminal" component={Terminal} options={{headerTitle: 'Terminal'}}/>
 
             <Stack.Screen name={'DropDownList'} component={DropDownList}
                           options={{headerShown: false, headerTitle: 'Select'}}/>
@@ -190,7 +190,7 @@ const ClientAreaStackNavigator = (props: any) => {
                           options={{presentation: 'modal', headerTitle: 'Cancel Reason'}}/>
 
 
-            <Stack.Screen name={'SalesReportNavigator'} component={Report} options={{title: 'Sales Report'}}/>
+
 
             <Stack.Screen name={'DropDownList'} component={DropDownList} options={({route}: any) => ({
                 presentation: route?.params?.presentation,
@@ -209,6 +209,8 @@ const ProfileSettingsNavigator = (props: any) => {
     return (
         <Stack.Navigator initialRouteName={'ProfileSettingsNavigator'} screenOptions={screenOptions}>
             <Stack.Screen name={'ProfileSettingsNavigator'} component={General} options={{headerShown: false}}/>
+
+            <Stack.Screen name={'SalesReportNavigator'} component={Report} options={{headerTitle: 'Sales Report'}}/>
 
             <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem} options={{headerTitle: 'Add Item'}}/>
             <Stack.Screen name={'AddEditCategory'} component={AddEditCategory} options={{headerTitle: 'Add Category'}}/>

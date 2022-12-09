@@ -124,56 +124,51 @@ const ProfileSettings = () => {
 
                     <View>
 
-                        <View>
+                        <View style={[styles.mb_3]}>
 
-                            <Card style={[styles.card]}>
-                                <Card.Content style={[styles.cardContent]}>
+                            <View>
 
+                                <View style={[{justifyContent: 'center', alignItems: 'center',}]}>
+                                    <Image
+                                        style={[{width: 70, height: 70}]}
+                                        source={require('../../assets/dhru-logo-22.png')}
+                                    />
                                     <View>
 
-                                        <View style={[{justifyContent: 'center', alignItems: 'center',}]}>
-                                            <Image
-                                                style={[{width: 70, height: 70}]}
-                                                source={require('../../assets/dhru-logo-22.png')}
-                                            />
-                                            <View>
-
-                                                <Title
-                                                    style={[styles.text_md, styles.textCenter]}>{firstname + ' ' + lastname} </Title>
-                                                <Text
-                                                    style={[styles.paragraph, styles.textCenter, styles.mb_2]}>{aemail}</Text>
-                                                <Caption
-                                                    style={[styles.paragraph, styles.textCenter, styles.mb_10]}>{workspace} ({terminal_name})</Caption>
-
-                                            </View>
-                                        </View>
-
-
-                                        <View style={[styles.grid, styles.justifyContent]}>
-                                            <Button style={[styles.w_auto, styles.noshadow]}
-                                                    more={{
-                                                        backgroundColor: styles.accent.color,
-                                                        color: 'white',
-                                                        height: 40
-                                                    }} onPress={() => {
-                                                navigation.goBack();
-                                                syncData().then()
-                                            }}>Sync</Button>
-                                            <Button style={[styles.ml_1, styles.w_auto, styles.noshadow]}
-                                                    more={{
-                                                        backgroundColor: styles.red.color,
-                                                        color: 'white',
-                                                        height: 40
-                                                    }} onPress={() => {
-                                                logoutUser();
-                                            }}>Logout</Button>
-                                        </View>
-
+                                        <Title
+                                            style={[styles.text_md, styles.textCenter]}>{firstname + ' ' + lastname} </Title>
+                                        <Text
+                                            style={[styles.paragraph, styles.textCenter, styles.mb_2]}>{aemail}</Text>
+                                        <Caption
+                                            style={[styles.paragraph, styles.textCenter, styles.mb_10]}>{workspace} ({terminal_name})</Caption>
 
                                     </View>
+                                </View>
 
-                                </Card.Content>
-                            </Card>
+
+                                <View style={[styles.grid, styles.justifyContent]}>
+                                    <Button style={[styles.w_auto, styles.noshadow]}
+                                            more={{
+                                                backgroundColor: styles.accent.color,
+                                                color: 'white',
+                                                height: 40
+                                            }} onPress={() => {
+                                        navigation.goBack();
+                                        syncData().then()
+                                    }}>Sync</Button>
+                                    <Button style={[styles.ml_1, styles.w_auto, styles.noshadow]}
+                                            more={{
+                                                backgroundColor: styles.red.color,
+                                                color: 'white',
+                                                height: 40
+                                            }} onPress={() => {
+                                        logoutUser();
+                                    }}>Logout</Button>
+                                </View>
+
+
+                            </View>
+
                         </View>
 
                         <View>
@@ -189,7 +184,6 @@ const ProfileSettings = () => {
                                             style={[styles.listitem]}
                                             title={'Sales Report'}
                                             onPress={() => {
-                                                navigation.goBack()
                                                 navigation.navigate("SalesReportNavigator");
                                             }}
                                             left={() => <List.Icon icon="point-of-sale"/>}

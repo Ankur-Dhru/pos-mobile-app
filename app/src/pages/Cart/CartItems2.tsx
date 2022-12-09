@@ -1,12 +1,3 @@
-
-
-
-
-
-
-
-
-
 import React, {useCallback, useEffect, useLayoutEffect, useRef, useState} from "react";
 
 import {FlatList, View} from "react-native";

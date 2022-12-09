@@ -114,7 +114,7 @@ const Index = (props: any) => {
 
             <View style={[styles.center, styles.h_100, styles.middle]}>
 
-                <View style={{width: 230}}>
+                <View style={{width: 300}}>
 
                     <View style={[styles.grid, styles.center,]}>
                         <Image

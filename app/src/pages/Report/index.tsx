@@ -27,6 +27,7 @@ import {
 import apiService from "../../libs/api-service";
 import ProIcon from "../../components/ProIcon";
 import {AddItem} from "../Items/ItemListTablet";
+import moment from "moment";
 
 
 const Index = ({ordersData}:any) => {
@@ -111,8 +112,8 @@ const Index = ({ordersData}:any) => {
                     <View style={[styles.grid, styles.noWrap, styles.top]}>
 
                         <View>
-                            <Paragraph
-                                style={[styles.paragraph,styles.bold]}>{getDateWithFormat(item?.date, dateFormat(true))}</Paragraph>
+                            {!Boolean(item?.voucherdisplayid) && <Paragraph style={[styles.paragraph,styles.bold]}>{getDateWithFormat(item.date,dateFormat())} {item.vouchercreatetime} </Paragraph>}
+                            {Boolean(item?.voucherdisplayid) &&  <Paragraph style={[styles.paragraph,styles.bold]}>{moment.unix(item.vouchercreatetime).format(dateFormat(true))} </Paragraph>}
                             <Paragraph style={[styles.paragraph]}>{name}</Paragraph>
                         </View>
                     </View>

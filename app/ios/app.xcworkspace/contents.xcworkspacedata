@@ -2,9 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/ankur/IdeaProjects/pops-mobile3/app/ios/Dhru POS.xcodeproj">
+      location = "group:/Users/ankur/IdeaProjects/pops-mobile3/app/ios/app.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:app.xcodeproj">
    </FileRef>
 </Workspace>

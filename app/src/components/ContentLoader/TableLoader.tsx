@@ -16,16 +16,7 @@ class Index extends React.Component<any> {
                     <View style={{width:45}}>
 
                     </View>
-                    <View>
-                        <ScrollView horizontal={true}>
-                            <Paragraph style={[styles.primary,styles.bold,styles.text_sm,styles.p_6]}>All</Paragraph>
-                            <Paragraph style={[styles.muted,styles.bold,styles.text_sm,styles.p_6]}>Tables</Paragraph>
-                            <Paragraph style={[styles.muted,styles.bold,styles.text_sm,styles.p_6]}>Home Delivery</Paragraph>
-                            <Paragraph style={[styles.muted,styles.bold,styles.text_sm,styles.p_6]}>Takeaway</Paragraph>
-                            <Paragraph style={[styles.muted,styles.bold,styles.text_sm,styles.p_6]}>Advance Order</Paragraph>
-                            <Paragraph style={[styles.muted,styles.bold,styles.text_sm,styles.p_6]}> + QSR / Quick Bill</Paragraph>
-                        </ScrollView>
-                    </View>
+
 
                 </View>
 

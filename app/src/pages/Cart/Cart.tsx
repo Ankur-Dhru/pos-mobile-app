@@ -47,7 +47,7 @@ const Index = (props: any) => {
 
                     <View style={[styles.grid,styles.w_100,styles.justifyContent,styles.p_3]}>
                         {hasrestaurant ?
-                            <Card style={[styles.card]} onPress={() => {
+                            <Card style={[styles.card,{marginRight:5}]} onPress={() => {
                                 saveTempLocalOrder().then(() => {})
                                 navigation.goBack();
                             }}>

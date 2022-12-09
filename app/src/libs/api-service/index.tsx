@@ -88,7 +88,7 @@ const apiService = async (config: configData) => {
             errorAlert('Internet connection not available')
           }
           else {
-            errorAlert(response?.message)
+            errorAlert(response?.message + ' ' +response?.code)
           }
         }
 

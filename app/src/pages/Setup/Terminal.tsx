@@ -4,7 +4,7 @@ import {ScrollView, View} from "react-native";
 import Container from "../../components/Container";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
-import {Card, Text, Title} from "react-native-paper";
+import {Caption, Card, Text, Title} from "react-native-paper";
 import {
     ACTIONS,
     composeValidators,
@@ -124,6 +124,7 @@ const Terminal = (props: any) => {
     }
 
 
+
     return <Container>
 
         <Form
@@ -142,8 +143,8 @@ const Terminal = (props: any) => {
                                 <Card style={[styles.card]}>
                                     <Card.Content style={[styles.cardContent]}>
                                 <View>
-                                    <Title>Terminal <Text
-                                        style={[styles.muted, styles.text_sm]}>({initData.workspace})</Text></Title>
+                                    <Caption style={[styles.caption]}>{initData.workspace}  </Caption>
+
                                     <View style={[styles.mt_3]}>
                                         <View style={[styles.mb_5]}>
                                             <Field name="terminalname" validate={composeValidators(required)}>

@@ -1,6 +1,6 @@
 import React from "react";
 
-import {SafeAreaView, View} from "react-native";
+import {Platform, SafeAreaView, View} from "react-native";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
 import {Card} from "react-native-paper";
@@ -61,6 +61,22 @@ const Index = (props: any) => {
 
     //{value: 'shared', label: 'Shared Printer'},
 
+    let printerTypes = [{
+        value: 'network',
+        label: 'Network Printer'
+    },{
+        value: 'broadcast',
+        label: 'Broadcast Printer'
+    }]
+
+    if(Platform.OS !== 'ios'){
+        printerTypes.push({
+            value: 'bluetooth',
+            label: 'Bluetooth Printer'
+        })
+    }
+
+
     return <Container>
         <SafeAreaView>
             <Form
@@ -85,16 +101,7 @@ const Index = (props: any) => {
                                                     <InputField
                                                         label={'Printer Type'}
                                                         mode={'flat'}
-                                                        list={[{
-                                                            value: 'network',
-                                                            label: 'Network Printer'
-                                                        }, {
-                                                            value: 'bluetooth',
-                                                            label: 'Bluetooth Printer'
-                                                        },{
-                                                            value: 'broadcast',
-                                                            label: 'Broadcast Printer'
-                                                        }]}
+                                                        list={printerTypes}
                                                         value={props.input.value}
                                                         selectedValue={props.input.value}
                                                         displaytype={'pagelist'}
@@ -147,7 +154,7 @@ const Index = (props: any) => {
                                                             )}
                                                         </Field>
                                                     </> : <>
-                                                        <View style={[styles.mb_5, styles.grid, styles.justifyContent]}>
+                                                        <View style={[styles.grid, styles.justifyContent]}>
                                                             <View style={[styles.flexGrow]}>
 
                                                                 <Field name="host" validate={composeValidators(required)}>
@@ -183,7 +190,7 @@ const Index = (props: any) => {
                                                         </View>
 
 
-                                                        <View style={[styles.mb_5]}>
+                                                        <View>
                                                             <View>
                                                                 <Field name="printername">
                                                                     {props => (
@@ -218,7 +225,7 @@ const Index = (props: any) => {
                                             <Card style={[styles.card]}>
                                                 <Card.Content style={[styles.cardContent]}>
 
-                                                    <View style={[styles.mb_5, styles.grid, styles.justifyContent]}>
+                                                    <View style={[styles.grid, styles.justifyContent]}>
                                                         <View style={[styles.flexGrow]}>
 
                                                             <Field name="printsize">
@@ -271,7 +278,7 @@ const Index = (props: any) => {
                                                     </View>
 
                                                     {type.departmentid !== PRINTER.INVOICE &&
-                                                        <View style={[styles.mb_5]}>
+                                                        <View>
                                                             <View style={[]}>
                                                                 <Field name="printoncancel">
                                                                     {props => (

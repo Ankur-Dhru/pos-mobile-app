@@ -493,7 +493,7 @@ export const styles: any = StyleSheet.create({
     },
     buttonSelected: {backgroundColor: '#343A40'},
 
-    bold: {fontWeight: 'bold'},
+    bold: {fontWeight: 'bold',fontSize:14},
     linethrough: {textDecorationLine: 'line-through'},
 
     theme: {},

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {Paragraph} from 'react-native-paper';
 import {styles} from "../../theme";
-import {View} from "react-native";
+import {Image, View} from "react-native";
 import {log, shortName} from "../../libs/function";
 
 import {ProIcon} from "../index";
@@ -12,7 +12,7 @@ export default class Index extends React.Component<any> {
 
 
     render() {
-        let {label, value, size, fontsize, lineheight, iconName, more}: any = this.props;
+        let {label, value, size, fontsize, lineheight, iconName, more,thumbnailPath}: any = this.props;
 
         const initials = shortName(label),
             charIndex = initials && initials.charCodeAt(0) - 65,
@@ -20,6 +20,10 @@ export default class Index extends React.Component<any> {
 
         if (!Boolean(size)) {
             size = 35
+        }
+
+        if(Boolean(thumbnailPath)){
+            return <Image source={{uri: thumbnailPath}} style={{width:40,height:40,borderRadius:50}} />
         }
 
         return (

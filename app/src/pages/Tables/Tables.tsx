@@ -211,7 +211,7 @@ const Index = ({tableorders}: any) => {
             return (
                 <Card style={[styles.card,styles.m_2,styles.mb_3,  styles.noshadow, {
                     marginTop:0,
-                    maxWidth: 180, minWidth: 150,
+                    maxWidth: 195, minWidth:185,
                     backgroundColor: Boolean(item.kots?.length) ? styles.yellow.color : Boolean(item.invoiceitems?.length) ? styles.secondary.color : styles.white.color,
                     borderRadius: 5
                 }, styles.flexGrow,]} key={item.tableid}>
@@ -240,7 +240,7 @@ const Index = ({tableorders}: any) => {
 
                                 <View style={[styles.mt_3]}>
                                     <Paragraph
-                                        style={[styles.paragraph, styles.text_lg, styles.bold, {color: 'black'}]}>{toCurrency(item.vouchertotaldisplay)}</Paragraph>
+                                        style={[styles.paragraph,  styles.bold,styles.text_lg, {color: 'black'}]}>{toCurrency(item.vouchertotaldisplay)}</Paragraph>
                                 </View>
 
                             </>}

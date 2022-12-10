@@ -51,6 +51,9 @@ const Index = (props: any) => {
             keyboardDismissMode={'on-drag'}
             keyboardShouldPersistTaps={'always'}
             initialNumToRender={5}
+            ListEmptyComponent={() => {
+                return (<View style={[]}><Paragraph  style={[styles.paragraph, styles.p_6, styles.muted, {textAlign: 'center'}]}>No any Holding Orders</Paragraph></View>)
+            }}
         />
     </View>
 }

@@ -21,7 +21,7 @@ import {updateCartField} from "../../redux-store/reducer/cart-data";
 import GroupHeading from "./GroupHeading";
 
 
-const Item = memo(({item}: any) => {
+export const Item = memo(({item}: any) => {
     //item = JSON.parse(item?.data);
 
     const pricingtype = item?.pricing?.type;
@@ -51,61 +51,14 @@ const Item = memo(({item}: any) => {
             }}
             left={() => <View style={{marginTop:5}}><Avatar label={item.itemname} value={item.itemid} fontsize={14} size={40}/></View>}
             right={() => {
-
+                appLog('item?.productqnt',item?.productqnt)
                 if(Boolean(item?.productqnt) && !hasKot){
                     return <View><AddButton item={item} page={'itemlist'}/></View>
                 }
-                return  <List.Icon icon="plus"/>
+                return  <List.Icon icon="plus" style={{height:35,width:35,margin:0}} />
             }}
         />
     )
-
-   /* return (<TouchableOpacity onPress={() => {
-        !Boolean(item?.productqnt) && selectItem(item)
-    }} style={[styles.noshadow]}>
-        <View>
-            <View>
-                <View style={[styles.grid, styles.top, styles.noWrap, styles.p_4]}>
-
-                    <View>
-                        <Avatar label={item.itemname} value={item.itemid} fontsize={12} size={35}/>
-                    </View>
-
-                    <View style={[styles.w_auto,styles.ml_2]}>
-                        <Paragraph style={[styles.paragraph, styles.text_sm, styles.bold]}>{item.itemname}</Paragraph>
-
-                        <View style={[styles.grid, styles.middle]}>
-                            {hasRestaurant && <View style={[styles.mr_1]}>
-                                <VegNonVeg type={item.veg}/>
-                            </View>}
-                            <Paragraph style={[styles.paragraph, styles.text_xs]}>
-                                {toCurrency(baseprice)}
-                            </Paragraph>
-                        </View>
-                    </View>
-
-                    {<View style={[styles.ml_auto]}>
-                        {
-                            (Boolean(item?.productqnt) && !hasKot) ? <AddButton item={item} page={'itemlist'}/> : <>
-                                <View style={[styles.grid, styles.middle, {
-                                    minWidth: 50,
-                                    borderRadius: 5,
-                                    padding: 5,
-                                    backgroundColor: styles.secondary.color
-                                }]}>
-                                    <Paragraph
-                                        style={[styles.paragraph, styles.caption, styles.flexGrow, styles.textCenter, styles.px_6, {color: styles.primary.color}]}> Add </Paragraph>
-                                </View></>
-                        }
-
-                    </View>}
-
-                </View>
-
-            </View>
-
-        </View>
-    </TouchableOpacity>)*/
 
 
 }, (r1, r2) => {

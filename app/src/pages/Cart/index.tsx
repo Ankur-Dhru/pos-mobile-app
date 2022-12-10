@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
-import {appLog, getTempOrders, isRestaurant, saveTempLocalOrder, voucherData} from "../../libs/function";
+import {appLog, cancelOrder, getTempOrders, isRestaurant, saveTempLocalOrder, voucherData} from "../../libs/function";
 import Cart from "./Cart";
 import {device, localredux, PRODUCTCATEGORY, VOUCHER} from "../../libs/static";
 import {useDispatch} from "react-redux";
-import {Appbar, withTheme} from "react-native-paper";
+import {Appbar, Menu, withTheme} from "react-native-paper";
 import {setSelected} from "../../redux-store/reducer/selected-data";
 import {refreshCartData, setCartData} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
@@ -11,9 +11,11 @@ import PageLoader from "../../components/PageLoader";
 
 import SearchItem from "../Items/SearchItem";
 import store from "../../redux-store/store";
-import {setDialog} from "../../redux-store/reducer/component";
+import {setBottomSheet, setDialog} from "../../redux-store/reducer/component";
 import Paxes from "../Tables/Paxes";
 import {setTableOrders} from "../../redux-store/reducer/table-orders-data";
+import HoldOrders from "./HoldOrders";
+import DeleteButton from "../../components/Button/DeleteButton";
 
 const Index = (props: any) => {
 
@@ -23,6 +25,10 @@ const Index = (props: any) => {
 
     const dispatch = useDispatch();
     const navigation = useNavigation()
+
+    const [visible, setVisible] = React.useState(false);
+    const openMenu = () => setVisible(true);
+    const closeMenu = () => setVisible(false);
 
 
     useEffect(() => {
@@ -90,11 +96,34 @@ const Index = (props: any) => {
         })
     }
 
+
+
+
     if (!device.tablet) {
         navigation.setOptions({
-            headerRight: () => <Appbar.Action icon={'magnify'} onPress={() => {
+            headerRight: () =><><Appbar.Action icon={'magnify'} onPress={() => {
                 navigation.navigate('SearchItem')
             }}/>
+
+                {!isRestaurant() &&   <Menu
+                    visible={visible}
+                    onDismiss={closeMenu}
+                    anchor={<Appbar.Action icon={'dots-vertical'} onPress={() => {
+                        openMenu()
+                    }}/>}>
+
+
+                    {!isRestaurant() && <Menu.Item onPress={async () => { 
+                        closeMenu()
+                        await dispatch(setBottomSheet({
+                            visible: true,
+                            height: '50%',
+                            component: () => <HoldOrders/>
+                        }))
+                    }} title="Holding Orders"/>}
+                </Menu>}
+
+            </>
         })
     }
 

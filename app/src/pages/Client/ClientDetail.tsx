@@ -8,21 +8,23 @@ import Avatar from "../../components/Avatar";
 import {useNavigation} from "@react-navigation/native";
 
 
-const Index = ({clientid, clientname}: any) => {
+const Index = ({clientdetail,clientid,clientname}: any) => {
 
-
-    const [client, setClient]: any = useState({});
 
     const navigation = useNavigation()
 
-    useEffect(() => {
-        setClient({label: clientname, value: clientid})
-    }, [clientid])
 
     return <Card style={[styles.card,{minWidth:360,paddingLeft:10}]} onPress={() => {
         navigation.navigate('ClientList');
     }}>
-        <List.Item style={[styles.listitem]} titleStyle={[styles.bold]}  title={client.label}   right={()=> <List.Icon icon="chevron-right"/>  }/>
+        <List.Item style={[styles.listitem]}
+                   titleStyle={[styles.bold]}
+                   title={clientname || clientdetail?.displayname}
+                   left={() => <View style={{marginTop:8}}>
+                       <Avatar label={clientname || clientdetail?.displayname} thumbnailPath={clientdetail?.thumbnailPath} value={clientid || clientdetail?.clientid} fontsize={14} size={40}/>
+                   </View>}
+                   right={()=> <List.Icon icon="chevron-right"/>  }
+        />
     </Card>
 
 
@@ -66,8 +68,9 @@ const Index = ({clientid, clientname}: any) => {
 }
 
 const mapStateToProps = (state: any) => ({
-    clientid: state.cartData.clientid,
-    clientname: state.cartData.clientname,
+    clientid:state.cartData.clientid,
+    clientname:state.cartData.clientname,
+    clientdetail:state.cartData.client
 })
 
 

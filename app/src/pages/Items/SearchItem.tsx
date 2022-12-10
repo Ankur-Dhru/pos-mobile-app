@@ -1,11 +1,11 @@
 import {device, ItemDivider} from "../../libs/static";
-import React, {memo, useEffect, useRef, useState} from "react";
+import React, {memo, useCallback, useEffect, useRef, useState} from "react";
 import {FlatList, Text, TouchableOpacity, View} from "react-native";
 import {Card, Divider, List, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
 import {Container, SearchBox} from "../../components";
 
-import {selectItem, toCurrency} from "../../libs/function";
+import {appLog, isRestaurant, selectItem, toCurrency} from "../../libs/function";
 
 import AddButton from "./AddButton";
 import {connect, useDispatch} from "react-redux";
@@ -13,12 +13,10 @@ import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 
 import {AddItem} from "./ItemListTablet";
 import {useNavigation} from "@react-navigation/native";
-import Search from "../../components/SearchBox";
-import VegNonVeg from "./VegNonVeg";
-import Avatar from "../../components/Avatar";
+import CartTotal from "../Cart/CartTotal";
+import {Item} from "./ItemListMobile";
 
-
-const Item = memo(({item}: any) => {
+/*const Item = memo(({item}: any) => {
 
     const navigation = useNavigation();
 
@@ -27,10 +25,11 @@ const Item = memo(({item}: any) => {
             style={[styles.listitem]}
             key={item.itemid}
             title={item.itemname}
-            titleStyle={{textTransform: 'capitalize'}}
+            titleStyle={[styles.bold,{textTransform: 'capitalize'}]}
+
             onPress={() => {
                 selectItem(item).then();
-                navigation.goBack()
+                //navigation.goBack()
             }}
 
             right={() => {
@@ -41,12 +40,12 @@ const Item = memo(({item}: any) => {
 
 }, (r1, r2) => {
     return ((r1.item.productqnt === r2.item.productqnt) && (r1.item.itemid === r2.item.itemid));
-})
+})*/
 
-const Index = ({navigation}: any) => {
+const Index = ({navigation,invoiceitems}: any) => {
 
 
-    let [items, setItems] = useState([]);
+    let [items, setItems]:any = useState([]);
     let [search, setSearch] = useState('');
     const [loading, setLoading]: any = useState(true);
 
@@ -56,7 +55,7 @@ const Index = ({navigation}: any) => {
         if (Boolean(search)) {
             setSearch(search);
             await getItemsByWhere({itemname: search, start: 0}).then((items) => {
-                setItems(items);
+                mergeVoucherItem(items)
                 setLoading(true)
             });
         }
@@ -67,17 +66,28 @@ const Index = ({navigation}: any) => {
         }
     }
 
+    const mergeVoucherItem = (items?:any) => {
+        let newitems = items?.map((i: any) => {
+            const find = invoiceitems.filter((ii: any) => {
+                return ((+i.itemid === +ii.itemid) && Boolean(ii.added));
+            })
+            if (Boolean(find) && Boolean(find[0])) {
+                return find[0]
+            }
+            return {...i,productqnt:0}
+        })
+        setItems(newitems);
+    }
+
+    useEffect(()=>{
+        mergeVoucherItem(items)
+    },[invoiceitems])
 
 
-    useEffect(() => {
-        device.search = search
-    }, [search])
 
-    const renderitems = (i: any) => {
-        return (
-            <Item item={i.item} index={i.index} search={true} key={i.item.key || i.item.productid}/>
-        );
-    };
+    const renderItem = useCallback(({item, index}: any) => {
+        return <Item item={item} index={index} key={item.key || item.productid}/>
+    }, [search]);
 
     return (
         <Container style={{backgroundColor:'white',padding:0}}>
@@ -96,7 +106,7 @@ const Index = ({navigation}: any) => {
                             data={items}
                             keyboardDismissMode={'on-drag'}
                             keyboardShouldPersistTaps={'always'}
-                            renderItem={renderitems}
+                            renderItem={renderItem}
                             ItemSeparatorComponent={ItemDivider}
                             ListEmptyComponent={Boolean(search.length > 0) ? <View>
                                 <View style={[styles.p_6]}>
@@ -113,6 +123,11 @@ const Index = ({navigation}: any) => {
                         />}
                     </Card.Content>
                 </Card>
+
+
+                {!device.tablet &&  <View style={[styles.p_3]}>
+                    <CartTotal/>
+                </View>}
 
             </View>
         </Container>

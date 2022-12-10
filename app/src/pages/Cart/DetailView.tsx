@@ -65,9 +65,6 @@ const Index = (props: any) => {
                             component: () => <HoldOrders/>
                         }))
                     }} title="Holding Orders"/>}
-
-
-
                 </Menu>
             </View>
         }

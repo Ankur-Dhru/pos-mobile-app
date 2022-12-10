@@ -4,7 +4,7 @@ import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-nati
 import {Card, Divider, List, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
 import {Container, SearchBox} from "../../components";
-
+import {Image} from "react-native";
 import {appLog, gePhonebook} from "../../libs/function";
 
 
@@ -40,7 +40,8 @@ const Item = memo(({client}: any) => {
                let clientdetail = {
                     phone: client?.phone,
                     displayname: client?.displayname,
-                    clientid:  client.clientid,
+                    clientid:  client?.clientid,
+                    thumbnailPath:client?.thumbnailPath,
                     clienttype: 0,
                 }
 
@@ -48,7 +49,9 @@ const Item = memo(({client}: any) => {
                 navigation.goBack();
 
             }}
-            left={() => <View style={{marginTop:5}}><Avatar label={client.displayname} value={client.clientid} fontsize={14} size={40}/></View>}
+            left={() => <View style={{marginTop:5}}>
+                <Avatar label={client.displayname} thumbnailPath={client?.thumbnailPath} value={client.clientid} fontsize={14} size={40}/>
+            </View>}
 
         />
     )
@@ -128,7 +131,7 @@ const Index = (props: any) => {
                             }
                             renderItem={renderclients}
                             ItemSeparatorComponent={ItemDivider}
-                            ListEmptyComponent={Boolean(search.length > 0) ? <View>
+                            ListEmptyComponent={Boolean(search?.length > 0) ? <View>
                                 <View style={[styles.p_6]}>
                                     <Text
                                         style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> No
@@ -150,8 +153,7 @@ const Index = (props: any) => {
                                 </View>
 
                             </View> : <View style={[styles.p_6]}>
-                                <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>Search
-                                    Client from here</Text>
+                                <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>Search client from here</Text>
                             </View>}
                             keyExtractor={client => client.clientid}
                         />}

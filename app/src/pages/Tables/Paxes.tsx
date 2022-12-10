@@ -12,7 +12,7 @@ const Paxes = () => {
     const dispatch = useDispatch();
 
     const onClickPax = (item: any) => {
-        dispatch(updateCartField({pax:item}))
+        dispatch(updateCartField({paxes:item,pax:item}))
         dispatch(setDialog({visible: false}))
     }
 

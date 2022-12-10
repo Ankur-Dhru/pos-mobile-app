@@ -6,7 +6,7 @@ import {TABLE} from "./config";
 
 
 
-export const getItemsByWhere = async ({itemgroupid,itemname,start}:any) => {
+export const getItemsByWhere = async ({itemgroupid,itemname,itemid,start}:any) => {
     const db = await getDBConnection();
 
     try {
@@ -20,6 +20,9 @@ export const getItemsByWhere = async ({itemgroupid,itemname,start}:any) => {
             }
             if(Boolean(itemname)){
                 where += ` and (itemname LIKE '%${itemname}%' or uniqueproductcode = '${itemname}') `;
+            }
+            if(Boolean(itemid)){
+                where += ` and (itemid = '${itemid}') `;
             }
 
            const query = `SELECT * FROM ${TABLE.ITEM} where  ${where}`; // limit ${start*20},20

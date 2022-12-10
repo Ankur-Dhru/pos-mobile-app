@@ -52,7 +52,7 @@ import {sendDataToPrinter} from "./Network";
 import {CommonActions} from "@react-navigation/native";
 import {getAddonByWhere, getClientsByWhere, getOrdersByWhere, getTempOrdersByWhere} from "./Sqlite/selectData";
 import Contacts from "react-native-contacts";
-import {PERMISSIONS} from "react-native-permissions";
+import {PERMISSIONS, requestMultiple} from "react-native-permissions";
 import ZeroPriceAlert from "../pages/Items/ZeroPriceAlert";
 import {deleteTable} from "./Sqlite/deleteData";
 import {TABLE} from "./Sqlite/config";
@@ -1994,13 +1994,12 @@ export const gePhonebook = async (force?: any) => {
                     appLog("Contact permission denied");
                 }
             } catch (err) {
-
                 console.warn(err);
             }
         }
 
         if (Platform.OS === "ios") {
-            await PermissionsAndroid.requestMultiple([PERMISSIONS.IOS.CONTACTS]).then(async (statuses: any) => {
+            requestMultiple([PERMISSIONS.IOS.CONTACTS]).then(async (statuses: any) => {
                 if (statuses[PERMISSIONS.IOS.CONTACTS]) {
                     await loadContacts()
                 }

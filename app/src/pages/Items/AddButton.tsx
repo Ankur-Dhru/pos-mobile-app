@@ -72,7 +72,7 @@ const Index = (props: any) => {
                         style={[{color: colors.secondary}]}
                     >{parseFloat(item?.productqnt || 1)}</Paragraph>
                 </TouchableOpacity>
-                {<TouchableOpacity style={[styles.py_4]} onPress={() => {
+                {<TouchableOpacity style={[styles.py_3]} onPress={() => {
                     updateItem(item, 'add').then(r => {
                     })
                 }}>

@@ -1,6 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit'
-import {appLog, clone, isEmpty, voucherTotal} from "../../libs/function";
-import {current, defaultclient} from "../../libs/static";
+import {appLog, clone, isEmpty, voucherData, voucherTotal} from "../../libs/function";
+import {current, defaultclient, VOUCHER} from "../../libs/static";
 import {v4 as uuid} from "uuid";
 
 /**
@@ -139,7 +139,8 @@ export const cartData = createSlice({
             }
         },
         resetCart: (state:any) => {
-            return clone({...intialState,ordertype:state.ordertype});
+            const voucherDataJson: any = voucherData(VOUCHER.INVOICE, false);
+            return clone({...intialState,...voucherDataJson,ordertype:state.ordertype});
         }
     },
 });

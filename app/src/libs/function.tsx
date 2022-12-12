@@ -34,7 +34,7 @@ import {
 
 import {setSettings} from "../redux-store/reducer/local-settings-data";
 import React from "react";
-import {Alert, PermissionsAndroid, Platform, Text} from "react-native";
+import {Alert, PermissionsAndroid, Platform,  Text} from "react-native";
 import {deleteOrder, setTableOrders, setTableOrdersData} from "../redux-store/reducer/table-orders-data";
 import {v4 as uuid} from "uuid";
 import SyncingInfo from "../pages/Pin/SyncingInfo";
@@ -56,6 +56,11 @@ import {PERMISSIONS, requestMultiple} from "react-native-permissions";
 import ZeroPriceAlert from "../pages/Items/ZeroPriceAlert";
 import {deleteTable} from "./Sqlite/deleteData";
 import {TABLE} from "./Sqlite/config";
+
+import RNFetchBlob from "rn-fetch-blob";
+import RNHTMLtoPDF from "react-native-html-to-pdf";
+import RNPrint from "react-native-print";
+import Share from "react-native-share";
 
 
 let NumberFormat = require('react-number-format');
@@ -2076,13 +2081,12 @@ export const syncInvoice = (invoiceData: any) => {
             other: {url: posUrl},
         }).then((response: any) => {
 
-
             if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
 
                 deleteTable(TABLE.ORDER,`orderid = '${invoiceData?.orderid}'`).then(async ()=>{
                     store.dispatch(setOrder({...invoiceData, synced: true}))
                     resolve('synced')
-                })
+                });
 
             } else {
                 resolve({status: "ERROR"})
@@ -2097,5 +2101,36 @@ export const syncInvoice = (invoiceData: any) => {
 export const nextFocus = (ref:any) => {
     setTimeout(()=>{
         ref?.current?.focus()
+    })
+}
+
+
+
+export const printPDF = async ({data, filename}: any) => {
+    const results: any = await RNHTMLtoPDF.convert({
+        html: data,
+        fileName: `${filename}.pdf`,
+        base64: true,
+    })
+    await RNPrint.print({filePath: results.filePath})
+}
+
+export const sharePDF = async ({data, filename}: any) => {
+
+    await RNHTMLtoPDF.convert({
+        html: data,
+        fileName: `${filename}.pdf`,
+        base64: true,
+    }).then((results: any) => {
+        try {
+            Share.open({
+                title: 'Share',
+                message: `${filename}.pdf`,
+                subject: `Share ${filename}.pdf`,
+                url: 'data:application/pdf;base64,' + results.base64,
+            });
+        } catch (error) {
+
+        }
     })
 }

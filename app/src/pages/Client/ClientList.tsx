@@ -34,7 +34,6 @@ const Item = memo(({client}: any) => {
 
                 if(client.phonebook === 1){
                     client.phone = client.clientid;
-                    client.clientid = 0;
                 }
 
                let clientdetail = {
@@ -44,6 +43,8 @@ const Item = memo(({client}: any) => {
                     thumbnailPath:client?.thumbnailPath,
                     clienttype: 0,
                 }
+
+                appLog('clientdetail',clientdetail)
 
                 store.dispatch(updateCartField({newclient: Boolean(client.phonebook),clientid: client.clientid,clientname: client.displayname,client:clientdetail}));
                 navigation.goBack();

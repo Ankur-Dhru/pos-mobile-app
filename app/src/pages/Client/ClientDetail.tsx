@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {chevronRight} from "../../libs/function";
+import {appLog, chevronRight} from "../../libs/function";
 import {View} from "react-native";
 import {Card, List, Paragraph, Text} from "react-native-paper";
 import {styles} from "../../theme";
@@ -12,7 +12,6 @@ const Index = ({clientdetail,clientid,clientname}: any) => {
 
 
     const navigation = useNavigation()
-
 
     return <Card style={[styles.card,{minWidth:360,paddingLeft:10}]} onPress={() => {
         navigation.navigate('ClientList');

@@ -51,7 +51,7 @@ export const Item = memo(({item}: any) => {
             }}
             left={() => <View style={{marginTop:5}}><Avatar label={item.itemname} value={item.itemid} fontsize={14} size={40}/></View>}
             right={() => {
-                appLog('item?.productqnt',item?.productqnt)
+
                 if(Boolean(item?.productqnt) && !hasKot){
                     return <View><AddButton item={item} page={'itemlist'}/></View>
                 }

@@ -26,7 +26,7 @@ import {
 } from "../../libs/static";
 import apiService from "../../libs/api-service";
 import ProIcon from "../../components/ProIcon";
-import {AddItem} from "../Items/ItemListTablet";
+
 import moment from "moment";
 
 
@@ -65,6 +65,7 @@ const Index = ({ordersData}:any) => {
         const {workspace, tax}: any = localredux.initData;
 
         const {token}: any = localredux.authData;
+
 
 
         await apiService({
@@ -108,6 +109,7 @@ const Index = ({ordersData}:any) => {
         return <TouchableOpacity style={[styles.p_5]}>
             <View
                 style={[styles.grid, styles.noWrap, styles.middle, styles.justifyContentSpaceBetween]}>
+
                 <View style={[styles.w_auto]}>
                     <View style={[styles.grid, styles.noWrap, styles.top]}>
 
@@ -125,15 +127,20 @@ const Index = ({ordersData}:any) => {
                         <ProIcon name={'print'} type={'solid'} size={15}/>
                     </TouchableOpacity>}
                 </View>
-                {<View style={{width: 80}}>
+                {<View style={{width: 100}}>
                     <Paragraph
                         style={[styles.paragraph, styles.text_xs, {textAlign: 'right'}]}>{toCurrency(item?.vouchertotaldisplay)}</Paragraph>
-                    {Boolean(item?.voucherdisplayid) &&
+                    {Boolean(item?.voucherdisplayid) ?
                         <Paragraph
                             style={[styles.paragraph, styles.text_xs, {
                                 textAlign: 'right',
                                 color: styles.green.color
-                            }]}>Synced</Paragraph>
+                            }]}>Synced</Paragraph> :
+                        <Paragraph
+                            style={[styles.paragraph, styles.text_xs, {
+                                textAlign: 'right',
+                                color: styles.red.color
+                            }]}>Sync in progress...</Paragraph>
                     }
                 </View>}
             </View>

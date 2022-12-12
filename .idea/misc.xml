@@ -15,17 +15,22 @@
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-get-random-values/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-gradle-plugin" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-haptic-feedback/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-html-to-pdf/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-pager-view/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-permissions/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-print/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-reanimated/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-safe-area-context/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-screens/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-share/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-sqlite-storage/platforms/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-sqlite-storage/platforms/android-native" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-svg/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-tcp-socket/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-vector-icons/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-webview/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native/ReactAndroid" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/rn-fetch-blob/android" />
     <file type="web" url="file://$USER_HOME$/node_modules/react-native-esc-pos-printer/android" />
   </component>
   <component name="PWA">

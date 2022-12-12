@@ -32,15 +32,20 @@
             <option value="$PROJECT_DIR$/app/node_modules/react-native-gesture-handler/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-get-random-values/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-gradle-plugin" />
+            <option value="$PROJECT_DIR$/app/node_modules/react-native-html-to-pdf/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-pager-view/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-permissions/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/react-native-print/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-reanimated/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-safe-area-context/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-screens/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/react-native-share/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-sqlite-storage/platforms/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-svg/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-tcp-socket/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-vector-icons/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/react-native-webview/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/rn-fetch-blob/android" />
           </set>
         </option>
       </GradleProjectSettings>

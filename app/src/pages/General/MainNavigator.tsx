@@ -68,7 +68,7 @@ const MainStackNavigator = () => {
                         syncInvoice(invoice).then()
                     }
                 })
-            }, 60000);
+            }, 10000);
         }
         CheckConnectivity()
         return () => {

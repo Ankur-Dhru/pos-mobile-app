@@ -181,7 +181,7 @@ const Terminal = (props: any) => {
                                             </Field>
                                         </View>
 
-                                        <View>
+                                        {/*<View>
                                             <Field name="timezone">
                                                 {props => (
                                                     <InputField
@@ -200,7 +200,7 @@ const Terminal = (props: any) => {
                                                     </InputField>
                                                 )}
                                             </Field>
-                                        </View>
+                                        </View>*/}
 
                                     </View>
                                 </View>

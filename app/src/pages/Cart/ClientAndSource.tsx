@@ -507,7 +507,7 @@ const ClientAndSource = (props: any) => {
                     <View style={[styles.submitbutton,styles.px_3,styles.mb_3]}>
                         <Button more={{color:'white'}}  onPress={() => {
 
-                            const {selectedClient,table,ordersource,advance} = globalTable;
+                            let {selectedClient,table,ordersource,advance} = globalTable;
 
                             let clientDisplayName = selectedClient?.displayname?.trim();
 
@@ -516,6 +516,21 @@ const ClientAndSource = (props: any) => {
                             let isPaxes = !isEmpty(table) && Boolean(table?.paxes);
 
                             if (Boolean(clientDisplayName) && (isSource ? Boolean(ordersource) : true) && (isReserveTable ? selectedTable && isPaxes : true)) {
+
+                                if(selectedClient.phonebook === 1){
+                                    selectedClient.phone = selectedClient.clientid;
+                                    selectedClient.clientid = 0;
+                                }
+
+                                selectedClient = {
+                                    ...selectedClient,
+                                    phone: selectedClient?.phone,
+                                    displayname: selectedClient?.displayname,
+                                    clientid:  selectedClient?.clientid,
+                                    thumbnailPath:selectedClient?.thumbnailPath,
+                                    clienttype: 0,
+                                }
+
                                 let pass = {
                                     ordersource: "POS",
                                     tablename: tabledetails.tablename,
@@ -526,6 +541,8 @@ const ClientAndSource = (props: any) => {
                                     advanceorder: isAdvanceorder ? advance : false,
                                     reservetable: isReserveTable ? table : false
                                 }
+
+
 
                                 if (isSource) {
                                     pass = {

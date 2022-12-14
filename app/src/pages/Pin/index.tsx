@@ -1,10 +1,11 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 
 import {Image, TouchableOpacity, View} from "react-native";
 import Container from "../../components/Container";
 import ReactNativePinView from "react-native-pin-view"
 import {useDispatch} from "react-redux";
 import {
+    appLog,
     gePhonebook,
     getAddons,
     getClients,
@@ -18,12 +19,13 @@ import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/compon
 import {Card, Paragraph, Text} from "react-native-paper";
 import {styles} from "../../theme";
 import moment from "moment/moment";
-import {localredux} from "../../libs/static";
+import {db, localredux} from "../../libs/static";
 import {setSettings} from "../../redux-store/reducer/local-settings-data";
 
 import {setGroupList} from "../../redux-store/reducer/group-list";
 import store from "../../redux-store/store";
 import {setTableOrdersData} from "../../redux-store/reducer/table-orders-data";
+import {createTables} from "../../libs/Sqlite";
 
 
 const md5 = require('md5');
@@ -39,6 +41,20 @@ const Index = (props: any) => {
     const [enteredPin, setEnteredPin] = useState("")
 
 
+
+    const loadDataCallback = useCallback(async () => {
+        try {
+            createTables().then()
+        } catch (error) {
+            appLog('error',error);
+        }
+    }, []);
+
+    useEffect(() => {
+        loadDataCallback().then(r => {});
+    }, [loadDataCallback]);
+
+
     useEffect(() => {
 
         setTimeout(async () => {
@@ -49,7 +65,7 @@ const Index = (props: any) => {
 
                     dispatch(showLoader())
 
-                    await retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
+                    await retrieveData(db.name).then(async (data: any) => {
 
                         const {
                             initData,
@@ -82,7 +98,7 @@ const Index = (props: any) => {
                                     await dispatch(setGroupList(itemgroup))
                                 }
 
-                                await retrieveData('fusion-pro-pos-mobile-settings').then(async (data: any) => {
+                                await retrieveData(`${db.name}-settings`).then(async (data: any) => {
                                     await dispatch(setSettings(data));
                                 })
 

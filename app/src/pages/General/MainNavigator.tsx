@@ -45,6 +45,7 @@ import CancelReason from "../Cart/CancelReason";
 import ClientList from "../Client/ClientList";
 import KotNote from "../Cart/KotNote";
 import GeneralSettings from "../GeneralSettings";
+import Preview from "../Preview";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -68,7 +69,7 @@ const MainStackNavigator = () => {
                         syncInvoice(invoice).then()
                     }
                 })
-            }, 10000);
+            }, 60000);
         }
         CheckConnectivity()
         return () => {
@@ -167,8 +168,7 @@ const ClientAreaStackNavigator = (props: any) => {
                           options={({route}: any) => ({headerShown: !device.tablet, title: route?.params?.tablename})}/>
 
 
-            <Stack.Screen name={'SearchItem'} component={SearchItem}
-                          options={{headerShown: false, headerTitle: 'Search Item'}}/>
+            <Stack.Screen name={'SearchItem'} component={SearchItem}  options={{headerShown: false, headerTitle: 'Search Item'}}/>
             <Stack.Screen name={'DetailViewNavigator'} component={DetailView} options={{headerTitle: 'Detail view'}}/>
 
             <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem} options={{headerTitle: 'Add Item'}}/>
@@ -211,6 +211,8 @@ const ProfileSettingsNavigator = (props: any) => {
             <Stack.Screen name={'ProfileSettingsNavigator'} component={General} options={{headerShown: false}}/>
 
             <Stack.Screen name={'SalesReportNavigator'} component={Report} options={{headerTitle: 'Sales Report'}}/>
+
+            <Stack.Screen name={'Preview'} component={Preview} options={{headerTitle: 'Preview'}}/>
 
             <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem} options={{headerTitle: 'Add Item'}}/>
             <Stack.Screen name={'AddEditCategory'} component={AddEditCategory} options={{headerTitle: 'Add Category'}}/>

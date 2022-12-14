@@ -2,28 +2,27 @@ import React, {Component} from "react";
 import {Keyboard, View} from "react-native";
 import {styles} from "../../theme";
 import {Button, Container} from "../../components";
-import {Card, Title, withTheme} from "react-native-paper";
-import {appLog, assignOption, errorAlert, getStateList, log, nextFocus} from "../../libs/function";
+import {Card, withTheme} from "react-native-paper";
+import {appLog, assignOption, errorAlert, getStateList, log, retrieveData, storeData} from "../../libs/function";
 import {Field, Form} from "react-final-form";
 import InputField from "../../components/InputField";
 import {
     ACTIONS,
-    adminUrl,
     composeValidators,
     countrylist,
     dateformats,
+    db,
     localredux,
     METHOD,
     months,
     required,
-    STATUS
+    STATUS, urls
 } from "../../libs/static";
 import {v4 as uuidv4} from 'uuid';
 import KeyboardScroll from "../../components/KeyboardScroll";
 import KAccessoryView from "../../components/KAccessoryView"
 import apiService from "../../libs/api-service";
 import {isArray} from "util";
-
 
 
 class Index extends Component<any, any> {
@@ -37,7 +36,6 @@ class Index extends Component<any, any> {
     constructor(props: any) {
         super(props);
         this._captchaRef = React.createRef();
-
 
 
         this.state = {
@@ -126,12 +124,15 @@ class Index extends Component<any, any> {
     }
 
 
-    getStateAndTaxType(country: any, reset?: boolean) {
+    getStateAndTaxType = async (country: any, reset?: boolean) => {
         let queryString = {country};
-        getStateList(country).then((result: any) => {
+        await getStateList(country).then(async (result: any) => {
             if (result.data) {
+
+                localredux.statelist = Object.keys(result.data).map((k: any) => assignOption(result.data[k].name, k))
+
                 this.setState({
-                    statelist: Object.keys(result.data).map((k: any) => assignOption(result.data[k].name, k))
+                    statelist: localredux.statelist
                 })
             }
         });
@@ -140,31 +141,29 @@ class Index extends Component<any, any> {
 
         const {token}: any = localredux.authData;
 
-        apiService({
+
+        await apiService({
             method: METHOD.GET,
             action: ACTIONS.GETTAXREGISTRATIONTYPE,
             workspace: workspace,
             token: token,
             hideLoader: true,
-            other: {url: adminUrl},
+            other: {url: urls.adminUrl},
             queryString,
         }).then((result) => {
+            localredux.taxtypelist = [];
             if (result.data) {
-                this.setState({
-                    taxtypelist: result.data
-                })
-            } else {
-                this.setState({
-                    taxtypelist: []
-                })
+                localredux.taxtypelist = result.data;
             }
+            this.setState({
+                taxtypelist: localredux.taxtypelist
+            })
         })
 
         if (Boolean(reset)) {
             this.initdata.taxregtype = [];
             this.initdata.taxid = [];
         }
-
     }
 
 
@@ -266,7 +265,7 @@ class Index extends Component<any, any> {
                 action: ACTIONS.SETTINGS,
                 workspace: workspace,
                 token: token,
-                other: {url: adminUrl},
+                other: {url: urls.adminUrl},
                 body: {'settingid': 'general', 'settingdata': settings},
 
             }).then((result) => {
@@ -280,7 +279,6 @@ class Index extends Component<any, any> {
 
 
     }
-
 
 
     render() {
@@ -305,57 +303,55 @@ class Index extends Component<any, any> {
                                     <Card style={[styles.card]}>
                                         <Card.Content style={[styles.cardContent]}>
 
-                                        <View>
-
                                             <View>
 
-                                                {/*<Paragraph style={[styles.paragraph]}>Let's get started by setting up your company
+                                                <View>
+
+                                                    {/*<Paragraph style={[styles.paragraph]}>Let's get started by setting up your company
                                                 profile</Paragraph>*/}
 
-                                                <View>
-                                                    <Field name="legalname" validate={composeValidators(required)}>
-                                                        {props => (
-                                                            <InputField
-                                                                {...props}
-                                                                label={'Legal/Organization Name'}
-                                                                value={props.input.value}
-                                                                inputtype={'textbox'}
-                                                                autoFocus={true}
+                                                    <View>
+                                                        <Field name="legalname" validate={composeValidators(required)}>
+                                                            {props => (
+                                                                <InputField
+                                                                    {...props}
+                                                                    label={'Legal/Organization Name'}
+                                                                    value={props.input.value}
+                                                                    inputtype={'textbox'}
+                                                                    autoFocus={true}
 
-                                                                autoCapitalize={true}
-                                                                onChange={(value: any) => {
-                                                                    props.input.onChange(value)
+                                                                    autoCapitalize={true}
+                                                                    onChange={(value: any) => {
+                                                                        props.input.onChange(value)
+                                                                    }}
+                                                                />
+                                                            )}
+                                                        </Field>
+                                                    </View>
+
+                                                </View>
+                                            </View>
+
+
+                                            {
+                                                this.update && <View>
+                                                    <View>
+
+                                                        <View style={[styles.cardContent, {paddingHorizontal: 0}]}>
+                                                            <InputField
+                                                                label={'Upload A New Logo'}
+                                                                divider={true}
+                                                                inputtype={'attachment'}
+                                                                singleImage={true}
+                                                                navigation={navigation}
+                                                                onChange={(data: any) => {
+                                                                    log("PICK", data);
                                                                 }}
                                                             />
-                                                        )}
-                                                    </Field>
-                                                </View>
-
-                                            </View>
-                                        </View>
-
-
-
-
-                                        {
-                                            this.update && <View>
-                                                <View>
-
-                                                    <View style={[styles.cardContent, {paddingHorizontal: 0}]}>
-                                                        <InputField
-                                                            label={'Upload A New Logo'}
-                                                            divider={true}
-                                                            inputtype={'attachment'}
-                                                            singleImage={true}
-                                                            navigation={navigation}
-                                                            onChange={(data: any) => {
-                                                                log("PICK", data);
-                                                            }}
-                                                        />
+                                                        </View>
                                                     </View>
                                                 </View>
-                                            </View>
-                                        }
+                                            }
 
 
                                         </Card.Content>
@@ -363,195 +359,196 @@ class Index extends Component<any, any> {
 
                                     <Card style={[styles.card]}>
                                         <Card.Content style={[styles.cardContent]}>
-
-                                        <View>
 
                                             <View>
-                                                <View>
-                                                    <Field name="country" validate={composeValidators(required)}>
-                                                        {props => (
-                                                            <InputField
-                                                                {...props}
-                                                                label={'Business Location (Country)'}
-                                                                selectedValue={props.input.value}
-                                                                selectedLabel={`Select Country`}
-                                                                displaytype={'pagelist'}
-                                                                inputtype={'dropdown'}
-                                                                showlabel={false}
-                                                                appbar={true}
-                                                                search={false}
-                                                                listtype={'other'}
-                                                                list={countrylist.map((item) => {
-                                                                    return {label: item.name, value: item.code}
-                                                                })}
-                                                                onChange={(value: any) => {
-                                                                    props.input.onChange(value);
-                                                                    this.getStateAndTaxType(value, true)
-                                                                }}
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                </View>
 
                                                 <View>
-                                                    {Boolean(statelist) &&
-                                                        <Field name="state" validate={composeValidators(required)}>
+                                                    <View>
+                                                        <Field name="country" validate={composeValidators(required)}>
                                                             {props => (
-                                                                <>
-                                                                    <InputField
-                                                                        {...props}
-                                                                        label={'State'}
-                                                                        selectedValue={props.input.value}
-                                                                        selectedLabel={`Select State`}
-                                                                        displaytype={'pagelist'}
-                                                                        inputtype={'dropdown'}
-                                                                        showlabel={false}
-                                                                        appbar={true}
-                                                                        key={uuidv4()}
-                                                                        search={false}
-                                                                        listtype={'other'}
-                                                                        list={statelist}
-                                                                        onChange={(value: any) => {
-                                                                            props.input.onChange(value)
-                                                                        }}
-                                                                    />
-                                                                </>
+                                                                <InputField
+                                                                    {...props}
+                                                                    label={'Business Location (Country)'}
+                                                                    selectedValue={props.input.value}
+                                                                    selectedLabel={`Select Country`}
+                                                                    displaytype={'pagelist'}
+                                                                    inputtype={'dropdown'}
+                                                                    showlabel={false}
+                                                                    appbar={true}
+                                                                    search={false}
+                                                                    listtype={'other'}
+                                                                    list={countrylist.map((item) => {
+                                                                        return {label: item.name, value: item.code}
+                                                                    })}
+                                                                    onChange={(value: any) => {
+                                                                        props.input.onChange(value);
+                                                                        this.getStateAndTaxType(value, true)
+                                                                    }}
+                                                                />
                                                             )}
-                                                        </Field>}
-                                                </View>
+                                                        </Field>
+                                                    </View>
+
+                                                    <View>
+                                                        {Boolean(statelist) &&
+                                                            <Field name="state" validate={composeValidators(required)}>
+                                                                {props => (
+                                                                    <>
+                                                                        <InputField
+                                                                            {...props}
+                                                                            label={'State'}
+                                                                            selectedValue={props.input.value}
+                                                                            selectedLabel={`Select State`}
+                                                                            displaytype={'pagelist'}
+                                                                            inputtype={'dropdown'}
+                                                                            showlabel={false}
+                                                                            appbar={true}
+                                                                            key={uuidv4()}
+                                                                            search={false}
+                                                                            listtype={'other'}
+                                                                            list={statelist}
+                                                                            onChange={(value: any) => {
+                                                                                props.input.onChange(value)
+                                                                            }}
+                                                                        />
+                                                                    </>
+                                                                )}
+                                                            </Field>}
+                                                    </View>
 
 
-                                                <View>
-                                                    <Field name="financialfirstmonth"
-                                                           validate={composeValidators(required)}>
-                                                        {props => (
-                                                            <InputField
-                                                                {...props}
-                                                                label={'Start of Financial Year From'}
-                                                                selectedValue={props.input.value}
-                                                                displaytype={'pagelist'}
-                                                                inputtype={'dropdown'}
-                                                                selectedLabel={`Select Financial Year`}
-                                                                showlabel={false}
-                                                                appbar={true}
-                                                                search={false}
-                                                                listtype={'other'}
-                                                                list={months}
-                                                                onChange={(value: any) => {
-                                                                    props.input.onChange(value)
-                                                                }}
-                                                            />
-                                                        )}
-                                                    </Field>
-                                                </View>
+                                                    <View>
+                                                        <Field name="financialfirstmonth"
+                                                               validate={composeValidators(required)}>
+                                                            {props => (
+                                                                <InputField
+                                                                    {...props}
+                                                                    label={'Start of Financial Year From'}
+                                                                    selectedValue={props.input.value}
+                                                                    displaytype={'pagelist'}
+                                                                    inputtype={'dropdown'}
+                                                                    selectedLabel={`Select Financial Year`}
+                                                                    showlabel={false}
+                                                                    appbar={true}
+                                                                    search={false}
+                                                                    listtype={'other'}
+                                                                    list={months}
+                                                                    onChange={(value: any) => {
+                                                                        props.input.onChange(value)
+                                                                    }}
+                                                                />
+                                                            )}
+                                                        </Field>
+                                                    </View>
 
 
-                                                <View>
-                                                    <Field name="date_format" validate={composeValidators(required)}>
-                                                        {props => (
-                                                            <InputField
-                                                                {...props}
-                                                                label={'Date Format'}
-                                                                selectedValue={props.input.value}
-                                                                displaytype={'pagelist'}
-                                                                inputtype={'dropdown'}
-                                                                selectedLabel={`Select Date Format`}
-                                                                showlabel={false}
-                                                                appbar={true}
-                                                                key={uuidv4()}
-                                                                search={false}
-                                                                listtype={'other'}
-                                                                list={dateformats}
-                                                                onChange={(value: any) => {
-                                                                    props.input.onChange(value)
-                                                                }}
-                                                            />
-                                                        )}
-                                                    </Field>
+                                                    <View>
+                                                        <Field name="date_format"
+                                                               validate={composeValidators(required)}>
+                                                            {props => (
+                                                                <InputField
+                                                                    {...props}
+                                                                    label={'Date Format'}
+                                                                    selectedValue={props.input.value}
+                                                                    displaytype={'pagelist'}
+                                                                    inputtype={'dropdown'}
+                                                                    selectedLabel={`Select Date Format`}
+                                                                    showlabel={false}
+                                                                    appbar={true}
+                                                                    key={uuidv4()}
+                                                                    search={false}
+                                                                    listtype={'other'}
+                                                                    list={dateformats}
+                                                                    onChange={(value: any) => {
+                                                                        props.input.onChange(value)
+                                                                    }}
+                                                                />
+                                                            )}
+                                                        </Field>
+                                                    </View>
+
                                                 </View>
 
                                             </View>
-
-                                        </View>
                                         </Card.Content>
                                     </Card>
 
 
                                     <Card style={[styles.card]}>
                                         <Card.Content style={[styles.cardContent]}>
-                                    <View>
-                                        {
+                                            <View>
+                                                {
 
-                                            (Boolean(values.country) && Boolean(taxtypelist)) &&
-                                            taxtypelist.map(({name, types}: any, index: any) => {
+                                                    (Boolean(values.country) && Boolean(taxtypelist)) &&
+                                                    taxtypelist.map(({name, types}: any, index: any) => {
 
-                                                return (
-                                                    <>
+                                                        return (
+                                                            <>
 
-                                                        <InputField
-                                                            selectedValue={this.initdata.taxregtype[index]}
-                                                            label={'Tax Registration Type'}
-                                                            displaytype={'pagelist'}
-                                                            selectedLabel={"Select Tax Registration Type"}
-                                                            inputtype={'dropdown'}
-                                                            showlabel={false}
-                                                            appbar={true}
-                                                            search={false}
-                                                            key={uuidv4()}
-                                                            listtype={'other'}
-                                                            list={Object.keys(types).filter((k) => types[k].company).map((k) => assignOption(types[k].name, k))}
-                                                            onChange={(value: any) => {
-                                                                this.initdata.taxregtype[index] = value;
-                                                                this.forceUpdate()
-                                                            }}
-                                                        />
+                                                                <InputField
+                                                                    selectedValue={this.initdata.taxregtype[index]}
+                                                                    label={'Tax Registration Type'}
+                                                                    displaytype={'pagelist'}
+                                                                    selectedLabel={"Select Tax Registration Type"}
+                                                                    inputtype={'dropdown'}
+                                                                    showlabel={false}
+                                                                    appbar={true}
+                                                                    search={false}
+                                                                    key={uuidv4()}
+                                                                    listtype={'other'}
+                                                                    list={Object.keys(types).filter((k) => types[k].company).map((k) => assignOption(types[k].name, k))}
+                                                                    onChange={(value: any) => {
+                                                                        this.initdata.taxregtype[index] = value;
+                                                                        this.forceUpdate()
+                                                                    }}
+                                                                />
 
-                                                        {
-                                                            this.initdata.taxregtype[index] &&
-                                                            types[this.initdata.taxregtype[index]]?.fields?.map(
-                                                                ({name, required: req}: any, k: number) => {
-                                                                    let value;
+                                                                {
+                                                                    this.initdata.taxregtype[index] &&
+                                                                    types[this.initdata.taxregtype[index]]?.fields?.map(
+                                                                        ({name, required: req}: any, k: number) => {
+                                                                            let value;
 
-                                                                    if (this.initdata?.taxid[index] && this.initdata?.taxid[index][k]) {
-                                                                        value = this.initdata?.taxid[index][k]
-                                                                    }
+                                                                            if (this.initdata?.taxid[index] && this.initdata?.taxid[index][k]) {
+                                                                                value = this.initdata?.taxid[index][k]
+                                                                            }
 
-                                                                    return <>
+                                                                            return <>
 
-                                                                        <InputField
-                                                                            defaultValue={value}
-                                                                            label={name}
-                                                                            autoCapitalize = {"characters"}
-                                                                            inputtype={'textbox'}
-                                                                            onChange={(value: any) => {
-                                                                                if (!Boolean(this.initdata.taxid[index])) {
-                                                                                    this.initdata.taxid[index] = []
-                                                                                }
-                                                                                this.initdata.taxid[index][k] = value;
+                                                                                <InputField
+                                                                                    defaultValue={value}
+                                                                                    label={name}
+                                                                                    autoCapitalize={"characters"}
+                                                                                    inputtype={'textbox'}
+                                                                                    onChange={(value: any) => {
+                                                                                        if (!Boolean(this.initdata.taxid[index])) {
+                                                                                            this.initdata.taxid[index] = []
+                                                                                        }
+                                                                                        this.initdata.taxid[index][k] = value;
 
-                                                                            }}
-                                                                        />
+                                                                                    }}
+                                                                                />
 
-                                                                    </>
-                                                                })
-                                                        }
-                                                    </>
-                                                )
-                                            })
-                                        }
+                                                                            </>
+                                                                        })
+                                                                }
+                                                            </>
+                                                        )
+                                                    })
+                                                }
 
 
-                                    </View>
+                                            </View>
 
                                         </Card.Content>
                                     </Card>
-
 
 
                                 </KeyboardScroll>
                                 <KAccessoryView>
                                     <View style={[styles.submitbutton]}>
-                                        <Button more={{color:'white'}} disable={more.invalid} secondbutton={more.invalid} onPress={() => {
+                                        <Button more={{color: 'white'}} disable={more.invalid}
+                                                secondbutton={more.invalid} onPress={() => {
                                             handleSubmit(values)
                                         }}>{this.update ? "Save" : "Next"}</Button>
                                     </View>

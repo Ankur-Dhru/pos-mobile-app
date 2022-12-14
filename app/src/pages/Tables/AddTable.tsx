@@ -4,7 +4,7 @@ import {View} from "react-native";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
 import KeyboardScroll from "../../components/KeyboardScroll";
-import {ACTIONS, adminUrl, composeValidators, localredux, METHOD, required, STATUS} from "../../libs/static";
+import {ACTIONS, composeValidators, localredux, METHOD, required, STATUS, urls} from "../../libs/static";
 import Button from "../../components/Button";
 import apiService from "../../libs/api-service";
 import {isEmpty, syncData} from "../../libs/function";
@@ -13,7 +13,7 @@ import {v4 as uuid} from "uuid";
 import KAccessoryView from '../../components/KAccessoryView';
 import {Container} from "../../components";
 import {useNavigation} from "@react-navigation/native";
-import { Card } from "react-native-paper";
+import {Card} from "react-native-paper";
 
 
 const AddTable = (props: any) => {
@@ -33,7 +33,7 @@ const AddTable = (props: any) => {
             action: ACTIONS.SETTINGS,
             workspace: initData.workspace,
             token: authData?.token,
-            other: {url: adminUrl},
+            other: {url: urls.posUrl},
             body: {settingid: 'location', settingdata: [{"key": currentLocation.locationid, "value": currentLocation}]}
         }).then(async (result) => {
             if (result.status === STATUS.SUCCESS && !isEmpty(result.data)) {
@@ -123,7 +123,7 @@ const AddTable = (props: any) => {
 
                             <KAccessoryView>
                                 <View style={[styles.submitbutton]}>
-                                    <Button more={{color:'white'}} disable={more.invalid} secondbutton={more.invalid}
+                                    <Button more={{color: 'white'}} disable={more.invalid} secondbutton={more.invalid}
                                             onPress={() => {
                                                 handleSubmit(values)
                                             }}> Add

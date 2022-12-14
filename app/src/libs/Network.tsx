@@ -17,7 +17,6 @@ export const sendDataToPrinter = async (input: any, template: string, printer: a
         try {
 
             let xmlData = Mustache.render(template, input);
-
             const buffer = EscPos.getBufferFromXML(xmlData);
 
             if (printer?.printertype === 'bluetooth') {

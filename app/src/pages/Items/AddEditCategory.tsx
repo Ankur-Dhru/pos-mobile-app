@@ -4,10 +4,10 @@ import {styles} from "../../theme";
 
 import {Button, Container} from "../../components";
 import {useDispatch} from "react-redux";
-import {appLog, assignOption, syncData} from "../../libs/function";
+import {assignOption, syncData} from "../../libs/function";
 import {Field, Form} from "react-final-form";
 
-import {ACTIONS, adminUrl, device, localredux, METHOD, required, STATUS} from "../../libs/static";
+import {ACTIONS, device, localredux, METHOD, required, STATUS, urls} from "../../libs/static";
 
 import InputField from '../../components/InputField';
 import {v4 as uuidv4} from "uuid";
@@ -42,12 +42,12 @@ const Index = (props: any) => {
         const {token}: any = localredux.authData;
 
         await apiService({
-            method: METHOD.PUT,
-            action: ACTIONS.SETTINGS,
-            body: {settingid: 'itemgroup', settingdata: [{"key": values.itemgroupid, "value": values}]},
+            method: METHOD.POST,
+            action: ACTIONS.CATEGORY,
+            body: values,
             workspace: workspace,
             token: token,
-            other: {url: adminUrl},
+            other: {url: urls.posUrl},
         }).then(async (result) => {
             if (result.status === STATUS.SUCCESS) {
                 dispatch(setGroup(values))
@@ -55,7 +55,7 @@ const Index = (props: any) => {
                 dispatch(setSelected({value: values.itemgroupid, field: 'group'}))
                 await syncData(false).then()
 
-                if(Boolean(callback)){
+                if (Boolean(callback)) {
                     await callback(values)
                     navigation.goBack()
                 }
@@ -92,73 +92,74 @@ const Index = (props: any) => {
     return (
         <Container>
             <SafeAreaView>
-            <Form
-                onSubmit={handleSubmit}
-                initialValues={{...initdata}}
-                render={({handleSubmit, submitting, values, ...more}: any) => (
-                    <View style={[styles.middle]}>
-                        <View style={[styles.middleForm]}>
-                            <ScrollView>
-                                <Card style={[styles.card]}>
+                <Form
+                    onSubmit={handleSubmit}
+                    initialValues={{...initdata}}
+                    render={({handleSubmit, submitting, values, ...more}: any) => (
+                        <View style={[styles.middle]}>
+                            <View style={[styles.middleForm]}>
+                                <ScrollView>
+                                    <Card style={[styles.card]}>
 
-                                    <Card.Content style={[styles.cardContent]}>
-                                        <View>
+                                        <Card.Content style={[styles.cardContent]}>
+                                            <View>
 
-                                            <Field name="itemgroupname" validate={required}>
-                                                {props => (
-                                                    <InputField
-                                                        {...props}
-                                                        value={props.input.value}
-                                                        autoFocus={true}
-                                                        label={'Category Name'}
-                                                        inputtype={'textbox'}
-                                                        onChange={props.input.onChange}
-                                                    />
-                                                )}
-                                            </Field>
-
-
-                                            <Field name="itemgroupmid">
-                                                {props => (
-                                                    <InputField
-                                                        label={'Parent Category'}
-                                                        divider={true}
-                                                        displaytype={'pagelist'}
-                                                        inputtype={'dropdown'}
-                                                        list={option_itemgroups}
-                                                        search={false}
-                                                        listtype={'other'}
-                                                        selectedValue={props.input.value}
-                                                        onChange={(value: any) => {
-                                                            props.input.onChange(value);
-                                                        }}
-                                                    />
-                                                )}
-                                            </Field>
+                                                <Field name="itemgroupname" validate={required}>
+                                                    {props => (
+                                                        <InputField
+                                                            {...props}
+                                                            value={props.input.value}
+                                                            autoFocus={true}
+                                                            label={'Category Name'}
+                                                            inputtype={'textbox'}
+                                                            onChange={props.input.onChange}
+                                                        />
+                                                    )}
+                                                </Field>
 
 
-                                        </View>
+                                                <Field name="itemgroupmid">
+                                                    {props => (
+                                                        <InputField
+                                                            label={'Parent Category'}
+                                                            divider={true}
+                                                            displaytype={'pagelist'}
+                                                            inputtype={'dropdown'}
+                                                            list={option_itemgroups}
+                                                            search={false}
+                                                            listtype={'other'}
+                                                            selectedValue={props.input.value}
+                                                            onChange={(value: any) => {
+                                                                props.input.onChange(value);
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Field>
 
-                                    </Card.Content>
 
-                                </Card>
-                            </ScrollView>
+                                            </View>
 
-                            <KAccessoryView>
+                                        </Card.Content>
 
-                                <View style={[styles.submitbutton]}>
-                                    <Button more={{color:'white'}} disable={more.invalid} secondbutton={more.invalid} onPress={() => {
-                                        handleSubmit(values)
-                                    }}> Add </Button>
-                                </View>
+                                    </Card>
+                                </ScrollView>
 
-                            </KAccessoryView>
+                                <KAccessoryView>
+
+                                    <View style={[styles.submitbutton]}>
+                                        <Button more={{color: 'white'}} disable={more.invalid}
+                                                secondbutton={more.invalid} onPress={() => {
+                                            handleSubmit(values)
+                                        }}> Add </Button>
+                                    </View>
+
+                                </KAccessoryView>
+                            </View>
                         </View>
-                    </View>
-                )}
-            >
+                    )}
+                >
 
-            </Form>
+                </Form>
             </SafeAreaView>
         </Container>
 

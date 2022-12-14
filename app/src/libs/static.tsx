@@ -1,16 +1,27 @@
 import {getType} from "@reduxjs/toolkit";
-import {assignOption} from "./function";
-import {Appbar} from "react-native-paper";
+import {appLog, assignOption, getDatabaseName, getLocalSettings, setAPIUrl, setDB} from "./function";
 import React from "react";
-import Icon from "react-native-fontawesome-pro";
 import {View} from "react-native";
 
 
 export const isDevelopment = process.env.NODE_ENV === "development";
 
-const apiUrl = isDevelopment ? ".api.dhru.com" : ".api.dhru.com";
-export const posUrl: any = `${apiUrl}/pos/v1/`;
-export const adminUrl: any = `${apiUrl}/admin/v1/`;
+
+export let posUrl: any = '';
+export let adminUrl: any = '';
+
+export const urls = {posUrl:'',adminUrl:''}
+export const db = {name:'fusion-pro-pos-mobile'}
+
+
+getLocalSettings('generalsettings').then((r:any) => {
+    setAPIUrl(Boolean(r?.betamode))
+});
+
+
+
+
+
 const mainUrl = "https://api.dhru.com";
 export const loginUrl: any = `${mainUrl}/client/api/v1/`;
 
@@ -33,6 +44,7 @@ export enum ACTIONS {
     VOUCHER = "voucher",
     ITEM = "item",
     ITEMS = "items",
+    CATEGORY = "category",
     LOGIN = "login",
     INIT = "init",
     TERMINAL = "terminal",
@@ -46,6 +58,7 @@ export enum ACTIONS {
     CLIENT = "client",
     CLIENTS = "clients",
     PRINT = "print",
+    REFRESH="refresh",
     LAST_ORDER = "order/lastorder",
     ORDER = "order",
     SALESREPORT = "report/salesreport",
@@ -60,7 +73,7 @@ export enum ACTIONS {
     SERVER_ORDER = "server/order",
     SERVER_PRINTINVOICE = "server/printinvoice",
     SERVER_INVOICE = "server/invoice",
-    SERVER_PRINTING = "server/printing",
+    PRINTING = "printing",
     SERVER_RECEIPT = "server/receipt",
     SETTING = "setting/",
     DRAWER = "drawer",
@@ -189,6 +202,7 @@ export const pricing: any = {
 };
 
 export const screenOptionStyle: any = {
+
     headerTitleAlign: 'center',
     headerLargeTitle: false,
     fullScreenSwipeEnabled: false,
@@ -1573,6 +1587,11 @@ export const supportedPrinterList = [
 ]
 
 
+export const defaultInvoiceTemplate2 = `<text>{{{locationname}}}</text><bold>
+            <text size="1:1">{{{legalname}}}
+</text>
+        </bold>`;
+
 export const defaultInvoiceTemplate = `<align mode="center">
 {{#logo}}
 <image>
@@ -1916,3 +1935,28 @@ export const ItemDivider = () => {
     );
 }
 
+
+
+export enum SIZE {
+    '0:1' = "20px",
+    '1:0' = "20px",
+    '1:1' = "20px",
+    '0:2' = "26px",
+    '2:0' = "26px",
+    '2:2' = "26px",
+    '0:3' = "32px",
+    '3:0' = "32px",
+    '3:3' = "32px",
+    '0:4' = "38px",
+    '4:0' = "38px",
+    '4:4' = "38px",
+    '0:5' = "44px",
+    '5:0' = "44px",
+    '5:5' = "44px",
+    '0:6' = "50px",
+    '6:0' = "50px",
+    '6:6' = "50px",
+    '0:7' = "56px",
+    '7:0' = "56px",
+    '7:7' = "56px",
+}

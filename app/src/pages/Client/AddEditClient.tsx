@@ -5,29 +5,19 @@ import {styles} from "../../theme";
 import {Button, Container} from "../../components";
 import {useDispatch} from "react-redux";
 import {Caption, Card, Paragraph,} from "react-native-paper";
-import {
-    appLog,
-    assignOption,
-    getDefaultCurrency,
-    getStateList,
-    nextFocus,
-    syncData,
-    updateComponent
-} from "../../libs/function";
+import {appLog, assignOption, getDefaultCurrency, nextFocus, syncData, updateComponent} from "../../libs/function";
 import {Field, Form} from "react-final-form";
 
 import {
     ACTIONS,
-    adminUrl,
-    countrylist,
     defalut_payment_term,
-    device,
     isEmail,
     localredux,
     METHOD,
     minLength,
     required,
-    STATUS
+    STATUS,
+    urls
 } from "../../libs/static";
 
 import InputField from '../../components/InputField';
@@ -52,16 +42,13 @@ const Index = (props: any) => {
     const search = props?.route?.params?.search;
 
     const {pricingtemplate, currency, paymentterms, general} = localredux.initData;
-    const [loading, setLoading]: any = useState(false);
+    const {taxtypelist, statelist} = localredux.localSettingsData;
+
     const [displayname, setDisplayname]: any = useState();
-    // const [country,setCountry]:any = useState(general.country);
+    const [loaded, setLoaded] = useState<boolean>(false)
 
-    let inputRef=[useRef(),useRef(),useRef(),useRef(),useRef(),useRef(),useRef(),useRef(),useRef(),useRef(),useRef()];
+    let inputRef = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef(), useRef(), useRef(), useRef(), useRef()];
 
-
-    let statelist: any = [];
-    const taxtypelist: any = [];
-    const refstate: any = '';
     const moreDetailRef = React.useRef<View>(null);
 
     const initdata: any = {
@@ -71,7 +58,7 @@ const Index = (props: any) => {
         lastname: '',
         company: '',
         paymentterm: 'date',
-        clientconfig: {pricingtemplate: 'default', taxregtype: ['c']},
+        clientconfig: {pricingtemplate: 'default', taxregtype: ['c'], taxid: []},
         clienttype: 0,
         country: general.country,
         currency: getDefaultCurrency(),
@@ -86,42 +73,21 @@ const Index = (props: any) => {
 
     useEffect(() => {
 
-        setTimeout(() => {
-            getState(initdata.country);
+        if (!initdata.clientid) {
+            initdata.clientconfig.taxregtype = []
+            initdata.clientconfig.taxid = [];
 
-            apiService({
-                method: METHOD.GET,
-                action: ACTIONS.GETTAXREGISTRATIONTYPE,
-                workspace: workspace,
-                token: token,
-                other: {url: adminUrl},
-                hideLoader:true,
-                queryString: {country: initdata.country}
-            }).then((result) => {
-                let taxtypelist = []
-                if (!initdata.clientid) {
-                    initdata.clientconfig.taxregtype = []
-                    initdata.clientconfig.taxid = []
-                }
-                if (result.data) {
-                    taxtypelist = result.data;
-                    if (!initdata.clientid) {
-                        taxtypelist && taxtypelist.map(({types}: any, index: any) => {
+            taxtypelist && taxtypelist?.map(({types}: any, index: any) => {
 
-                            if (types) {
-                                let findConsumer = Object.keys(types).find((d: any) => d === "c");
+                if (types) {
+                    let findConsumer = Object.keys(types).find((d: any) => d === "c");
 
-                                if (findConsumer) {
-                                    initdata.clientconfig.taxregtype[index] = findConsumer;
-                                }
-                            }
-                        })
+                    if (findConsumer) {
+                        initdata.clientconfig.taxregtype[index] = findConsumer;
                     }
                 }
             })
-
-        })
-
+        }
     }, [])
 
     const displayName = (field?: any, value?: any) => {
@@ -130,16 +96,6 @@ const Index = (props: any) => {
             initdata[field] = value;
         }
         setDisplayname(displaynames)
-    }
-
-    const getState = (country: any) => {
-        setLoading(false)
-        country && getStateList(country).then((result) => {
-            if (result.data) {
-                statelist = Object.keys(result.data).map((k) => assignOption(result.data[k].name, k));
-                setLoading(true)
-            }
-        });
     }
 
 
@@ -163,11 +119,11 @@ const Index = (props: any) => {
 
         await apiService({
             method: METHOD.POST,
-            action: ACTIONS.CLIENTS,
+            action: ACTIONS.CLIENT,
             body: values,
             workspace: workspace,
             token: token,
-            other: {url: adminUrl},
+            other: {url: urls.posUrl},
         }).then(async (result) => {
             if (result.status === STATUS.SUCCESS) {
                 dispatch(showLoader());
@@ -177,7 +133,7 @@ const Index = (props: any) => {
                     await syncData(false).then()
 
                     if (Boolean(search)) {
-                        store.dispatch(updateCartField({clientid: client.clientid,clientname: client.displayname}));
+                        store.dispatch(updateCartField({clientid: client.clientid, clientname: client.displayname}));
                         navigation.goBack()
                     }
 
@@ -191,7 +147,7 @@ const Index = (props: any) => {
         });
     }
 
-    const [loaded, setLoaded] = useState(false)
+
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             setTimeout(() => {
@@ -252,7 +208,7 @@ const Index = (props: any) => {
                                                                 {...props}
                                                                 value={props.input.value}
                                                                 label={'Display Name'}
-                                                                onSubmitEditing={()=> nextFocus(inputRef[1])}
+                                                                onSubmitEditing={() => nextFocus(inputRef[1])}
                                                                 returnKeyType={'next'}
                                                                 autoFocus={true}
                                                                 disabled={initdata.clientid === '1'}
@@ -273,7 +229,7 @@ const Index = (props: any) => {
                                                                 value={props.input.value}
                                                                 label={'Email'}
                                                                 customRef={inputRef[1]}
-                                                                onSubmitEditing={()=> nextFocus(inputRef[2])}
+                                                                onSubmitEditing={() => nextFocus(inputRef[2])}
                                                                 returnKeyType={'next'}
                                                                 keyboardType={'email-address'}
                                                                 inputtype={'textbox'}
@@ -292,7 +248,7 @@ const Index = (props: any) => {
                                                             <InputField
                                                                 {...props}
                                                                 customRef={inputRef[2]}
-                                                                onSubmitEditing={()=> handleSubmit(values) }
+                                                                onSubmitEditing={() => handleSubmit(values)}
                                                                 value={props.input.value}
                                                                 label={'Phone'}
                                                                 returnKeyType={"next"}
@@ -312,89 +268,89 @@ const Index = (props: any) => {
 
                                     </Card>
 
-                                        <Card  style={[styles.card]}>
-                                            <Card.Content style={[styles.cardContent]}>
+                                    <Card style={[styles.card]}>
+                                        <Card.Content style={[styles.cardContent]}>
+                                            <View>
+                                                <TouchableOpacity onPress={() => {
+                                                    moredetail = !moredetail;
+                                                    updateComponent(moreDetailRef, 'display', moredetail ? 'flex' : 'none')
+                                                }} style={[styles.grid, styles.middle, styles.justifyContent]}>
+                                                    <Caption style={[styles.caption]}>
+                                                        More Detail
+                                                    </Caption>
+                                                    <Paragraph>
+                                                        <ProIcon name={!moredetail ? 'chevron-down' : 'chevron-up'}
+                                                        />
+                                                    </Paragraph>
+                                                </TouchableOpacity>
+                                            </View>
+
+                                            {<View ref={moreDetailRef} style={{display: 'none'}}>
+
                                                 <View>
-                                                    <TouchableOpacity onPress={() => {
-                                                        moredetail = !moredetail;
-                                                        updateComponent(moreDetailRef, 'display', moredetail ? 'flex' : 'none')
-                                                    }} style={[styles.grid, styles.middle, styles.justifyContent]}>
-                                                        <Caption style={[styles.caption]}>
-                                                            More Detail
-                                                        </Caption>
-                                                        <Paragraph>
-                                                            <ProIcon name={!moredetail ? 'chevron-down' : 'chevron-up'}
-                                                                     />
-                                                        </Paragraph>
-                                                    </TouchableOpacity>
-                                                </View>
-
-                                                {<View ref={moreDetailRef} style={{display: 'none'}}>
-
                                                     <View>
-                                                        <View>
-                                                            <Field name="firstname">
-                                                                {props => (
-                                                                    <InputField
-                                                                        value={props.input.value}
-                                                                        label={'First Name'}
+                                                        <Field name="firstname">
+                                                            {props => (
+                                                                <InputField
+                                                                    value={props.input.value}
+                                                                    label={'First Name'}
 
-                                                                        onSubmitEditing={()=> nextFocus(inputRef[3])}
-                                                                        returnKeyType={'next'}
+                                                                    onSubmitEditing={() => nextFocus(inputRef[3])}
+                                                                    returnKeyType={'next'}
 
-                                                                        inputtype={'textbox'}
-                                                                        onChange={(value: any) => {
-                                                                            props.input.onChange(value);
-                                                                            displayName('firstname', value)
-                                                                        }}
-                                                                    />
-                                                                )}
-                                                            </Field>
-
-                                                        </View>
-
-                                                        <View>
-                                                            <Field name="lastname">
-                                                                {props => (
-                                                                    <InputField
-                                                                        value={props.input.value}
-                                                                        label={'Last Name'}
-                                                                        customRef={inputRef[3]}
-                                                                        onSubmitEditing={()=> nextFocus(inputRef[4])}
-                                                                        returnKeyType={'next'}
-                                                                        inputtype={'textbox'}
-                                                                        onChange={(value: any) => {
-                                                                            props.input.onChange(value);
-                                                                            displayName('lastname', value)
-                                                                        }}
-                                                                    />
-                                                                )}
-                                                            </Field>
-                                                        </View>
+                                                                    inputtype={'textbox'}
+                                                                    onChange={(value: any) => {
+                                                                        props.input.onChange(value);
+                                                                        displayName('firstname', value)
+                                                                    }}
+                                                                />
+                                                            )}
+                                                        </Field>
 
                                                     </View>
 
                                                     <View>
-                                                        <Field name="company">
+                                                        <Field name="lastname">
                                                             {props => (
                                                                 <InputField
                                                                     value={props.input.value}
-                                                                    label={'Company Name'}
-                                                                    customRef={inputRef[4]}
-                                                                    onSubmitEditing={()=> nextFocus(inputRef[5])}
+                                                                    label={'Last Name'}
+                                                                    customRef={inputRef[3]}
+                                                                    onSubmitEditing={() => nextFocus(inputRef[4])}
                                                                     returnKeyType={'next'}
                                                                     inputtype={'textbox'}
                                                                     onChange={(value: any) => {
                                                                         props.input.onChange(value);
-                                                                        displayName('company', value)
+                                                                        displayName('lastname', value)
                                                                     }}
                                                                 />
                                                             )}
                                                         </Field>
                                                     </View>
 
+                                                </View>
 
-                                                    <View>
+                                                <View>
+                                                    <Field name="company">
+                                                        {props => (
+                                                            <InputField
+                                                                value={props.input.value}
+                                                                label={'Company Name'}
+                                                                customRef={inputRef[4]}
+                                                                onSubmitEditing={() => nextFocus(inputRef[5])}
+                                                                returnKeyType={'next'}
+                                                                inputtype={'textbox'}
+                                                                onChange={(value: any) => {
+                                                                    props.input.onChange(value);
+                                                                    displayName('company', value)
+                                                                }}
+                                                            />
+                                                        )}
+                                                    </Field>
+                                                </View>
+
+
+                                                {/*<View>
                                                         <Field name="country">
                                                             {props => (
                                                                 <>
@@ -417,251 +373,249 @@ const Index = (props: any) => {
                                                                 </>
                                                             )}
                                                         </Field>
-                                                    </View>
+                                                    </View>*/}
 
-                                                    {Boolean(statelist?.length) && <View>
-                                                        <Field name="state">
-                                                            {props => (
-                                                                <InputField
-                                                                    label={'State'}
-                                                                    mode={'flat'}
-                                                                    ref={refstate}
-                                                                    list={statelist || []}
-                                                                    value={props.input.value}
-                                                                    selectedValue={props.input.value}
-                                                                    displaytype={'pagelist'}
-                                                                    inputtype={'dropdown'}
-                                                                    listtype={'other'}
-                                                                    onChange={(value: any) => {
-                                                                        props.input.onChange(value);
-                                                                    }}>
-                                                                </InputField>
-                                                            )}
-                                                        </Field>
-                                                    </View>}
-
-
-                                                    <View>
-                                                        <Field name="address1">
-                                                            {props => (
-                                                                <InputField
-                                                                    value={props.input.value}
-                                                                    label={'Address 1'}
-                                                                    customRef={inputRef[5]}
-                                                                    onSubmitEditing={()=> nextFocus(inputRef[6])}
-                                                                    returnKeyType={'next'}
-                                                                    inputtype={'textbox'}
-                                                                    onChange={(value: any) => {
-                                                                        props.input.onChange(value);
-                                                                    }}
-                                                                />
-                                                            )}
-                                                        </Field>
-                                                    </View>
-
-                                                    <View>
-                                                        <Field name="address2">
-                                                            {props => (
-                                                                <InputField
-                                                                    value={props.input.value}
-                                                                    label={'Address 2'}
-                                                                    customRef={inputRef[6]}
-                                                                    onSubmitEditing={()=> nextFocus(inputRef[7])}
-                                                                    returnKeyType={'next'}
-                                                                    inputtype={'textbox'}
-                                                                    onChange={(value: any) => {
-                                                                        props.input.onChange(value);
-                                                                    }}
-                                                                />
-                                                            )}
-                                                        </Field>
-                                                    </View>
-
-                                                    <View>
-                                                        <Field name="city">
-                                                            {props => (
-                                                                <InputField
-                                                                    value={props.input.value}
-                                                                    customRef={inputRef[7]}
-                                                                    onSubmitEditing={()=> nextFocus(inputRef[8])}
-                                                                    returnKeyType={'next'}
-                                                                    label={'City'}
-                                                                    inputtype={'textbox'}
-                                                                    onChange={(value: any) => {
-                                                                        props.input.onChange(value);
-                                                                    }}
-                                                                />
-                                                            )}
-                                                        </Field>
-                                                    </View>
-
-                                                    <View>
-                                                        <Field name="pin">
-                                                            {props => (
-                                                                <InputField
-                                                                    value={props.input.value}
-                                                                    customRef={inputRef[8]}
-                                                                    onSubmitEditing={()=> nextFocus(inputRef[9])}
-                                                                    returnKeyType={'next'}
-                                                                    label={'PIN'}
-                                                                    inputtype={'textbox'}
-                                                                    onChange={(value: any) => {
-                                                                        props.input.onChange(value);
-                                                                    }}
-                                                                />
-                                                            )}
-                                                        </Field>
-                                                    </View>
-
-
-                                                    {
-                                                        taxtypelist.map((taxtypes: any, index: any) => {
-                                                            const {types} = taxtypes;
-
-                                                            let typelist = Object.keys(types).map((k) => assignOption(types[k]?.name, k));
-
-                                                            if (!Boolean(initdata?.clientconfig && initdata?.clientconfig?.taxregtype)) {
-                                                                initdata.clientconfig = {
-                                                                    ...initdata.clientconfig,
-                                                                    taxregtype: [],
-                                                                    taxid: []
-                                                                };
-                                                            }
-
-                                                            return (
-
-                                                                <>
-
-                                                                    <View>
-                                                                        <Field
-                                                                            name={`clientconfig.taxregtype[${index}]`}>
-                                                                            {props => (
-                                                                                <>
-                                                                                    <InputField
-                                                                                        label={`Tax Registration Type`}
-                                                                                        mode={'flat'}
-                                                                                        list={typelist}
-                                                                                        value={props.input.value}
-                                                                                        selectedValue={props.input.value}
-                                                                                        displaytype={'bottomlist'}
-                                                                                        inputtype={'dropdown'}
-                                                                                        listtype={'other'}
-                                                                                        onChange={(value: any) => {
-                                                                                            props.input.onChange(value);
-                                                                                            initdata.clientconfig.taxregtype[index] = value;
-
-                                                                                        }}>
-                                                                                    </InputField>
-                                                                                </>
-                                                                            )}
-                                                                        </Field>
-                                                                    </View>
-
-
-                                                                    <View>
-                                                                        {
-                                                                            initdata?.clientconfig?.taxregtype[index] &&
-                                                                            types[initdata?.clientconfig?.taxregtype[index]]?.fields?.map(({
-                                                                                                                                               name,
-                                                                                                                                               required
-                                                                                                                                           }: any, indexs: number) => {
-
-                                                                                let defaultValue = initdata?.clientconfig?.taxid &&
-                                                                                    initdata?.clientconfig?.taxid[index] &&
-                                                                                    initdata?.clientconfig?.taxid[index][indexs];
-
-                                                                                return (
-                                                                                    <View>
-                                                                                        <Field
-                                                                                            name={`clientconfig.taxid[${index}][${indexs}]`}
-                                                                                            key={`${index}${indexs}`}>
-                                                                                            {props => (
-                                                                                                <InputField
-                                                                                                    value={'' + defaultValue ? defaultValue : ''}
-                                                                                                    label={`${name} ${required ? "*" : ""}`}
-                                                                                                    inputtype={'textbox'}
-                                                                                                    onChange={props.input.onChange}
-                                                                                                />
-                                                                                            )}
-                                                                                        </Field>
-                                                                                    </View>)
-                                                                            })
-                                                                        }
-
-                                                                    </View>
-
-                                                                </>
-
-                                                            )
-                                                        })
-                                                    }
-
-
-                                                    <View>
-                                                        <Field name="paymentterm">
-                                                            {props => (
-                                                                <InputField
-                                                                    label={'Payment Term'}
-                                                                    mode={'flat'}
-                                                                    list={paymentterms_options || []}
-                                                                    value={props.input.value}
-                                                                    selectedValue={props.input.value}
-                                                                    displaytype={'pagelist'}
-                                                                    inputtype={'dropdown'}
-                                                                    listtype={'other'}
-                                                                    onChange={(value: any) => {
-                                                                        props.input.onChange(value + '');
-                                                                    }}>
-                                                                </InputField>
-                                                            )}
-                                                        </Field>
-                                                    </View>
-
-                                                    <View>
-                                                        <Field name="currency">
-                                                            {props => (
-                                                                <InputField
-                                                                    label={'Currency'}
-                                                                    mode={'flat'}
-                                                                    list={currency_options}
-                                                                    value={props.input.value}
-                                                                    selectedValue={props.input.value}
-                                                                    displaytype={'bottomlist'}
-                                                                    inputtype={'dropdown'}
-                                                                    listtype={'other'}
-                                                                    onChange={(value: any) => {
-                                                                        props.input.onChange(value);
-                                                                    }}>
-                                                                </InputField>
-                                                            )}
-                                                        </Field>
-                                                    </View>
-
-                                                    {initdata.clienttype === 0 && <View>
-                                                        <Field name="clientconfig.pricingtemplate">
-                                                            {props => (
-                                                                <InputField
-                                                                    label={'Pricing Template'}
-                                                                    mode={'flat'}
-                                                                    list={pricingtemplate_options}
-                                                                    value={props.input.value}
-                                                                    selectedValue={props.input.value}
-                                                                    displaytype={'bottomlist'}
-                                                                    inputtype={'dropdown'}
-                                                                    listtype={'other'}
-                                                                    onChange={(value: any) => {
-                                                                        props.input.onChange(value);
-                                                                    }}>
-                                                                </InputField>
-                                                            )}
-                                                        </Field>
-                                                    </View>}
-
+                                                {Boolean(statelist.length) && <View>
+                                                    <Field name="state">
+                                                        {props => (
+                                                            <InputField
+                                                                label={'State'}
+                                                                mode={'flat'}
+                                                                list={statelist || []}
+                                                                value={props.input.value}
+                                                                selectedValue={props.input.value}
+                                                                displaytype={'pagelist'}
+                                                                inputtype={'dropdown'}
+                                                                listtype={'other'}
+                                                                onChange={(value: any) => {
+                                                                    props.input.onChange(value);
+                                                                }}>
+                                                            </InputField>
+                                                        )}
+                                                    </Field>
                                                 </View>}
 
-                                            </Card.Content>
 
-                                        </Card>
+                                                <View>
+                                                    <Field name="address1">
+                                                        {props => (
+                                                            <InputField
+                                                                value={props.input.value}
+                                                                label={'Address 1'}
+                                                                customRef={inputRef[5]}
+                                                                onSubmitEditing={() => nextFocus(inputRef[6])}
+                                                                returnKeyType={'next'}
+                                                                inputtype={'textbox'}
+                                                                onChange={(value: any) => {
+                                                                    props.input.onChange(value);
+                                                                }}
+                                                            />
+                                                        )}
+                                                    </Field>
+                                                </View>
+
+                                                <View>
+                                                    <Field name="address2">
+                                                        {props => (
+                                                            <InputField
+                                                                value={props.input.value}
+                                                                label={'Address 2'}
+                                                                customRef={inputRef[6]}
+                                                                onSubmitEditing={() => nextFocus(inputRef[7])}
+                                                                returnKeyType={'next'}
+                                                                inputtype={'textbox'}
+                                                                onChange={(value: any) => {
+                                                                    props.input.onChange(value);
+                                                                }}
+                                                            />
+                                                        )}
+                                                    </Field>
+                                                </View>
+
+                                                <View>
+                                                    <Field name="city">
+                                                        {props => (
+                                                            <InputField
+                                                                value={props.input.value}
+                                                                customRef={inputRef[7]}
+                                                                onSubmitEditing={() => nextFocus(inputRef[8])}
+                                                                returnKeyType={'next'}
+                                                                label={'City'}
+                                                                inputtype={'textbox'}
+                                                                onChange={(value: any) => {
+                                                                    props.input.onChange(value);
+                                                                }}
+                                                            />
+                                                        )}
+                                                    </Field>
+                                                </View>
+
+                                                <View>
+                                                    <Field name="pin">
+                                                        {props => (
+                                                            <InputField
+                                                                value={props.input.value}
+                                                                customRef={inputRef[8]}
+                                                                returnKeyType={'next'}
+                                                                label={'PIN'}
+                                                                inputtype={'textbox'}
+                                                                onChange={(value: any) => {
+                                                                    props.input.onChange(value);
+                                                                }}
+                                                            />
+                                                        )}
+                                                    </Field>
+                                                </View>
+
+
+                                                {
+                                                    taxtypelist.map((taxtypes: any, index: any) => {
+                                                        const {types} = taxtypes;
+
+                                                        let typelist = Object.keys(types).map((k) => assignOption(types[k]?.name, k));
+
+                                                        if (!Boolean(initdata?.clientconfig && initdata?.clientconfig?.taxregtype)) {
+                                                            initdata.clientconfig = {
+                                                                ...initdata.clientconfig,
+                                                                taxregtype: [],
+                                                                taxid: []
+                                                            };
+                                                        }
+
+                                                        return (
+
+                                                            <>
+
+                                                                <View>
+                                                                    <Field
+                                                                        name={`clientconfig.taxregtype[${index}]`}>
+                                                                        {props => (
+                                                                            <>
+                                                                                <InputField
+                                                                                    label={`Tax Registration Type`}
+                                                                                    mode={'flat'}
+                                                                                    list={typelist}
+                                                                                    value={props.input.value}
+                                                                                    selectedValue={props.input.value}
+                                                                                    displaytype={'bottomlist'}
+                                                                                    inputtype={'dropdown'}
+                                                                                    listtype={'other'}
+                                                                                    onChange={(value: any) => {
+                                                                                        props.input.onChange(value);
+                                                                                        initdata.clientconfig.taxregtype[index] = value;
+
+                                                                                    }}>
+                                                                                </InputField>
+                                                                            </>
+                                                                        )}
+                                                                    </Field>
+                                                                </View>
+
+
+                                                                <View>
+                                                                    {
+                                                                        initdata?.clientconfig?.taxregtype[index] &&
+                                                                        types[initdata?.clientconfig?.taxregtype[index]]?.fields?.map(({
+                                                                                                                                           name,
+                                                                                                                                           required
+                                                                                                                                       }: any, indexs: number) => {
+
+                                                                            let defaultValue = initdata?.clientconfig?.taxid &&
+                                                                                initdata?.clientconfig?.taxid[index] &&
+                                                                                initdata?.clientconfig?.taxid[index][indexs];
+
+                                                                            return (
+                                                                                <View>
+                                                                                    <Field
+                                                                                        name={`clientconfig.taxid[${index}][${indexs}]`}
+                                                                                        key={`${index}${indexs}`}>
+                                                                                        {props => (
+                                                                                            <InputField
+                                                                                                value={'' + defaultValue ? defaultValue : ''}
+                                                                                                label={`${name} ${required ? "*" : ""}`}
+                                                                                                inputtype={'textbox'}
+                                                                                                onChange={props.input.onChange}
+                                                                                            />
+                                                                                        )}
+                                                                                    </Field>
+                                                                                </View>)
+                                                                        })
+                                                                    }
+
+                                                                </View>
+
+                                                            </>
+
+                                                        )
+                                                    })
+                                                }
+
+
+                                                <View>
+                                                    <Field name="paymentterm">
+                                                        {props => (
+                                                            <InputField
+                                                                label={'Payment Term'}
+                                                                mode={'flat'}
+                                                                list={paymentterms_options || []}
+                                                                value={props.input.value}
+                                                                selectedValue={props.input.value}
+                                                                displaytype={'pagelist'}
+                                                                inputtype={'dropdown'}
+                                                                listtype={'other'}
+                                                                onChange={(value: any) => {
+                                                                    props.input.onChange(value + '');
+                                                                }}>
+                                                            </InputField>
+                                                        )}
+                                                    </Field>
+                                                </View>
+
+                                                <View>
+                                                    <Field name="currency">
+                                                        {props => (
+                                                            <InputField
+                                                                label={'Currency'}
+                                                                mode={'flat'}
+                                                                list={currency_options}
+                                                                value={props.input.value}
+                                                                selectedValue={props.input.value}
+                                                                displaytype={'bottomlist'}
+                                                                inputtype={'dropdown'}
+                                                                listtype={'other'}
+                                                                onChange={(value: any) => {
+                                                                    props.input.onChange(value);
+                                                                }}>
+                                                            </InputField>
+                                                        )}
+                                                    </Field>
+                                                </View>
+
+                                                {initdata.clienttype === 0 && <View>
+                                                    <Field name="clientconfig.pricingtemplate">
+                                                        {props => (
+                                                            <InputField
+                                                                label={'Pricing Template'}
+                                                                mode={'flat'}
+                                                                list={pricingtemplate_options}
+                                                                value={props.input.value}
+                                                                selectedValue={props.input.value}
+                                                                displaytype={'bottomlist'}
+                                                                inputtype={'dropdown'}
+                                                                listtype={'other'}
+                                                                onChange={(value: any) => {
+                                                                    props.input.onChange(value);
+                                                                }}>
+                                                            </InputField>
+                                                        )}
+                                                    </Field>
+                                                </View>}
+
+                                            </View>}
+
+                                        </Card.Content>
+
+                                    </Card>
 
 
                                 </ScrollView>
@@ -669,7 +623,8 @@ const Index = (props: any) => {
 
                                 <KAccessoryView>
                                     <View style={[styles.submitbutton]}>
-                                        <Button more={{color:'white'}}  disable={more.invalid} secondbutton={more.invalid} onPress={() => {
+                                        <Button more={{color: 'white'}} disable={more.invalid}
+                                                secondbutton={more.invalid} onPress={() => {
                                             handleSubmit(values)
                                         }}> Add </Button>
                                     </View>

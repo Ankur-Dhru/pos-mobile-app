@@ -2,13 +2,13 @@ import React, {Component} from "react";
 import {Keyboard, View} from "react-native";
 import {styles} from "../../theme";
 import {Button, Container} from "../../components";
-import {Card, Paragraph, Title, withTheme} from "react-native-paper";
+import {Card, Paragraph, withTheme} from "react-native-paper";
 import {Field, Form} from "react-final-form";
 import InputField from "../../components/InputField";
 import {CommonActions} from "@react-navigation/native";
 import KeyboardScroll from "../../components/KeyboardScroll";
 import apiService from "../../libs/api-service";
-import {ACTIONS, adminUrl, localredux, METHOD, required, STATUS} from "../../libs/static";
+import {ACTIONS, localredux, METHOD, required, STATUS, urls} from "../../libs/static";
 import {assignOption} from "../../libs/function";
 import KAccessoryView from "../../components/KAccessoryView"
 
@@ -41,7 +41,7 @@ class Index extends Component<any> {
             action: ACTIONS.SETTINGS,
             workspace: workspace,
             token: token,
-            other: {url: adminUrl},
+            other: {url: urls.adminUrl},
             body: {
                 settingid: 'currency',
                 settingdata: [{
@@ -91,42 +91,42 @@ class Index extends Component<any> {
                                             <Card.Content style={[styles.cardContent]}>
 
 
-                                        <View>
+                                                <View>
 
-                                            <Paragraph style={[styles.paragraph]}>Select your base currency and
-                                                you can
-                                                start revolutionising
-                                                your Business with DHRU</Paragraph>
+                                                    <Paragraph style={[styles.paragraph]}>Select your base currency and
+                                                        you can
+                                                        start revolutionising
+                                                        your Business with DHRU</Paragraph>
 
 
-                                            <View>
-                                                <Field name="currency" validate={required}>
-                                                    {props => (
-                                                        <InputField
-                                                            {...props}
-                                                            label={'Currency'}
-                                                            selectedValue={props.input.value}
-                                                            selectlabel={'Currency'}
-                                                            displaytype={'pagelist'}
-                                                            inputtype={'dropdown'}
-                                                            showlabel={false}
-                                                            appbar={true}
-                                                            search={false}
-                                                            listtype={'other'}
-                                                            list={currency_options}
-                                                            onChange={(value: any) => {
-                                                                props.input.onChange(value);
-                                                            }}
-                                                        />
-                                                    )}
-                                                </Field>
+                                                    <View>
+                                                        <Field name="currency" validate={required}>
+                                                            {props => (
+                                                                <InputField
+                                                                    {...props}
+                                                                    label={'Currency'}
+                                                                    selectedValue={props.input.value}
+                                                                    selectlabel={'Currency'}
+                                                                    displaytype={'pagelist'}
+                                                                    inputtype={'dropdown'}
+                                                                    showlabel={false}
+                                                                    appbar={true}
+                                                                    search={false}
+                                                                    listtype={'other'}
+                                                                    list={currency_options}
+                                                                    onChange={(value: any) => {
+                                                                        props.input.onChange(value);
+                                                                    }}
+                                                                />
+                                                            )}
+                                                        </Field>
 
-                                                <Paragraph style={[styles.paragraph, styles.red]}>You can't
-                                                    change your base
-                                                    currency after finish.</Paragraph>
-                                            </View>
+                                                        <Paragraph style={[styles.paragraph, styles.red]}>You can't
+                                                            change your base
+                                                            currency after finish.</Paragraph>
+                                                    </View>
 
-                                        </View>
+                                                </View>
 
                                             </Card.Content>
 
@@ -135,7 +135,8 @@ class Index extends Component<any> {
 
                                     <KAccessoryView>
                                         <View style={[styles.submitbutton]}>
-                                            <Button more={{color:'white'}} disable={more.invalid} secondbutton={more.invalid} onPress={() => {
+                                            <Button more={{color: 'white'}} disable={more.invalid}
+                                                    secondbutton={more.invalid} onPress={() => {
                                                 handleSubmit(values)
                                             }}>Next</Button>
                                         </View>

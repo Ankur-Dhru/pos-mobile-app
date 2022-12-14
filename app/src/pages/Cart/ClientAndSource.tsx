@@ -439,7 +439,7 @@ const ClientAndSource = (props: any) => {
     })
 
     useEffect(()=>{
-        getLocalSettings('asksources').then(r => {
+        getLocalSettings('generalsettings').then(r => {
             setAsksources(r);
             setLoading(true)
         });

@@ -1,98 +1,115 @@
 import React, {useEffect, useState} from "react";
 import {FlatList, Text, TouchableOpacity, View} from "react-native";
-import {Card, Divider, Paragraph} from "react-native-paper"
+import {Card, Paragraph} from "react-native-paper"
 import {
-    appLog, CheckConnectivity, dateFormat,
-    getDateWithFormat, getItem, getLeftRight, getOrders, getPrintTemplate, getTemplate, getTempOrders, getTrimChar,
-    isEmpty, numberFormat, objToArray, printInvoice,
-
-    retrieveData,
-    storeData, syncInvoice,
+    appLog,
+    base64Encode,
+    dateFormat,
+    getDateWithFormat,
+    getOrders,
+    printInvoice,
     toCurrency
 } from "../../libs/function";
 import Container from "../../components/Container";
 import {styles} from "../../theme";
 import {connect} from "react-redux";
-import {
-    ACTIONS,
-    adminUrl,
-    defaultInvoiceTemplate, ItemDivider,
-    localredux,
-    METHOD,
-    posUrl,
-    PRINTER,
-    STATUS,
-    VOUCHER
-} from "../../libs/static";
+import {ACTIONS, ItemDivider, localredux, METHOD, STATUS, urls, VOUCHER} from "../../libs/static";
 import apiService from "../../libs/api-service";
 import ProIcon from "../../components/ProIcon";
 
 import moment from "moment";
+import {useNavigation} from "@react-navigation/native";
 
 
-const Index = ({ordersData}:any) => {
+const Index = ({ordersData,navigation}: any) => {
 
     let {
-        initData,
         licenseData,
     }: any = localredux;
 
+    const {workspace}: any = localredux.initData;
+    const {token}: any = localredux.authData;
 
     const [data, setData] = useState<any>({});
 
 
     useEffect(() => {
-        getOrders().then((orders:any)=>{
+        getOrders().then((orders: any) => {
             apiService({
                 method: METHOD.GET,
                 action: ACTIONS.REPORT_SALES,
-                workspace: initData.workspace,
-                token: licenseData?.token,
+                workspace: workspace,
+                token: token,
                 queryString: {terminalid: licenseData?.data?.terminal_id},
                 hideLoader: true,
                 hidealert: true,
-                other: {url: posUrl},
+                other: {url: urls.posUrl},
             }).then((response: any) => {
                 setData({...orders, ...response?.data})
             })
         })
     }, [ordersData])
 
-
-    const printData = async (invoice: any) => {
-
-
-        const {workspace, tax}: any = localredux.initData;
-
+    const printPreview = async (invoice:any) => {
+        const {workspace}: any = localredux.initData;
         const {token}: any = localredux.authData;
-
-
 
         await apiService({
             method: METHOD.GET,
-            action: ACTIONS.VOUCHER,
-            queryString: {voucherdisplayid: invoice.voucherdisplayid, vouchertype: VOUCHER.INVOICE},
+            action: ACTIONS.PRINTING,
+            queryString: {voucherid: invoice.voucherid, printingtemplate: 1},
             workspace: workspace,
             token: token,
-            other: {url: adminUrl},
+            other: {url: urls.posUrl},
         }).then(async (result) => {
 
             if (result.status === STATUS.SUCCESS) {
+                navigation.push('Preview',{data:base64Encode(result.data)})
+            }
 
-                const {voucheritems, receipt}: any = result.data
+        });
+    }
 
-                result.data = {
-                    ...result.data,
-                    invoiceitems: Object.values(voucheritems).map((item:any)=>{
-                        return {...item,change:true}
+    const getOrderDetail = async (invoice: any) => {
+
+
+
+        const {workspace}: any = localredux.initData;
+        const {token}: any = localredux.authData;
+
+        await apiService({
+            method: METHOD.GET,
+            action: ACTIONS.INVOICE,
+            queryString: {voucherdisplayid: invoice.voucherdisplayid, vouchertypeid: VOUCHER.INVOICE},
+            workspace: workspace,
+            token: token,
+            other: {url: urls.posUrl},
+        }).then(async (result) => {
+
+
+            if (result.status === STATUS.SUCCESS) {
+
+                let data:any = result.data?.result;
+                const {voucheritems, receipt}: any = result.data?.result
+
+                data = {
+                    ...data,
+                    invoiceitems: Object.values(voucheritems).map((item: any) => {
+                        return {...item, change: true}
                     }),
                     payment: Object.values(receipt).map((payment: any) => {
                         return {paymentAmount: payment.amount, paymentby: payment.payment}
                     })
                 }
 
-                printInvoice(result.data).then()
+                printInvoice(data,true).then((xmlData:any)=>{
+                    navigation.push('Preview',{data:base64Encode(xmlData)})
+                })
+
             }
+
+
+
         });
 
 
@@ -106,7 +123,9 @@ const Index = ({ordersData}:any) => {
             name = `${item?.voucherprefix}${item?.voucherdisplayid} ${name}`
         }
 
-        return <TouchableOpacity style={[styles.p_5]}>
+        return <TouchableOpacity style={[styles.p_5]} onPress={() => {
+            Boolean(item?.voucherdisplayid) &&  printPreview(item).then()
+        }}>
             <View
                 style={[styles.grid, styles.noWrap, styles.middle, styles.justifyContentSpaceBetween]}>
 
@@ -114,18 +133,18 @@ const Index = ({ordersData}:any) => {
                     <View style={[styles.grid, styles.noWrap, styles.top]}>
 
                         <View>
-                            {!Boolean(item?.voucherdisplayid) && <Paragraph style={[styles.paragraph,styles.bold]}>{getDateWithFormat(item.date,dateFormat())} {item.vouchercreatetime} </Paragraph>}
-                            {Boolean(item?.voucherdisplayid) &&  <Paragraph style={[styles.paragraph,styles.bold]}>{moment.unix(item.vouchercreatetime).format(dateFormat(true))} </Paragraph>}
+                            {!Boolean(item?.voucherdisplayid) && <Paragraph
+                                style={[styles.paragraph, styles.bold]}>{getDateWithFormat(item.date, dateFormat())} {item.vouchercreatetime} </Paragraph>}
+                            {Boolean(item?.voucherdisplayid) && <Paragraph
+                                style={[styles.paragraph, styles.bold]}>{moment.unix(item.vouchercreatetime).format(dateFormat(true))} </Paragraph>}
                             <Paragraph style={[styles.paragraph]}>{name}</Paragraph>
                         </View>
                     </View>
                 </View>
                 <View style={{width: 50}}>
-                    {Boolean(item?.voucherdisplayid) && <TouchableOpacity onPress={() => {
-                        printData(item).then()
-                    }}>
+                    {/*{Boolean(item?.voucherdisplayid) && <TouchableOpacity >
                         <ProIcon name={'print'} type={'solid'} size={15}/>
-                    </TouchableOpacity>}
+                    </TouchableOpacity>}*/}
                 </View>
                 {<View style={{width: 100}}>
                     <Paragraph
@@ -162,7 +181,8 @@ const Index = ({ordersData}:any) => {
 
                     ListEmptyComponent={<View>
                         <View style={[styles.p_6]}>
-                            <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>No any items found</Text>
+                            <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>No any
+                                items found</Text>
 
                         </View>
 

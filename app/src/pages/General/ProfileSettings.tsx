@@ -5,7 +5,7 @@ import {Button as PButton, Caption, Card, List, Text, Title} from "react-native-
 import {styles} from "../../theme";
 import {CommonActions, useNavigation} from "@react-navigation/native";
 import {
-    ACTIONS,
+    ACTIONS, db,
     grecaptcharesponse,
     ItemDivider,
     localredux,
@@ -50,14 +50,14 @@ const ProfileSettings = () => {
 
 
     const resetTerminal = async () => {
-        await storeData('fusion-pro-pos-mobile', {}).then(async () => {
+        await storeData(db.name, {}).then(async () => {
         });
 
-        await storeData('fusion-pro-pos-mobile-settings', {}).then(async () => {
+        await storeData(`${db.name}-settings`, {}).then(async () => {
         });
-        await storeData('fusion-pro-pos-mobile-vouchernos', 0).then(async () => {
+        await storeData(`${db.name}-vouchernos`, 0).then(async () => {
         });
-        await storeData('fusion-pro-pos-mobile-kotno', 0).then(async () => {
+        await storeData(`${db.name}-kotno`, 0).then(async () => {
         });
 
         await deleteDB()

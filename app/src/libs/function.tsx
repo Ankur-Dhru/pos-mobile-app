@@ -16,8 +16,7 @@ import {hideLoader, setAlert, setBottomSheet, setDialog, showLoader} from "../re
 import apiService from "./api-service";
 import {
     ACTIONS,
-    adminUrl,
-    current,
+      db,
     defaultInvoiceTemplate,
     defaultKOTTemplate,
     isDevelopment,
@@ -28,7 +27,7 @@ import {
     STATUS,
     taxTypes,
     TICKET_STATUS,
-    TICKETS_TYPE,
+    TICKETS_TYPE, urls,
     VOUCHER
 } from "./static";
 
@@ -61,6 +60,8 @@ import RNFetchBlob from "rn-fetch-blob";
 import RNHTMLtoPDF from "react-native-html-to-pdf";
 import RNPrint from "react-native-print";
 import Share from "react-native-share";
+import {setGroupList} from "../redux-store/reducer/group-list";
+import Mustache from "mustache";
 
 
 let NumberFormat = require('react-number-format');
@@ -486,7 +487,7 @@ export const CheckConnectivity = () => {
 
 export const syncData = async (loader = true) => {
 
-    await retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
+    await retrieveData(db.name).then(async (data: any) => {
 
         try {
 
@@ -527,7 +528,7 @@ export const syncData = async (loader = true) => {
                     workspace: initData.workspace,
                     token: licenseData?.token,
                     hideLoader: true,
-                    other: {url: posUrl},
+                    other: {url: urls.posUrl},
                 }).then(async (response: any) => {
 
                     const {status, data, info: {type, start, result}} = response;
@@ -571,7 +572,7 @@ export const syncData = async (loader = true) => {
 
                         } else {
 
-                            await retrieveData('fusion-pro-pos-mobile').then(async (data: any) => {
+                            await retrieveData(db.name).then(async (data: any) => {
 
                                 try {
 
@@ -589,6 +590,7 @@ export const syncData = async (loader = true) => {
                                         ...data,
                                         initData,
                                         localSettingsData: {
+                                            ...localSettingsData,
                                             currentLocation: locations[locationid],
                                             printingtemplates: printingtemplates,
                                             lastSynctime: moment().unix(),
@@ -598,7 +600,7 @@ export const syncData = async (loader = true) => {
                                     }
 
 
-                                    await storeData('fusion-pro-pos-mobile', data).then(async () => {
+                                    await storeData(db.name, data).then(async () => {
                                         localredux.initData = data.initData;
                                         localredux.localSettingsData = data.localSettingsData;
 
@@ -995,13 +997,13 @@ export const saveLocalOrder = (order?: any) => {
 
         ///////// CREATE LOCALORDER ID //////////
         if (!Boolean(order.invoice_display_number)) {
-           await retrieveData('fusion-pro-pos-mobile-vouchernos').then(async (vouchers: any) => {
+           await retrieveData(`${db.name}-vouchernos`).then(async (vouchers: any) => {
                 order = {
                     ...order,
                     invoice_display_number: (Boolean(vouchers) && vouchers[order.vouchertypeid]) || 1
                 }
                 vouchers = {...vouchers, [order.vouchertypeid]: ++order.invoice_display_number}
-                await storeData('fusion-pro-pos-mobile-vouchernos', vouchers).then(async () => {
+                await storeData(`${db.name}-vouchernos`, vouchers).then(async () => {
                 });
             })
         }
@@ -1022,16 +1024,29 @@ export const saveLocalOrder = (order?: any) => {
 
 }
 
+export const getDatabaseName = async () => {
+    return new Promise(async resolve => {
+        await retrieveData(`fusion-pro-database`).then(async (data: any) => {
+            resolve(data)
+        })
+    })
+
+}
+
+
+export const saveDatabaseName = async (databasename: any) => {
+    await storeData(`fusion-pro-database`, databasename).then(async () => {});
+}
 
 
 export const saveLocalSettings = async (key: any, setting?: any) => {
 
-    await retrieveData('fusion-pro-pos-mobile-settings').then(async (data: any) => {
+    await retrieveData(`${db.name}-settings`).then(async (data: any) => {
         data = {
             ...data,
             [key]: setting
         }
-        await storeData('fusion-pro-pos-mobile-settings', data).then(async () => {
+        await storeData(`${db.name}-settings`, data).then(async () => {
             await store.dispatch(setSettings(clone(data)));
         });
     })
@@ -1040,12 +1055,33 @@ export const saveLocalSettings = async (key: any, setting?: any) => {
 
 export const getLocalSettings = async (key: any) => {
     return new Promise(async resolve => {
-        await retrieveData('fusion-pro-pos-mobile-settings').then(async (data: any) => {
-            resolve(data[key])
+        await retrieveData(`${db.name}-settings`).then(async (data: any) => {
+            if(Boolean(data) && Boolean(data[key])) {
+                resolve(data[key])
+            }
+            else{
+                resolve({})
+            }
         })
     })
-
 }
+
+export const setAPIUrl = (betamode:any) => {
+    let apiUrl = isDevelopment ? ".api.dhru.io" : ".api.dhru.com";
+    if(betamode){
+        apiUrl = ".api.dhru.net";
+    }
+    urls.posUrl = `${apiUrl}/pos/v1/`;
+    urls.adminUrl = `${apiUrl}/admin/v1/`;
+}
+
+
+/*export const setDB = (workspace:any,location:any) => {
+
+
+    const regx2 = /[^a-zA-Z0-9_. -]/g;
+    db.name = workspace.replace(regx2,'')+''+location.replace(regx2,'')
+}*/
 
 
 export const getTicketStatus = (statusid: any) => {
@@ -1348,14 +1384,14 @@ export const generateKOT = async () => {
         const today: any = store.getState().localSettings?.today;
 
         try {
-            await retrieveData('fusion-pro-pos-mobile-kotno').then(async (kotno: any) => {
+            await retrieveData(`${db.name}-kotno`).then(async (kotno: any) => {
 
                 if (!Boolean(kotno)) {
                     kotno = 0;
                 }
                 if ((today !== moment().format('YYYY-MM-DD'))) {
                     kotno = 0;
-                    await retrieveData('fusion-pro-pos-mobile-settings').then(async (data: any) => {
+                    await retrieveData(`${db.name}-settings`).then(async (data: any) => {
                         data.today = moment().format('YYYY-MM-DD');
                         saveLocalSettings("today", data.today).then();
                         await store.dispatch(setSettings(data));
@@ -1423,7 +1459,7 @@ export const generateKOT = async () => {
 
                                 let k = kitchens[i]
 
-                                await storeData('fusion-pro-pos-mobile-kotno', kotid).then(() => {
+                                await storeData(`${db.name}-kotno`, kotid).then(() => {
                                 });
 
                                 let kotitems: any = [];
@@ -1592,7 +1628,7 @@ export const generateKOT = async () => {
 }
 
 
-export const printInvoice = async (order?: any) => {
+export const printInvoice = async (order?: any,preview?:any) => {
 
     try {
 
@@ -1606,13 +1642,13 @@ export const printInvoice = async (order?: any) => {
 
         ///////// CREATE LOCALORDER ID //////////
         if (!Boolean(cartData.invoice_display_number)) {
-            await retrieveData('fusion-pro-pos-mobile-vouchernos').then(async (vouchers: any) => {
+            await retrieveData(`${db.name}-vouchernos`).then(async (vouchers: any) => {
                 cartData = {
                     ...cartData,
                     invoice_display_number: (Boolean(vouchers) && vouchers[cartData.vouchertypeid]) || 1
                 }
                 vouchers = {...vouchers, [cartData.vouchertypeid]: ++cartData.invoice_display_number}
-                await storeData('fusion-pro-pos-mobile-vouchernos', vouchers).then(async () => {
+                await storeData(`${db.name}-vouchernos`, vouchers).then(async () => {
                     await store.dispatch(setCartData(cartData));
                 });
             })
@@ -1742,7 +1778,11 @@ export const printInvoice = async (order?: any) => {
 
             const template: any = getPrintTemplate('Thermal');
 
-            if (Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip)) {
+            if(preview){
+                let xmlData = Mustache.render( template, printJson);
+                resolve(xmlData)
+            }
+            else if(Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip)) {
 
                 setTimeout(() => {
                     sendDataToPrinter(printJson, getTemplate(template), {
@@ -1877,8 +1917,51 @@ export const getStateList = (country: any) => {
         workspace: workspace,
         token: token,
         hideLoader: true,
-        other: {url: adminUrl},
+        other: {url: urls.adminUrl},
     })
+}
+
+
+export const refreshToken = () => {
+
+    const {workspace}: any = localredux.initData;
+    const {token}: any = localredux.authData;
+
+    appLog('old token',token)
+
+    return apiService({
+        method: METHOD.GET,
+        action: ACTIONS.REFRESH,
+        workspace: workspace,
+        token: token,
+        hideLoader: true,
+        other: {url: urls.posUrl},
+    }).then((response:any) => {
+        const {newtoken}:any = response?.data
+
+        appLog('newtoken',newtoken)
+
+        if(Boolean(newtoken)) {
+            updateToken(newtoken).then()
+        }
+
+    })
+}
+
+
+export const updateToken = async (token:any) => {
+    localredux.authData.token = token;
+    await retrieveData(db.name).then(async (data: any) => {
+        data = {
+            ...data,
+            authData:localredux.authData
+        }
+        storeData(db.name, data).then(async () => {});
+    })
+}
+
+export const createDatabaseName = ({workspace,locationid}:any) => {
+    return base64Encode(workspace+''+locationid)
 }
 
 
@@ -1891,7 +1974,7 @@ export const selectWorkspace = async (workspace: any, navigation: any) => {
         method: METHOD.GET,
         action: ACTIONS.INIT,
         queryString: {stream: "pos"},
-        other: {url: adminUrl, workspace: true},
+        other: {url: urls.adminUrl, workspace: true},
         token: token,
         workspace: workspace.name
     }).then((response: any) => {
@@ -2065,20 +2148,19 @@ export const loadContacts = async () => {
 
 
 export const syncInvoice = (invoiceData: any) => {
+    const {workspace}: any = localredux.initData;
+    const {token}: any = localredux.authData;
     return new Promise((resolve) => {
-        let {
-            initData,
-            licenseData,
-        }: any = localredux;
+
         apiService({
             method: METHOD.POST,
             action: ACTIONS.INVOICE,
             body: invoiceData,
-            workspace: initData.workspace,
-            token: licenseData?.token,
+            workspace: workspace,
+            token: token,
             hideLoader: true,
             hidealert: true,
-            other: {url: posUrl},
+            other: {url: urls.posUrl},
         }).then((response: any) => {
 
             if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
@@ -2134,3 +2216,7 @@ export const sharePDF = async ({data, filename}: any) => {
         }
     })
 }
+
+
+
+

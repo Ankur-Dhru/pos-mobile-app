@@ -35,7 +35,7 @@ const Index = (props: any) => {
     let passwordRef:any = useRef()
 
     const initdata: any = isDevelopment ? {
-        //email: 'ankur9090_132@dhrusoft.com',
+        //email: 'ankur9090_184@dhrusoft.com',
         //password: 'Dhrunet1@',
         email: 'dhru360@yahoo.com',
         password: 'dhru@9090',

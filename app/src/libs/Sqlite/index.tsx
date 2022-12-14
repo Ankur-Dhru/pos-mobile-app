@@ -6,15 +6,16 @@ import {
     CREATE_ORDER_TABLE,
     CREATE_TEMPORDER_TABLE
 } from "./config";
+import {db} from "../static";
 
 enablePromise(true);
 
 export const getDBConnection = async () => {
-    return await openDatabase({name: 'fusion-pro-pos-terminal-data.db', location: 'default'});
+    return await openDatabase({name: `${db.name}-terminal-data.db`, location: 'default'});
 };
 
 export const deleteDB = async () => {
-    return await deleteDatabase({name: 'fusion-pro-pos-terminal-data.db', location: 'default'});
+    return await deleteDatabase({name: `${db.name}-terminal-data.db`, location: 'default'});
 };
 
 

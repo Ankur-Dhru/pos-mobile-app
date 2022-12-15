@@ -3,7 +3,16 @@ import {Keyboard, View} from "react-native";
 import {styles} from "../../theme";
 import {Button, Container} from "../../components";
 import {Card, withTheme} from "react-native-paper";
-import {appLog, assignOption, errorAlert, getStateList, log, retrieveData, storeData} from "../../libs/function";
+import {
+    appLog,
+    assignOption,
+    errorAlert,
+    getStateAndTaxType,
+    getStateList,
+    log,
+    retrieveData,
+    storeData
+} from "../../libs/function";
 import {Field, Form} from "react-final-form";
 import InputField from "../../components/InputField";
 import {
@@ -115,7 +124,9 @@ class Index extends Component<any, any> {
             }
         }
         if (this?.initdata?.country) {
-            this.getStateAndTaxType(this?.initdata?.country);
+            getStateAndTaxType(this?.initdata?.country).then((data)=>{
+                this.setState({statelist:localredux.statelist,taxtypelist:localredux.taxtypelist})
+            });
         }
     }
 
@@ -124,47 +135,7 @@ class Index extends Component<any, any> {
     }
 
 
-    getStateAndTaxType = async (country: any, reset?: boolean) => {
-        let queryString = {country};
-        await getStateList(country).then(async (result: any) => {
-            if (result.data) {
 
-                localredux.statelist = Object.keys(result.data).map((k: any) => assignOption(result.data[k].name, k))
-
-                this.setState({
-                    statelist: localredux.statelist
-                })
-            }
-        });
-
-        const {workspace}: any = localredux.initData;
-
-        const {token}: any = localredux.authData;
-
-
-        await apiService({
-            method: METHOD.GET,
-            action: ACTIONS.GETTAXREGISTRATIONTYPE,
-            workspace: workspace,
-            token: token,
-            hideLoader: true,
-            other: {url: urls.adminUrl},
-            queryString,
-        }).then((result) => {
-            localredux.taxtypelist = [];
-            if (result.data) {
-                localredux.taxtypelist = result.data;
-            }
-            this.setState({
-                taxtypelist: localredux.taxtypelist
-            })
-        })
-
-        if (Boolean(reset)) {
-            this.initdata.taxregtype = [];
-            this.initdata.taxid = [];
-        }
-    }
 
 
     validate = (values: any) => {
@@ -382,7 +353,10 @@ class Index extends Component<any, any> {
                                                                     })}
                                                                     onChange={(value: any) => {
                                                                         props.input.onChange(value);
-                                                                        this.getStateAndTaxType(value, true)
+                                                                        getStateAndTaxType(value, true).then(()=>{
+                                                                            this.initdata.taxregtype = [];
+                                                                            this.initdata.taxid = [];
+                                                                        })
                                                                     }}
                                                                 />
                                                             )}

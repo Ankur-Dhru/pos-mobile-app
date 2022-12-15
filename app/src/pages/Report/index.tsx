@@ -15,10 +15,9 @@ import {styles} from "../../theme";
 import {connect} from "react-redux";
 import {ACTIONS, ItemDivider, localredux, METHOD, STATUS, urls, VOUCHER} from "../../libs/static";
 import apiService from "../../libs/api-service";
-import ProIcon from "../../components/ProIcon";
 
 import moment from "moment";
-import {useNavigation} from "@react-navigation/native";
+import ProIcon from "../../components/ProIcon";
 
 
 const Index = ({ordersData,navigation}: any) => {
@@ -49,6 +48,7 @@ const Index = ({ordersData,navigation}: any) => {
             })
         })
     }, [ordersData])
+
 
     const printPreview = async (invoice:any) => {
         const {workspace}: any = localredux.initData;
@@ -102,8 +102,8 @@ const Index = ({ordersData,navigation}: any) => {
                     })
                 }
 
-                printInvoice(data,true).then((xmlData:any)=>{
-                    navigation.push('Preview',{data:base64Encode(xmlData)})
+                printInvoice(data).then((xmlData:any)=>{
+                    //navigation.push('Preview',{data:base64Encode(xmlData)})
                 })
 
             }
@@ -123,9 +123,7 @@ const Index = ({ordersData,navigation}: any) => {
             name = `${item?.voucherprefix}${item?.voucherdisplayid} ${name}`
         }
 
-        return <TouchableOpacity style={[styles.p_5]} onPress={() => {
-            Boolean(item?.voucherdisplayid) &&  printPreview(item).then()
-        }}>
+        return <TouchableOpacity style={[styles.p_5]} >
             <View
                 style={[styles.grid, styles.noWrap, styles.middle, styles.justifyContentSpaceBetween]}>
 
@@ -142,9 +140,11 @@ const Index = ({ordersData,navigation}: any) => {
                     </View>
                 </View>
                 <View style={{width: 50}}>
-                    {/*{Boolean(item?.voucherdisplayid) && <TouchableOpacity >
+                    {Boolean(item?.voucherdisplayid) && <TouchableOpacity onPress={() => {
+                        Boolean(item?.voucherdisplayid) &&  getOrderDetail(item).then()
+                    }}>
                         <ProIcon name={'print'} type={'solid'} size={15}/>
-                    </TouchableOpacity>}*/}
+                    </TouchableOpacity>}
                 </View>
                 {<View style={{width: 100}}>
                     <Paragraph

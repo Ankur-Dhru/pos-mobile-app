@@ -7,6 +7,7 @@ import AddEditCategory from "./AddEditCategory";
 import InputField from "../../components/InputField";
 import {appLog} from "../../libs/function";
 import {v4 as uuidv4} from "uuid";
+import {styles} from "../../theme";
 
 const Index = (props: any) => {
 
@@ -37,7 +38,7 @@ const Index = (props: any) => {
                 addItem={<TouchableOpacity onPress={async () => {
                     navigation.navigate('AddEditCategory',{callback: callBack });
                 }}>
-                    <Paragraph><ProIcon name={'plus'}/></Paragraph></TouchableOpacity>}
+                    <Paragraph style={[styles.paragraph,{marginTop:10}]}><ProIcon name={'plus'} /></Paragraph></TouchableOpacity>}
 
                 onChange={(value: any) => {
                     setSelected(value)

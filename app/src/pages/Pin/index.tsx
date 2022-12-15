@@ -9,7 +9,7 @@ import {
     gePhonebook,
     getAddons,
     getClients,
-    getOrders,
+    getOrders, getStateAndTaxType,
     getTempOrders,
     retrieveData,
     syncData
@@ -42,17 +42,7 @@ const Index = (props: any) => {
 
 
 
-    const loadDataCallback = useCallback(async () => {
-        try {
-            createTables().then()
-        } catch (error) {
-            appLog('error',error);
-        }
-    }, []);
 
-    useEffect(() => {
-        loadDataCallback().then(r => {});
-    }, [loadDataCallback]);
 
 
     useEffect(() => {
@@ -86,6 +76,14 @@ const Index = (props: any) => {
                                 localredux.authData = {...params, ...authData};
                                 localredux.localSettingsData = localSettingsData;
 
+                                /*const {taxtypelist, statelist} = localredux.localSettingsData;
+
+                                if(!Boolean(statelist)){
+                                    getStateAndTaxType(localredux.initData.general.country).then(()=>{
+                                        syncData(false).then()
+                                    })
+                                }*/
+
                                 await getClients().then()
                                 await getAddons().then()
                                 await getTempOrders().then((orders)=>{
@@ -102,7 +100,9 @@ const Index = (props: any) => {
                                     await dispatch(setSettings(data));
                                 })
 
-                                getOrders().then()
+                                await getOrders().then();
+
+
 
                             }
                         }

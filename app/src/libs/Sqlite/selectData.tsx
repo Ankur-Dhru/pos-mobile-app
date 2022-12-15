@@ -90,7 +90,7 @@ export const getClientsByWhere = async ({displayname,phone,search,start}:any) =>
                 where += ` and (displayname LIKE '%${displayname}%') `;
             }
             if(Boolean(search)){
-                where += ` and ((displayname LIKE '%${search}%') or (phone LIKE '%${search} or (clientid LIKE '%${search}'))`;
+                where += ` and ((displayname LIKE '%${search}%') or (phone LIKE '%${search}') or (clientid LIKE '%${search}'))`;
             }
 
             const query = `SELECT * FROM ${TABLE.CLIENT} where  ${where}`; // limit ${start*20},20

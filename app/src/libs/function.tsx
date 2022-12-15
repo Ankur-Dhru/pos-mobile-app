@@ -487,6 +487,15 @@ export const CheckConnectivity = () => {
 
 export const syncData = async (loader = true) => {
 
+
+    if(!Boolean(localredux.statelist)) {
+        await retrieveData(`dhru-tempStore`).then(async (data: any) => {
+            const {statelist, taxtypelist}: any = data;
+            localredux.statelist = statelist;
+            localredux.taxtypelist = taxtypelist
+        })
+    }
+
     await retrieveData(db.name).then(async (data: any) => {
 
         try {
@@ -591,6 +600,8 @@ export const syncData = async (loader = true) => {
                                         initData,
                                         localSettingsData: {
                                             ...localSettingsData,
+                                            statelist: localredux.statelist,
+                                            taxtypelist: localredux?.taxtypelist,
                                             currentLocation: locations[locationid],
                                             printingtemplates: printingtemplates,
                                             lastSynctime: moment().unix(),
@@ -2220,3 +2231,45 @@ export const sharePDF = async ({data, filename}: any) => {
 
 
 
+
+export const getStateAndTaxType = async (country: any, reset?: boolean) => {
+
+    return new Promise(async (resolve, reject)=>{
+        let queryString = {country};
+        await getStateList(country).then(async (result: any) => {
+            if (result.data) {
+                localredux.statelist = Object.keys(result.data).map((k: any) => assignOption(result.data[k].name, k))
+            }
+        });
+
+        const {workspace}: any = localredux.initData;
+        const {token}: any = localredux.authData;
+
+        await apiService({
+            method: METHOD.GET,
+            action: ACTIONS.GETTAXREGISTRATIONTYPE,
+            workspace: workspace,
+            token: token,
+            hideLoader: true,
+            other: {url: urls.adminUrl},
+            queryString,
+        }).then((result) => {
+            localredux.taxtypelist = [];
+            if (result.data) {
+                localredux.taxtypelist = result.data;
+            }
+        })
+
+        localredux.localSettingsData = {
+            ...localredux.localSettingsData,
+            statelist:localredux.statelist,
+            taxtypelist:localredux.taxtypelist
+        }
+
+        await storeData(`dhru-tempStore`, localredux.localSettingsData).then(async () => {});
+
+        resolve({statelist:localredux.statelist,taxtypelist:localredux.taxtypelist})
+    })
+
+
+}

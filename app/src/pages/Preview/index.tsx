@@ -1,5 +1,5 @@
-import React, {Component, WebViewHTMLAttributes} from 'react';
-import {Image, ScrollView, Text, useWindowDimensions, View,} from 'react-native';
+import React, {Component} from 'react';
+import { ScrollView, Text,  View,} from 'react-native';
 import {styles} from "../../theme";
 
 import {Container, ProIcon} from "../../components";
@@ -11,8 +11,9 @@ import {Card, Paragraph} from "react-native-paper";
 
 import {SIZE} from "../../libs/static";
 import RenderHtml from 'react-native-render-html';
+import parse, {domToReact} from 'html-react-parser';
 
-var XMLParser = require('react-xml-parser');
+//var XMLParser = require('react-xml-parser');
 
 
 class Preview extends Component<any> {
@@ -45,9 +46,10 @@ class Preview extends Component<any> {
                     </style>
                   </head>
                   <body>
-                     ${base64Decode(this.params.data)}
+                     ${this.renderTemplate(base64Decode(this.params.data))}
                   </body>
                 </html>`;
+
 
         this.loadPrintData();
 
@@ -60,14 +62,48 @@ class Preview extends Component<any> {
         }
     }
 
-    renderTemplate = (xmlData: any) => {
+    renderTemplate = (xmlData:any) => {
 
-        appLog('new XMLParser().parseFromString(xmlData)',new XMLParser().parseFromString(xmlData))
+
+        /*xmlData = xmlData.replaceAll('<align','<div').replaceAll('<text','<div').replaceAll('<bold','<div');
+        xmlData = xmlData.replaceAll('</align','</div').replaceAll('</text','</div').replaceAll('</bold','</div');
+
+        appLog('xmlData',xmlData)
+
+        return xmlData*/
+
 
         try {
+            const options = {
+                replace: (domNode: any) => {
+                    const {name, children, attribs, nextSibling} = domNode;
 
-             new XMLParser().parseFromString(xmlData)
+                    if (name === "img" || name === "image") {
+                        let srcData = nextSibling.data;
+                        nextSibling.data = "";
+                        return <img width={130} src={srcData}/>
+                    }
+                    if (name === "bold") {
+                        return <b>{domToReact(children, options)}</b>
+                    }
+                    if (name === "text") {
+                        if (attribs?.size) {
+                            let sizePx: keyof typeof SIZE = attribs.size
+                            let size: any = SIZE[sizePx];
+                            return <div style={{fontSize: size, lineHeight: size}}>{domToReact(children, options)}</div>
+                        }
+                        return <div>{domToReact(children, options)}</div>
+                    }
+                    if (name === "align") {
+                        return <div style={{textAlign: attribs?.mode || "left"}}>{domToReact(children, options)}</div>
+                    }
+                    return domNode
+                }
+            }
 
+            appLog('parse(xmlData,options)',parse(xmlData,options))
+
+            return parse(xmlData,options)
         } catch (e: any) {
             return `Template Error : ${e?.message}`
         }
@@ -76,10 +112,11 @@ class Preview extends Component<any> {
     }
 
 
+
+
     render() {
         const {navigation}: any = this.props;
         const {menu, filename}: any = this.params;
-
 
         navigation.setOptions({
             headerTitle: `Preview`,
@@ -105,7 +142,7 @@ class Preview extends Component<any> {
 
 
                                         <RenderHtml
-                                            source={this.renderTemplate(base64Decode(this.params.data))}
+                                            source={{html:`<div style="color:black">25254345</div>`}}
                                         />
 
 
@@ -116,6 +153,7 @@ class Preview extends Component<any> {
                                         source={{ uri: 'https://reactnative.dev/' }}
                                         automaticallyAdjustContentInsets={true}
                                     />*/}
+
                                     </ScrollView>
 
                                 </Card.Content>

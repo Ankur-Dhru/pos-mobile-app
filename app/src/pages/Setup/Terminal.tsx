@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useCallback, useEffect} from "react";
 
 import {ScrollView, View} from "react-native";
 import Container from "../../components/Container";
@@ -20,6 +20,7 @@ import Button from "../../components/Button";
 import {useDispatch} from "react-redux";
 import apiService from "../../libs/api-service";
 import {
+    appLog,
     base64Encode, createDatabaseName,
     findObject,
     isEmpty,
@@ -32,6 +33,7 @@ import {
 } from "../../libs/function";
 import InputField from "../../components/InputField";
 import KAccessoryView from "../../components/KAccessoryView"
+import {createTables} from "../../libs/Sqlite";
 
 const Terminal = (props: any) => {
 
@@ -57,7 +59,7 @@ const Terminal = (props: any) => {
             action: ACTIONS.TERMINAL,
             body: values,
             workspace: initData.workspace,
-            token: props?.authData?.token,
+            token: authData.token,
             other: {url: urls.adminUrl},
         }).then(async (response: any) => {
 
@@ -80,8 +82,11 @@ const Terminal = (props: any) => {
                 saveLocalSettings("defaultInputValues", defaultInputValues).then()
                 saveLocalSettings("defaultInputAmounts", defaultInputAmounts).then();
 
-                db.name = createDatabaseName({workspace:initData.workspace,locationid:values?.locationid});
+                db.name =  createDatabaseName({workspace:initData.workspace,locationid:values?.locationid});
+
                 await saveDatabaseName(db.name).then();
+
+                await createTables().then()
 
                 retrieveData(db.name).then(async (data: any) => {
                     let localSettingsData = data?.localSettingsData || {};

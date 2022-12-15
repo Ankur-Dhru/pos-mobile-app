@@ -3,7 +3,7 @@ import React, {memo, useEffect,  useState} from "react";
 import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
 import {Card, Divider, List, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
-import {Container, SearchBox} from "../../components";
+import {Container, ProIcon, SearchBox} from "../../components";
 import {Image} from "react-native";
 import {appLog, gePhonebook} from "../../libs/function";
 
@@ -17,6 +17,7 @@ import store from "../../redux-store/store";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
 import Avatar from "../../components/Avatar";
 import Button from "../../components/Button";
+import Search from "../../components/SearchBox";
 
 
 const Item = memo(({client}: any) => {
@@ -34,6 +35,7 @@ const Item = memo(({client}: any) => {
 
                 if(client.phonebook === 1){
                     client.phone = client.clientid;
+                    client.clientid = 0;
                 }
 
                let clientdetail = {
@@ -112,10 +114,20 @@ const Index = (props: any) => {
         <Container style={{padding:0,backgroundColor:'white'}}>
             <View style={[styles.h_100, styles.flex, styles.w_100, {flexDirection: 'column'}]}>
 
-                <View style={[{padding: 10}]}>
-                    <SearchBox handleSearch={handleSearch} onIconPress={() => navigation.goBack()}
-                               icon={{ source: 'arrow-left', direction: 'auto' }} autoFocus={false}  placeholder="Search Client..."/>
+                <View style={[styles.grid,styles.middle,styles.justifyContent,{padding: 10}]}>
+                    <View style={[styles.w_auto]}>
+                        <SearchBox handleSearch={handleSearch} onIconPress={() => navigation.goBack()}
+                                   icon={{ source: 'arrow-left', direction: 'auto' }} autoFocus={false}  placeholder="Search Client..."/>
+                    </View>
+                    <View>
+                        <TouchableOpacity onPress={async () => {
+                            navigation.navigate('AddEditClient',{search:true});
+                        }}>
+                            <Paragraph style={[styles.paragraph,{marginTop:10}]}><ProIcon name={'plus'} /></Paragraph></TouchableOpacity>
+                    </View>
                 </View>
+
+
 
                 <Card style={[styles.card,styles.h_100, styles.flex,{marginBottom:0}]}>
                     <Card.Content style={[styles.cardContent,{paddingHorizontal:5,paddingVertical:0}]}>

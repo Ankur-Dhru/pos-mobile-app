@@ -6,7 +6,7 @@ import Terminal from "../Setup/Terminal";
 import Workspaces from "../Setup/Workspaces";
 import Login from "../Setup/Login";
 import Pin from "../Pin";
-import {device, screenOptionStyle} from "../../libs/static";
+import {db, device, screenOptionStyle} from "../../libs/static";
 
 import Splash from "../Splash";
 import Tables from "../Tables";
@@ -63,12 +63,14 @@ const MainStackNavigator = () => {
     useEffect(() => {
         if (!interval) {
             interval = setInterval(() => {
-                getOrders().then((orders: any) => {
-                    if (!isEmpty(orders)) {
-                        let invoice: any = Object.values(orders)[0]
-                        syncInvoice(invoice).then()
-                    }
-                })
+                if(Boolean(db.name)) {
+                    getOrders().then((orders: any) => {
+                        if (!isEmpty(orders)) {
+                            let invoice: any = Object.values(orders)[0]
+                            syncInvoice(invoice).then()
+                        }
+                    })
+                }
             }, 60000);
         }
         CheckConnectivity()
@@ -212,7 +214,7 @@ const ProfileSettingsNavigator = (props: any) => {
 
             <Stack.Screen name={'SalesReportNavigator'} component={Report} options={{headerTitle: 'Sales Report'}}/>
 
-            <Stack.Screen name={'Preview'} component={Preview} options={{headerTitle: 'Preview'}}/>
+            {/*<Stack.Screen name={'Preview'} component={Preview} options={{headerTitle: 'Preview'}}/>*/}
 
             <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem} options={{headerTitle: 'Add Item'}}/>
             <Stack.Screen name={'AddEditCategory'} component={AddEditCategory} options={{headerTitle: 'Add Category'}}/>

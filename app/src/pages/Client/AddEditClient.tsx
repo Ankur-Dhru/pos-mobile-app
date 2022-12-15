@@ -375,7 +375,7 @@ const Index = (props: any) => {
                                                         </Field>
                                                     </View>*/}
 
-                                                {Boolean(statelist.length) && <View>
+                                                {Boolean(statelist?.length) && <View>
                                                     <Field name="state">
                                                         {props => (
                                                             <InputField
@@ -469,7 +469,7 @@ const Index = (props: any) => {
 
 
                                                 {
-                                                    taxtypelist.map((taxtypes: any, index: any) => {
+                                                    taxtypelist?.map((taxtypes: any, index: any) => {
                                                         const {types} = taxtypes;
 
                                                         let typelist = Object.keys(types).map((k) => assignOption(types[k]?.name, k));

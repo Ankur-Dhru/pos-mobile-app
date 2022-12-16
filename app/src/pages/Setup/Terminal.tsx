@@ -22,7 +22,7 @@ import apiService from "../../libs/api-service";
 import {
     appLog,
     base64Encode, createDatabaseName,
-    findObject,
+    findObject, getStateAndTaxType,
     isEmpty,
     retrieveData, saveDatabaseName,
     saveLocalSettings,
@@ -51,8 +51,6 @@ const Terminal = (props: any) => {
         const isRestaurant = (location.industrytype === "foodservices");
 
         values = {...values, timezone: values?.timezone, locationid: values?.locationid}
-
-
 
         await apiService({
             method: METHOD.POST,
@@ -86,15 +84,17 @@ const Terminal = (props: any) => {
 
                 await saveDatabaseName(db.name).then();
 
-                await createTables().then()
+                await createTables().then();
 
-                retrieveData(db.name).then(async (data: any) => {
+                await getStateAndTaxType(initData.general?.country).then()
+
+                await retrieveData(db.name).then(async (data: any) => {
                     let localSettingsData = data?.localSettingsData || {};
                     data = {
                         ...data,
                         localSettingsData: {
                             ...localSettingsData,
-                            statelist: localredux.statelist,
+                            statelist: localredux?.statelist,
                             taxtypelist: localredux?.taxtypelist,
                             currentLocation: locations[values?.locationid],
                             isRestaurant: isRestaurant,

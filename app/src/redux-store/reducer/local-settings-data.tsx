@@ -14,3 +14,4 @@ export const localSettings = createSlice({
 export const {setSettings} = localSettings.actions
 
 export default localSettings.reducer
+

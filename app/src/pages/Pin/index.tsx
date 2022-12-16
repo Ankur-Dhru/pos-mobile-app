@@ -8,7 +8,7 @@ import {
     appLog,
     gePhonebook,
     getAddons,
-    getClients,
+    getClients, getLocalSettings,
     getOrders, getStateAndTaxType,
     getTempOrders,
     retrieveData,
@@ -76,13 +76,6 @@ const Index = (props: any) => {
                                 localredux.authData = {...params, ...authData};
                                 localredux.localSettingsData = localSettingsData;
 
-                                /*const {taxtypelist, statelist} = localredux.localSettingsData;
-
-                                if(!Boolean(statelist)){
-                                    getStateAndTaxType(localredux.initData.general.country).then(()=>{
-                                        syncData(false).then()
-                                    })
-                                }*/
 
                                 await getClients().then()
                                 await getAddons().then()
@@ -96,7 +89,7 @@ const Index = (props: any) => {
                                     await dispatch(setGroupList(itemgroup))
                                 }
 
-                                await retrieveData(`${db.name}-settings`).then(async (data: any) => {
+                                await retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
                                     await dispatch(setSettings(data));
                                 })
 

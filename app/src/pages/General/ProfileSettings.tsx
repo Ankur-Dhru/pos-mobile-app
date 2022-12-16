@@ -53,7 +53,7 @@ const ProfileSettings = () => {
         await storeData(db.name, {}).then(async () => {
         });
 
-        await storeData(`${db.name}-settings`, {}).then(async () => {
+        await storeData(`fusion-dhru-pos-settings`, {}).then(async () => {
         });
         await storeData(`${db.name}-vouchernos`, 0).then(async () => {
         });

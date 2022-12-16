@@ -124,8 +124,8 @@ class Index extends Component<any, any> {
             }
         }
         if (this?.initdata?.country) {
-            getStateAndTaxType(this?.initdata?.country).then((data)=>{
-                this.setState({statelist:localredux.statelist,taxtypelist:localredux.taxtypelist})
+            getStateAndTaxType(this?.initdata?.country,true).then((data)=>{
+                this.setState({statelist:localredux?.statelist,taxtypelist:localredux?.taxtypelist})
             });
         }
     }
@@ -354,6 +354,7 @@ class Index extends Component<any, any> {
                                                                     onChange={(value: any) => {
                                                                         props.input.onChange(value);
                                                                         getStateAndTaxType(value, true).then(()=>{
+                                                                            this.setState({statelist:localredux.statelist,taxtypelist:localredux.taxtypelist})
                                                                             this.initdata.taxregtype = [];
                                                                             this.initdata.taxid = [];
                                                                         })

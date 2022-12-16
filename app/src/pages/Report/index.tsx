@@ -29,11 +29,13 @@ const Index = ({ordersData,navigation}: any) => {
     const {workspace}: any = localredux.initData;
     const {token}: any = localredux.authData;
 
-    const [data, setData] = useState<any>({});
+    const [data, setData] = useState<any>(ordersData);
+    const [loader,setLoader] = useState(false);
 
 
     useEffect(() => {
         getOrders().then((orders: any) => {
+
             apiService({
                 method: METHOD.GET,
                 action: ACTIONS.REPORT_SALES,
@@ -45,6 +47,7 @@ const Index = ({ordersData,navigation}: any) => {
                 other: {url: urls.posUrl},
             }).then((response: any) => {
                 setData({...orders, ...response?.data})
+                setLoader(true)
             })
         })
     }, [ordersData])
@@ -87,19 +90,22 @@ const Index = ({ordersData,navigation}: any) => {
         }).then(async (result) => {
 
 
+
             if (result.status === STATUS.SUCCESS) {
 
                 let data:any = result.data?.result;
-                const {voucheritems, receipt}: any = result.data?.result
+                const {voucheritems, receipt}: any = data;
+
+                const payment = Boolean(receipt) ? Object.values(receipt)?.map((payment: any) => {
+                    return {paymentAmount: payment.amount, paymentby: payment.payment}
+                }) : []
 
                 data = {
                     ...data,
-                    invoiceitems: Object.values(voucheritems).map((item: any) => {
+                    invoiceitems: Object.values(voucheritems)?.map((item: any) => {
                         return {...item, change: true}
                     }),
-                    payment: Object.values(receipt).map((payment: any) => {
-                        return {paymentAmount: payment.amount, paymentby: payment.payment}
-                    })
+                    payment: payment,
                 }
 
                 printInvoice(data).then((xmlData:any)=>{
@@ -107,8 +113,6 @@ const Index = ({ordersData,navigation}: any) => {
                 })
 
             }
-
-
 
         });
 
@@ -120,22 +124,22 @@ const Index = ({ordersData,navigation}: any) => {
         let name = item?.clientname;
 
         if (item?.voucherprefix && item?.voucherdisplayid) {
-            name = `${item?.voucherprefix}${item?.voucherdisplayid} ${name}`
+            name = `(${item?.posinvoice}) ${item?.voucherprefix}${item?.voucherdisplayid} - ${name}`
         }
 
-        return <TouchableOpacity style={[styles.p_5]} >
+        if(!Boolean(item.localdatetime)){
+            item.localdatetime = item.date
+        }
+
+        return <TouchableOpacity style={[styles.p_5]} key={index}>
             <View
                 style={[styles.grid, styles.noWrap, styles.middle, styles.justifyContentSpaceBetween]}>
 
                 <View style={[styles.w_auto]}>
                     <View style={[styles.grid, styles.noWrap, styles.top]}>
-
                         <View>
-                            {!Boolean(item?.voucherdisplayid) && <Paragraph
-                                style={[styles.paragraph, styles.bold]}>{getDateWithFormat(item.date, dateFormat())} {item.vouchercreatetime} </Paragraph>}
-                            {Boolean(item?.voucherdisplayid) && <Paragraph
-                                style={[styles.paragraph, styles.bold]}>{moment.unix(item.vouchercreatetime).format(dateFormat(true))} </Paragraph>}
-                            <Paragraph style={[styles.paragraph]}>{name}</Paragraph>
+                            <Paragraph style={[styles.paragraph, styles.bold]}>{item.invoice_display_number && `(${item.invoice_display_number}) `}{name}</Paragraph>
+                            <Paragraph style={[styles.paragraph, styles.text_xs]}>{moment(item.localdatetime).format(dateFormat(true))}</Paragraph>
                         </View>
                     </View>
                 </View>
@@ -148,7 +152,7 @@ const Index = ({ordersData,navigation}: any) => {
                 </View>
                 {<View style={{width: 100}}>
                     <Paragraph
-                        style={[styles.paragraph, styles.text_xs, {textAlign: 'right'}]}>{toCurrency(item?.vouchertotaldisplay)}</Paragraph>
+                        style={[styles.paragraph,styles.bold, {textAlign: 'right'}]}>{toCurrency(item?.vouchertotaldisplay)}</Paragraph>
                     {Boolean(item?.voucherdisplayid) ?
                         <Paragraph
                             style={[styles.paragraph, styles.text_xs, {
@@ -159,7 +163,7 @@ const Index = ({ordersData,navigation}: any) => {
                             style={[styles.paragraph, styles.text_xs, {
                                 textAlign: 'right',
                                 color: styles.red.color
-                            }]}>Sync in progress...</Paragraph>
+                            }]}>Sync in progress</Paragraph>
                     }
                 </View>}
             </View>
@@ -168,12 +172,15 @@ const Index = ({ordersData,navigation}: any) => {
         </TouchableOpacity>
     }
 
+    if(!loader){
+        return <></>
+    }
+
     return <Container>
         <Card style={[styles.card]}>
             <Card.Content style={[styles.cardContent]}>
-
-
                 <FlatList
+                    style={[styles.listitem]}
                     data={Object.values(data).reverse()}
                     keyboardDismissMode={'on-drag'}
                     keyboardShouldPersistTaps={'always'}

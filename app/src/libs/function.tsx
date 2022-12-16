@@ -488,18 +488,10 @@ export const CheckConnectivity = () => {
 export const syncData = async (loader = true) => {
 
 
-    if(!Boolean(localredux.statelist)) {
-        await retrieveData(`dhru-tempStore`).then(async (data: any) => {
-            const {statelist, taxtypelist}: any = data;
-            localredux.statelist = statelist;
-            localredux.taxtypelist = taxtypelist
-        })
-    }
 
     await retrieveData(db.name).then(async (data: any) => {
 
         try {
-
 
             let start = moment();
 
@@ -600,8 +592,6 @@ export const syncData = async (loader = true) => {
                                         initData,
                                         localSettingsData: {
                                             ...localSettingsData,
-                                            statelist: localredux.statelist,
-                                            taxtypelist: localredux?.taxtypelist,
                                             currentLocation: locations[locationid],
                                             printingtemplates: printingtemplates,
                                             lastSynctime: moment().unix(),
@@ -1013,9 +1003,11 @@ export const saveLocalOrder = (order?: any) => {
                     ...order,
                     invoice_display_number: (Boolean(vouchers) && vouchers[order.vouchertypeid]) || 1
                 }
-                vouchers = {...vouchers, [order.vouchertypeid]: ++order.invoice_display_number}
-                await storeData(`${db.name}-vouchernos`, vouchers).then(async () => {
-                });
+
+               let nextno = clone(order.invoice_display_number);
+
+               vouchers = {...vouchers, [order.vouchertypeid]: ++nextno}
+                await storeData(`${db.name}-vouchernos`, vouchers).then(async () => {});
             })
         }
         ///////// CREATE LOCALORDER ID //////////
@@ -1024,7 +1016,7 @@ export const saveLocalOrder = (order?: any) => {
 
         deleteTempLocalOrder(order.tableorderid).then((msg:any) => {
             insertOrder(order).then(()=>{
-                resolve('Save Order')
+                resolve(order)
             });
         })
     })
@@ -1051,13 +1043,12 @@ export const saveDatabaseName = async (databasename: any) => {
 
 
 export const saveLocalSettings = async (key: any, setting?: any) => {
-
-    await retrieveData(`${db.name}-settings`).then(async (data: any) => {
+    await retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
         data = {
             ...data,
             [key]: setting
         }
-        await storeData(`${db.name}-settings`, data).then(async () => {
+        await storeData(`fusion-dhru-pos-settings`, data).then(async () => {
             await store.dispatch(setSettings(clone(data)));
         });
     })
@@ -1066,12 +1057,12 @@ export const saveLocalSettings = async (key: any, setting?: any) => {
 
 export const getLocalSettings = async (key: any) => {
     return new Promise(async resolve => {
-        await retrieveData(`${db.name}-settings`).then(async (data: any) => {
+        await retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
             if(Boolean(data) && Boolean(data[key])) {
                 resolve(data[key])
             }
             else{
-                resolve({})
+                resolve(false)
             }
         })
     })
@@ -1402,7 +1393,7 @@ export const generateKOT = async () => {
                 }
                 if ((today !== moment().format('YYYY-MM-DD'))) {
                     kotno = 0;
-                    await retrieveData(`${db.name}-settings`).then(async (data: any) => {
+                    await retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
                         data.today = moment().format('YYYY-MM-DD');
                         saveLocalSettings("today", data.today).then();
                         await store.dispatch(setSettings(data));
@@ -1650,18 +1641,23 @@ export const printInvoice = async (order?: any,preview?:any) => {
 
         const PRINTERS: any = store.getState()?.localSettings?.printers || [];
 
-
         ///////// CREATE LOCALORDER ID //////////
-        if (!Boolean(cartData.invoice_display_number)) {
+
+        if(Boolean(cartData?.voucherdata?.invoice_display_number)){
+            cartData.invoice_display_number = cartData?.voucherdata?.invoice_display_number
+        }
+
+        if (!Boolean(cartData?.invoice_display_number)) {
+
             await retrieveData(`${db.name}-vouchernos`).then(async (vouchers: any) => {
                 cartData = {
                     ...cartData,
                     invoice_display_number: (Boolean(vouchers) && vouchers[cartData.vouchertypeid]) || 1
                 }
-                vouchers = {...vouchers, [cartData.vouchertypeid]: ++cartData.invoice_display_number}
-                await storeData(`${db.name}-vouchernos`, vouchers).then(async () => {
-                    await store.dispatch(setCartData(cartData));
-                });
+                await store.dispatch(setCartData(cartData));
+                let nextno = clone(cartData.invoice_display_number);
+                vouchers = {...vouchers, [cartData.vouchertypeid]: ++nextno}
+                await storeData(`${db.name}-vouchernos`, vouchers).then(async () => {});
             })
         }
         ///////// CREATE LOCALORDER ID //////////
@@ -1793,8 +1789,8 @@ export const printInvoice = async (order?: any,preview?:any) => {
                 let xmlData = Mustache.render( template, printJson);
                 resolve(xmlData)
             }
-            else if(Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip)) {
 
+           if(Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip)) {
                 setTimeout(() => {
                     sendDataToPrinter(printJson, getTemplate(template), {
                         ...printer,
@@ -1804,9 +1800,8 @@ export const printInvoice = async (order?: any,preview?:any) => {
                         resolve(msg)
                     });
                 }, 200)
-
-            } else {
-
+            }
+           else {
                 setTimeout(() => {
                     store.dispatch(setAlert({visible: true, message: 'Invoice Printer not set'}))
                 }, 200)
@@ -1916,21 +1911,6 @@ export const arraySome = (arrayList: any[], key: string) => {
 }
 
 
-export const getStateList = (country: any) => {
-    const {workspace}: any = localredux.initData;
-    const {token}: any = localredux.authData;
-
-    let queryString = {country};
-    return apiService({
-        method: METHOD.GET,
-        action: ACTIONS.GETSTATE,
-        queryString,
-        workspace: workspace,
-        token: token,
-        hideLoader: true,
-        other: {url: urls.adminUrl},
-    })
-}
 
 
 export const refreshToken = () => {
@@ -1994,7 +1974,7 @@ export const selectWorkspace = async (workspace: any, navigation: any) => {
         if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
             localredux.initData = {...response.data, deviceName: response?.deviceName, workspace: workspace.name}
             if (Boolean(localredux.initData?.general?.legalname) && Boolean(localredux.initData?.location) && Boolean(localredux.initData?.currency)) {
-                navigation.navigate('Terminal');
+                navigation.replace('Terminal');
             } else {
                 navigation.navigate('OrganizationProfile');
             }
@@ -2058,7 +2038,6 @@ export const getTempOrders = (refresh = false) => {
 export const getOrders = (refresh = false) => {
     return new Promise((resolve)=> {
         getOrdersByWhere().then((orders: any) => {
-            //store.dispatch(setOrdersData(orders));
             resolve(orders)
         });
     })
@@ -2068,7 +2047,6 @@ export const getOrders = (refresh = false) => {
 export const gePhonebook = async (force?: any) => {
 
     const synccontact: any = store.getState()?.localSettings?.synccontact;
-
 
     if (!Boolean(synccontact) || force) {
 
@@ -2231,45 +2209,74 @@ export const sharePDF = async ({data, filename}: any) => {
 
 
 
+export const getStateList = async (country: any) => {
+    const {workspace}: any = localredux.initData;
+    const {token}: any = localredux.authData;
+
+    let queryString = {country};
+    await apiService({
+        method: METHOD.GET,
+        action: ACTIONS.GETSTATE,
+        queryString,
+        workspace: workspace,
+        token: token,
+        hideLoader: true,
+        other: {url: urls.adminUrl},
+    }).then((result:any)=>{
+        if(result.status === STATUS.SUCCESS && Boolean(result?.data)){
+            localredux.statelist = Object.keys(result.data).map((k: any) => assignOption(result.data[k].name, k));
+            saveLocalSettings('statelist',localredux.statelist).then()
+        }
+    })
+}
 
 export const getStateAndTaxType = async (country: any, reset?: boolean) => {
 
     return new Promise(async (resolve, reject)=>{
+
         let queryString = {country};
-        await getStateList(country).then(async (result: any) => {
-            if (result.data) {
-                localredux.statelist = Object.keys(result.data).map((k: any) => assignOption(result.data[k].name, k))
+
+        await getLocalSettings('statelist').then(async (statelist)=>{
+
+            if(Boolean(statelist) && !reset){
+
+                localredux.statelist = statelist
             }
-        });
+            else{
 
-        const {workspace}: any = localredux.initData;
-        const {token}: any = localredux.authData;
-
-        await apiService({
-            method: METHOD.GET,
-            action: ACTIONS.GETTAXREGISTRATIONTYPE,
-            workspace: workspace,
-            token: token,
-            hideLoader: true,
-            other: {url: urls.adminUrl},
-            queryString,
-        }).then((result) => {
-            localredux.taxtypelist = [];
-            if (result.data) {
-                localredux.taxtypelist = result.data;
+                await getStateList(country)
             }
         })
 
-        localredux.localSettingsData = {
-            ...localredux.localSettingsData,
-            statelist:localredux.statelist,
-            taxtypelist:localredux.taxtypelist
-        }
+        await getLocalSettings('taxtypelist').then(async (taxtypelist)=>{
+            if(Boolean(taxtypelist)  && !reset){
+                localredux.taxtypelist = taxtypelist
+            }
+            else{
+                const {workspace}: any = localredux.initData;
+                const {token}: any = localredux.authData;
 
-        await storeData(`dhru-tempStore`, localredux.localSettingsData).then(async () => {});
+                await apiService({
+                    method: METHOD.GET,
+                    action: ACTIONS.GETTAXREGISTRATIONTYPE,
+                    workspace: workspace,
+                    token: token,
+                    hideLoader: true,
+                    other: {url: urls.adminUrl},
+                    queryString,
+                }).then((result) => {
+                    localredux.taxtypelist = [];
 
-        resolve({statelist:localredux.statelist,taxtypelist:localredux.taxtypelist})
+                    if (result.data) {
+                        localredux.taxtypelist = result.data;
+                        saveLocalSettings('taxtypelist',localredux.taxtypelist).then()
+                    }
+                })
+            }
+        })
+
+        resolve(true)
+
     })
-
 
 }

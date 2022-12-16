@@ -1,7 +1,7 @@
 import React from "react";
 import {Image, View} from "react-native";
 import {styles} from "../../theme";
-import {getDatabaseName, retrieveData} from "../../libs/function";
+import {appLog, getDatabaseName, getStateAndTaxType, retrieveData} from "../../libs/function";
 import Container from "../../components/Container";
 import moment from "moment";
 import {useDispatch} from "react-redux";
@@ -39,15 +39,12 @@ const Index = (props: any) => {
                         localredux.initData = initData;
                         localredux.localSettingsData = localSettingsData;
 
-
-                        //await store.dispatch(setInitData(initData))
+                        await getStateAndTaxType(initData.general?.country).then()
 
                         screen = 'PinStackNavigator';
 
-                        await retrieveData(`${db.name}-settings`).then(async (data: any) => {
-                            if (Boolean(data)) {
-                                await dispatch(setSettings(data));
-                            }
+                        await retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
+                            await dispatch(setSettings(data));
                         })
 
                     }

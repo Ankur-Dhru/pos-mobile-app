@@ -42,7 +42,7 @@ const Index = (props: any) => {
     const search = props?.route?.params?.search;
 
     const {pricingtemplate, currency, paymentterms, general} = localredux.initData;
-    const {taxtypelist, statelist} = localredux.localSettingsData;
+    const {taxtypelist, statelist} = localredux;
 
     const [displayname, setDisplayname]: any = useState();
     const [loaded, setLoaded] = useState<boolean>(false)

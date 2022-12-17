@@ -78,7 +78,8 @@ export enum ACTIONS {
     SETTING = "setting/",
     DRAWER = "drawer",
     SAVE_TABLE_ORDER = "tableorder",
-    REPORT_SALES = "reportsales"
+    REPORT_SALES = "reportsales",
+    DAY_END_REPORT = "dayendreport"
 }
 
 
@@ -1587,10 +1588,6 @@ export const supportedPrinterList = [
 ]
 
 
-export const defaultInvoiceTemplate2 = `<text>{{{locationname}}}</text><bold>
-            <text size="1:1">{{{legalname}}}
-</text>
-        </bold>`;
 
 export const defaultInvoiceTemplate = `<align mode="center">
 {{#logo}}
@@ -1726,6 +1723,49 @@ export  const  defaultKOTTemplate = `<align mode="center">
 {{/ticketitems}}
 {{{line}}}`
 
+
+export  const  dayendReportTemplate = `
+<align mode="center">
+<bold>
+<text size="1:1">{{{legalname}}}
+</text>
+<text size="1:0">{{{locationname}}}
+
+</text>
+</bold>
+<text size="1:0">Terminal : {{terminalname}}
+</text>
+<text>{{invoicetype}}
+</text>
+</align>
+<line-feed/>
+<text>Date : {{{date}}}
+</text>
+{{{line}}}
+<text>{{{head}}}
+</text>
+{{{line}}}
+{{#isItems}}
+{{#items}}
+<text>{{{.}}}
+</text>
+{{/items}}
+{{{line}}}
+{{/isItems}}
+{{#isSummary}}
+<bold><text>Total amount by payment mode 
+</text></bold>
+{{#gateways}}
+<text>{{{.}}}
+</text>
+{{/gateways}}
+{{{line}}}
+{{/isSummary}}
+ 
+ 
+<text>{{{finaltotal}}}
+</text>
+{{{line}}}`
 
 
 export const testInvoiceData = {

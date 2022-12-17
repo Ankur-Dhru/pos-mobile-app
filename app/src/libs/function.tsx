@@ -15,8 +15,8 @@ import {decode} from 'html-entities';
 import {hideLoader, setAlert, setBottomSheet, setDialog, showLoader} from "../redux-store/reducer/component";
 import apiService from "./api-service";
 import {
-    ACTIONS,
-      db,
+    ACTIONS, dayendReportTemplate,
+    db,
     defaultInvoiceTemplate,
     defaultKOTTemplate,
     isDevelopment,
@@ -1735,7 +1735,7 @@ export const printInvoice = async (order?: any,preview?:any) => {
             firstname,
             lastname,
             printinvoice:true,
-            clientname: cartData?.client || cartData?.clientname,
+            clientname: cartData?.client?.displayname || cartData?.clientname,
             isListPayment: Boolean(cartData?.payment?.length > 0),
             isdisplaytaxable: cartData?.vouchersubtotaldisplay != cartData?.vouchertaxabledisplay,
             head: () => getItem("DESCRIPTION", "QNT", "RATE", "AMOUNT") + "\n" + getItem("HSN Code", "GST %", "", ""),
@@ -1781,7 +1781,7 @@ export const printInvoice = async (order?: any,preview?:any) => {
         }
 
 
-        return await new Promise(async (resolve) => {
+         return await new Promise(async (resolve) => {
 
             const template: any = getPrintTemplate('Thermal');
 
@@ -1866,7 +1866,7 @@ export const getPrintTemplate = (type?: any) => {
     if (Boolean(printingtemplates) && Boolean(printingtemplates[type])) {
         return base64Decode(printingtemplates[type]?.content)
     }
-    return type === 'KOT' ? defaultKOTTemplate : defaultInvoiceTemplate
+    return type === 'KOT' ? defaultKOTTemplate : type === 'Thermal' ? defaultInvoiceTemplate : dayendReportTemplate
 }
 
 export const cancelOrder = async (navigation: any) => {
@@ -2256,6 +2256,8 @@ export const getStateAndTaxType = async (country: any, reset?: boolean) => {
                 const {workspace}: any = localredux.initData;
                 const {token}: any = localredux.authData;
 
+                appLog('token',token)
+
                 await apiService({
                     method: METHOD.GET,
                     action: ACTIONS.GETTAXREGISTRATIONTYPE,
@@ -2280,3 +2282,62 @@ export const getStateAndTaxType = async (country: any, reset?: boolean) => {
     })
 
 }
+
+
+
+export const printDayEndReport = ({date:date,data:data}:any) => {
+    try {
+
+        const {
+            currentLocation: {
+                locationname,
+            }
+        }: any = localredux.localSettingsData;
+        const {general: {legalname}}: any = localredux.initData;
+        const {terminal_name}: any = localredux.licenseData.data;
+        const decimalPlace = 2;
+        let total:any=0;
+
+        let printJson = {
+            date: moment(date).format(dateFormat()),
+            locationname,
+            legalname,
+            terminalname: terminal_name,
+            invoicetype:'Retail Invoice',
+            head: () => getLeftRight("#ID | Name","Amount"),
+            isItems:true,
+            items: Object.values(data.order)?.map((item: any) => {
+                    total += +item.vouchertotal;
+                    return  getLeftRight(item.voucherdisplayid+' | '+item.client, numberFormat(item.vouchertotal,false, decimalPlace))
+                }
+            ),
+            isSummary:true,
+            gateways:()=> data?.info?.map((pm: any) => {
+                return getLeftRight(pm.label, numberFormat(pm?.value,false,decimalPlace))
+            }),
+            finaltotal: () => getLeftRight("Total",numberFormat(total,false,decimalPlace)),
+            line: () => "<text>" + getTrimChar(0, "-") + "\n</text>",
+        }
+
+        const PRINTERS: any = store.getState().localSettings?.printers || [];
+        let printer = PRINTERS[PRINTER.INVOICE];
+
+        PAGE_WIDTH = printer?.printsize || 48;
+
+        return new Promise(async (resolve) => {
+            if (Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip)) {
+                const template: any = getPrintTemplate('DayendReport');
+                sendDataToPrinter(printJson, getTemplate(template), printer).then((msg) => {
+                    resolve(msg)
+                });
+            } else {
+                store.dispatch(setAlert({visible: true, message: 'Invoice Printer not set'}))
+                resolve('No printer set')
+            }
+        })
+
+    } catch (e) {
+        appLog("print Error", e);
+    }
+}
+

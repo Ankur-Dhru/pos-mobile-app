@@ -39,7 +39,7 @@ const Index = (props: any) => {
                         localredux.initData = initData;
                         localredux.localSettingsData = localSettingsData;
 
-                        await getStateAndTaxType(initData.general?.country).then()
+                        //await getStateAndTaxType(initData.general?.country).then()
 
                         screen = 'PinStackNavigator';
 

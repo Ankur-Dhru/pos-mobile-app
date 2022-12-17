@@ -281,7 +281,7 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
                                                     mode={'outlined'}
                                                     numberOfLines={1}
                                                     blurOnSubmit={true}
-                                                    style={{height:40}}
+
                                                     selectionColor={styles.secondary.color}
                                                     selectTextOnFocus={true}
                                                     keyboardType='numeric'

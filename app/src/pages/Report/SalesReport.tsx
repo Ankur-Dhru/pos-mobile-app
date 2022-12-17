@@ -18,9 +18,10 @@ import apiService from "../../libs/api-service";
 
 import moment from "moment";
 import ProIcon from "../../components/ProIcon";
+import PageLoader from "../../components/PageLoader";
 
 
-const Index = ({ordersData,navigation}: any) => {
+const SalesReport = ({ordersData,navigation}: any) => {
 
     let {
         licenseData,
@@ -120,6 +121,11 @@ const Index = ({ordersData,navigation}: any) => {
     }
 
 
+    if (!loader) {
+        return <PageLoader/>
+    }
+
+
     const renderItem = ({item, index}: any) => {
         let name = item?.clientname;
 
@@ -172,9 +178,7 @@ const Index = ({ordersData,navigation}: any) => {
         </TouchableOpacity>
     }
 
-    if(!loader){
-        return <></>
-    }
+
 
     return <Container>
         <Card style={[styles.card]}>
@@ -209,7 +213,7 @@ const mapStateToProps = (state: any) => ({
     ordersData: state.ordersData,
 })
 
-export default connect(mapStateToProps)(Index);
+export default connect(mapStateToProps)(SalesReport);
 
 
 

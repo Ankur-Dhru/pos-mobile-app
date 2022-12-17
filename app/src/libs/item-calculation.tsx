@@ -399,14 +399,15 @@ export const itemTotalCalculation = (
                     }
 
                     item?.product_tax_object_display?.forEach((itemTax: any) => {
-                        const taxIndex: any = globaltax.findIndex((taxItem: any) => taxItem.taxid === itemTax.taxid);
+                        const taxIndex: any = globaltax.findIndex((taxItem: any) => taxItem.taxid == itemTax.taxid);
 
                         let typeTotal = 0;
 
                         if (typeWiseTaxSummary[itemTax?.taxtype]) {
                             typeTotal = typeWiseTaxSummary[itemTax?.taxtype];
                         }
-                        typeWiseTaxSummary[itemTax?.taxtype] = typeTotal + itemTax?.taxprice
+
+                        typeWiseTaxSummary[itemTax?.taxtype] = typeTotal + itemTax?.taxprice;
 
                         if (taxIndex === -1) {
                             const {taxprice, taxablerate, ...otherData} = itemTax;

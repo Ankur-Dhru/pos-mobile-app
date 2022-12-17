@@ -14,7 +14,7 @@ import Cart from "../Cart";
 import {CheckConnectivity, getOrders, isEmpty, isRestaurant, syncInvoice} from "../../libs/function";
 import DetailView from "../Cart/DetailView";
 import Payment from "../Cart/Payment";
-import Report from "../Report";
+import SalesReport from "../Report/SalesReport";
 
 import InputOpenSetting from "../InputOpenSetting";
 import DefaultInputValues from "../DefaultInputValues";
@@ -45,6 +45,7 @@ import CancelReason from "../Cart/CancelReason";
 import ClientList from "../Client/ClientList";
 import KotNote from "../Cart/KotNote";
 import GeneralSettings from "../GeneralSettings";
+import DayEndReport from "../Report/dayendreport";
 import Preview from "../Preview";
 
 const screenOptions = {...screenOptionStyle};
@@ -212,7 +213,8 @@ const ProfileSettingsNavigator = (props: any) => {
         <Stack.Navigator initialRouteName={'ProfileSettingsNavigator'} screenOptions={screenOptions}>
             <Stack.Screen name={'ProfileSettingsNavigator'} component={General} options={{headerShown: false}}/>
 
-            <Stack.Screen name={'SalesReportNavigator'} component={Report} options={{headerTitle: 'Sales Report'}}/>
+            <Stack.Screen name={'SalesReport'} component={SalesReport} options={{headerTitle: 'Sales Report'}}/>
+            <Stack.Screen name={'DayEndReport'} component={DayEndReport} options={{headerTitle: 'Day End Report'}}/>
 
             {/*<Stack.Screen name={'Preview'} component={Preview} options={{headerTitle: 'Preview'}}/>*/}
 

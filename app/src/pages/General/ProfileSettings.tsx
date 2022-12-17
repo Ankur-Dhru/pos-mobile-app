@@ -184,7 +184,19 @@ const ProfileSettings = () => {
                                             style={[styles.listitem]}
                                             title={'Sales Report'}
                                             onPress={() => {
-                                                navigation.navigate("SalesReportNavigator");
+                                                navigation.navigate("SalesReport");
+                                            }}
+                                            left={() => <List.Icon icon="point-of-sale"/>}
+                                            right={() => <List.Icon icon="chevron-right"/>}
+                                        />
+
+                                        <ItemDivider/>
+
+                                        <List.Item
+                                            style={[styles.listitem]}
+                                            title={'Day End Report'}
+                                            onPress={() => {
+                                                navigation.navigate("DayEndReport");
                                             }}
                                             left={() => <List.Icon icon="point-of-sale"/>}
                                             right={() => <List.Icon icon="chevron-right"/>}

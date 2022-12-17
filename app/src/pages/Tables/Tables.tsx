@@ -276,7 +276,7 @@ const Index = ({tableorders}: any) => {
                     anchor={<Appbar.Action icon={'dots-vertical'} onPress={() => {
                         openMenu()
                     }}/>  }>
-                    <Menu.Item onPress={onClickAddTable} title="Add Table"/>
+                    {/*<Menu.Item onPress={onClickAddTable} title="Add Table"/>*/}
                     {!shifttable && <Menu.Item onPress={() => {
                         closeMenu()
                         setShifttable(true)

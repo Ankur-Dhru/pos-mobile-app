@@ -68,9 +68,13 @@ const Index = ({navigation}: any) => {
         }).then((response: any) => {
 
             const {info,data}:any = response;
-            setData({order:data,info:Object.keys(info).map((key:any)=>{
-                return {label:key,value:info[key]}
-            })})
+            if(Boolean(info)) {
+                setData({
+                    order: data, info: Object.keys(info).map((key: any) => {
+                        return {label: key, value: info[key]}
+                    })
+                })
+            }
             setLoader(true)
         })
     }, [datetime])
@@ -106,15 +110,7 @@ const Index = ({navigation}: any) => {
         </View>
     }
 
-    if(!Boolean(data?.info)){
-        return <Container>
-            <Card style={[styles.card]}>
-                <Card.Content style={[styles.cardContent]}>
-                    <Paragraph>No Data found</Paragraph>
-                </Card.Content>
-            </Card>
-        </Container>
-    }
+
 
     return <Container>
         <View style={[styles.marginOver,{marginBottom:0}]}>
@@ -219,8 +215,11 @@ const Index = ({navigation}: any) => {
                         renderItem={renderItem}
                         ListEmptyComponent={<View>
                             <View style={[styles.p_6]}>
-                                <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>No any items found</Text>
+                                <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>No any
+                                    items found</Text>
+
                             </View>
+
                         </View>}
                         ItemSeparatorComponent={ItemDivider}
                     />

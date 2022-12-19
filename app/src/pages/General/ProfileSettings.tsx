@@ -1,6 +1,6 @@
 import React from "react";
 import {isEmpty, isRestaurant, saveLocalSettings, storeData, syncData} from "../../libs/function";
-import {Dimensions, Image, ScrollView, View} from "react-native";
+import {Dimensions, Image, ScrollView, TouchableOpacity, View} from "react-native";
 import {Button as PButton, Caption, Card, List, Text, Title} from "react-native-paper";
 import {styles} from "../../theme";
 import {CommonActions, useNavigation} from "@react-navigation/native";
@@ -21,6 +21,8 @@ import AddEditClient from "../Client/AddEditClient";
 import DeleteButton from "../../components/Button/DeleteButton";
 import {Container} from "../../components";
 import {createTables, deleteDB} from "../../libs/Sqlite";
+import {Icon} from "react-native-paper/lib/typescript/components/List/List";
+import ProIcon from "../../components/ProIcon";
 
 
 const ProfileSettings = () => {
@@ -116,11 +118,20 @@ const ProfileSettings = () => {
     return <Container>
 
 
+
         <View style={[styles.middle]}>
 
             <View style={[styles.middleForm]}>
 
+
+
                 <ScrollView keyboardShouldPersistTaps='handled' style={[styles.h_100]}>
+
+                    <View style={[styles.absolute,styles.p_4,{right:0}]}>
+                        <TouchableOpacity onPress={()=>navigation.goBack()}>
+                            <ProIcon name={'xmark'}/>
+                        </TouchableOpacity>
+                    </View>
 
                     <View>
 

@@ -24,6 +24,7 @@ import Button from "../../components/Button";
 import apiService from "../../libs/api-service";
 import {appLog, isEmpty, nextFocus} from "../../libs/function";
 import KAccessoryView from "../../components/KAccessoryView";
+import InputField from "../../components/InputField";
 
 
 const Index = (props: any) => {
@@ -99,19 +100,22 @@ const Index = (props: any) => {
                                     </View>
 
                                     <View style={[styles.py_5]}>
-                                        <View style={[styles.mb_5]}>
+                                        <View>
                                             <Field name="email" validate={composeValidators(required, isEmail)}>
                                                 {props => (
-                                                    <InputBox
+
+                                                    <InputField
                                                         {...props}
                                                         value={props.input.value}
-                                                        label={'Email'}
-                                                        autoFocus={false}
-                                                        onSubmitEditing={()=> nextFocus(passwordRef)}
                                                         returnKeyType={'next'}
+                                                        onSubmitEditing={()=> nextFocus(passwordRef)}
+                                                        label={'Email Address'}
+                                                        inputtype={'textbox'}
                                                         keyboardType='email-address'
                                                         onChange={props.input.onChange}
                                                     />
+
+
                                                 )}
                                             </Field>
                                         </View>
@@ -119,19 +123,28 @@ const Index = (props: any) => {
                                         <View>
                                             <Field name="password" validate={required}>
                                                 {props => (
-                                                    <InputBox
 
-                                                        value={props.input.value}
-                                                        label={'Password'}
-                                                        customRef={passwordRef}
-                                                        onSubmitEditing={(e: any) => {
-                                                            handleSubmit(values)
-                                                        }}
-                                                        right={<TI.Icon name={passwordVisible ? "eye" : "eye-off"} onPress={() => setPasswordVisible(!passwordVisible)}/>}
-                                                        returnKeyType={'go'}
-                                                        secureTextEntry={passwordVisible}
-                                                        onChange={props.input.onChange}
-                                                    />
+                                                    <>
+
+                                                        <InputField
+                                                            {...props}
+                                                            value={props.input.value}
+                                                            label={'Password'}
+                                                            inputtype={'textbox'}
+                                                            onSubmitEditing={(e: any) => {
+                                                                handleSubmit(values)
+                                                            }}
+                                                            right={<TI.Icon name={passwordVisible ? "eye" : "eye-off"} onPress={() => setPasswordVisible(!passwordVisible)}/>}
+                                                            returnKeyType={'go'}
+                                                            secureTextEntry={passwordVisible}
+                                                            onChange={props.input.onChange}
+
+                                                        />
+
+                                                    </>
+
+
+
                                                 )}
                                             </Field>
                                         </View>

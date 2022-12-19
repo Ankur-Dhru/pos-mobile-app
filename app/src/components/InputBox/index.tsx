@@ -26,6 +26,7 @@ class Index extends React.Component<any> {
                     outlineColor="transparent"
                     dense={true}
                     disabled={!editmode}
+
                     underlineColor={underlineColor}
                     onChangeText={(e:any) => { onChange(e) }}
                     {...this.props}

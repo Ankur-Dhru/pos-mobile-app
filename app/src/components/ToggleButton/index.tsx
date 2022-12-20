@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { ToggleButton } from 'react-native-paper';
-import ProIcon from "../ProIcon";
+import {Paragraph, ToggleButton} from 'react-native-paper';
 import {useEffect} from "react";
 
 
 const ToggleButtons = (props:any) => {
-    const [value, setValue] = React.useState('server');
+    const [value, setValue] = React.useState(props.default);
 
     useEffect(() => {
         Boolean(value) && props.onValueChange(value)
@@ -13,9 +12,12 @@ const ToggleButtons = (props:any) => {
 
 
     return (
-        <ToggleButton.Row  onValueChange={value => setValue(value)} value={value}>
-            <ToggleButton  style={{height:35,width:80}} icon={()=><ProIcon name={'user'} size={18}/>} value="server" />
-            <ToggleButton style={{height:35,width:80}}  icon={()=><ProIcon name={'address-book'}/>}  value="phonebook" />
+        <ToggleButton.Row   onValueChange={value => setValue(value)} value={value}>
+            {
+                props?.btns?.map(({label,value}:any)=>{
+                    return <ToggleButton   style={{height:40,width:props.width}}  icon={()=> <Paragraph>{label}</Paragraph>} value={value} />
+                })
+            }
         </ToggleButton.Row>
     );
 };

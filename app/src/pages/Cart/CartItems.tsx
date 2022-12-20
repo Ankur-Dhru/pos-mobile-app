@@ -12,6 +12,7 @@ import Button from "../../components/Button";
 import {appLog, isRestaurant, updateComponent} from "../../libs/function";
 import ProIcon from "../../components/ProIcon";
 import {ItemDivider} from "../../libs/static";
+import ToggleButtons from "../../components/ToggleButton";
 
 const Index = (props: any) => {
 
@@ -49,24 +50,27 @@ const Index = (props: any) => {
     const renderItem = useCallback(({item, index}: any) => <Item item={item} key={item.key} hasLast={invoiceitems.length === index+1} isRestaurant={hasrestaurant}   index={index}/>, []);
     const renderKot = useCallback(({item, index}: any) => <Kot kot={item} hasLast={kots.length === index+1} key={item.key} />, []);
 
+    const onButtonToggle = (value:any) => {
+        if(value === 'items'){
+            updateComponent(cartListRef,'display','flex')
+            updateComponent(kotListRef,'display','none')
+        }
+        else{
+            updateComponent(cartListRef,'display','none')
+            updateComponent(kotListRef,'display','flex')
+        }
+    };
 
 
     return (
         <>
             {Boolean(kots?.length > 0) &&  <View style={[styles.mb_3]}>
-                <View style={[styles.grid,styles.justifyContent]}>
-
-                    <Button style={[styles.w_auto]} more={{color:'white',height:40}} compact={true}  onPress={() => {
-                        updateComponent(cartListRef,'display','flex')
-                        updateComponent(kotListRef,'display','none')
-
-                    }} secondbutton={true} >Items</Button>
-                    <Button style={[styles.ml_1,styles.w_auto]} more={{color:'black',backgroundColor:styles.secondary.color,height:40}}  compact={true}  onPress={() => {
-                        updateComponent(cartListRef,'display','none')
-                        updateComponent(kotListRef,'display','flex')
-
-                    }}  secondbutton={true}>KOTs</Button>
-                </View>
+                <ToggleButtons
+                    width={'50%'}
+                    default={'items'}
+                    btns={[{label:'Items',value:'items'},{label:'KOTs',value:'kots'}]}
+                    onValueChange={onButtonToggle}
+                />
             </View>}
 
 

@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect} from "react";
 
-import {ScrollView, View} from "react-native";
+import {Alert, ScrollView, View} from "react-native";
 import Container from "../../components/Container";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
@@ -21,7 +21,7 @@ import {useDispatch} from "react-redux";
 import apiService from "../../libs/api-service";
 import {
     appLog,
-    base64Encode, createDatabaseName,
+    base64Encode, createDatabaseName, errorAlert,
     findObject, getStateAndTaxType,
     isEmpty,
     retrieveData, saveDatabaseName,
@@ -35,6 +35,12 @@ import InputField from "../../components/InputField";
 import KAccessoryView from "../../components/KAccessoryView"
 import {createTables} from "../../libs/Sqlite";
 
+import { getUniqueId } from 'react-native-device-info';
+import {setDialog} from "../../redux-store/reducer/component";
+
+
+
+let uniqueDeviceId = '';
 const Terminal = (props: any) => {
 
 
@@ -44,13 +50,70 @@ const Terminal = (props: any) => {
     const {initData, authData}: any = localredux;
 
 
-    const handleSubmit = async (values: any) => {
 
+
+    const handleSubmit = async (values: any) => {
 
         const location = findObject(locationList, 'value', values.locationid, true)
         const isRestaurant = (location.industrytype === "foodservices");
 
-        values = {...values, timezone: values?.timezone, locationid: values?.locationid}
+        values = {...values, timezone: values?.timezone, locationid: values?.locationid,deviceid:uniqueDeviceId}
+
+        const useThis = async (response:any) => {
+            const licensedata = {
+                data: response.data,
+                token: response.token
+            }
+
+            const locations = initData?.location;
+            localredux.licenseData = {
+                ...localredux.licenseData,
+                ...licensedata
+            }
+
+            saveLocalSettings("defaultInputValues", defaultInputValues).then()
+            saveLocalSettings("defaultInputAmounts", defaultInputAmounts).then();
+
+            db.name =  createDatabaseName({workspace:initData.workspace,locationid:values?.locationid});
+
+            await saveDatabaseName(db.name).then();
+
+            await createTables().then();
+
+            await getStateAndTaxType(initData.general?.country).then()
+
+            await retrieveData(db.name).then(async (data: any) => {
+                let localSettingsData = data?.localSettingsData || {};
+                data = {
+                    ...data,
+                    localSettingsData: {
+                        ...localSettingsData,
+                        statelist: localredux?.statelist,
+                        taxtypelist: localredux?.taxtypelist,
+                        currentLocation: locations[values?.locationid],
+                        isRestaurant: isRestaurant,
+                        terminalname: values.terminalname
+                    }
+                }
+
+                storeData(db.name, {
+                    ...data,
+                    initData,
+                    authData,
+                    localSettingsData,
+                    licenseData: localredux.licenseData,
+                    theme,
+                    itemsData: {},
+                    addonsData: {},
+                    orders: {},
+                    clientsData: {},
+                }).then(async () => {
+                    await updateToken(response.token);
+                    await syncData();
+                    navigation.replace('PinStackNavigator');
+                });
+            })
+        }
 
         await apiService({
             method: METHOD.POST,
@@ -61,68 +124,25 @@ const Terminal = (props: any) => {
             other: {url: urls.adminUrl},
         }).then(async (response: any) => {
 
-            if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
-
-
-                const licensedata = {
-                    data: response.data,
-                    token: response.token
+            if(response.status === STATUS.SUCCESS){
+                if(Boolean(response?.data?.deviceid)) {
+                    Alert.alert(
+                        "Alert",
+                        response.message,
+                        [
+                            {text: "Setup New",onPress: () => handleSubmit({...values,bypass:1})},
+                            {text: "Use This", onPress: () => useThis(response).then()}
+                        ]
+                    );
                 }
-
-                const locations = initData?.location;
-
-
-                localredux.licenseData = {
-                    ...localredux.licenseData,
-                    ...licensedata
+                else{
+                    useThis(response).then()
                 }
-
-                saveLocalSettings("defaultInputValues", defaultInputValues).then()
-                saveLocalSettings("defaultInputAmounts", defaultInputAmounts).then();
-
-                db.name =  createDatabaseName({workspace:initData.workspace,locationid:values?.locationid});
-
-                await saveDatabaseName(db.name).then();
-
-                await createTables().then();
-
-                await getStateAndTaxType(initData.general?.country).then()
-
-                await retrieveData(db.name).then(async (data: any) => {
-                    let localSettingsData = data?.localSettingsData || {};
-                    data = {
-                        ...data,
-                        localSettingsData: {
-                            ...localSettingsData,
-                            statelist: localredux?.statelist,
-                            taxtypelist: localredux?.taxtypelist,
-                            currentLocation: locations[values?.locationid],
-                            isRestaurant: isRestaurant,
-                            terminalname: values.terminalname
-                        }
-                    }
-
-                    storeData(db.name, {
-                        ...data,
-                        initData,
-                        authData,
-                        localSettingsData,
-                        licenseData: localredux.licenseData,
-                        theme,
-                        itemsData: {},
-                        addonsData: {},
-                        orders: {},
-                        clientsData: {},
-                    }).then(async () => {
-                        await updateToken(response.token);
-                        await syncData();
-                        navigation.replace('PinStackNavigator');
-                    });
-                })
-
-
             }
         })
+
+
+
     }
 
 
@@ -146,6 +166,13 @@ const Terminal = (props: any) => {
     if (locationList.length === 1) {
         locationid = locationList[0].value
     }
+
+    useEffect(()=>{
+        getUniqueId().then((deviceid)=>{
+            uniqueDeviceId = deviceid
+        })
+    },[])
+
 
     const initialValues = {
         timezone: defaultTimeZone?.value,

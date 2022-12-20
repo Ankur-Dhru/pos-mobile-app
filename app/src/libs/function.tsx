@@ -1226,13 +1226,13 @@ export const selectItem = async (item: any) => {
 
     const directQnt = arraySome(store.getState()?.localSettings?.defaultAmountOpen, item.salesunit)
     if (directQnt) {
-        onPressNumber(item, (productqnt: any) => {
+        onPressNumber(item,'quantity', (productqnt: any) => {
             setItemQnt({...item, productqnt: +productqnt}).then()
             store.dispatch(setDialog({visible: false}))
         })
     } else if (!Boolean(baseprice)) {
 
-        onPressNumber(item, (price: any) => {
+        onPressNumber(item,'amount', (price: any) => {
             const pricingtype = item?.pricing?.type;
             item.pricing.price.default[0] = {[pricingtype]:{baseprice:price}};
             selectItem(item).then(()=>{

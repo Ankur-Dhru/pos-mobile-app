@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {FlatList, TouchableOpacity, View} from "react-native";
 import {Card, Divider, Paragraph, Text} from "react-native-paper"
-import {clone, isEmpty, saveLocalSettings} from "../../libs/function";
+import {clone, isEmpty, saveLocalSettings, updateComponent} from "../../libs/function";
 import Container from "../../components/Container";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
@@ -9,6 +9,7 @@ import Button from "../../components/Button";
 import InputField from "../../components/InputField";
 import {ProIcon} from "../../components";
 import {ItemDivider} from "../../libs/static";
+import ToggleButtons from "../../components/ToggleButton";
 
 const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
 
@@ -71,6 +72,15 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
     const qntRef = React.useRef<View>(null);
     const amtRef = React.useRef<View>(null);
 
+    const onButtonToggle = (value:any) => {
+        if(value === 'quantity'){
+            setSelectedTab("num")
+        }
+        else{
+            setSelectedTab("amt")
+        }
+    };
+
     return <Container>
 
         <View style={[styles.middle]}>
@@ -80,20 +90,14 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
                 <Card style={[styles.card]}>
                     <Card.Content  style={[styles.cardContent]}>
 
-                <View>
-                    <View style={[styles.grid, styles.justifyContent]}>
-                        <Button more={{color:'black',backgroundColor:styles.secondary.color}}  style={[styles.w_auto]}  onPress={() => {
-                            setSelectedTab("num")
+                        <ToggleButtons
+                            width={'50%'}
+                            default={'quantity'}
+                            btns={[{label:'Quick Quantity',value:'quantity'},{label:'Quick Amount',value:'amount'}]}
+                            onValueChange={onButtonToggle}
+                        />
 
 
-                        }} secondbutton={true}>Quick Quantity</Button>
-                        <Button style={[styles.ml_2, styles.w_auto]} more={{color:'white'}}  onPress={() => {
-                            setSelectedTab("amt")
-
-
-                        }} secondbutton={true}>Quick Amount</Button>
-                    </View>
-                </View>
 
                 <View style={[styles.grid, styles.justifyContent, styles.middle, styles.mt_5]}>
                     <View style={[styles.w_auto]}>

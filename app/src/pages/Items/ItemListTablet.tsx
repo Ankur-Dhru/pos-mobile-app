@@ -4,15 +4,13 @@ import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-nati
 
 import {connect, useDispatch} from "react-redux";
 import {styles} from "../../theme";
-import {isRestaurant, selectItem} from "../../libs/function";
+import {isRestaurant, selectItem, toCurrency} from "../../libs/function";
 import {Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 import Button from "../../components/Button";
 
 
-const hasRestaurant = isRestaurant()
-let sGroup: any = '';
 
 export const AddItem = ({navigation,search}: any) => {
 
@@ -37,6 +35,10 @@ export const AddItem = ({navigation,search}: any) => {
 
 const Item = memo(({item}: any) => {
     const {veg} = item;
+    const pricingtype = item?.pricing?.type;
+    const baseprice = item?.pricing?.price?.default[0][pricingtype]?.baseprice || 0;
+    const hasRestaurant = isRestaurant()
+
     return (<TouchableOpacity onPress={() => selectItem(item)} style={[styles.flexGrow, styles.center, styles.middle, {
         width: 110,
         padding: 10,
@@ -49,6 +51,9 @@ const Item = memo(({item}: any) => {
         {hasRestaurant && <View style={[styles.absolute, {top: 3, right: 3}]}>
             <VegNonVeg type={veg}/>
         </View>}
+        <Paragraph style={[styles.paragraph, styles.text_xs]}>
+            {toCurrency(baseprice)}
+        </Paragraph>
     </TouchableOpacity>)
 }, (r1, r2) => {
     return (r1.item.itemid === r2.item.itemid);

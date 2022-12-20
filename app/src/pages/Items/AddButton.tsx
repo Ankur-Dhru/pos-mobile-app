@@ -43,7 +43,7 @@ const Index = (props: any) => {
     const onPressNumberIN = () => {
 
 
-        onPressNumber(item, (productqnt: any) => {
+        onPressNumber(item,'quantity', (productqnt: any) => {
             updateItem({...item, productqnt: +productqnt}, "update").then(() => {
                 store.dispatch(setDialog({visible: false}))
             })
@@ -143,7 +143,7 @@ export const updateCartItem = async (values: any, action: any) => {
 }
 
 
-export const onPressNumber = (item: any, onPressOK: any) => {
+export const onPressNumber = (item: any,defaultselected:any, onPressOK: any) => {
     let isRes  = isRestaurant(), directQnt = false;
 
 
@@ -160,6 +160,7 @@ export const onPressNumber = (item: any, onPressOK: any) => {
         component: () => <KeyPad
             defaultValue={item?.productqnt}
             customNumber={directQnt}
+            defaultTab={defaultselected}
             rate={rate}
             onPressCancel={() => {
                 store.dispatch(setDialog({visible: false}))

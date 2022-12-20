@@ -48,8 +48,7 @@ const Index = (props: any) => {
                     <View style={[styles.grid,styles.w_100,styles.justifyContent,styles.p_3]}>
                         {hasrestaurant ?
                             <Card style={[styles.card,{marginRight:5}]} onPress={() => {
-                                saveTempLocalOrder().then(() => {})
-                                navigation.goBack();
+                                saveTempLocalOrder().then(() => {navigation.goBack();})
                             }}>
                                 <List.Item style={[styles.listitem]}  title={tabledetails?.tablename} left={()=><List.Icon icon={'chevron-left'}/>}/>
                             </Card>

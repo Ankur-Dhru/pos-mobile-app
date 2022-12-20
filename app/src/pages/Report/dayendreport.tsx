@@ -75,10 +75,12 @@ const Index = ({navigation}: any) => {
                     })
                 })
             }
+            else{
+                setData({order: [], info: []})
+            }
             setLoader(true)
         })
     }, [datetime])
-
 
 
     if (!loader) {
@@ -145,7 +147,7 @@ const Index = ({navigation}: any) => {
                                     mode={'time'}
                                     removeSpace={true}
                                     render={()=>{
-                                        return <Paragraph  style={[styles.paragraph,styles.bold]}>{datetime.starttime}</Paragraph>
+                                        return <Paragraph  style={[styles.paragraph,styles.bold]}>{moment(currentdate+' '+datetime.starttime).format('hh:mm A')}</Paragraph>
                                     }}
                                     selectedValue={currentdate+' '+datetime.starttime}
                                     onChange={(value: any) => {
@@ -185,7 +187,7 @@ const Index = ({navigation}: any) => {
                                     mode={'time'}
                                     removeSpace={true}
                                     render={()=>{
-                                        return <Paragraph style={[styles.paragraph,styles.bold]}>{datetime.endtime}</Paragraph>
+                                        return <Paragraph style={[styles.paragraph,styles.bold]}>{moment(currentdate+' '+datetime.endtime).format('hh:mm A')}</Paragraph>
                                     }}
                                     selectedValue={currentdate+' '+datetime.endtime}
                                     onChange={(value: any) => {
@@ -217,9 +219,7 @@ const Index = ({navigation}: any) => {
                             <View style={[styles.p_6]}>
                                 <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>No any
                                     items found</Text>
-
                             </View>
-
                         </View>}
                         ItemSeparatorComponent={ItemDivider}
                     />

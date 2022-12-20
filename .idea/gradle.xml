@@ -26,7 +26,9 @@
             <option value="$PROJECT_DIR$/app/node_modules/@react-native-community/datetimepicker/android" />
             <option value="$PROJECT_DIR$/app/node_modules/@react-native-community/netinfo/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-ble-manager/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/react-native-camera/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-contacts/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/react-native-device-info/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-esc-pos-printer/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-extra-dimensions-android/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-gesture-handler/android" />
@@ -40,6 +42,7 @@
             <option value="$PROJECT_DIR$/app/node_modules/react-native-safe-area-context/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-screens/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-share/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/react-native-sound/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-sqlite-storage/platforms/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-svg/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-tcp-socket/android" />

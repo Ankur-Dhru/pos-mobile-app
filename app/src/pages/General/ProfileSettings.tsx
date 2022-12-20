@@ -1,6 +1,6 @@
 import React from "react";
 import {isEmpty, isRestaurant, saveLocalSettings, storeData, syncData} from "../../libs/function";
-import {Dimensions, Image, ScrollView, TouchableOpacity, View} from "react-native";
+import {Dimensions, Image, Platform, ScrollView, TouchableOpacity, View} from "react-native";
 import {Button as PButton, Caption, Card, List, Text, Title} from "react-native-paper";
 import {styles} from "../../theme";
 import {CommonActions, useNavigation} from "@react-navigation/native";
@@ -127,11 +127,11 @@ const ProfileSettings = () => {
 
                 <ScrollView keyboardShouldPersistTaps='handled' style={[styles.h_100]}>
 
-                    <View style={[styles.absolute,styles.p_4,{right:0}]}>
+                    {Platform.OS !== 'ios' && <View style={[styles.absolute,styles.p_4,{right:0,zIndex:99}]}>
                         <TouchableOpacity onPress={()=>navigation.goBack()}>
                             <ProIcon name={'xmark'}/>
                         </TouchableOpacity>
-                    </View>
+                    </View>}
 
                     <View>
 
@@ -209,7 +209,7 @@ const ProfileSettings = () => {
                                             onPress={() => {
                                                 navigation.navigate("DayEndReport");
                                             }}
-                                            left={() => <List.Icon icon="point-of-sale"/>}
+                                            left={() => <List.Icon icon="receipt"/>}
                                             right={() => <List.Icon icon="chevron-right"/>}
                                         />
 

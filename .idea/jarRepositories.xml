@@ -66,5 +66,10 @@
       <option name="name" value="maven4" />
       <option name="url" value="file:$PROJECT_DIR$/app/example/node_modules/react-native/android" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven4" />
+      <option name="name" value="maven4" />
+      <option name="url" value="https://jitpack.io" />
+    </remote-repository>
   </component>
 </project>

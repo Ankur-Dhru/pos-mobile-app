@@ -189,14 +189,12 @@ const SalesReport = ({ordersData,navigation}: any) => {
                     keyboardDismissMode={'on-drag'}
                     keyboardShouldPersistTaps={'always'}
                     renderItem={renderItem}
-
                     ListEmptyComponent={<View>
                         <View style={[styles.p_6]}>
                             <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>No any
                                 items found</Text>
 
                         </View>
-
                     </View>}
 
                     ItemSeparatorComponent={ItemDivider}

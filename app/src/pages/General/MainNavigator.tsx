@@ -47,6 +47,7 @@ import KotNote from "../Cart/KotNote";
 import GeneralSettings from "../GeneralSettings";
 import DayEndReport from "../Report/dayendreport";
 import Preview from "../Preview";
+import ScanItem from "../Items/ScanItem";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -172,6 +173,7 @@ const ClientAreaStackNavigator = (props: any) => {
 
 
             <Stack.Screen name={'SearchItem'} component={SearchItem}  options={{headerShown: false, headerTitle: 'Search Item'}}/>
+            <Stack.Screen name={'ScanItem'} component={ScanItem}  options={{headerShown: true, headerTitle: 'Scan Item'}}/>
             <Stack.Screen name={'DetailViewNavigator'} component={DetailView} options={{headerTitle: 'Detail view'}}/>
 
             <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem} options={{headerTitle: 'Add Item'}}/>

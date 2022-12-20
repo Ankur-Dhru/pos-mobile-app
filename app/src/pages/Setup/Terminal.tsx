@@ -131,7 +131,7 @@ const Terminal = (props: any) => {
                         response.message,
                         [
                             {text: "Setup New",onPress: () => handleSubmit({...values,bypass:1})},
-                            {text: "Use This", onPress: () => useThis(response).then()}
+                            {text: "Resume", onPress: () => useThis(response).then()}
                         ]
                     );
                 }

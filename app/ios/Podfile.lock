@@ -75,6 +75,8 @@ PODS:
   - glog (0.3.5)
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.1100)
+  - Permission-Camera (3.6.1):
+    - RNPermissions
   - Permission-Contacts (3.6.1):
     - RNPermissions
   - RCT-Folly (2021.07.22.00):
@@ -288,6 +290,14 @@ PODS:
     - glog
   - react-native-ble-manager (8.5.0):
     - React-Core
+  - react-native-camera (4.2.1):
+    - React-Core
+    - react-native-camera/RCT (= 4.2.1)
+    - react-native-camera/RN (= 4.2.1)
+  - react-native-camera/RCT (4.2.1):
+    - React-Core
+  - react-native-camera/RN (4.2.1):
+    - React-Core
   - react-native-contacts (7.0.5):
     - React-Core
   - react-native-esc-pos-printer (2.3.0):
@@ -425,6 +435,11 @@ PODS:
     - React-RCTImage
   - RNShare (8.0.1):
     - React-Core
+  - RNSound (0.11.2):
+    - React-Core
+    - RNSound/Core (= 0.11.2)
+  - RNSound/Core (0.11.2):
+    - React-Core
   - RNSVG (13.6.0):
     - React-Core
   - RNVectorIcons (9.2.0):
@@ -462,6 +477,7 @@ DEPENDENCIES:
   - FlipperKit/SKIOSNetworkPlugin (= 0.125.0)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - OpenSSL-Universal (= 1.1.1100)
+  - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera`)
   - Permission-Contacts (from `../node_modules/react-native-permissions/ios/Contacts`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -480,6 +496,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-ble-manager (from `../node_modules/react-native-ble-manager`)
+  - react-native-camera (from `../node_modules/react-native-camera`)
   - react-native-contacts (from `../node_modules/react-native-contacts`)
   - react-native-esc-pos-printer (from `../node_modules/react-native-esc-pos-printer`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
@@ -512,6 +529,7 @@ DEPENDENCIES:
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNShare (from `../node_modules/react-native-share`)
+  - RNSound (from `../node_modules/react-native-sound`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -545,6 +563,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/React/FBReactNativeSpec"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
+  Permission-Camera:
+    :path: "../node_modules/react-native-permissions/ios/Camera"
   Permission-Contacts:
     :path: "../node_modules/react-native-permissions/ios/Contacts"
   RCT-Folly:
@@ -577,6 +597,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-ble-manager:
     :path: "../node_modules/react-native-ble-manager"
+  react-native-camera:
+    :path: "../node_modules/react-native-camera"
   react-native-contacts:
     :path: "../node_modules/react-native-contacts"
   react-native-esc-pos-printer:
@@ -641,6 +663,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-screens"
   RNShare:
     :path: "../node_modules/react-native-share"
+  RNSound:
+    :path: "../node_modules/react-native-sound"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   RNVectorIcons:
@@ -667,6 +691,7 @@ SPEC CHECKSUMS:
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
+  Permission-Camera: bf6791b17c7f614b6826019fcfdcc286d3a107f6
   Permission-Contacts: 2484d274171688b1ca80978b949ac771259b51f0
   RCT-Folly: 0080d0a6ebf2577475bda044aa59e2ca1f909cda
   RCTRequired: 1b4e0388c8ad776b2d23f8135926fa4e7ddacdf4
@@ -683,6 +708,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 1363be638eccfe1aea1b10dd42e632b0397e5ec8
   React-logger: 7bd569e3857d74ed412ce0a5c51f421ff7d4ca7f
   react-native-ble-manager: e1184e064e170de242ca12648ac31f8fcdc6ecab
+  react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-contacts: 0aa99963d8f29099d4725cd0d2f8b6ef5f0d9a2d
   react-native-esc-pos-printer: d6ea125658058929e5ddd8e2ff1e6ee48aa17499
   react-native-get-random-values: a6ea6a8a65dc93e96e24a11105b1a9c8cfe1d72a
@@ -715,12 +741,13 @@ SPEC CHECKSUMS:
   RNReanimated: ce445c233a6ff5600223484a88ad5704945d972a
   RNScreens: 34cc502acf1b916c582c60003dc3089fa01dc66d
   RNShare: d93e00e906e6174657f6370b480437e4702bc86e
+  RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNSVG: 3a79c0c4992213e4f06c08e62730c5e7b9e4dc17
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 6c8252e38d65aa387daee699eacf027e055e0b31
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 15090e931d1a37d0abaec749829812334d17e9b9
+PODFILE CHECKSUM: 9a0c335dee824a38ac73eb534bb0ef1457b7b189
 
 COCOAPODS: 1.11.3

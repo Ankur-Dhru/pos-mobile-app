@@ -27,6 +27,7 @@ target 'app' do
 
     pod 'react-native-sqlite-storage', :path => '../node_modules/react-native-sqlite-storage'
     pod 'Permission-Contacts', :path => "#{permissions_path}/Contacts"
+    pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
 
 
   target 'appTests' do

@@ -944,7 +944,7 @@ export const saveTempLocalOrder = (order?: any, config?: any) => {
                 terminalid: localredux?.licenseData?.data?.terminal_id
             }
             insertTempOrder(order).then((msg) => {
-                appLog('msg',msg)
+
                 store.dispatch(setCartData(order));
                 resolve(order)
             })

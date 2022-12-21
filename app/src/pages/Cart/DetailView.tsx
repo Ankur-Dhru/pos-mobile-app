@@ -4,12 +4,12 @@ import Container from "../../components/Container";
 
 import CartItems from "./CartItems";
 import ClientDetail from "../Client/ClientDetail";
-import {device} from "../../libs/static";
+import {device, localredux} from "../../libs/static";
 import CartActions from "./CartActions";
 import CartSummary from "./CartSummary";
 import {useNavigation} from "@react-navigation/native";
 import {Appbar, Card, Menu} from "react-native-paper";
-import {TouchableOpacity, View} from "react-native";
+import {Alert, TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
 import ProIcon from "../../components/ProIcon";
 import {cancelOrder, isRestaurant} from "../../libs/function";
@@ -26,8 +26,11 @@ const Index = (props: any) => {
     const openMenu = () => setVisible(true);
     const closeMenu = () => setVisible(false);
     const dispatch = useDispatch()
+    const {cancelorder}:any = localredux?.authData?.settings;
 
+    const askPermission = () => {
 
+    }
 
     navigation.setOptions({
         headerRight:()=>{
@@ -52,7 +55,20 @@ const Index = (props: any) => {
                         onPress={(index: any) => {
                             if (index === 0) {
                                 closeMenu();
-                                cancelOrder(navigation).then(r => {})
+
+                                if(cancelorder) {
+                                    cancelOrder(navigation).then(r => {})
+                                }
+                                else{
+                                    Alert.alert(
+                                        "Alert",
+                                        'You do not have cancel Order permission',
+                                        [
+                                            {text: "Cancel",onPress: () => {},style:'cancel'},
+                                            {text: "Ask Permission", onPress: () => askPermission()}
+                                        ]
+                                    );
+                                }
                             }
                         }}
                     />

@@ -95,8 +95,7 @@ class Index extends React.Component<any> {
             <View style={{width: '100%'}}>
 
                 {Platform.OS === "ios" && mode==='date' && <View>
-                    <Paragraph style={[styles.text_md, {marginBottom: 10, textAlign: 'center'}]}>{label}</Paragraph>
-                    {dueterm && <ScrollView horizontal={true}>
+                    {/*{dueterm && <ScrollView horizontal={true}>
                         <View style={[styles.row, styles.px_5]}>
                             {
                                 this.paymentterms.map((paymentterm: any) => {
@@ -113,7 +112,7 @@ class Index extends React.Component<any> {
                                 })
                             }
                         </View>
-                    </ScrollView>}
+                    </ScrollView>}*/}
                 </View>}
 
                 <View>

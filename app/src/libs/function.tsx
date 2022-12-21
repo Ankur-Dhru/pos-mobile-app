@@ -552,7 +552,7 @@ export const syncData = async (loader = true) => {
                                 });
                             }
 
-                        } else if (result === 'customer') {
+                        } else if (result === 'customer' || result === 'vendor') {
                             if (Boolean(data.result)) {
                                 await insertClients(data.result, 'all').then(() => {
                                 });
@@ -1872,6 +1872,8 @@ export const getPrintTemplate = (type?: any) => {
 export const cancelOrder = async (navigation: any) => {
 
     let cartData = store.getState().cartData;
+
+
 
     try {
 

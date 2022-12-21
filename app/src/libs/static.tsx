@@ -41,6 +41,7 @@ export enum METHOD {
 
 export enum ACTIONS {
     INVOICE = "invoice",
+    EXPENSE = "expense",
     VOUCHER = "voucher",
     ITEM = "item",
     ITEMS = "items",
@@ -85,6 +86,7 @@ export enum ACTIONS {
 
 export enum VOUCHER {
     INVOICE = "b152d626-b614-4736-8572-2ebd95e24173",
+    EXPENSE = "ba7f0f54-60da-4f07-b07b-8645632616ac",
     TAX_INVOICE = "372278d3-c3c9-4c5e-9890-f66cfa2cb1e4",
     RECEIPT = "be0e9672-a46e-4e91-a2bf-815530b22b43",
 }

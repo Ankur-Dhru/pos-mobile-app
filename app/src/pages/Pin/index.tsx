@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 
 import {Image, TouchableOpacity, View} from "react-native";
 import Container from "../../components/Container";
@@ -8,8 +8,8 @@ import {
     appLog,
     gePhonebook,
     getAddons,
-    getClients, getLocalSettings,
-    getOrders, getStateAndTaxType,
+    getClients,
+    getOrders,
     getTempOrders,
     retrieveData,
     syncData
@@ -23,9 +23,7 @@ import {db, localredux} from "../../libs/static";
 import {setSettings} from "../../redux-store/reducer/local-settings-data";
 
 import {setGroupList} from "../../redux-store/reducer/group-list";
-import store from "../../redux-store/store";
 import {setTableOrdersData} from "../../redux-store/reducer/table-orders-data";
-import {createTables} from "../../libs/Sqlite";
 
 
 const md5 = require('md5');
@@ -39,10 +37,6 @@ const Index = (props: any) => {
 
     const pinView: any = useRef(null)
     const [enteredPin, setEnteredPin] = useState("")
-
-
-
-
 
 
     useEffect(() => {
@@ -76,10 +70,9 @@ const Index = (props: any) => {
                                 localredux.authData = {...params, ...authData};
                                 localredux.localSettingsData = localSettingsData;
 
-
                                 await getClients().then()
                                 await getAddons().then()
-                                await getTempOrders().then((orders)=>{
+                                await getTempOrders().then((orders) => {
                                     dispatch(setTableOrdersData(orders));
                                 })
 
@@ -94,7 +87,6 @@ const Index = (props: any) => {
                                 })
 
                                 await getOrders().then();
-
 
 
                             }
@@ -117,9 +109,9 @@ const Index = (props: any) => {
     navigation.setOptions({headerShown: !params.onlyone})
 
 
-    return <Container style={{padding:0}}>
+    return <Container style={{padding: 0}}>
 
-        <Card style={[styles.card,{marginBottom:0}]}>
+        <Card style={[styles.card, {marginBottom: 0}]}>
 
             <View style={[styles.center, styles.h_100, styles.middle]}>
 
@@ -133,10 +125,12 @@ const Index = (props: any) => {
                     </View>
 
                     {params.onlyone && <View>
-                        <Paragraph style={[styles.paragraph,styles.bold, {textAlign: 'center'}]}>{params.username} </Paragraph>
+                        <Paragraph
+                            style={[styles.paragraph, styles.bold, {textAlign: 'center'}]}>{params.username} </Paragraph>
                         <Paragraph
                             style={[styles.paragraph, styles.text_sm, {textAlign: 'center'}]}>{params.loginpin === 'b0baee9d279d34fa1dfd71aadb908c3f' &&
-                            <Text style={[styles.paragraph, styles.muted,styles.text_xs, {textAlign: 'center'}]}>Default PIN is
+                            <Text style={[styles.paragraph, styles.muted, styles.text_xs, {textAlign: 'center'}]}>Default
+                                PIN is
                                 11111</Text>}</Paragraph>
                     </View>}
 
@@ -157,13 +151,13 @@ const Index = (props: any) => {
                             borderWidth: 0,
                             backgroundColor: styles.secondary.color,
                             borderColor: styles.secondary.color,
-                            width:60,
-                            height:60,
-                            borderRadius:50
+                            width: 60,
+                            height: 60,
+                            borderRadius: 50
                         }}
                         buttonTextStyle={{
                             color: "#222",
-                            fontSize:18,
+                            fontSize: 18,
                         }}
                         inputViewStyle={{
                             marginBottom: 0

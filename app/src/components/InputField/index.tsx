@@ -5,7 +5,7 @@ import {Platform, TextInput as TextInputReact, TouchableOpacity, TouchableWithou
 
 
 import List from "./List";
-import {setBottomSheet} from "../../redux-store/reducer/component";
+import {setBottomSheet, setDialog} from "../../redux-store/reducer/component";
 import {connect} from "react-redux";
 import {InputBox, ProIcon} from "../index";
 import DateTimePicker from './DateTimePicker';
@@ -15,6 +15,7 @@ import {chevronRight, findObject, getType, isEmpty} from "../../libs/function";
 //import {PERMISSIONS, requestMultiple} from "react-native-permissions";
 import ToggleSwitch from "./Switch";
 import {device, ItemDivider, localredux} from "../../libs/static";
+import {format} from "util";
 
 
 class Index extends React.Component<any, any> {
@@ -375,17 +376,16 @@ class Index extends React.Component<any, any> {
                 {inputtype === 'datepicker' &&
                     <View>
                         <TouchableOpacity
-                            onPress={() => editmode && (Platform.OS === "ios" ? setBottomSheet({
-                                visible: true,
-                                fullView: fullView,
-                                component: () => <DateTimePicker
-                                    label={label}
-                                    dueterm={dueterm}
-                                    defaultValue={moment(selectedValue).format('YYYY-MM-DD')}
-                                    mode={mode}
-                                    onSelect={this.onSelect}
-                                />
-                            }) : this.setState({showDatePicker: true}))}>
+                            onPress={() => editmode && (Platform.OS === "ios" ?
+
+                                navigation.navigate('DateTimePicker', {
+                                    defaultValue:moment(selectedValue).format('YYYY-MM-DD'),
+                                    label:label,
+                                    dueterm:dueterm,
+                                    mode:mode,
+                                    onSelect: this.onSelect,
+                                })
+                                  : this.setState({showDatePicker: true}))}>
                             {Boolean(render) ?
                                 <Render/> : <View>
                                     <Text style={[labelstyle]}>{label}</Text>

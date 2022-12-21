@@ -43,7 +43,10 @@
     <string>Our app uses bluetooth to find, connect and transfer data between different devices</string>
 	<key>NSContactsUsageDescription</key>
     	<string>Contact Permission</string>
+    <key>NSCameraUsageDescription</key>
+        <string>Camera Permission</string>
 	<key>UIAppFonts</key>
+
 	<array>
 		<string>AntDesign.ttf</string>
 		<string>Entypo.ttf</string>

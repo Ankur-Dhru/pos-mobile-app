@@ -46,8 +46,9 @@ import ClientList from "../Client/ClientList";
 import KotNote from "../Cart/KotNote";
 import GeneralSettings from "../GeneralSettings";
 import DayEndReport from "../Report/dayendreport";
-import Preview from "../Preview";
 import ScanItem from "../Items/ScanItem";
+import AddExpense from "../../pages/Expense"
+import DateTimePicker from "./DateTimePicker";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -65,7 +66,7 @@ const MainStackNavigator = () => {
     useEffect(() => {
         if (!interval) {
             interval = setInterval(() => {
-                if(Boolean(db.name)) {
+                if (Boolean(db.name)) {
                     getOrders().then((orders: any) => {
                         if (!isEmpty(orders)) {
                             let invoice: any = Object.values(orders)[0]
@@ -172,8 +173,10 @@ const ClientAreaStackNavigator = (props: any) => {
                           options={({route}: any) => ({headerShown: !device.tablet, title: route?.params?.tablename})}/>
 
 
-            <Stack.Screen name={'SearchItem'} component={SearchItem}  options={{headerShown: false, headerTitle: 'Search Item'}}/>
-            <Stack.Screen name={'ScanItem'} component={ScanItem}  options={{headerShown: true, headerTitle: 'Scan Item'}}/>
+            <Stack.Screen name={'SearchItem'} component={SearchItem}
+                          options={{headerShown: false, headerTitle: 'Search Item'}}/>
+            <Stack.Screen name={'ScanItem'} component={ScanItem}
+                          options={{headerShown: true, headerTitle: 'Scan Item'}}/>
             <Stack.Screen name={'DetailViewNavigator'} component={DetailView} options={{headerTitle: 'Detail view'}}/>
 
             <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem} options={{headerTitle: 'Add Item'}}/>
@@ -195,12 +198,14 @@ const ClientAreaStackNavigator = (props: any) => {
                           options={{presentation: 'modal', headerTitle: 'Cancel Reason'}}/>
 
 
-
-
             <Stack.Screen name={'DropDownList'} component={DropDownList} options={({route}: any) => ({
                 presentation: route?.params?.presentation,
                 headerShown: false,
                 title: 'select'
+            })}/>
+
+            <Stack.Screen name={'DateTimePicker'} component={DateTimePicker}  options={({route}: any) => ({
+                presentation: route?.params?.presentation,
             })}/>
 
 
@@ -224,6 +229,8 @@ const ProfileSettingsNavigator = (props: any) => {
             <Stack.Screen name={'AddEditCategory'} component={AddEditCategory} options={{headerTitle: 'Add Category'}}/>
             <Stack.Screen name={'AddEditClient'} component={AddEditClient} options={{headerTitle: 'Add Client'}}/>
 
+            <Stack.Screen name={'AddExpense'} component={AddExpense} options={{headerTitle: 'Add Expense'}}/>
+
 
             <Stack.Screen name={'KOTPrinter'} component={KOTPrinter} options={{title: 'KOT Printer'}}/>
             <Stack.Screen name={'InputOpenSetting'} component={InputOpenSetting}
@@ -236,6 +243,10 @@ const ProfileSettingsNavigator = (props: any) => {
             <Stack.Screen name={'PrinterSettings'} component={PrinterSettings} options={{title: ''}}/>
             <Stack.Screen name={'DropDownList'} component={DropDownList}
                           options={{headerShown: false, headerTitle: 'Select'}}/>
+
+            <Stack.Screen name={'DateTimePicker'} component={DateTimePicker}
+                          options={{headerTitle: ''}}/>
+
         </Stack.Navigator>
     );
 };

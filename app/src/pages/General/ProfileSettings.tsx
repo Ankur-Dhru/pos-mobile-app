@@ -223,6 +223,18 @@ const ProfileSettings = () => {
 
                                         <List.Item
                                             style={[styles.listitem]}
+                                            title={'Expense'}
+                                            onPress={async () => {
+                                                navigation.navigate("AddExpense");
+                                            }}
+                                            left={() => <List.Icon icon="playlist-plus"/>}
+                                            right={() => <List.Icon icon="chevron-right"/>}
+                                        />
+
+                                        <ItemDivider/>
+
+                                        <List.Item
+                                            style={[styles.listitem]}
                                             title={'Item Category'}
                                             onPress={async () => {
                                                 navigation.navigate("AddEditCategory");

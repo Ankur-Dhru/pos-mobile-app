@@ -3,15 +3,13 @@
 import React, { Component } from 'react';
 
 import {
-    Linking, Text, TouchableOpacity
+    Linking,
 } from 'react-native';
 
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
 import {withTheme} from "react-native-paper";
-import {RNCamera} from "react-native-camera";
-import {styles} from "../../theme";
-import {appLog} from "../../libs/function";
+
 
 class ScanScreen extends Component<any> {
 

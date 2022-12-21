@@ -1,5 +1,5 @@
 import React, {memo, useState} from "react";
-import {View} from "react-native";
+import {Alert, View} from "react-native";
 import {Divider, Paragraph, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {Button} from "../../components";
@@ -9,7 +9,7 @@ import {clone, printKOT} from "../../libs/function";
 import store from "../../redux-store/store";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
-import {ItemDivider} from "../../libs/static";
+import {ItemDivider, localredux} from "../../libs/static";
 
 
 const Index = memo((props: any) => {
@@ -19,6 +19,7 @@ const Index = memo((props: any) => {
     const {departmentname, commonkotnote, staffname, kotid, tickettime, ticketitems}: any = kt;
     const dispatch = useDispatch();
     const navigation = useNavigation()
+    const {cancelkot}:any = localredux?.authData?.settings;
 
     let [kot, setKot]: any = useState(kt);
     const reprint = async (kot: any) => {
@@ -42,9 +43,27 @@ const Index = memo((props: any) => {
     }
 
 
-    const cancelKOTDialog = async (kot: any) => {
-        navigation.navigate('CancelReason', {type: 'ticketcancelreason', kot: kot, setKot: setKot})
+    const askPemission = () => {
+
     }
+
+    const cancelKOTDialog = async (kot: any) => {
+        if(cancelkot) {
+            navigation.navigate('CancelReason', {type: 'ticketcancelreason', kot: kot, setKot: setKot})
+        }
+        else{
+            Alert.alert(
+                "Alert",
+                'You do not have cancel KOT permission',
+                [
+                    {text: "Cancel",onPress: () => {},style:'cancel'},
+                    {text: "Ask Permission", onPress: () => askPemission()}
+                ]
+            );
+        }
+    }
+
+
 
     return (
         <View style={[{minWidth: '100%', marginBottom: 4}]}>

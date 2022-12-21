@@ -120,10 +120,10 @@ const Index = ({navigation}: any) => {
                 <Card.Content style={[styles.cardContent]}>
                     <View style={[styles.grid,styles.justifyContent,styles.middle]}>
 
-                        <View  style={[styles.w_auto,styles.grid,styles.p_4,styles.center,{backgroundColor:'#eee',borderRadius:5}]}>
+                        <View  style={[styles.w_auto,styles.grid,styles.p_3,styles.center,{backgroundColor:'#eee',borderRadius:5}]}>
                             <View>
                                 <InputField
-                                    label={"Date From"}
+                                    label={"Start Date"}
                                     displaytype={'bottomlist'}
                                     inputtype={'datepicker'}
                                     mode={'date'}
@@ -139,7 +139,7 @@ const Index = ({navigation}: any) => {
                             </View>
 
 
-                            <View style={[styles.ml_2]}>
+                            <View style={[styles.ml_1]}>
                                 <InputField
                                     label={"Start Time"}
                                     displaytype={'bottomlist'}
@@ -161,10 +161,10 @@ const Index = ({navigation}: any) => {
 
                         <View style={[styles.px_3]}><Paragraph style={[styles.paragraph]}>To</Paragraph></View>
 
-                        <View  style={[styles.w_auto,styles.grid,styles.p_4,styles.center,{backgroundColor:'#eee',borderRadius:5}]}>
+                        <View  style={[styles.w_auto,styles.grid,styles.p_3,styles.center,{backgroundColor:'#eee',borderRadius:5}]}>
                             <View>
                                 <InputField
-                                    label={"Date To"}
+                                    label={"End Date"}
                                     displaytype={'bottomlist'}
                                     inputtype={'datepicker'}
                                     mode={'date'}
@@ -179,7 +179,7 @@ const Index = ({navigation}: any) => {
                                 />
                             </View>
 
-                            <View style={[styles.ml_2]}>
+                            <View style={[styles.ml_1]}>
                                 <InputField
                                     label={"End Time"}
                                     displaytype={'bottomlist'}

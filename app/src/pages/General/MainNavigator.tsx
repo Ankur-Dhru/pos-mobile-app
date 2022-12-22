@@ -49,6 +49,7 @@ import DayEndReport from "../Report/dayendreport";
 import ScanItem from "../Items/ScanItem";
 import AddExpense from "../../pages/Expense"
 import DateTimePicker from "./DateTimePicker";
+import AskPermission from "../Pin/AskPermission";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -74,7 +75,7 @@ const MainStackNavigator = () => {
                         }
                     })
                 }
-            }, 60000);
+            }, 10000);
         }
         CheckConnectivity()
         return () => {
@@ -207,6 +208,9 @@ const ClientAreaStackNavigator = (props: any) => {
             <Stack.Screen name={'DateTimePicker'} component={DateTimePicker}  options={({route}: any) => ({
                 presentation: route?.params?.presentation,
             })}/>
+
+
+            <Stack.Screen name="AskPermission" component={AskPermission} options={{title: 'Ask Permission'}}/>
 
 
         </Stack.Navigator>

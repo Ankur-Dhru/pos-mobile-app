@@ -10,6 +10,7 @@ import {setBottomSheet, setDialog} from "../../redux-store/reducer/component";
 import AddonActions from "./AddonActions";
 import store from "../../redux-store/store";
 import KeyPad from "../../components/KeyPad";
+import {localredux} from "../../libs/static";
 
 
 const Index = (props: any) => {
@@ -25,6 +26,7 @@ const Index = (props: any) => {
     const updateItem = async (values: any, action: any) => {
 
         if (values.productqnt > 0 && action === 'add' && !bottomsheet.visible && values?.hasAddon) {
+
             await dispatch(setBottomSheet({
                 visible: true,
                 height: '20%',
@@ -130,10 +132,7 @@ export const updateCartItem = async (values: any, action: any) => {
 
             });
         } else {
-            store.dispatch(changeCartItem({
-                itemIndex: index, item: finditem
-            }));
-
+            store.dispatch(changeCartItem({itemIndex: index, item: finditem}));
         }
 
 
@@ -146,8 +145,11 @@ export const updateCartItem = async (values: any, action: any) => {
 export const onPressNumber = (item: any,defaultselected:any, onPressOK: any) => {
     let isRes  = isRestaurant(), directQnt = false;
 
+    const {unit}: any = localredux.initData;
+
 
     let rate =  item?.productratedisplay || item?.pricing?.price?.default[0][item?.pricing?.type].baseprice
+    let unittype = unit[item?.itemunit]
 
     if (!isRes){
         directQnt = arraySome(store.getState()?.localSettings?.defaultAmountOpen, item?.salesunit || item?.productqntunitid)
@@ -160,6 +162,7 @@ export const onPressNumber = (item: any,defaultselected:any, onPressOK: any) => 
         component: () => <KeyPad
             defaultValue={item?.productqnt}
             customNumber={directQnt}
+            unitname={unittype?.unitcode}
             defaultTab={defaultselected}
             rate={rate}
             onPressCancel={() => {

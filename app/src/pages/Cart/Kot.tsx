@@ -5,7 +5,7 @@ import {styles} from "../../theme";
 import {Button} from "../../components";
 import {connect, useDispatch} from "react-redux";
 import CancelReason from "./CancelReason";
-import {clone, printKOT} from "../../libs/function";
+import {appLog, clone, printKOT} from "../../libs/function";
 import store from "../../redux-store/store";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
@@ -16,7 +16,7 @@ const Index = memo((props: any) => {
 
     let {kot: kt, tablename, theme: {colors}, hasLast}: any = props;
 
-    const {departmentname, commonkotnote, staffname, kotid, tickettime, ticketitems}: any = kt;
+    const {departmentname, commonkotnote, staffname, kotid, tickettime, ticketitems,ticketnumberprefix}: any = kt;
     const dispatch = useDispatch();
     const navigation = useNavigation()
     const {cancelkot}:any = localredux?.authData?.settings;
@@ -44,11 +44,13 @@ const Index = memo((props: any) => {
 
 
     const askPemission = () => {
-
+        navigation.navigate('AskPermission',{kot:kot,cancelKOTDialog:cancelKOTDialog})
     }
 
-    const cancelKOTDialog = async (kot: any) => {
-        if(cancelkot) {
+
+
+    const cancelKOTDialog = async (kot: any,force?:any) => {
+        if(cancelkot || force) {
             navigation.navigate('CancelReason', {type: 'ticketcancelreason', kot: kot, setKot: setKot})
         }
         else{
@@ -69,12 +71,14 @@ const Index = memo((props: any) => {
         <View style={[{minWidth: '100%', marginBottom: 4}]}>
             <View>
                 <View style={[styles.px_5, styles.py_4]}>
-                    <View style={[styles.grid, styles.justifyContentSpaceBetween, styles.noWrap]}>
-                        <View>
-                            {Boolean(kot.cancelreason) &&
-                                <View style={[styles.mb_2]}><Paragraph style={[styles.paragraph, {color: styles.red.color}]}>Cancel
-                                    : {kot.cancelreason}</Paragraph></View>}
-                            <View style={[styles.grid,styles.mb_2]}><Paragraph style={[styles.bold]}>#{tablename}-{kotid} </Paragraph><Paragraph style={[styles.ml_1]}> ({tickettime})</Paragraph></View>
+
+                    <View>
+                        {Boolean(kot.cancelreason) &&
+                            <View style={[styles.mb_2]}><Paragraph style={[styles.paragraph, {color: styles.red.color}]}>Cancel
+                                : {kot.cancelreason}</Paragraph></View>}
+                        <View style={[styles.grid,styles.mb_2,styles.justifyContent]}>
+                            <Paragraph style={[styles.bold]}>{ticketnumberprefix}-{kotid} ({tickettime})</Paragraph>
+                            <Paragraph style={[styles.ml_1]}> {tablename}</Paragraph>
                         </View>
                     </View>
 

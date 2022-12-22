@@ -13,7 +13,9 @@ let numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Clear", "0", "."]
 
 const index = (props: any) => {
 
-    const {defaultValue, onPressCancel, onPressOK, defaultInputValues,defaultInputAmounts, customNumber, rate,defaultTab} = props;
+    appLog('props',props)
+
+    const {defaultValue, onPressCancel, onPressOK, defaultInputValues,defaultInputAmounts, customNumber, rate,defaultTab,unitname} = props;
 
     const [numPadValue, setNumPadValue] = useState<any>(defaultValue || "");
     const [selectedTab, setSelectedTab] = useState<any>("num");
@@ -77,7 +79,9 @@ const index = (props: any) => {
 
 
         <View style={[styles.grid,styles.middle,styles.border,styles.mt_5,styles.mb_3,styles.p_4,{marginHorizontal:5,borderRadius:5,borderColor:styles.accent.color}]}>
-            <Text><ProIcon name={selectedTab==='num'?'scale-balanced':'indian-rupee-sign'}/></Text><Text style={[{fontSize: 24}]}> {numPadValue}</Text>
+            <Text><ProIcon name={selectedTab==='num'?'scale-balanced':'indian-rupee-sign'}/></Text>
+            <Text style={[{fontSize: 24}]}> {numPadValue}</Text>
+            {selectedTab ==='num' && <Text style={[{fontSize: 24,marginLeft:'auto'}]}> {unitname}</Text>}
         </View>
 
         <View ref={qntRef} style={[styles.grid, styles.justifyContent, styles.mb_4, ]}>
@@ -88,7 +92,7 @@ const index = (props: any) => {
                         style={[ {
                             width: "33.33%",
                         }]}>
-                        <Paragraph style={[styles.textCenter,styles.p_5,  styles.bold,{borderRadius:5,marginHorizontal:2,backgroundColor: "#fafafa"}]}>
+                        <Paragraph style={[styles.textCenter,styles.p_5,  styles.bold,{borderRadius:5,marginHorizontal:2,backgroundColor: "#f3f3f3"}]}>
                             {num}
                         </Paragraph>
                     </TouchableOpacity>
@@ -97,7 +101,7 @@ const index = (props: any) => {
         </View>
 
         <View ref={amtRef}
-              style={[styles.grid, styles.justifyContent, {display:'none'}]}>
+              style={[styles.grid, styles.justifyContent,styles.mb_4, {display:'none'}]}>
             {
                 defaultInputAmounts?.map((num: string) => {
                     return <TouchableOpacity
@@ -105,7 +109,7 @@ const index = (props: any) => {
                         style={[ {
                             width: "33.33%",
                         }]}>
-                        <Paragraph style={[styles.textCenter,styles.p_5,  styles.bold,{borderRadius:5,marginHorizontal:2,backgroundColor: "#fafafa"}]}>
+                        <Paragraph style={[styles.textCenter,styles.p_5,  styles.bold,{borderRadius:5,marginHorizontal:2,backgroundColor: "#f3f3f3"}]}>
                             {num}
                         </Paragraph>
                     </TouchableOpacity>

@@ -29,7 +29,7 @@ const Index = (props: any) => {
     const {cancelorder}:any = localredux?.authData?.settings;
 
     const askPermission = () => {
-
+        navigation.navigate('AskPermission',{cancelOrder:cancelOrder})
     }
 
     navigation.setOptions({

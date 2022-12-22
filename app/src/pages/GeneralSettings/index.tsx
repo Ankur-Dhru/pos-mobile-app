@@ -13,7 +13,7 @@ import {getLocalSettings, saveLocalSettings, setAPIUrl} from "../../libs/functio
 const Index = () => {
 
     const dispatch = useDispatch();
-    let [initdata, setInitdata]: any = useState({homedelivery: false, takeaway: false, betamode: false})
+    let [initdata, setInitdata]: any = useState({homedelivery: false, takeaway: false, betamode: false,paxes:false})
 
     const [loading, setLoading]: any = useState(false)
 
@@ -73,6 +73,22 @@ const Index = () => {
                                                 initdata = {
                                                     ...initdata,
                                                     takeaway: value
+                                                }
+                                                saveLocalSettings("generalsettings", initdata).then();
+                                            }}
+                                        /></>
+                                    )}
+                                </Field>
+
+                                <Field name="paxes">
+                                    {props => (
+                                        <><CheckBox
+                                            value={props.input.value}
+                                            label={'Pax optional for Table order'}
+                                            onChange={(value: any) => {
+                                                initdata = {
+                                                    ...initdata,
+                                                    paxes: value
                                                 }
                                                 saveLocalSettings("generalsettings", initdata).then();
                                             }}

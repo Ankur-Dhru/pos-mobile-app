@@ -10,6 +10,7 @@ import {localredux} from "../../libs/static";
 
 const Index = ({addtags, itemaddon,updateProduct}: any) => {
 
+
     const {addonsData} = localredux;
 
     let {addongroupid, addonid,autoaddon} = addtags || {addongroupid: [], addonid: [],autoaddon:[]}

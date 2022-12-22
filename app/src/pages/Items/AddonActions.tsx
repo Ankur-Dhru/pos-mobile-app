@@ -55,8 +55,13 @@ const Index = ({product }: any) => {
                                     product={
                                         ...product,
                                         key: uuid(),
-                                        productqnt:0
+                                        productqnt:0,
+                                        itemaddon:[],
+                                        itemtags:undefined
                                     }
+
+
+
                                     await dispatch(setItemDetail(product));
                                     await dispatch(setBottomSheet({
                                         visible: true,

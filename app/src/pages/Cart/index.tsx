@@ -1,5 +1,13 @@
 import React, {useEffect, useState} from "react";
-import {appLog, cancelOrder, getTempOrders, isRestaurant, saveTempLocalOrder, voucherData} from "../../libs/function";
+import {
+    appLog,
+    cancelOrder,
+    getLocalSettings,
+    getTempOrders,
+    isRestaurant,
+    saveTempLocalOrder,
+    voucherData
+} from "../../libs/function";
 import Cart from "./Cart";
 import {device, localredux, PRODUCTCATEGORY, VOUCHER} from "../../libs/static";
 import {useDispatch} from "react-redux";
@@ -40,12 +48,19 @@ const Index = (props: any) => {
         }
 
         if(tabledetails?.invoiceitems.length === 0 && (tabledetails?.ordertype === 'tableorder')){
-            dispatch(setDialog({
-                visible: true,
-                title: "Paxes",
-                hidecancel: true,
-                component: () => <Paxes />
-            }))
+
+            getLocalSettings('generalsettings').then((r:any) => {
+                if(!r.paxes) {
+                    dispatch(setDialog({
+                        visible: true,
+                        title: "Paxes",
+                        hidecancel: true,
+                        component: () => <Paxes/>
+                    }))
+                }
+            });
+
+
         }
 
         dispatch(setSelected({value: mainproductgroupid, field: 'group'}))
@@ -113,7 +128,7 @@ const Index = (props: any) => {
                     }}/>}>
 
 
-                    {!isRestaurant() && <Menu.Item onPress={async () => { 
+                    {!isRestaurant() && <Menu.Item onPress={async () => {
                         closeMenu()
                         await dispatch(setBottomSheet({
                             visible: true,

@@ -441,6 +441,7 @@ export const testPrint = async (printer: any) => {
             .cut()
             .addPulse()
             .send()
+
     }
 }
 

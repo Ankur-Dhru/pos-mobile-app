@@ -12,7 +12,6 @@ import {localredux} from "../../libs/static";
 
 const Index = ({tags,notes,itemtags,updateProduct}: any) => {
 
-
     const {tags:inittags}:any = localredux.initData
 
     const [selectedTag,setSelectedTag] = useState(0);

@@ -1014,10 +1014,11 @@ export const saveLocalOrder = (order?: any) => {
 
 
 
-        deleteTempLocalOrder(order.tableorderid).then((msg:any) => {
-            insertOrder(order).then(()=>{
+        deleteTempLocalOrder(order.tableorderid).then(async (msg:any) => {
+            await insertOrder(order).then(()=>{
                 resolve(order)
             });
+            syncInvoice(order)
         })
     })
 
@@ -1380,6 +1381,8 @@ export const generateKOT = async () => {
         const {currentLocation: {departments}} = localredux.localSettingsData;
 
         const currentTicketType = localredux.initData?.tickets[TICKETS_TYPE.KOT];
+
+        appLog('currentTicketType',currentTicketType)
 
         const {adminid, username}: any = localredux.loginuserData;
 
@@ -2138,10 +2141,20 @@ export const loadContacts = async () => {
 }
 
 
-export const syncInvoice = (invoiceData: any) => {
+export const syncInvoice = async (invoiceData: any) => {
     const {workspace}: any = localredux.initData;
     const {token}: any = localredux.authData;
+
+    const syncstatus:any = await getLocalSettings('sync_in_process')
+
     return new Promise((resolve) => {
+
+        if(syncstatus){
+            appLog('sync in progress')
+            resolve('sync in progress')
+        }
+
+        saveLocalSettings({sync_in_process: true})
 
         apiService({
             method: METHOD.POST,
@@ -2152,8 +2165,8 @@ export const syncInvoice = (invoiceData: any) => {
             hideLoader: true,
             hidealert: true,
             other: {url: urls.posUrl},
-        }).then((response: any) => {
-
+        }).then(async (response: any) => {
+            await saveLocalSettings({sync_in_process: false})
             if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
 
                 deleteTable(TABLE.ORDER,`orderid = '${invoiceData?.orderid}'`).then(async ()=>{
@@ -2164,9 +2177,13 @@ export const syncInvoice = (invoiceData: any) => {
             } else {
                 resolve({status: "ERROR"})
             }
-        }).catch(() => {
+        }).catch(async () => {
+            await saveLocalSettings({sync_in_process: false})
             resolve({status: "TRY CATCH ERROR"})
         })
+
+
+
     })
 }
 

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {FlatList, Text, TouchableOpacity, View} from "react-native";
-import {Card, Paragraph} from "react-native-paper"
+import {Caption, Card, Paragraph} from "react-native-paper"
 import {
     appLog,
     base64Encode,
@@ -12,13 +12,15 @@ import {
 } from "../../libs/function";
 import Container from "../../components/Container";
 import {styles} from "../../theme";
-import {connect} from "react-redux";
+import {connect, useDispatch} from "react-redux";
 import {ACTIONS, ItemDivider, localredux, METHOD, STATUS, urls, VOUCHER} from "../../libs/static";
 import apiService from "../../libs/api-service";
 
 import moment from "moment";
 import ProIcon from "../../components/ProIcon";
 import PageLoader from "../../components/PageLoader";
+
+import {ordersData, setOrdersData} from "../../redux-store/reducer/orders-data";
 
 
 const SalesReport = ({ordersData,navigation}: any) => {
@@ -29,27 +31,37 @@ const SalesReport = ({ordersData,navigation}: any) => {
 
     const {workspace}: any = localredux.initData;
     const {token}: any = localredux.authData;
+    const dispatch = useDispatch()
 
-    const [data, setData] = useState<any>(ordersData);
+    const [data, setData] = useState<any>([]);
     const [loader,setLoader] = useState(false);
+    const [unsynced,setUnsynced] = useState(false);
+    const [localorder,setLocalorder] = useState(ordersData);
 
 
     useEffect(() => {
-        getOrders().then((orders: any) => {
 
-            apiService({
-                method: METHOD.GET,
-                action: ACTIONS.REPORT_SALES,
-                workspace: workspace,
-                token: token,
-                queryString: {terminalid: licenseData?.data?.terminal_id},
-                hideLoader: true,
-                hidealert: true,
-                other: {url: urls.posUrl},
-            }).then((response: any) => {
-                setData({...orders, ...response?.data})
-                setLoader(true)
-            })
+        getOrders().then((orders:any)=>{
+            if(Boolean(orders)) {
+                setLocalorder(Object.values(orders).reverse())
+            }
+        })
+
+
+        apiService({
+            method: METHOD.GET,
+            action: ACTIONS.REPORT_SALES,
+            workspace: workspace,
+            token: token,
+            queryString: {terminalid: licenseData?.data?.terminal_id},
+            hideLoader: true,
+            hidealert: true,
+            other: {url: urls.posUrl},
+        }).then((response: any) => {
+            setData(Object.values(response?.data).reverse())
+            setLoader(true)
+        }).catch(()=>{
+            setLoader(true)
         })
     }, [ordersData])
 
@@ -125,26 +137,37 @@ const SalesReport = ({ordersData,navigation}: any) => {
         return <PageLoader/>
     }
 
+    navigation.setOptions({
+        headerRight:()=>{
+            return <TouchableOpacity onPress={()=>setUnsynced(!unsynced)}><Paragraph>{unsynced?'Synced':'Unsynced'}</Paragraph></TouchableOpacity>
+        }
+    })
+
 
     const renderItem = ({item, index}: any) => {
-        let name = item?.clientname;
+
+        const {terminal_name}: any = localredux.licenseData.data;
+
+
+
+        let name = `(${terminal_name}-${item?.posinvoice || item.invoice_display_number}) - ${item?.clientname}`
 
         if (item?.voucherprefix && item?.voucherdisplayid) {
-            name = `(${item?.posinvoice}) ${item?.voucherprefix}${item?.voucherdisplayid} - ${name}`
+            name = `${item?.voucherprefix}${item?.voucherdisplayid}  ${item?.clientname} (${terminal_name}-${item?.posinvoice})`
         }
 
         if(!Boolean(item.localdatetime)){
             item.localdatetime = item.date
         }
 
-        return <TouchableOpacity style={[styles.p_5]} key={index}>
+        return <TouchableOpacity style={[styles.py_5]} key={index}>
             <View
                 style={[styles.grid, styles.noWrap, styles.middle, styles.justifyContentSpaceBetween]}>
 
                 <View style={[styles.w_auto]}>
                     <View style={[styles.grid, styles.noWrap, styles.top]}>
                         <View>
-                            <Paragraph style={[styles.paragraph, styles.bold]}>{item.invoice_display_number && `(${item.invoice_display_number}) `}{name}</Paragraph>
+                            <Paragraph style={[styles.paragraph, styles.bold]}>{name}</Paragraph>
                             <Paragraph style={[styles.paragraph, styles.text_xs]}>{moment(item.localdatetime).format(dateFormat(true))}</Paragraph>
                         </View>
                     </View>
@@ -156,7 +179,7 @@ const SalesReport = ({ordersData,navigation}: any) => {
                         <ProIcon name={'print'} type={'solid'} size={15}/>
                     </TouchableOpacity>}
                 </View>
-                {<View style={{width: 100}}>
+                {<View style={{width: 90}}>
                     <Paragraph
                         style={[styles.paragraph,styles.bold, {textAlign: 'right'}]}>{toCurrency(item?.vouchertotaldisplay)}</Paragraph>
                     {Boolean(item?.voucherdisplayid) ?
@@ -183,22 +206,22 @@ const SalesReport = ({ordersData,navigation}: any) => {
     return <Container>
         <Card style={[styles.card]}>
             <Card.Content style={[styles.cardContent]}>
-                <FlatList
+
+                {<FlatList
                     style={[styles.listitem]}
-                    data={Object.values(data).reverse()}
+                    data={(unsynced ? localorder : data)}
                     keyboardDismissMode={'on-drag'}
                     keyboardShouldPersistTaps={'always'}
                     renderItem={renderItem}
                     ListEmptyComponent={<View>
                         <View style={[styles.p_6]}>
-                            <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>No any
-                                items found</Text>
+                            <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>No any {unsynced?'unsynced':'synced'} items found</Text>
 
                         </View>
                     </View>}
 
                     ItemSeparatorComponent={ItemDivider}
-                />
+                />}
 
             </Card.Content>
         </Card>
@@ -208,7 +231,7 @@ const SalesReport = ({ordersData,navigation}: any) => {
 
 
 const mapStateToProps = (state: any) => ({
-    ordersData: state.ordersData,
+    ordersData: Object.values(state?.ordersData).reverse() || [],
 })
 
 export default connect(mapStateToProps)(SalesReport);

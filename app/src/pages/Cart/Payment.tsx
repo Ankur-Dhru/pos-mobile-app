@@ -207,8 +207,8 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
 
 
                     {<View style={[styles.grid,styles.justifyContent,styles.p_5]}>
-                        <Paragraph style={[styles.paragraph, styles.bold,{color:styles.green.color}]}>{"Voucher Total"} </Paragraph>
-                        <Paragraph style={[styles.paragraph,styles.bold,{color:styles.green.color}]}> {toCurrency(vouchertotaldisplay)}</Paragraph>
+                        <Paragraph style={[styles.paragraph, styles.bold,styles.text_lg]}>{"Total"} </Paragraph>
+                        <Paragraph style={[styles.paragraph,styles.bold,styles.text_lg]}> {toCurrency(vouchertotaldisplay)}</Paragraph>
                     </View>}
 
 
@@ -376,8 +376,8 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
 
                 <View>
                     {<View style={[styles.grid,styles.justifyContent,styles.p_5]}>
-                        <Paragraph style={[styles.paragraph, styles.bold,{color:styles.red.color}]}> Remaining </Paragraph>
-                        <Paragraph style={[styles.paragraph,styles.bold,{color:styles.red.color}]}>  {toCurrency(remainingAmount || '0')}</Paragraph>
+                        <Paragraph style={[styles.paragraph, styles.bold,styles.text_lg,{color:styles.red.color}]}>Remaining </Paragraph>
+                        <Paragraph style={[styles.paragraph,styles.bold,styles.text_lg,{color:styles.red.color}]}>  {toCurrency(remainingAmount || '0')}</Paragraph>
                     </View>}
                 </View>
 
@@ -395,17 +395,18 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
             {<View style={[styles.grid, styles.justifyContent]}>
 
                 <View style={[styles.w_auto]}>
-                    <Button
-                        more={{backgroundColor: styles.secondary.color, color: 'black',height:50}}
-                        onPress={() => {
-                            validatePayment({print: true}).then()
-                        }}>Print & Generate Invoice</Button>
+                    <Button more={{backgroundColor: styles.secondary.color, color: 'black',height:55}} onPress={() => {
+                        validatePayment().then()
+                    }}> Generate Invoice </Button>
                 </View>
 
                 <View style={[styles.w_auto, styles.ml_1]}>
-                    <Button more={{color:'white',height:50}} onPress={() => {
-                        validatePayment().then()
-                    }}> Generate Invoice </Button>
+                    <Button
+                        more={{color:'white',height:55}}
+                        onPress={() => {
+                            validatePayment({print: true}).then()
+                        }}>Print & Generate Invoice</Button>
+
                 </View>
 
 

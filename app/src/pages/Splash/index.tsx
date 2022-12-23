@@ -1,7 +1,7 @@
 import React from "react";
 import {Image, View} from "react-native";
 import {styles} from "../../theme";
-import {appLog, getDatabaseName, getStateAndTaxType, retrieveData} from "../../libs/function";
+import {appLog, getDatabaseName, getStateAndTaxType, intervalInvoice, retrieveData} from "../../libs/function";
 import Container from "../../components/Container";
 import moment from "moment";
 import {useDispatch} from "react-redux";
@@ -12,15 +12,24 @@ import {setSettings} from "../../redux-store/reducer/local-settings-data";
 
 const Index = (props: any) => {
 
+
+
+
     const {navigation} = props
     const dispatch = useDispatch();
 
     device.navigation = navigation;
 
     getDatabaseName().then(async (dbname: any) => {
+
+
+
         let screen = 'SetupStackNavigator';
         if (Boolean(dbname)) {
             db.name = dbname;
+
+            appLog('db.name',db.name)
+
 
             //////// check license and set workspace and staffdata
             await retrieveData(db.name).then(async (data: any) => {

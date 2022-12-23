@@ -781,6 +781,18 @@
     deepmerge "^3.2.0"
     hoist-non-react-statics "^3.3.0"
 
+"@datahex/escpos-xml@^1.1.9":
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/@datahex/escpos-xml/-/escpos-xml-1.1.9.tgz#1c4fa39c57f8f2c5ea40e6b40e61574920bbeac7"
+  integrity sha512-IbsKYRSsG3ya0boZzERnf8KUB6dG274dd4cbqmKWJ07HgC0hzaW1WEjASAfZpNLAB3ZHiQ+xCmyy7e9ZYGeYpQ==
+  dependencies:
+    handlebars "^4.0.10"
+    lodash "^4.17.4"
+    moment "^2.18.1"
+    mutable-buffer "2.0.3"
+    numeral "^2.0.6"
+    xml-parser "^1.2.1"
+
 "@egjs/hammerjs@^2.0.17":
   version "2.0.17"
   resolved "https://registry.yarnpkg.com/@egjs/hammerjs/-/hammerjs-2.0.17.tgz#5dc02af75a6a06e4c2db0202cae38c9263895124"
@@ -2957,6 +2969,11 @@ electron-to-chromium@^1.4.251:
   version "1.4.284"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.284.tgz#61046d1e4cab3a25238f6bf7413795270f125592"
   integrity sha512-M8WEXFuKXMYMVr45fo8mq0wUrrJHheiKZf6BArTKk9ZBYCKJEOU5H8cdWgDT+qCVZf7Na4lVUaZsA+h6uA9+PA==
+
+emitter-component@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/emitter-component/-/emitter-component-1.1.1.tgz#065e2dbed6959bf470679edabeaf7981d1003ab6"
+  integrity sha512-G+mpdiAySMuB7kesVRLuyvYRqDmshB7ReKEVuyBPkzQlmiDiLrt7hHHIy4Aff552bgknVN7B2/d3lzhGO5dvpQ==
 
 emittery@^0.10.2:
   version "0.10.2"
@@ -5849,6 +5866,11 @@ mustache@^4.2.0:
   resolved "https://registry.yarnpkg.com/mustache/-/mustache-4.2.0.tgz#e5892324d60a12ec9c2a73359edca52972bf6f64"
   integrity sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==
 
+mutable-buffer@2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/mutable-buffer/-/mutable-buffer-2.0.3.tgz#67bca5568bf15d3f6035fb716e3899dc44901c8c"
+  integrity sha512-FULQBjbqsMLenQgefrxiFbvE4xE/6XlfMLK08iPR9CFMFG8scEQYy12inRLLTEoBzYRptaBhcuO19BlJW1LjSQ==
+
 mutable-buffer@^2.0.3:
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/mutable-buffer/-/mutable-buffer-2.2.5.tgz#1a1d9b227a39356b9bbc845324a972e3dac23246"
@@ -7371,6 +7393,13 @@ statuses@~1.5.0:
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
 
+stream@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/stream/-/stream-0.0.2.tgz#7f5363f057f6592c5595f00bc80a27f5cec1f0ef"
+  integrity sha512-gCq3NDI2P35B2n6t76YJuOp7d6cN/C7Rt0577l91wllh0sY9ZBuw9KaSGqH/b0hzn3CWWJbpbW0W0WvQ1H/Q7g==
+  dependencies:
+    emitter-component "^1.1.1"
+
 strict-uri-encode@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/strict-uri-encode/-/strict-uri-encode-2.0.0.tgz#b9c7330c7042862f6b142dc274bbcc5866ce3546"
@@ -8033,6 +8062,18 @@ ws@^7, ws@^7.5.1:
   version "7.5.9"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.9.tgz#54fa7db29f4c7cec68b1ddd3a89de099942bb591"
   integrity sha512-F+P9Jil7UiSKSkppIiD94dN07AwvFixvLIj1Og1Rl9GGMuNipJnV9JzjD6XuqmAeiswGvUmNLjr5cFuXwNS77Q==
+
+xml-escpos@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/xml-escpos/-/xml-escpos-1.0.1.tgz#2b2c1cf04417ab1c42ded63cf0308104f6b07ab9"
+  integrity sha512-RGiiuvtwxQ9KlOfEzXsQU5ikGNaIapGikWBwePPgjvClIrHhhABbWXMJsLO89HfeJNnJ7RdTwS2BDoSWb78Yjg==
+  dependencies:
+    handlebars "^4.0.10"
+    lodash "^4.17.4"
+    moment "^2.18.1"
+    mutable-buffer "^2.0.3"
+    numeral "^2.0.6"
+    xml-parser "^1.2.1"
 
 xml-parser@^1.2.1:
   version "1.2.1"

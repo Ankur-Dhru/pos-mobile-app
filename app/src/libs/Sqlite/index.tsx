@@ -7,30 +7,45 @@ import {
     CREATE_TEMPORDER_TABLE
 } from "./config";
 import {db} from "../static";
+import {appLog} from "../function";
 
 enablePromise(true);
 
 export const getDBConnection = async () => {
-    return await openDatabase({name: `${db.name}-terminal-data.db`, location: 'default'});
+    if(Boolean(db?.name)) {
+        return await openDatabase({name: `${db.name}-terminal-data.db`, location: 'default'});
+    }
+    return false
 };
 
 export const deleteDB = async () => {
-    return await deleteDatabase({name: `${db.name}-terminal-data.db`, location: 'default'});
+    if(Boolean(db?.name)) {
+        return await deleteDatabase({name: `${db.name}-terminal-data.db`, location: 'default'});
+    }
+    return false
 };
 
 
 export const createTables = async () => {
     const db:any = await getDBConnection();
 
-    db.executeSql(CREATE_ITEM_TABLE);
-    db.executeSql(CREATE_ADDON_TABLE);
-    db.executeSql(CREATE_CLIENT_TABLE);
-    db.executeSql(CREATE_ORDER_TABLE);
-    db.executeSql(CREATE_TEMPORDER_TABLE);
+    if(Boolean(db)) {
 
-    db.executeSql(CREATE_ITEM_INDEX_ITEMGROUPID);
-    db.executeSql(CREATE_ITEM_INDEX_ITEMNAME);
-    db.executeSql(CREATE_ITEM_INDEX_ITEMUNIQUE);
+        db.executeSql(CREATE_ITEM_TABLE);
+        db.executeSql(CREATE_ADDON_TABLE);
+        db.executeSql(CREATE_CLIENT_TABLE);
+        db.executeSql(CREATE_ORDER_TABLE);
+        db.executeSql(CREATE_TEMPORDER_TABLE);
+
+        db.executeSql(CREATE_ITEM_INDEX_ITEMGROUPID);
+        db.executeSql(CREATE_ITEM_INDEX_ITEMNAME);
+        db.executeSql(CREATE_ITEM_INDEX_ITEMUNIQUE);
+
+        appLog('table created')
+    }
+    else{
+        appLog('no database found')
+    }
 }
 
 

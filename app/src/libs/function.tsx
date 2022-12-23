@@ -32,7 +32,7 @@ import {
 } from "./static";
 
 import {setSettings} from "../redux-store/reducer/local-settings-data";
-import React from "react";
+import React, {useEffect} from "react";
 import {Alert, PermissionsAndroid, Platform,  Text} from "react-native";
 import {deleteOrder, setTableOrders, setTableOrdersData} from "../redux-store/reducer/table-orders-data";
 import {v4 as uuid} from "uuid";
@@ -487,7 +487,7 @@ export const CheckConnectivity = () => {
 
 export const syncData = async (loader = true) => {
 
-
+    appLog('sync data')
 
     await retrieveData(db.name).then(async (data: any) => {
 
@@ -1946,6 +1946,9 @@ export const refreshToken = () => {
 
 
 export const updateToken = async (token:any) => {
+
+    appLog('updateToken')
+
     localredux.authData.token = token;
     await retrieveData(db.name).then(async (data: any) => {
         data = {
@@ -1957,7 +1960,7 @@ export const updateToken = async (token:any) => {
 }
 
 export const createDatabaseName = ({workspace,locationid}:any) => {
-    return base64Encode(workspace+''+locationid)
+    return workspace+''+locationid
 }
 
 
@@ -1993,10 +1996,9 @@ export const selectWorkspace = async (workspace: any, navigation: any) => {
 
 export const getTemplate = (template: string) => {
     return `<?xml version="1.0" encoding="UTF-8"?>
-<document>
-   ` + template + `
-</document>
-`
+<document>       
+   ` + template + `   
+</document>`
 }
 
 
@@ -2144,6 +2146,8 @@ export const loadContacts = async () => {
 export const syncInvoice = async (invoiceData: any) => {
     const {workspace}: any = localredux.initData;
     const {token}: any = localredux.authData;
+
+    appLog('syncInvoice');
 
     const syncstatus:any = await getLocalSettings('sync_in_process')
 
@@ -2360,3 +2364,28 @@ export const printDayEndReport = ({date:date,data:data}:any) => {
     }
 }
 
+
+
+export const intervalInvoice = () => {
+    let interval: any = null;
+
+    CheckConnectivity()
+    useEffect(() => {
+        if (!interval) {
+            interval = setInterval(() => {
+                if (Boolean(db?.name)) {
+                    getOrders().then((orders: any) => {
+                        if (!isEmpty(orders)) {
+                            let invoice: any = Object.values(orders)[0]
+                            syncInvoice(invoice).then()
+                        }
+                    })
+                }
+            }, 10000);
+        }
+        return () => {
+            clearInterval(interval);
+            interval = null;
+        };
+    }, []);
+}

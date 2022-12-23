@@ -11,7 +11,7 @@ export let posUrl: any = '';
 export let adminUrl: any = '';
 
 export const urls = {posUrl:'',adminUrl:''}
-export const db = {name:'fusion-pro-pos-mobile'}
+export const db = {name:''}
 
 
 getLocalSettings('generalsettings').then((r:any) => {
@@ -1590,6 +1590,11 @@ export const supportedPrinterList = [
 ]
 
 
+export const defaultTestTemplate = `<align mode="center">
+        <bold>
+            <text size="1:1">Test Print
+</text>
+        </bold></align>`;
 
 export const defaultInvoiceTemplate = `<align mode="center">
 {{#logo}}

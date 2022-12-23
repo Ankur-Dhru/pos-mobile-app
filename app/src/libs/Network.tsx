@@ -7,6 +7,7 @@ import BleManager from "react-native-ble-manager";
 import {readyforPrint} from "../pages/PrinterSettings/Setting";
 import apiService from "./api-service";
 import {ACTIONS, METHOD} from "./static";
+import {appLog} from "./function";
 
 const net = require('react-native-tcp-socket');
 
@@ -61,6 +62,9 @@ export const sendDataToPrinter = async (input: any, template: string, printer: a
                     return await connectToPrinter(printer, (buffer as unknown) as Buffer).then(async (msg:any) => {
                         if(Boolean(msg)) {
                             setTimeout(async ()=>{
+
+                               // resolve(msg)
+
                                 await paperCut(printer).then((msg) => {
                                     resolve(msg)
                                 })

@@ -88,8 +88,6 @@ const SalesReport = ({ordersData,navigation}: any) => {
 
     const getOrderDetail = async (invoice: any) => {
 
-
-
         const {workspace}: any = localredux.initData;
         const {token}: any = localredux.authData;
 
@@ -179,7 +177,7 @@ const SalesReport = ({ordersData,navigation}: any) => {
                         <ProIcon name={'print'} type={'solid'} size={15}/>
                     </TouchableOpacity>}
                 </View>
-                {<View style={{width: 90}}>
+                {<View style={{width: 100}}>
                     <Paragraph
                         style={[styles.paragraph,styles.bold, {textAlign: 'right'}]}>{toCurrency(item?.vouchertotaldisplay)}</Paragraph>
                     {Boolean(item?.voucherdisplayid) ?

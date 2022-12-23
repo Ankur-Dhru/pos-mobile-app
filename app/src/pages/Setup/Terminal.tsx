@@ -76,6 +76,8 @@ const Terminal = (props: any) => {
 
             db.name =  createDatabaseName({workspace:initData.workspace,locationid:values?.locationid});
 
+            appLog('db.name',db.name)
+
             await saveDatabaseName(db.name).then();
 
             await createTables().then();

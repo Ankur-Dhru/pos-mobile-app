@@ -45,9 +45,9 @@ const Index = (props: any) => {
             if (enteredPin.length === 5) {
                 if (md5(enteredPin) === params.loginpin) {
 
-                    await gePhonebook();
-
                     dispatch(showLoader())
+
+                    await gePhonebook();
 
                     await retrieveData(db.name).then(async (data: any) => {
 

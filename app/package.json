@@ -17,6 +17,7 @@
     "gradle clean": "cd android && ./gradlew clean"
   },
   "dependencies": {
+    "@datahex/escpos-xml": "^1.1.9",
     "@fortawesome/free-brands-svg-icons": "^6.1.2",
     "@fortawesome/pro-light-svg-icons": "^6.1.2",
     "@fortawesome/pro-regular-svg-icons": "^6.1.2",
@@ -83,9 +84,11 @@
     "react-number-format": "^4.9.3",
     "react-redux": "^8.0.2",
     "rn-fetch-blob": "^0.12.0",
+    "stream": "^0.0.2",
     "utf8": "^3.0.0",
     "util": "^0.12.4",
-    "uuidv4": "^6.2.13"
+    "uuidv4": "^6.2.13",
+    "xml-escpos": "^1.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

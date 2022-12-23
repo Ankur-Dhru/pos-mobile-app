@@ -11,7 +11,15 @@ import {db, device, screenOptionStyle} from "../../libs/static";
 import Splash from "../Splash";
 import Tables from "../Tables";
 import Cart from "../Cart";
-import {CheckConnectivity, getOrders, isEmpty, isRestaurant, syncInvoice} from "../../libs/function";
+import {
+    appLog,
+    CheckConnectivity,
+    getOrders,
+    intervalInvoice,
+    isEmpty,
+    isRestaurant,
+    syncInvoice
+} from "../../libs/function";
 import DetailView from "../Cart/DetailView";
 import Payment from "../Cart/Payment";
 import SalesReport from "../Report/SalesReport";
@@ -61,13 +69,14 @@ const Stack = createNativeStackNavigator();
 const MainStackNavigator = () => {
 
 
-    const dispatch = useDispatch();
+    intervalInvoice();
+   /* const dispatch = useDispatch();
 
     let interval: any = null;
     useEffect(() => {
         if (!interval) {
             interval = setInterval(() => {
-                if (Boolean(db.name)) {
+                if (Boolean(db?.name)) {
                     getOrders().then((orders: any) => {
                         if (!isEmpty(orders)) {
                             let invoice: any = Object.values(orders)[0]
@@ -82,7 +91,7 @@ const MainStackNavigator = () => {
             clearInterval(interval);
             interval = null;
         };
-    }, []);
+    }, []);*/
 
     return (
         <Stack.Navigator

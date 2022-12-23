@@ -1,5 +1,5 @@
 import React from "react";
-import {isEmpty, isRestaurant, saveLocalSettings, storeData, syncData} from "../../libs/function";
+import {getDatabaseName, isEmpty, isRestaurant, saveLocalSettings, storeData, syncData} from "../../libs/function";
 import {Dimensions, Image, Platform, ScrollView, TouchableOpacity, View} from "react-native";
 import {Button as PButton, Caption, Card, List, Text, Title} from "react-native-paper";
 import {styles} from "../../theme";
@@ -52,22 +52,16 @@ const ProfileSettings = () => {
 
 
     const resetTerminal = async () => {
-        await storeData(db.name, {}).then(async () => {
-        });
 
-        await storeData(`fusion-dhru-pos-settings`, {}).then(async () => {
-        });
-        await storeData(`${db.name}-vouchernos`, 0).then(async () => {
-        });
-        await storeData(`${db.name}-kotno`, 0).then(async () => {
-        });
-
-        await deleteDB()
-
-        await createTables().then()
-
-        await saveLocalSettings('synccontact', false).then(() => {
-
+        await storeData(`fusion-dhru-pos-settings`, {}).then(async () => {});
+        await storeData(`${db.name}`, {}).then(async () => {});
+        await storeData(`${db.name}-vouchernos`, 0).then(async () => {});
+        await storeData(`${db.name}-kotno`, 0).then(async () => {});
+        await saveLocalSettings('synccontact', false).then(() => {})
+        await deleteDB();
+        await getDatabaseName().then(async (dbname:any)=>{
+            db.name = dbname;
+            await createTables().then();
         })
 
         navigation.dispatch(

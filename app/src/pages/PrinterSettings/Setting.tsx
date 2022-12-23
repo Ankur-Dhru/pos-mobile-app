@@ -4,10 +4,18 @@ import {Platform, SafeAreaView, View} from "react-native";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
 import {Card} from "react-native-paper";
-import {ACTIONS, composeValidators, METHOD, PRINTER, required, supportedPrinterList} from "../../libs/static";
+import {
+    ACTIONS,
+    composeValidators,
+    defaultInvoiceTemplate, defaultTestTemplate,
+    METHOD,
+    PRINTER,
+    required,
+    supportedPrinterList
+} from "../../libs/static";
 import Button from "../../components/Button";
 import {connect} from "react-redux";
-import {appLog, saveLocalSettings} from "../../libs/function";
+import {appLog, getTemplate, saveLocalSettings} from "../../libs/function";
 import InputField from "../../components/InputField";
 import {Container} from "../../components";
 import KeyboardScroll from "../../components/KeyboardScroll";
@@ -18,6 +26,9 @@ import BleManager from "react-native-ble-manager";
 import {EscPos} from "escpos-xml";
 import EscPosPrinter, {getPrinterSeriesByName} from "react-native-esc-pos-printer";
 import apiService from "../../libs/api-service";
+import {sendDataToPrinter} from "../../libs/Network";
+import store from "../../redux-store/store";
+import {setAlert} from "../../redux-store/reducer/component";
 
 
 const Index = (props: any) => {
@@ -388,12 +399,19 @@ export default connect(mapStateToProps)(Index);
 
 export const testPrint = async (printer: any) => {
 
-    const {host, printername,broadcastip, printertype, bluetoothdetail}: any = printer
+
+
+
+    const {host, printername,broadcastip, printertype, bluetoothdetail}: any = printer;
+
+
+
+    const buffer: any = EscPos.getBufferFromXML(`<?xml version="1.0" encoding="UTF-8"?><document><align mode="center"><text size="1:0">Test Print</text></align></document>`);
 
     if (printertype === 'bluetooth') {
         const peripheral = bluetoothdetail.more;
         readyforPrint(peripheral).then((findSC: any) => {
-            const buffer: any = EscPos.getBufferFromXML(`<?xml version="1.0" encoding="UTF-8"?><document><align mode="center"><text size="1:0">Test Print</text></align></document>`);
+
             BleManager.write(peripheral.id, findSC?.service, findSC?.characteristic, [...buffer]).then(() => {
                 BleManager.disconnect(peripheral.id).then(() => {
                         console.log("Disconnected");
@@ -407,7 +425,6 @@ export const testPrint = async (printer: any) => {
 
     }
     else if(printertype === 'broadcast'){
-        const buffer: any = EscPos.getBufferFromXML(`<?xml version="1.0" encoding="UTF-8"?><document><align mode="center"><text size="1:0">Test Print</text></align></document>`);
 
         apiService({
             method: METHOD.POST,
@@ -425,11 +442,22 @@ export const testPrint = async (printer: any) => {
     else {
 
 
+        setTimeout(() => {
+            sendDataToPrinter({}, getTemplate(defaultTestTemplate), {
+                ...printer,
+            }).then((msg) => {
+                store.dispatch(setAlert({visible: true, message: msg}))
+            });
+        }, 200)
+
+
         await EscPosPrinter.init({
             target: `TCP:${host}`,
             seriesName: getPrinterSeriesByName(printername),
             language: 'EPOS2_LANG_EN',
         })
+
+        appLog('printername',printername)
 
         const printing = new EscPosPrinter.printing();
         let status = printing

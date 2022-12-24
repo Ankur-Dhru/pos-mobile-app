@@ -7,17 +7,30 @@ import BleManager from "react-native-ble-manager";
 import {readyforPrint} from "../pages/PrinterSettings/Setting";
 import apiService from "./api-service";
 import {ACTIONS, METHOD} from "./static";
-import {appLog} from "./function";
+import {appLog, getTemplate} from "./function";
+
+global.Buffer = require('buffer').Buffer;
 
 const net = require('react-native-tcp-socket');
 
 
 export const sendDataToPrinter = async (input: any, template: string, printer: any) => {
 
+
+
+
     return await new Promise(async (resolve) => {
         try {
 
-            let xmlData = Mustache.render(template, input);
+            if(printer?.printertype !== 'broadcast'){
+                /*if(printer.qrcode){
+                    template += `<align  mode="center"><line-feed/><text>Scan to Pay</text><line-feed/></align>`;
+                }*/
+                template += `<align  mode="center"><line-feed/><text>
+Powered By Dhru ERP</text><line-feed/></align>`;
+            }
+
+            let xmlData = Mustache.render(getTemplate(template), input);
             const buffer = EscPos.getBufferFromXML(xmlData);
 
             if (printer?.printertype === 'bluetooth') {
@@ -35,20 +48,20 @@ export const sendDataToPrinter = async (input: any, template: string, printer: a
 
                     })
                 })
-
             }
             else if(printer?.printertype === 'broadcast'){
+
                 apiService({
                     method: METHOD.POST,
-                    action: input.printinvoice ? ACTIONS.PRINT : ACTIONS.KOT_PRINT,
+                    action: input?.printinvoice ? ACTIONS.PRINT : ACTIONS.KOT_PRINT,
                     body:{
                         buffer: [...buffer],
                         kot:input,
                         debugPrint: true,
                         displayQR: true,
-                        vouchertotaldisplay: input.vouchertotaldisplay,
-                        invoice_display_number: input.invoice_display_number,
-                        terminalname: input.terminalname,
+                        vouchertotaldisplay: input?.vouchertotaldisplay,
+                        invoice_display_number: input?.invoice_display_number,
+                        terminalname: input?.terminalname,
                     },
                     other:{url:`http://${printer?.broadcastip}:8081/`},
                     queryString:{remoteprint:true}
@@ -61,14 +74,7 @@ export const sendDataToPrinter = async (input: any, template: string, printer: a
                 if (Boolean(printer?.host)) {
                     return await connectToPrinter(printer, (buffer as unknown) as Buffer).then(async (msg:any) => {
                         if(Boolean(msg)) {
-                            setTimeout(async ()=>{
-
-                               // resolve(msg)
-
-                                await paperCut(printer).then((msg) => {
-                                    resolve(msg)
-                                })
-                            },500)
+                            resolve(msg)
                         }
                         else{
                             store.dispatch(setAlert({visible: true, message: msg}))
@@ -78,9 +84,6 @@ export const sendDataToPrinter = async (input: any, template: string, printer: a
                     resolve('printer not set')
                 }
             }
-
-
-
         } catch (err) {
             resolve('Check Printer Connection')
         }
@@ -97,9 +100,7 @@ const connectToPrinter = async (printer: any, buffer: Buffer,): Promise<unknown>
 
         try {
             let device = new net.Socket();
-
             if(device) {
-
                 device.on('close', async () => {
                     if (device) {
                         device.destroy();
@@ -120,10 +121,10 @@ const connectToPrinter = async (printer: any, buffer: Buffer,): Promise<unknown>
 
                 if (Boolean(printer?.host)) {
                     await device.connect({port, host}, async () => {
-                        device.write(buffer);
+                        device.write( Buffer.concat([buffer,Buffer.from([0x1B,0x6D])]));
                         setTimeout(()=>{
                             device.emit('close');
-                        },500)
+                        })
                     });
                     await device.setTimeout(5000)
                 }

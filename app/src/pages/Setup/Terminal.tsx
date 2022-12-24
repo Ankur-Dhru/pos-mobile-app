@@ -54,6 +54,8 @@ const Terminal = (props: any) => {
 
     const handleSubmit = async (values: any) => {
 
+
+
         const location = findObject(locationList, 'value', values.locationid, true)
         const isRestaurant = (location.industrytype === "foodservices");
 
@@ -76,7 +78,8 @@ const Terminal = (props: any) => {
 
             db.name =  createDatabaseName({workspace:initData.workspace,locationid:values?.locationid});
 
-            appLog('db.name',db.name)
+            await storeData(`${db.name}-vouchernos`, 0).then(async () => {});
+            await storeData(`${db.name}-kotno`, 0).then(async () => {});
 
             await saveDatabaseName(db.name).then();
 

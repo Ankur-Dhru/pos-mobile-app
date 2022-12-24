@@ -29,6 +29,7 @@ import apiService from "../../libs/api-service";
 import {sendDataToPrinter} from "../../libs/Network";
 import store from "../../redux-store/store";
 import {setAlert} from "../../redux-store/reducer/component";
+import Mustache from "mustache";
 
 
 const Index = (props: any) => {
@@ -86,7 +87,6 @@ const Index = (props: any) => {
             label: 'Bluetooth Printer'
         })
     }
-
 
     return <Container>
         <SafeAreaView>
@@ -201,7 +201,7 @@ const Index = (props: any) => {
                                                         </View>
 
 
-                                                        <View>
+                                                        {/*<View>
                                                             <View>
                                                                 <Field name="printername">
                                                                     {props => (
@@ -224,7 +224,7 @@ const Index = (props: any) => {
                                                                 </Field>
                                                             </View>
 
-                                                        </View>
+                                                        </View>*/}
 
                                                     </>}
 
@@ -350,7 +350,6 @@ const Index = (props: any) => {
                                         </>}
 
 
-
                                     </View>
                                 </View>
                             </KeyboardScroll>
@@ -402,11 +401,10 @@ export const testPrint = async (printer: any) => {
 
 
 
-    const {host, printername,broadcastip, printertype, bluetoothdetail}: any = printer;
+    const {broadcastip, printertype, bluetoothdetail}: any = printer;
 
-
-
-    const buffer: any = EscPos.getBufferFromXML(`<?xml version="1.0" encoding="UTF-8"?><document><align mode="center"><text size="1:0">Test Print</text></align></document>`);
+    let xmlData = Mustache.render(getTemplate(defaultTestTemplate), {message:'Test Print Success'});
+    const buffer: any = EscPos.getBufferFromXML(xmlData);
 
     if (printertype === 'bluetooth') {
         const peripheral = bluetoothdetail.more;
@@ -426,38 +424,34 @@ export const testPrint = async (printer: any) => {
     }
     else if(printertype === 'broadcast'){
 
-        apiService({
-            method: METHOD.POST,
-            action: ACTIONS.PRINT,
-            body:{
-                buffer: [...buffer],
-            },
-            other:{url:`http://${broadcastip}:8081/`},
-            queryString:{remoteprint:true}
-        }).then((response: any) => {
-            appLog('response',response)
-        })
+        if(Boolean(broadcastip)) {
+            apiService({
+                method: METHOD.POST,
+                action: ACTIONS.PRINT,
+                body: {
+                    buffer: [...buffer],
+                },
+                other: {url: `http://${broadcastip}:8081/`},
+                queryString: {remoteprint: true}
+            }).then((response: any) => {
+                store.dispatch(setAlert({visible: true, message: response.message}))
+                appLog('response', response)
+            })
+        }
 
     }
     else {
 
-
-        setTimeout(() => {
-            sendDataToPrinter({}, getTemplate(defaultTestTemplate), {
-                ...printer,
-            }).then((msg) => {
-                store.dispatch(setAlert({visible: true, message: msg}))
-            });
-        }, 200)
+        sendDataToPrinter({message:'Test Print Success'}, defaultTestTemplate, printer).then((msg) => {
+            store.dispatch(setAlert({visible: true, message: msg}))
+        });
 
 
-        await EscPosPrinter.init({
+        /*await EscPosPrinter.init({
             target: `TCP:${host}`,
             seriesName: getPrinterSeriesByName(printername),
             language: 'EPOS2_LANG_EN',
         })
-
-        appLog('printername',printername)
 
         const printing = new EscPosPrinter.printing();
         let status = printing
@@ -468,7 +462,7 @@ export const testPrint = async (printer: any) => {
             .newline(1)
             .cut()
             .addPulse()
-            .send()
+            .send()*/
 
     }
 }

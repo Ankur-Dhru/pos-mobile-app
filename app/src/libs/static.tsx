@@ -1590,11 +1590,10 @@ export const supportedPrinterList = [
 ]
 
 
-export const defaultTestTemplate = `<align mode="center">
-        <bold>
-            <text size="1:1">Test Print
-</text>
-        </bold></align>`;
+export const defaultTestTemplate = `<align mode="center">                  
+<text   size="1:1">{{message}}
+</text>   
+</align>`;
 
 export const defaultInvoiceTemplate = `<align mode="center">
 {{#logo}}

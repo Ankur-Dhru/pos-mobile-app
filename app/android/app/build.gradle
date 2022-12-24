@@ -138,8 +138,8 @@ android {
         applicationId "com.dhru.pos.terminal"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 311
-        versionName "3.1.1"
+        versionCode 313
+        versionName "3.1.3"
         missingDimensionStrategy 'react-native-camera', 'general'
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 

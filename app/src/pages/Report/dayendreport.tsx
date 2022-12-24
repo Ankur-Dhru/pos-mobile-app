@@ -1,35 +1,13 @@
 import React, {useEffect, useState} from "react";
-import {FlatList, Text, TouchableOpacity, View} from "react-native";
-import {Appbar, Card, Paragraph} from "react-native-paper"
-import {
-    appLog,
-    base64Encode,
-    dateFormat,
-    getDateWithFormat,
-    getItem,
-    getLeftRight,
-    getOrders,
-    getPrintTemplate,
-    getPrintTemplateLogo,
-    getTemplate,
-    getTrimChar,
-    isEmpty,
-    numberFormat,
-    printDayEndReport,
-    printInvoice,
-    toCurrency
-} from "../../libs/function";
+import {FlatList, Text, View} from "react-native";
+import {Card, Paragraph} from "react-native-paper"
+import {dateFormat, printDayEndReport, toCurrency} from "../../libs/function";
 import Container from "../../components/Container";
 import {styles} from "../../theme";
-import {connect} from "react-redux";
-import {ACTIONS, ItemDivider, localredux, METHOD, PRINTER, STATUS, urls, VOUCHER} from "../../libs/static";
+import {ACTIONS, ItemDivider, localredux, METHOD, urls} from "../../libs/static";
 import apiService from "../../libs/api-service";
 
 import moment from "moment";
-import ProIcon from "../../components/ProIcon";
-import store from "../../redux-store/store";
-import {sendDataToPrinter} from "../../libs/Network";
-import {setAlert} from "../../redux-store/reducer/component";
 import InputField from "../../components/InputField";
 import Button from "../../components/Button";
 import KAccessoryView from "../../components/KAccessoryView";
@@ -47,12 +25,16 @@ const Index = ({navigation}: any) => {
     const {token}: any = localredux.authData;
     const {terminal_id}: any = licenseData?.data;
 
-    const currentdate = moment().format(dateFormat(false,true));
+    const currentdate = moment().format(dateFormat(false, true));
 
     const [data, setData] = useState<any>({});
-    const [loader,setLoader] = useState(false);
-    const [datetime,setDateTime]:any = useState({dateto:currentdate,datefrom:currentdate,starttime:`00:00`,endtime:`23:59`});
-
+    const [loader, setLoader] = useState(false);
+    const [datetime, setDateTime]: any = useState({
+        dateto: currentdate,
+        datefrom: currentdate,
+        starttime: `00:00`,
+        endtime: `23:59`
+    });
 
 
     useEffect(() => {
@@ -61,21 +43,26 @@ const Index = ({navigation}: any) => {
             action: ACTIONS.DAY_END_REPORT,
             workspace: workspace,
             token: token,
-            queryString: {terminalid: terminal_id,dateto:datetime.dateto,starttime:datetime.starttime,datefrom:datetime.datefrom,endtime:datetime.endtime},
+            queryString: {
+                terminalid: terminal_id,
+                dateto: datetime.dateto,
+                starttime: datetime.starttime,
+                datefrom: datetime.datefrom,
+                endtime: datetime.endtime
+            },
             hideLoader: true,
             hidealert: true,
             other: {url: urls.posUrl},
         }).then((response: any) => {
 
-            const {info,data}:any = response;
-            if(Boolean(info)) {
+            const {info, data}: any = response;
+            if (Boolean(info)) {
                 setData({
                     order: data, info: Object.keys(info).map((key: any) => {
                         return {label: key, value: info[key]}
                     })
                 })
-            }
-            else{
+            } else {
                 setData({order: [], info: []})
             }
             setLoader(true)
@@ -88,7 +75,6 @@ const Index = ({navigation}: any) => {
     }
 
 
-
     const renderItem = ({item, index}: any) => {
 
         return <View style={[styles.p_4]} key={index}>
@@ -98,29 +84,38 @@ const Index = ({navigation}: any) => {
                 <View style={[styles.w_auto]}>
                     <View style={[styles.grid, styles.noWrap, styles.top]}>
                         <View>
-                            <Paragraph style={[styles.paragraph, styles.bold]}>{`${item.voucherprefix} ${item.voucherdisplayid} - ${item?.client}`} </Paragraph>
-                            <Paragraph style={[styles.paragraph, styles.text_xs]}>{moment(item.date).format(dateFormat(true))}</Paragraph>
+                            <Paragraph
+                                style={[styles.paragraph, styles.bold]}>{`${item.voucherprefix} ${item.voucherdisplayid} - ${item?.client}`} </Paragraph>
+                            <Paragraph
+                                style={[styles.paragraph, styles.text_xs]}>{moment(item.date).format(dateFormat(true))}</Paragraph>
                         </View>
                     </View>
                 </View>
 
                 <View>
-                    <Paragraph  style={[styles.paragraph,styles.bold, {textAlign: 'right'}]}>{toCurrency(item?.vouchertotal)}</Paragraph>
-                    <Paragraph  style={[styles.paragraph,styles[item.voucherstatus],styles.text_xs,{textAlign: 'center',color:'white',borderRadius:5}]}>{item?.voucherstatus}</Paragraph>
+                    <Paragraph
+                        style={[styles.paragraph, styles.bold, {textAlign: 'right'}]}>{toCurrency(item?.vouchertotal)}</Paragraph>
+                    <Paragraph style={[styles.paragraph, styles[item.voucherstatus], styles.text_xs, {
+                        textAlign: 'center',
+                        color: 'white',
+                        borderRadius: 5
+                    }]}>{item?.voucherstatus}</Paragraph>
                 </View>
             </View>
         </View>
     }
 
 
-
     return <Container>
-        <View style={[styles.marginOver,{marginBottom:0}]}>
+        <View style={[styles.marginOver, {marginBottom: 0}]}>
             <Card style={[styles.card]}>
                 <Card.Content style={[styles.cardContent]}>
-                    <View style={[styles.grid,styles.justifyContent,styles.middle]}>
+                    <View style={[styles.grid, styles.justifyContent, styles.middle]}>
 
-                        <View  style={[styles.w_auto,styles.grid,styles.p_3,styles.center,{backgroundColor:'#eee',borderRadius:5}]}>
+                        <View style={[styles.w_auto, styles.grid, styles.p_3, styles.center, {
+                            backgroundColor: '#eee',
+                            borderRadius: 5
+                        }]}>
                             <View>
                                 <InputField
                                     label={"Start Date"}
@@ -128,12 +123,13 @@ const Index = ({navigation}: any) => {
                                     inputtype={'datepicker'}
                                     mode={'date'}
                                     removeSpace={true}
-                                    render={()=>{
-                                        return <Paragraph style={[styles.paragraph,styles.bold]}>{moment(datetime.dateto).format(dateFormat())}</Paragraph>
+                                    render={() => {
+                                        return <Paragraph
+                                            style={[styles.paragraph, styles.bold]}>{moment(datetime.dateto).format(dateFormat())}</Paragraph>
                                     }}
                                     selectedValue={datetime.dateto}
                                     onChange={(value: any) => {
-                                        setDateTime({...datetime,dateto:value});
+                                        setDateTime({...datetime, dateto: value});
                                     }}
                                 />
                             </View>
@@ -146,13 +142,14 @@ const Index = ({navigation}: any) => {
                                     inputtype={'datepicker'}
                                     mode={'time'}
                                     removeSpace={true}
-                                    render={()=>{
-                                        return <Paragraph  style={[styles.paragraph,styles.bold]}>{moment(currentdate+' '+datetime.starttime).format('hh:mm A')}</Paragraph>
+                                    render={() => {
+                                        return <Paragraph
+                                            style={[styles.paragraph, styles.bold]}>{moment(currentdate + ' ' + datetime.starttime).format('hh:mm A')}</Paragraph>
                                     }}
-                                    selectedValue={currentdate+' '+datetime.starttime}
+                                    selectedValue={currentdate + ' ' + datetime.starttime}
                                     onChange={(value: any) => {
                                         value = moment(value).format('HH:mm')
-                                        setDateTime({...datetime,starttime:value});
+                                        setDateTime({...datetime, starttime: value});
                                     }}
                                 />
                             </View>
@@ -161,7 +158,10 @@ const Index = ({navigation}: any) => {
 
                         <View style={[styles.px_3]}><Paragraph style={[styles.paragraph]}>To</Paragraph></View>
 
-                        <View  style={[styles.w_auto,styles.grid,styles.p_3,styles.center,{backgroundColor:'#eee',borderRadius:5}]}>
+                        <View style={[styles.w_auto, styles.grid, styles.p_3, styles.center, {
+                            backgroundColor: '#eee',
+                            borderRadius: 5
+                        }]}>
                             <View>
                                 <InputField
                                     label={"End Date"}
@@ -169,12 +169,13 @@ const Index = ({navigation}: any) => {
                                     inputtype={'datepicker'}
                                     mode={'date'}
                                     removeSpace={true}
-                                    render={()=>{
-                                        return <Paragraph style={[styles.paragraph,styles.bold]}>{moment(datetime.datefrom).format(dateFormat())}</Paragraph>
+                                    render={() => {
+                                        return <Paragraph
+                                            style={[styles.paragraph, styles.bold]}>{moment(datetime.datefrom).format(dateFormat())}</Paragraph>
                                     }}
                                     selectedValue={datetime.datefrom}
                                     onChange={(value: any) => {
-                                        setDateTime({...datetime,datefrom:value});
+                                        setDateTime({...datetime, datefrom: value});
                                     }}
                                 />
                             </View>
@@ -186,13 +187,14 @@ const Index = ({navigation}: any) => {
                                     inputtype={'datepicker'}
                                     mode={'time'}
                                     removeSpace={true}
-                                    render={()=>{
-                                        return <Paragraph style={[styles.paragraph,styles.bold]}>{moment(currentdate+' '+datetime.endtime).format('hh:mm A')}</Paragraph>
+                                    render={() => {
+                                        return <Paragraph
+                                            style={[styles.paragraph, styles.bold]}>{moment(currentdate + ' ' + datetime.endtime).format('hh:mm A')}</Paragraph>
                                     }}
-                                    selectedValue={currentdate+' '+datetime.endtime}
+                                    selectedValue={currentdate + ' ' + datetime.endtime}
                                     onChange={(value: any) => {
                                         value = moment(value).format('HH:mm')
-                                        setDateTime({...datetime,endtime:value});
+                                        setDateTime({...datetime, endtime: value});
                                     }}
                                 />
                             </View>
@@ -217,7 +219,8 @@ const Index = ({navigation}: any) => {
                         renderItem={renderItem}
                         ListEmptyComponent={<View>
                             <View style={[styles.p_6]}>
-                                <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>No any
+                                <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>No
+                                    any
                                     items found</Text>
                             </View>
                         </View>}
@@ -228,50 +231,46 @@ const Index = ({navigation}: any) => {
 
         </KeyboardScroll>
 
-        {Boolean(data.order) &&  <><Card style={[styles.card,{marginTop:10}]}>
-                <Card.Content>
-                    {
-                        data?.info?.map((item:any)=>{
-                            return (
-                                <View
-                                    style={[styles.grid, styles.noWrap, styles.middle, styles.justifyContentSpaceBetween]}>
+        {Boolean(data.order) && <><Card style={[styles.card, {marginTop: 10}]}>
+            <Card.Content>
+                {
+                    data?.info?.map((item: any) => {
+                        return (
+                            <View
+                                style={[styles.grid, styles.noWrap, styles.middle, styles.justifyContentSpaceBetween]}>
 
-                                    <View style={[styles.w_auto]}>
-                                        <View style={[styles.grid, styles.noWrap, styles.top]}>
-                                            <View>
-                                                <Paragraph style={[styles.paragraph, styles.bold]}>{item.label}</Paragraph>
-                                            </View>
+                                <View style={[styles.w_auto]}>
+                                    <View style={[styles.grid, styles.noWrap, styles.top]}>
+                                        <View>
+                                            <Paragraph style={[styles.paragraph, styles.bold]}>{item.label}</Paragraph>
                                         </View>
                                     </View>
-
-                                    {<View>
-                                        <Paragraph
-                                            style={[styles.paragraph, styles.bold, {textAlign: 'right'}]}>{toCurrency(item.value)}</Paragraph>
-                                    </View>}
                                 </View>
-                            )
-                        })
-                    }
+
+                                {<View>
+                                    <Paragraph
+                                        style={[styles.paragraph, styles.bold, {textAlign: 'right'}]}>{toCurrency(item.value)}</Paragraph>
+                                </View>}
+                            </View>
+                        )
+                    })
+                }
 
 
-
-                </Card.Content>
-            </Card>
+            </Card.Content>
+        </Card>
 
             <KAccessoryView>
                 <View style={[styles.submitbutton]}>
-                    <Button   more={{color:'white'}}
-                              onPress={() => {
-                                  printDayEndReport({date:datetime,data:data})
-                              }}> Print
+                    <Button more={{color: 'white'}}
+                            onPress={() => {
+                                printDayEndReport({date: datetime, data: data})
+                            }}> Print
                     </Button>
                 </View>
             </KAccessoryView>
 
-        </>  }
-
-
-
+        </>}
 
 
     </Container>

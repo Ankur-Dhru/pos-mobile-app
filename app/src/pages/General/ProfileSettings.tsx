@@ -55,8 +55,8 @@ const ProfileSettings = () => {
 
         await storeData(`fusion-dhru-pos-settings`, {}).then(async () => {});
         await storeData(`${db.name}`, {}).then(async () => {});
-        await storeData(`${db.name}-vouchernos`, 0).then(async () => {});
-        await storeData(`${db.name}-kotno`, 0).then(async () => {});
+        /*await storeData(`${db.name}-vouchernos`, 0).then(async () => {});
+        await storeData(`${db.name}-kotno`, 0).then(async () => {});*/
         await saveLocalSettings('synccontact', false).then(() => {})
         await deleteDB();
         await getDatabaseName().then(async (dbname:any)=>{

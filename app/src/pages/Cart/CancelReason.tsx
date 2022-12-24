@@ -1,34 +1,23 @@
 import React, {useState} from "react";
 import {FlatList, SafeAreaView, View} from "react-native";
-import {Card, Divider, List, Title, withTheme} from "react-native-paper";
+import {Card, List, withTheme} from "react-native-paper";
 import {useDispatch} from "react-redux";
 
 import InputBox from "../../components/InputBox";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
 import Button from "../../components/Button";
-import {setAlert, setDialog} from "../../redux-store/reducer/component";
-import {
-    appLog,
-    deleteTempLocalOrder,
-    getTicketStatus,
-    objToArray,
-    printKOT,
-    saveLocalOrder,
-    voucherTotal
-} from "../../libs/function";
-import {ItemDivider, localredux, PRINTER, TICKET_STATUS} from "../../libs/static";
+import {appLog, deleteTempLocalOrder, getTicketStatus, objToArray, printKOT, voucherTotal} from "../../libs/function";
+import {ItemDivider, localredux, TICKET_STATUS} from "../../libs/static";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
 import store from "../../redux-store/store";
 import {CommonActions} from "@react-navigation/native";
 import Container from "../../components/Container";
-import KeyboardScroll from "../../components/KeyboardScroll";
-import Icon from "react-native-fontawesome-pro";
 
 
 const Index = (props: any) => {
 
-    const {navigation,route} = props;
+    const {navigation, route} = props;
 
     const type = route?.params?.type;
     const setKot = route?.params?.setKot;
@@ -52,7 +41,7 @@ const Index = (props: any) => {
                 cancelreasonid: cancelreasonid,
             }));
 
-            const {kots,tableorderid}: any = store.getState().cartData;
+            const {kots, tableorderid}: any = store.getState().cartData;
             kots.map((kot: any) => {
                 printKOT({...kot, cancelreason: cancelreason, cancelled: true, adminid: adminid,});
             })
@@ -87,6 +76,8 @@ const Index = (props: any) => {
 
         const openTicketStatus = getTicketStatus(TICKET_STATUS.DECLINED);
 
+
+
         kot = {
             ...kot,
             ticketstatus: openTicketStatus?.statusid,
@@ -103,6 +94,7 @@ const Index = (props: any) => {
             ...kots,
             [index]: kot
         }
+
 
 
         printKOT(kot).then();
@@ -136,7 +128,7 @@ const Index = (props: any) => {
             onPress={async () => {
                 setCancelReason(item)
             }}
-            right={() =>  <List.Icon icon="chevron-right"/>}
+            right={() => <List.Icon icon="chevron-right"/>}
         />
 
         </>
@@ -153,62 +145,62 @@ const Index = (props: any) => {
 
     return <Container>
         <SafeAreaView>
-        <Form
-            initialValues={{cancelreason: cancelreason.data, cancelreasonid: cancelreason.key}}
-            onSubmit={handleSubmit}
+            <Form
+                initialValues={{cancelreason: cancelreason.data, cancelreasonid: cancelreason.key}}
+                onSubmit={handleSubmit}
 
-            render={({handleSubmit, submitting, values, ...more}: any) => (
-                <View style={[styles.middle]}>
-                    <View style={[styles.middleForm]}>
-                        <View style={[styles.h_100,styles.flex]}>
-                            <View>
+                render={({handleSubmit, submitting, values, ...more}: any) => (
+                    <View style={[styles.middle]}>
+                        <View style={[styles.middleForm]}>
+                            <View style={[styles.h_100, styles.flex]}>
+                                <View>
 
-                                <Card style={[styles.card]}>
-                                    <Card.Content style={[styles.cardContent]}>
-                                        <Field name="cancelreason">
-                                            {props => (
-                                                <InputBox
-                                                    {...props}
-                                                    value={props.input.value}
-                                                    label={'Cancel Reason'}
-                                                    autoFocus={true}
-                                                    onChange={props.input.onChange}
-                                                />
-                                            )}
-                                        </Field>
-                                    </Card.Content>
-                                </Card>
+                                    <Card style={[styles.card]}>
+                                        <Card.Content style={[styles.cardContent]}>
+                                            <Field name="cancelreason">
+                                                {props => (
+                                                    <InputBox
+                                                        {...props}
+                                                        value={props.input.value}
+                                                        label={'Cancel Reason'}
+                                                        autoFocus={true}
+                                                        onChange={props.input.onChange}
+                                                    />
+                                                )}
+                                            </Field>
+                                        </Card.Content>
+                                    </Card>
 
 
-                                <Card style={[styles.card]}>
-                                    <Card.Content style={[styles.cardContent]}>
-                                        <FlatList
-                                            data={objToArray(reasonlist)}
-                                            keyboardDismissMode={'on-drag'}
-                                            keyboardShouldPersistTaps={'always'}
-                                            renderItem={renderitem}
-                                            ItemSeparatorComponent={ItemDivider}
-                                            initialNumToRender={5}
-                                        />
-                                    </Card.Content>
-                                </Card>
+                                    <Card style={[styles.card]}>
+                                        <Card.Content style={[styles.cardContent]}>
+                                            <FlatList
+                                                data={objToArray(reasonlist)}
+                                                keyboardDismissMode={'on-drag'}
+                                                keyboardShouldPersistTaps={'always'}
+                                                renderItem={renderitem}
+                                                ItemSeparatorComponent={ItemDivider}
+                                                initialNumToRender={5}
+                                            />
+                                        </Card.Content>
+                                    </Card>
 
+                                </View>
                             </View>
+
+
+                            <View style={[styles.submitbutton]}>
+                                <Button onPress={() => {
+                                    handleSubmit(values)
+                                }}>Cancel {type === 'ticketcancelreason' ? 'KOT' : 'Order'}</Button>
+                            </View>
+
                         </View>
-
-
-                        <View style={[styles.submitbutton]}>
-                            <Button onPress={() => {
-                                handleSubmit(values)
-                            }}>Cancel {type === 'ticketcancelreason' ? 'KOT' : 'Order'}</Button>
-                        </View>
-
                     </View>
-                </View>
 
-            )}
-        >
-        </Form>
+                )}
+            >
+            </Form>
         </SafeAreaView>
     </Container>
 

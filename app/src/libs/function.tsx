@@ -1679,6 +1679,9 @@ export const printInvoice = async (order?: any,preview?:any) => {
         const {general: {legalname}}: any = localredux.initData;
         const {terminal_name}: any = localredux.licenseData.data;
         const {firstname, lastname}: any = localredux.authData;
+        const regExMiddleText = new RegExp('(?<=>)([\\w\\s\\S\\W]+)(?=<\\/)')
+        const regExFindNumber = new RegExp('\\d+')
+        const regExTagWord = new RegExp('<(.*?)>')
 
         let decimalPlace = cartData?.currentDecimalPlace || 2;
 
@@ -1765,7 +1768,107 @@ export const printInvoice = async (order?: any,preview?:any) => {
             taxes: () => cartData?.typeWiseTaxSummary?.map((item: any) => {
                 return `${item?.taxtype}:${numberFormat(item?.taxprice, decimalPlace)}`
             }).join(", "),
+
             line: () => "<text>" + getTrimChar(0, "-") + "\n</text>",
+            column: function () {
+                return function (text: any, render: any) {
+
+                    // FIND WITH NUMBER FROM TAG;
+                    const getWidthNumber = (value: any) => {
+                        let widthNumber = -1;
+                        let numArray: any = regExFindNumber.exec(value);
+                        if (numArray && !isNaN(numArray[0])) {
+                            widthNumber = parseInt(numArray[0]);
+                        }
+                        return widthNumber;
+                    }
+
+                    // FIND RIGHT WORD FROM TAG
+                    const getAlignIsRight = (value: any) => {
+                        return value.some((r: any) => r == "right")
+                    }
+
+                    // SET SPACE CHARACTER
+                    const getTrimChar = (count: any, char?: any, defaultLength?: any) => {
+                        let space = "";
+                        if (!Boolean(char)) {
+                            char = " ";
+                        }
+                        if (!Boolean(defaultLength)) {
+                            defaultLength = PAGE_WIDTH
+                        }
+                        for (let i = 0; i < (defaultLength - count); i++) {
+                            space += char;
+                        }
+                        return space;
+                    }
+
+                    // GET COLUMN STRING
+                    const getColString = (value: any, colLength: any, isRight: any) => {
+                        let isFullWidth = true;
+                        if (colLength != PAGE_WIDTH) {
+                            isFullWidth = false;
+                            colLength = colLength - 1;
+                        }
+                        if (!Boolean(value)) {
+                            value = " ";
+                        }
+                        if (value.length > colLength) {
+                            value = value.slice(0, colLength)
+                        } else {
+                            if (isRight) {
+                                value = getTrimChar((PAGE_WIDTH - (colLength - value.length))) + value
+                            } else {
+                                value += getTrimChar((PAGE_WIDTH - (colLength - value.length)))
+                            }
+
+                        }
+                        if (!isFullWidth) {
+                            value = isRight ? " " + value : value + " ";
+                        }
+
+                        return value.toString()
+                    }
+
+                    let returnFinal,
+                        curlyText: any = regExMiddleText.exec(text),
+                        checkTagWord: any = regExTagWord.exec(text),
+                        widthPercent = getWidthNumber(checkTagWord[0]),
+                        isRight = getAlignIsRight(checkTagWord);
+
+                    if (curlyText && curlyText[0]) {
+                        if (regExMiddleText.test(curlyText[0])) {
+                            checkTagWord = regExTagWord.exec(curlyText[0]);
+                            if (!isRight) {
+                                isRight = getAlignIsRight(checkTagWord)
+                            }
+                            if (widthPercent < 0) {
+                                widthPercent = getWidthNumber(checkTagWord[0])
+                            }
+                            curlyText = regExMiddleText.exec(curlyText[0]);
+                        } else {
+                            let checkHasTag = regExTagWord.exec(curlyText[0]);
+                            if (checkHasTag && checkHasTag.length > 0) {
+                                curlyText[0] = null;
+                            }
+                        }
+                        returnFinal = render(curlyText[0]);
+                    }
+
+                    let width = Math.round((PAGE_WIDTH * (widthPercent / 100)))
+                    return getColString(returnFinal, width, isRight);
+                }
+            },
+            row: function () {
+                return function (text: any, render: any) {
+                    return render(text.split("\n").map((t: any) => t.trim()).join(""))
+                }
+            },
+            decimal: function () {
+                return function (text: any, render: any) {
+                    return numberFormat(render(text), decimalPlace)
+                }
+            }
         }
 
         let printer = PRINTERS[PRINTER.INVOICE];
@@ -1794,20 +1897,16 @@ export const printInvoice = async (order?: any,preview?:any) => {
             }
 
            if(Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip)) {
-                setTimeout(() => {
-                    sendDataToPrinter(printJson, getTemplate(template), {
-                        ...printer,
-                        qrcode
-                    }).then((msg) => {
-                        store.dispatch(setAlert({visible: true, message: msg}))
-                        resolve(msg)
-                    });
-                }, 200)
+               sendDataToPrinter(printJson, template, {
+                   ...printer,
+                   qrcode
+               }).then((msg) => {
+                   store.dispatch(setAlert({visible: true, message: msg}))
+                   resolve(msg)
+               });
             }
            else {
-                setTimeout(() => {
-                    store.dispatch(setAlert({visible: true, message: 'Invoice Printer not set'}))
-                }, 200)
+               store.dispatch(setAlert({visible: true, message: 'Invoice Printer not set'}))
                 resolve(false)
             }
         })
@@ -1837,7 +1936,7 @@ export const printKOT = async (kot?: any) => {
             return new Promise(async (resolve) => {
                 if (Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip)) {
                     const template: any = getPrintTemplate('KOT');
-                    sendDataToPrinter(printJson, getTemplate(template), printer).then((msg) => {
+                    sendDataToPrinter(printJson, template, printer).then((msg) => {
                         resolve(msg)
                     });
                 } else {
@@ -1997,7 +2096,10 @@ export const selectWorkspace = async (workspace: any, navigation: any) => {
 export const getTemplate = (template: string) => {
     return `<?xml version="1.0" encoding="UTF-8"?>
 <document>       
-   ` + template + `   
+   ` + template + `                
+    <line-feed/>
+    <line-feed/>
+    <line-feed/>
 </document>`
 }
 
@@ -2325,6 +2427,7 @@ export const printDayEndReport = ({date:date,data:data}:any) => {
             date: moment(date).format(dateFormat()),
             locationname,
             legalname,
+            printinvoice:true,
             terminalname: terminal_name,
             invoicetype:'Retail Invoice',
             head: () => getLeftRight("#ID | Name","Amount"),
@@ -2347,10 +2450,12 @@ export const printDayEndReport = ({date:date,data:data}:any) => {
 
         PAGE_WIDTH = printer?.printsize || 48;
 
+
+
         return new Promise(async (resolve) => {
             if (Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip)) {
                 const template: any = getPrintTemplate('DayendReport');
-                sendDataToPrinter(printJson, getTemplate(template), printer).then((msg) => {
+                sendDataToPrinter(printJson, template, printer).then((msg) => {
                     resolve(msg)
                 });
             } else {

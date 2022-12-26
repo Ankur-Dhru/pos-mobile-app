@@ -105,6 +105,7 @@ const SalesReport = ({ordersData,navigation}: any) => {
             if (result.status === STATUS.SUCCESS) {
 
                 let data:any = result.data?.result;
+
                 const {voucheritems, receipt}: any = data;
 
                 const payment = Boolean(receipt) ? Object.values(receipt)?.map((payment: any) => {

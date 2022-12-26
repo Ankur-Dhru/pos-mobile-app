@@ -5,14 +5,14 @@ import {styles} from "../../theme";
 import {appLog} from "../../libs/function";
 
 const CheckBox = (props:any) => {
-    const {editmode=true, description}:any = props;
+    const {editmode=true, description,disabled}:any = props;
     const [checked, setChecked] = React.useState(props.value);
 
 
     return (
         <View >
             <TouchableOpacity onPress={() => {
-                if(editmode) {
+                if(editmode && !disabled) {
                     setChecked(!checked);
                     props.onChange(!checked);
                 }
@@ -21,8 +21,10 @@ const CheckBox = (props:any) => {
                     mode={'android'}
                     position={'leading'}
                     label={props.label}
+                    labelStyle={{textTransform:'capitalize'}}
                     disabled={!editmode}
                     status={(checked) ? 'checked' : 'unchecked'}
+                    {...props}
                 />
                 {/*<Paragraph>{props.label}</Paragraph>*/}
 

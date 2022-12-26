@@ -1382,9 +1382,7 @@ export const generateKOT = async () => {
 
         const currentTicketType = localredux.initData?.tickets[TICKETS_TYPE.KOT];
 
-        appLog('currentTicketType',currentTicketType)
-
-        const {adminid, username}: any = localredux.loginuserData;
+          const {adminid, username}: any = localredux.loginuserData;
 
         const today: any = store.getState().localSettings?.today;
 
@@ -1502,6 +1500,7 @@ export const generateKOT = async () => {
                                             "productqnt": productqnt,
                                             "productqntunitid": itemunit,
                                             "related": 0,
+                                            "selected":true,
                                             "item_ref_id": "",
                                             "staffid": adminid,
                                             "productdisplayname": itemname,
@@ -2249,7 +2248,7 @@ export const syncInvoice = async (invoiceData: any) => {
     const {workspace}: any = localredux.initData;
     const {token}: any = localredux.authData;
 
-    appLog('syncInvoice');
+    appLog('syncInvoice',invoiceData.cancelreason);
 
     const syncstatus:any = await getLocalSettings('sync_in_process')
 

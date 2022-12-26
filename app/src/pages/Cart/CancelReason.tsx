@@ -7,12 +7,21 @@ import InputBox from "../../components/InputBox";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
 import Button from "../../components/Button";
-import {appLog, deleteTempLocalOrder, getTicketStatus, objToArray, printKOT, voucherTotal} from "../../libs/function";
+import {
+    appLog, clone,
+    deleteTempLocalOrder,
+    getTicketStatus,
+    objToArray, printInvoice,
+    printKOT,
+    saveLocalOrder,
+    voucherTotal
+} from "../../libs/function";
 import {ItemDivider, localredux, TICKET_STATUS} from "../../libs/static";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
 import store from "../../redux-store/store";
 import {CommonActions} from "@react-navigation/native";
 import Container from "../../components/Container";
+import {hideLoader, setAlert} from "../../redux-store/reducer/component";
 
 
 const Index = (props: any) => {
@@ -41,16 +50,22 @@ const Index = (props: any) => {
                 cancelreasonid: cancelreasonid,
             }));
 
-            const {kots, tableorderid}: any = store.getState().cartData;
+            const {kots, tableorderid,invoiceitems}: any = store.getState().cartData;
+
             kots.map((kot: any) => {
                 printKOT({...kot, cancelreason: cancelreason, cancelled: true, adminid: adminid,});
+            });
+
+           await store.dispatch(updateCartField({
+                invoiceitems: [],
+                invoiceitemsdeleted: invoiceitems
+            }))
+
+
+            await saveLocalOrder().then(async () => {
+                await deleteTempLocalOrder(tableorderid).then();
             })
 
-            deleteTempLocalOrder(tableorderid).then();
-
-            /*await saveLocalOrder().then(async () => {
-                store.dispatch(setAlert({visible: true, message: 'Order cancelled'}))
-            })*/
 
             navigation.dispatch(
                 CommonActions.reset({
@@ -76,37 +91,55 @@ const Index = (props: any) => {
 
         const openTicketStatus = getTicketStatus(TICKET_STATUS.DECLINED);
 
+        const totalseleted = kot.ticketitems.filter((item:any)=>{ return item.selected }).length;
 
+        if(totalseleted === kot?.ticketitems?.length) {
 
-        kot = {
-            ...kot,
-            ticketstatus: openTicketStatus?.statusid,
-            ticketstatusname: "Cancelled",
-            cancelreason: cancelreason,
-            cancelled: true,
-            adminid: adminid,
-            cancelreasonid: cancelreasonid,
+            kot = {
+                ...kot,
+                ticketstatus: openTicketStatus?.statusid,
+                ticketstatusname: "Cancelled",
+                cancelreason: cancelreason,
+                reasonname:cancelreason,
+                cancelled: true,
+                adminid: adminid,
+                cancelreasonid: cancelreasonid,
+            }
         }
+
+        kot?.ticketitems?.map((item:any,index:any)=>{
+            if(item.selected && !item.cancelled) {
+                item = {
+                    ...item,
+                    cancelreason: cancelreason,
+                    reasonname:cancelreason,
+                    cancelled: true,
+                    adminid: adminid,
+                    cancelreasonid: cancelreasonid,
+                }
+            }
+            kot.ticketitems[index] = item
+        })
+
         const index = kots.findIndex(function (item: any) {
             return item.kotid === kot.kotid
         });
+
         kots = {
             ...kots,
             [index]: kot
         }
-
-
 
         printKOT(kot).then();
 
         setKot(kot);
 
         const remaininginvoiceitems = invoiceitems.filter(function (item: any) {
-            return item.kotid !== kot.kotid
+            return (item.kotid !== kot.kotid) && !Boolean(item.cancelled)
         });
 
         const addtoinvoiceitemsdeleted = invoiceitems.filter(function (item: any) {
-            return item.kotid === kot.kotid
+            return Boolean(item.cancelled)
         });
         const newdeletedinvoiceitems = invoiceitemsdeleted.concat(addtoinvoiceitemsdeleted);
 

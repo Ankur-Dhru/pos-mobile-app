@@ -78,9 +78,6 @@ const Terminal = (props: any) => {
 
             db.name =  createDatabaseName({workspace:initData.workspace,locationid:values?.locationid});
 
-            await storeData(`${db.name}-vouchernos`, 0).then(async () => {});
-            await storeData(`${db.name}-kotno`, 0).then(async () => {});
-
             await saveDatabaseName(db.name).then();
 
             await createTables().then();
@@ -135,7 +132,11 @@ const Terminal = (props: any) => {
                         "Alert",
                         response.message,
                         [
-                            {text: "Setup New",onPress: () => handleSubmit({...values,bypass:1})},
+                            {text: "Setup New",onPress: () => {
+                                    storeData(`${db.name}-vouchernos`, 0).then(async () => {});
+                                    storeData(`${db.name}-kotno`, 0).then(async () => {});
+                                    handleSubmit({...values, bypass: 1})
+                                }},
                             {text: "Resume", onPress: () => useThis(response).then()}
                         ]
                     );

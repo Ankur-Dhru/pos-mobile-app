@@ -10,13 +10,16 @@ import store from "../../redux-store/store";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
 import {ItemDivider, localredux} from "../../libs/static";
+import {setBottomSheet} from "../../redux-store/reducer/component";
+import KOTItemListforCancel from "./KOTItemListforCancel";
 
 
-const Index = memo((props: any) => {
+const Index = (props: any) => {
 
     let {kot: kt, tablename, theme: {colors}, hasLast}: any = props;
 
     const {departmentname, commonkotnote, staffname, kotid, tickettime, ticketitems,ticketnumberprefix}: any = kt;
+
     const dispatch = useDispatch();
     const navigation = useNavigation()
     const {cancelkot}:any = localredux?.authData?.settings;
@@ -84,9 +87,9 @@ const Index = memo((props: any) => {
 
                     <View style={[styles.mt_2]}>
                         {
-                            ticketitems.map((item: any, index: any) => {
+                           Boolean(ticketitems.length) && ticketitems?.map((item: any, index: any) => {
                                 return <View key={index}>
-                                    <Paragraph>{item.productqnt} x {item.productdisplayname} {Boolean(item.cancelled) && `(Cancelled - ${item.reasonname})`}</Paragraph>
+                                    <Paragraph style={Boolean(item.cancelled) && {color:styles.red.color}}>{item.productqnt} x {item.productdisplayname} {Boolean(item.cancelled) && `(Cancelled - ${item.reasonname})`}</Paragraph>
                                 </View>
                             })
                         }
@@ -105,7 +108,16 @@ const Index = memo((props: any) => {
                         </View>
                         <View>
                             {!Boolean(kot.cancelreason) && <Button onPress={() => {
-                                cancelKOTDialog(kot).then()
+                               if(kot?.ticketitems?.length === 1) {
+                                   cancelKOTDialog(kot).then()
+                               }
+                               else {
+                                   dispatch(setBottomSheet({
+                                       visible: true,
+                                       height: '70%',
+                                       component: () => <KOTItemListforCancel kot={kot} cancelKOTDialog={cancelKOTDialog}/>
+                                   }))
+                               }
                             }} more={{backgroundColor: styles.bg_red.backgroundColor,color:'white'}}>Cancel KOT</Button>}
                         </View>
                     </View>
@@ -115,9 +127,7 @@ const Index = memo((props: any) => {
             </View>
         </View>
     );
-}, (r1, r2) => {
-    return r1.item === r2.item;
-})
+}
 
 const mapStateToProps = (state: any) => ({
     kots: state.cartData.kots,

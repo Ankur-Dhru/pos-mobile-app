@@ -45,7 +45,7 @@ const Index = (props: any) => {
             if (enteredPin.length === 5) {
                 if (md5(enteredPin) === params.loginpin) {
 
-                    dispatch(showLoader())
+                    await dispatch(showLoader())
 
                     await gePhonebook();
 
@@ -87,7 +87,6 @@ const Index = (props: any) => {
                                 })
 
                                 await getOrders().then();
-
 
                             }
                         }

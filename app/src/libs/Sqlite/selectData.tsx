@@ -1,17 +1,17 @@
 
 import {appLog} from "../function";
-import {getDBConnection} from "./index";
+import {closeDB, getDBConnection} from "./index";
 import {TABLE} from "./config";
 
 
 
 
 export const getItemsByWhere = async ({itemgroupid,itemname,itemid,start}:any) => {
-    const db = await getDBConnection();
+    const db:any = await getDBConnection();
 
     try {
         let items:any=[];
-        await db.transaction(function (txn) {
+        await db.transaction(function (txn:any) {
 
             let where=' 1 = 1 ';
 
@@ -30,7 +30,7 @@ export const getItemsByWhere = async ({itemgroupid,itemname,itemid,start}:any) =
             txn.executeSql(
                 query,
                 [],
-                function (tx, res) {
+                function (tx:any, res:any) {
                     for (let i = 0; i < res.rows.length; ++i) {
                         items.push(JSON.parse(res.rows.item(i).data))
                     }
@@ -41,15 +41,15 @@ export const getItemsByWhere = async ({itemgroupid,itemname,itemid,start}:any) =
     } catch (e) {
         appLog('e', e)
     }
-    db.close().then()
+    closeDB(db);
 }
 
 export const getAddonByWhere = async ({itemgroupid,itemname,start}:any) => {
-    const db = await getDBConnection();
+    const db:any = await getDBConnection();
 
     try {
         let items:any={};
-        await db.transaction(function (txn) {
+        await db.transaction(function (txn:any) {
 
             let where=' 1 = 1 ';
 
@@ -58,7 +58,7 @@ export const getAddonByWhere = async ({itemgroupid,itemname,start}:any) => {
             txn.executeSql(
                 query,
                 [],
-                function (tx, res) {
+                function (tx:any, res:any) {
                     for (let i = 0; i < res.rows.length; ++i) {
                         const {itemid,data} = res.rows.item(i);
                         items[itemid] = JSON.parse(data)
@@ -71,15 +71,15 @@ export const getAddonByWhere = async ({itemgroupid,itemname,start}:any) => {
     } catch (e) {
         appLog('e', e)
     }
-    db.close().then()
+    closeDB(db);
 }
 
 export const getClientsByWhere = async ({displayname,phone,search,clienttype,start}:any) => {
-    const db = await getDBConnection();
+    const db:any = await getDBConnection();
 
     try {
         let items:any=[];
-        await db.transaction(function (txn) {
+        await db.transaction(function (txn:any) {
 
             let where=' 1 = 1 ';
 
@@ -101,7 +101,7 @@ export const getClientsByWhere = async ({displayname,phone,search,clienttype,sta
             txn.executeSql(
                 query,
                 [],
-                function (tx, res) {
+                function (tx:any, res:any) {
                     for (let i = 0; i < res.rows.length; ++i) {
                         items.push(JSON.parse(res.rows.item(i).data))
                     }
@@ -112,24 +112,24 @@ export const getClientsByWhere = async ({displayname,phone,search,clienttype,sta
     } catch (e) {
         appLog('get clients', e)
     }
-    db.close().then()
+    closeDB(db);
 }
 
 export const getTempOrdersByWhere = async () => {
 
     return new Promise<any>(async (resolve, reject)=>{
-        const db = await getDBConnection();
+        const db:any = await getDBConnection();
         let items:any={};
 
         try {
-            await db.transaction(function (txn) {
+            await db.transaction(function (txn:any) {
 
                 let where=' 1 = 1 ';
                 const query = `SELECT * FROM ${TABLE.TEMPORDER} where  ${where}`;
                 txn.executeSql(
                     query,
                     [],
-                    function (tx, res) {
+                    function (tx:any, res:any) {
                         for (let i = 0; i < res.rows.length; ++i) {
                             const {tableorderid,data}:any = res.rows.item(i);
                             items[tableorderid] = JSON.parse(data)
@@ -142,7 +142,7 @@ export const getTempOrdersByWhere = async () => {
             appLog('get temp orders', e)
         }
 
-        db.close().then()
+        closeDB(db);
         resolve(items)
     })
 
@@ -150,18 +150,18 @@ export const getTempOrdersByWhere = async () => {
 }
 
 export const getOrdersByWhere = async () => {
-    const db = await getDBConnection();
+    const db:any = await getDBConnection();
 
     try {
         let items:any={};
-        await db.transaction(function (txn) {
+        await db.transaction(function (txn:any) {
 
             let where=' 1 = 1 ';
             const query = `SELECT * FROM ${TABLE.ORDER} where  ${where}`;
             txn.executeSql(
                 query,
                 [],
-                function (tx, res) {
+                function (tx:any, res:any) {
                     for (let i = 0; i < res.rows.length; ++i) {
                         const {orderid,data}:any = res.rows.item(i);
                         items[orderid] = JSON.parse(data)
@@ -174,19 +174,19 @@ export const getOrdersByWhere = async () => {
     } catch (e) {
         appLog('get orders', e)
     }
-    db.close().then()
+    closeDB(db);
 }
 
 
 export const readTable = async (tablename:any,{start}:any) => {
-    const db = await getDBConnection();
+    const db:any = await getDBConnection();
     try {
         let items:any=[];
-        await db.transaction(function (txn) {
+        await db.transaction(function (txn:any) {
             txn.executeSql(
                 `SELECT * FROM ${tablename}  limit ?*100,100`,
                 [start],
-                function (tx, res) {
+                function (tx:any, res:any) {
 
                     for (let i = 0; i < res.rows.length; ++i) {
                         items.push(JSON.parse(res.rows.item(i).data))
@@ -200,5 +200,5 @@ export const readTable = async (tablename:any,{start}:any) => {
     } catch (e) {
         appLog('e', e)
     }
-    db.close().then()
+    closeDB(db);
 }

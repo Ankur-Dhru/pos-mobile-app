@@ -20,8 +20,6 @@ const Index = memo((props: any) => {
 
     const handleSubmit = (values:any) => {
 
-        appLog('values.ticketitems',values.ticketitems)
-
         dispatch(setBottomSheet({visible:false}))
         kot.ticketitems = values.ticketitems
         cancelKOTDialog(kot);
@@ -69,21 +67,21 @@ const Index = memo((props: any) => {
 
                         </ScrollView>
 
-                        <View style={[styles.submitbutton,styles.px_6,styles.mb_5]}>
+                        <View style={[styles.submitbutton,styles.px_5,styles.mb_3]}>
                             {<View style={[styles.grid, styles.justifyContent]}>
                                 <View style={[styles.w_auto]}>
                                     <Button disable={more.invalid}
-                                            more={{color: 'black',backgroundColor:styles.secondary.color}}
+                                            more={{color: 'black',backgroundColor:styles.secondary.color,height:50}}
                                             secondbutton={true} onPress={() => {
                                             dispatch(setBottomSheet({visible:false}))
                                     }}> Close </Button>
                                 </View>
 
                                 <View style={[styles.w_auto, styles.ml_2]}>
-                                    <Button more={{color: 'white',backgroundColor:styles.red.color}} disable={more.invalid} secondbutton={more.invalid}
+                                    <Button more={{color: 'white',backgroundColor:styles.red.color,height:50}} disable={more.invalid} secondbutton={more.invalid}
                                             onPress={() => {
                                                 handleSubmit(values)
-                                            }}> Cancel Selected Items
+                                            }}> Cancel Items
                                     </Button>
                                 </View>
 

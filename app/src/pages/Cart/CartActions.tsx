@@ -1,15 +1,24 @@
 import React, {memo, useEffect} from "react";
-import {appLog, generateKOT, isRestaurant, printInvoice, saveTempLocalOrder} from "../../libs/function";
+import {
+    appLog,
+    clone, dateFormat,
+    generateKOT, getItem, getLeftRight, getPrintTemplate, getPrintTemplateLogo, getTrimChar,
+    isRestaurant, numberFormat, objToArray, printInvoice,
+
+    retrieveData,
+    saveTempLocalOrder, storeData
+} from "../../libs/function";
 import {View} from "react-native";
 import {Card, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {useNavigation} from "@react-navigation/native";
 import Button from "../../components/Button";
-import {resetCart} from "../../redux-store/reducer/cart-data";
-import {hideLoader, setBottomSheet, showLoader} from "../../redux-store/reducer/component";
+import {resetCart, setCartData} from "../../redux-store/reducer/cart-data";
+import {hideLoader, setAlert, setBottomSheet, showLoader} from "../../redux-store/reducer/component";
 import HoldOrders from "./HoldOrders";
-import {device} from "../../libs/static";
+import {db, device, localredux, PRINTER} from "../../libs/static";
+
 
 
 const Index = ({

@@ -1,14 +1,14 @@
 
 import {appLog,  errorAlert} from "../function";
-import {getDBConnection} from "./index";
+import {closeDB, getDBConnection} from "./index";
 
 
 
 export const deleteTable = (tablename:any,condition?:any) => {
     return new Promise<any>(async (resolve)=> {
-        const db = await getDBConnection();
+        const db:any = await getDBConnection();
         try {
-            await db.transaction(function (txn) {
+            await db.transaction(function (txn:any) {
 
                 let where = ' 1 = 1 ';
 
@@ -31,7 +31,9 @@ export const deleteTable = (tablename:any,condition?:any) => {
         } catch (e) {
             appLog('e', e)
         }
-        db.close().then();
-        resolve('Delete Data');
+        setTimeout(()=>{
+            closeDB(db);
+            resolve('Delete Data');
+        },100)
     });
 }

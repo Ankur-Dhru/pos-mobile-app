@@ -107,6 +107,7 @@ export enum PRODUCTCATEGORY {
     TAXGROUPID = "9da54644-3581-45a3-ae2f-dbdc72a4af3a",
     ITEMUNIT = "9c2ecc81-d201-4353-8fbc-7b9d61e0afb4",
     DEPARTMENT = "b8035c22-0b89-408e-b7b2-969d750bd84f",
+    LOCATIONID = "06aa6e6d-a01b-43b5-849e-a1d84ba533ad",
 }
 
 

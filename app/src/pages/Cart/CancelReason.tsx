@@ -9,7 +9,7 @@ import {styles} from "../../theme";
 import Button from "../../components/Button";
 import {
     appLog, clone,
-    deleteTempLocalOrder,
+    deleteTempLocalOrder, findObject,
     getTicketStatus,
     objToArray, printInvoice,
     printKOT,
@@ -93,30 +93,47 @@ const Index = (props: any) => {
 
         const totalseleted = kot.ticketitems.filter((item:any)=>{ return item.selected }).length;
 
-        if(totalseleted === kot?.ticketitems?.length) {
+        const cancelJson = {
+            ticketstatus: openTicketStatus?.statusid,
+            ticketstatusname: "Cancel",
+            cancelreason: cancelreason,
+            reasonname:cancelreason,
+            cancelled: true,
+            adminid: adminid,
+            cancelreasonid: cancelreasonid,
+            "reasonid": cancelreasonid,
+            "canceladminid": adminid,
+        }
 
+        if(totalseleted === kot?.ticketitems?.length) {
             kot = {
                 ...kot,
-                ticketstatus: openTicketStatus?.statusid,
-                ticketstatusname: "Cancelled",
-                cancelreason: cancelreason,
-                reasonname:cancelreason,
-                cancelled: true,
-                adminid: adminid,
-                cancelreasonid: cancelreasonid,
+                ...cancelJson
             }
         }
 
+        appLog('step 1')
+
         kot?.ticketitems?.map((item:any,index:any)=>{
             if(item.selected && !item.cancelled) {
+
+                appLog('step 2')
                 item = {
                     ...item,
-                    cancelreason: cancelreason,
-                    reasonname:cancelreason,
-                    cancelled: true,
-                    adminid: adminid,
-                    cancelreasonid: cancelreasonid,
+                    ...cancelJson
                 }
+
+
+                invoiceitems = invoiceitems.map((invoiceitem:any)=>{
+                    if(invoiceitem.key === item.item_ref_id){
+                        invoiceitem = {
+                            ...invoiceitem,
+                            cancelled :true
+                        }
+                    }
+                    return invoiceitem
+                })
+
             }
             kot.ticketitems[index] = item
         })
@@ -135,13 +152,15 @@ const Index = (props: any) => {
         setKot(kot);
 
         const remaininginvoiceitems = invoiceitems.filter(function (item: any) {
-            return (item.kotid !== kot.kotid) && !Boolean(item.cancelled)
+            return !item.cancelled
         });
 
         const addtoinvoiceitemsdeleted = invoiceitems.filter(function (item: any) {
-            return Boolean(item.cancelled)
+            return item.cancelled
         });
+
         const newdeletedinvoiceitems = invoiceitemsdeleted.concat(addtoinvoiceitemsdeleted);
+
 
         store.dispatch(updateCartField({
             kots: Object.values(kots),

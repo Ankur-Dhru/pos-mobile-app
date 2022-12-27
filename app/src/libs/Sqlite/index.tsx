@@ -25,6 +25,10 @@ export const deleteDB = async () => {
     return false
 };
 
+export const closeDB = async (db:any) => {
+     await db.close()
+};
+
 
 export const createTables = async () => {
     const db:any = await getDBConnection();

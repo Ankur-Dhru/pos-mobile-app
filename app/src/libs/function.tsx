@@ -1501,7 +1501,7 @@ export const generateKOT = async () => {
                                             "productqntunitid": itemunit,
                                             "related": 0,
                                             "selected":true,
-                                            "item_ref_id": "",
+                                            "item_ref_id": itemL1.key,
                                             "staffid": adminid,
                                             "productdisplayname": itemname,
                                             "itemgroupname": groupname,
@@ -1678,7 +1678,8 @@ export const printInvoice = async (order?: any,preview?:any) => {
         const {general: {legalname}}: any = localredux.initData;
         const {terminal_name}: any = localredux.licenseData.data;
         const {firstname, lastname}: any = localredux.authData;
-        const regExMiddleText = new RegExp('(?<=>)([\\w\\s\\S\\W]+)(?=<\\/)')
+        //const regExMiddleText = new RegExp('(?<=>)([\\w\\s\\S\\W]+)(?=<\\/)')
+        const regExMiddleText = new RegExp('([\\w\\s\\S\\W]+)(?=<\\/)')
         const regExFindNumber = new RegExp('\\d+')
         const regExTagWord = new RegExp('<(.*?)>')
 
@@ -2195,8 +2196,6 @@ export const gePhonebook = async (force?: any) => {
 
 export const loadContacts = async () => {
 
-
-
     function compare(a: any, b: any) {
         if (a.displayname < b.displayname) {
             return -1;
@@ -2206,8 +2205,6 @@ export const loadContacts = async () => {
         }
         return 0;
     }
-
-    store.dispatch(showLoader())
 
     await Contacts.getAll()
         .then(async contacts => {
@@ -2232,7 +2229,7 @@ export const loadContacts = async () => {
             await insertClients(clients, 'all').then(async () => {
 
                 await saveLocalSettings('synccontact', true).then(() => {
-                    store.dispatch(hideLoader())
+
                 })
             });
         })
@@ -2248,7 +2245,13 @@ export const syncInvoice = async (invoiceData: any) => {
     const {workspace}: any = localredux.initData;
     const {token}: any = localredux.authData;
 
-    appLog('syncInvoice',invoiceData.cancelreason);
+    if(Boolean(invoiceData.cancelreason) && Boolean(invoiceData.invoiceitems.length === 0)){
+        invoiceData.vouchernotes = {
+            "reasonid": invoiceData.cancelreasonid,
+            "reasonname": invoiceData.cancelreason
+        },
+        invoiceData.deletedorder = true
+    }
 
     const syncstatus:any = await getLocalSettings('sync_in_process')
 
@@ -2272,6 +2275,7 @@ export const syncInvoice = async (invoiceData: any) => {
             other: {url: urls.posUrl},
         }).then(async (response: any) => {
             await saveLocalSettings({sync_in_process: false})
+
             if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
 
                 deleteTable(TABLE.ORDER,`orderid = '${invoiceData?.orderid}'`).then(async ()=>{

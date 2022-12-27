@@ -8,8 +8,8 @@ import InputField from "../../components/InputField";
 import {v4 as uuidv4} from 'uuid';
 import KAccessoryView from "../../components/KAccessoryView"
 import apiService from "../../libs/api-service";
-import {ACTIONS, localredux, METHOD, required, STATUS, urls} from "../../libs/static";
-import {assignOption, nextFocus} from "../../libs/function";
+import {ACTIONS, localredux, METHOD, PRODUCTCATEGORY, required, STATUS, urls} from "../../libs/static";
+import {appLog, assignOption, nextFocus} from "../../libs/function";
 import KeyboardScroll from "../../components/KeyboardScroll";
 
 let inputRef: any = [];
@@ -23,6 +23,7 @@ class Index extends Component<any> {
     isNew: boolean = true;
     buttonLabel: string = "Next";
     industrytypes: any;
+    locationname:any;
 
     constructor(props: any) {
         super(props);
@@ -32,6 +33,7 @@ class Index extends Component<any> {
         const {location: {industrytype, pin, street1, street2, city}} = localredux.initData;
 
         inputRef = [React.createRef(), React.createRef(), React.createRef(), React.createRef()]
+        this.locationname = route?.params?.legalname || 'Default';
 
         this.initdata = {
             "industrytype": industrytype || "",
@@ -40,11 +42,13 @@ class Index extends Component<any> {
             "street2": street2 || "",
             "departments": [{type: "Other"}],
             "city": city || "",
+            locationname:this.locationname
         }
 
         this.industrytypes = localredux.initData?.staticdata?.industrytypes || []
 
         this.alreadySetup = Boolean(route?.params?.alreadySetup);
+
         this.isNew = Boolean(route?.params?.isNew);
 
         if (this.alreadySetup) {
@@ -65,10 +69,15 @@ class Index extends Component<any> {
         const {workspace}: any = localredux.initData;
         const {token}: any = localredux.authData;
 
-        let key = "06aa6e6d-a01b-43b5-849e-a1d84ba533ad"
+        let key = PRODUCTCATEGORY.LOCATIONID
         if (this.alreadySetup) {
             key = this.isNew ? uuidv4() : values?.locationid
         }
+
+        if(values.industrytype === 'foodservices'){
+            values.departments[0].type = 'Kitchen';
+        }
+
 
         apiService({
             method: METHOD.PUT,

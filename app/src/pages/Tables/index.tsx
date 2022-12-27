@@ -4,7 +4,6 @@ import Tables from "./Tables";
 
 import PageLoader from "../../components/PageLoader";
 
-
 const Index = (props: any) => {
 
     const {navigation} = props;

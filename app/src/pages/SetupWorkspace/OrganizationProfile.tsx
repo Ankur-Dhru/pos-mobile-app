@@ -241,7 +241,7 @@ class Index extends Component<any, any> {
 
             }).then((result) => {
                 if (result.status === STATUS.SUCCESS) {
-                    this.props.navigation.navigate('BusinessDetails');
+                    this.props.navigation.navigate('BusinessDetails',{legalname:values.legalname});
                 }
             });
         } catch (e) {

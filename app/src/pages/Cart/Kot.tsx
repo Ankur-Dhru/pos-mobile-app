@@ -89,20 +89,20 @@ const Index = (props: any) => {
                         {
                            Boolean(ticketitems.length) && ticketitems?.map((item: any, index: any) => {
                                 return <View key={index}>
-                                    <Paragraph style={Boolean(item.cancelled) && {color:styles.red.color}}>{item.productqnt} x {item.productdisplayname} {Boolean(item.cancelled) && `(Cancelled - ${item.reasonname})`}</Paragraph>
+                                    <Paragraph style={[{textTransform:'capitalize'},Boolean(item.cancelled) && {color:styles.red.color}]}>{item.productqnt} x {item.productdisplayname} {Boolean(item.cancelled) && `(Cancelled - ${item.reasonname})`}</Paragraph>
                                 </View>
                             })
                         }
                         {Boolean(commonkotnote) && <View><Text>{commonkotnote}</Text></View>}
 
-                        <View style={[styles.mt_2,styles.grid]}><Paragraph>Kitchen : {departmentname}</Paragraph>
-                        {Boolean(staffname) && <Paragraph  style={[styles.ml_1]}>({staffname})</Paragraph>}
+                        <View style={[styles.mt_2,styles.grid]}><Paragraph style={[styles.paragraph,styles.text_xs,styles.muted]}>Kitchen : {departmentname}</Paragraph>
+                        {Boolean(staffname) && <Paragraph  style={[styles.paragraph,styles.text_xs,styles.ml_1,styles.muted]}>({staffname})</Paragraph>}
                         </View>
                     </View>
 
                     <View style={[styles.grid, styles.justifyContentSpaceBetween, styles.mt_4]}>
                         <View>
-                            <Button more={{color:'white'}}  onPress={() => {
+                            <Button more={{color:'white',height:40}}  onPress={() => {
                                 reprint(kot)
                             }}> Reprint {kot.print ? '(' + (kot.print) + ')' : ''}</Button>
                         </View>
@@ -118,7 +118,7 @@ const Index = (props: any) => {
                                        component: () => <KOTItemListforCancel kot={kot} cancelKOTDialog={cancelKOTDialog}/>
                                    }))
                                }
-                            }} more={{backgroundColor: styles.bg_red.backgroundColor,color:'white'}}>Cancel KOT</Button>}
+                            }} more={{backgroundColor: styles.bg_red.backgroundColor,color:'white',height:40}}>Cancel KOT</Button>}
                         </View>
                     </View>
 

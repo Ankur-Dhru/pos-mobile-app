@@ -1,10 +1,10 @@
 
 import {appLog} from "../function";
-import {getDBConnection} from "./index";
+import {closeDB, getDBConnection} from "./index";
 
 
 export const insertInit = async (  initdata?: any) => {
-    const db = await getDBConnection();
+    const db:any = await getDBConnection();
 
     let insertQuery:any = [];
 
@@ -28,13 +28,13 @@ export const insertInit = async (  initdata?: any) => {
 
 
     }
-    db.close().then()
+    closeDB(db);
 };
 
 
 export const insertItems = async (  itemsdata?: any,type:any = 'all') => {
 
-    const db = await getDBConnection();
+    const db:any = await getDBConnection();
     const regx = /[^a-zA-Z0-9_. -]/g;
 
     let insertQuery:any = [];
@@ -75,12 +75,12 @@ export const insertItems = async (  itemsdata?: any,type:any = 'all') => {
 
       }
   }
-  db.close().then()
+    closeDB(db);
 };
 
 
 export const insertAddons = async (  itemsdata?: any,type:any = 'all') => {
-    const db = await getDBConnection();
+    const db:any = await getDBConnection();
     const regx = /[^a-zA-Z0-9_. -]/g;
 
     let insertQuery:any = [];
@@ -114,12 +114,12 @@ export const insertAddons = async (  itemsdata?: any,type:any = 'all') => {
 
         }
     }
-    db.close().then()
+    closeDB(db);
 };
 
 
 export const insertClients = async (  clientsdata?: any,type:any = 'all') => {
-    const db = await getDBConnection();
+    const db:any = await getDBConnection();
 
     let insertQuery:any = [];
 
@@ -150,14 +150,14 @@ export const insertClients = async (  clientsdata?: any,type:any = 'all') => {
 
         }
     }
-    db.close().then()
+    closeDB(db);
 };
 
 
 export const insertTempOrder =  (data?: any) => {
 
     return new Promise<any>(async (resolve)=> {
-        const db = await getDBConnection();
+        const db:any = await getDBConnection();
 
         let values = `('${data?.tableorderid}', '${JSON.stringify(data)}')`;
         let insertQuery = `INSERT OR REPLACE INTO tblTempOrder("tableorderid","data") values ${values}`;
@@ -168,7 +168,7 @@ export const insertTempOrder =  (data?: any) => {
         } catch (e) {
             appLog('ERROR', insertQuery)
         }
-        db.close().then();
+        closeDB(db);
 
         resolve('Inset Temp Order')
     })
@@ -176,7 +176,7 @@ export const insertTempOrder =  (data?: any) => {
 
 export const insertOrder =  (data?: any) => {
     return new Promise<any>(async (resolve)=>{
-        const db = await getDBConnection();
+        const db:any = await getDBConnection();
         let values = `('${data?.orderid}', '${JSON.stringify(data)}')`;
         let  insertQuery = `INSERT OR REPLACE INTO tblOrder("orderid","data") values ${values}`;
         try {
@@ -186,7 +186,7 @@ export const insertOrder =  (data?: any) => {
         catch (e) {
             appLog('ERROR',insertQuery)
         }
-        db.close().then()
+        closeDB(db);
         resolve('Inset Order')
     })
 

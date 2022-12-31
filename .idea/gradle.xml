@@ -17,13 +17,14 @@
         </compositeConfiguration>
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/app/android" />
-        <option name="gradleJvm" value="17" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/app/android" />
             <option value="$PROJECT_DIR$/app/android/app" />
+            <option value="$PROJECT_DIR$/app/node_modules/@heasy/react-native-sunmi-printer/android" />
             <option value="$PROJECT_DIR$/app/node_modules/@react-native-async-storage/async-storage/android" />
             <option value="$PROJECT_DIR$/app/node_modules/@react-native-community/datetimepicker/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/@react-native-community/image-editor/android" />
             <option value="$PROJECT_DIR$/app/node_modules/@react-native-community/netinfo/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-ble-manager/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-camera/android" />
@@ -31,10 +32,12 @@
             <option value="$PROJECT_DIR$/app/node_modules/react-native-device-info/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-esc-pos-printer/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-extra-dimensions-android/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/react-native-fs/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-gesture-handler/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-get-random-values/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-gradle-plugin" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-html-to-pdf/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/react-native-image-size/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-pager-view/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-permissions/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-print/android" />
@@ -47,7 +50,6 @@
             <option value="$PROJECT_DIR$/app/node_modules/react-native-svg/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-tcp-socket/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-vector-icons/android" />
-            <option value="$PROJECT_DIR$/app/node_modules/rn-fetch-blob/android" />
           </set>
         </option>
       </GradleProjectSettings>

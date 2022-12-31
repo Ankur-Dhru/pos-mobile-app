@@ -10,7 +10,6 @@ import {ACTIONS, METHOD} from "./static";
 import {appLog, getTemplate} from "./function";
 
 global.Buffer = require('buffer').Buffer;
-
 const net = require('react-native-tcp-socket');
 
 
@@ -38,13 +37,19 @@ Powered By Dhru ERP</text><line-feed/></align>`;
 
                 BleManager.start({showAlert: false}).then(()=> {
                     readyforPrint(peripheral).then((findSC: any) => {
-                        BleManager.write(peripheral.id, findSC?.service, findSC?.characteristic, [...buffer]).then(() => {
-                            /*BleManager.disconnect(peripheral.id).then(() => {console.log("Disconnected");})
-                                .catch((error) => {// Failure code
-                                    console.log(error);
-                                });*/
-                            resolve('Print Successful')
-                        });
+
+                        if(Boolean(findSC)) {
+                            BleManager.write(peripheral.id, findSC?.service, findSC?.characteristic, [...buffer]).then(() => {
+                                /*BleManager.disconnect(peripheral.id).then(() => {console.log("Disconnected");})
+                                    .catch((error) => {// Failure code
+                                        console.log(error);
+                                    });*/
+                                resolve('Print Successful')
+                            });
+                        }
+                        else{
+                            resolve('Connection error')
+                        }
 
                     })
                 })

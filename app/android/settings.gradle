@@ -9,6 +9,13 @@ project(':react-native-html-to-pdf').projectDir = new File(rootProject.projectDi
 if (settings.hasProperty("newArchEnabled") && settings.newArchEnabled == "true") {
     include(":ReactAndroid")
     project(":ReactAndroid").projectDir = file('../node_modules/react-native/ReactAndroid')
+
+    include ':react-native-fs'
+    project(':react-native-fs').projectDir = new File(settingsDir, '../node_modules/react-native-fs/android')
+
+    include ':react-native-image-size'
+    project(':react-native-image-size').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-image-size/android')
+
     include(":ReactAndroid:hermes-engine")
     project(":ReactAndroid:hermes-engine").projectDir = file('../node_modules/react-native/ReactAndroid/hermes-engine')
 }

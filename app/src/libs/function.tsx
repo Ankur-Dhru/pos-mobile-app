@@ -18,7 +18,7 @@ import {
     ACTIONS, dayendReportTemplate,
     db,
     defaultInvoiceTemplate,
-    defaultKOTTemplate,
+    defaultKOTTemplate, image6000,
     isDevelopment,
     localredux,
     METHOD,
@@ -52,16 +52,18 @@ import {CommonActions} from "@react-navigation/native";
 import {getAddonByWhere, getClientsByWhere, getOrdersByWhere, getTempOrdersByWhere} from "./Sqlite/selectData";
 import Contacts from "react-native-contacts";
 import {PERMISSIONS, requestMultiple} from "react-native-permissions";
-import ZeroPriceAlert from "../pages/Items/ZeroPriceAlert";
 import {deleteTable} from "./Sqlite/deleteData";
 import {TABLE} from "./Sqlite/config";
 
-import RNFetchBlob from "rn-fetch-blob";
 import RNHTMLtoPDF from "react-native-html-to-pdf";
 import RNPrint from "react-native-print";
 import Share from "react-native-share";
-import {setGroupList} from "../redux-store/reducer/group-list";
+
 import Mustache from "mustache";
+import RNFS from "react-native-fs";
+import ImageSize from "react-native-image-size";
+import SunmiPrinter from "@heasy/react-native-sunmi-printer";
+import ImageEditor from "@react-native-community/image-editor";
 
 
 let NumberFormat = require('react-number-format');
@@ -1012,8 +1014,6 @@ export const saveLocalOrder = (order?: any) => {
         }
         ///////// CREATE LOCALORDER ID //////////
 
-
-
         deleteTempLocalOrder(order.tableorderid).then(async (msg:any) => {
             await insertOrder(order).then(()=>{
                 resolve(order)
@@ -1027,6 +1027,7 @@ export const saveLocalOrder = (order?: any) => {
 
 
 }
+
 
 export const getDatabaseName = async () => {
     return new Promise(async resolve => {
@@ -2496,4 +2497,78 @@ export const intervalInvoice = () => {
             interval = null;
         };
     }, []);
+}
+
+
+
+
+export const printImage = async (cropheight:any = 500,image:any) => {
+
+    const base64result = image.split(',')[1];
+    const path = 'file://'+ RNFS.DocumentDirectoryPath + '/voucher.png';
+
+    await RNFS.writeFile(path, base64result, 'base64')
+        .then((success) => {
+            appLog('FILE WRITTEN!');
+        })
+        .catch((err) => {
+            appLog(err.message);
+        });
+
+
+
+    try {
+        ImageSize.getSize(path).then(async ({width,height}: any) => {
+
+            const deviding = height/cropheight;
+            const roundof = Math.floor(height/cropheight)
+            const remainign = Math.floor((deviding - roundof) * cropheight);
+
+
+
+            SunmiPrinter.printerInit();
+            let yaxis = 0;
+            let images:any = [];
+
+            for(let i=0;i <= roundof;i++){
+                yaxis = i * cropheight;
+
+                try {
+
+                    const croppedImageURI = await ImageEditor.cropImage(
+                        path,
+                        {
+                            offset: {x: 0, y: yaxis },
+                            size: {width: width, height: i === roundof ? remainign: cropheight },
+                            resizeMode: 'contain',
+                        }
+                    );
+                    images.push(croppedImageURI);
+
+                } catch (cropError) {
+                    appLog('cropError',cropError)
+                }
+
+            }
+
+            for(let key in images){
+                await RNFS.readFile(images[key], 'base64')
+                    .then(async (base64result) =>{
+                        await SunmiPrinter.printBitmap(base64result, width)
+                    });
+            }
+
+            await SunmiPrinter.lineWrap(3)
+            await SunmiPrinter.cutPaper()
+
+        })
+
+    }
+    catch (e) {
+        appLog(e)
+    }
+
+
+
+
 }

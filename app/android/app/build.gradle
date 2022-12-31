@@ -252,11 +252,13 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
+    implementation "com.facebook.react:react-native:"  // From node_modules
 
-    //noinspection GradleDynamicVersion
-    implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation project(':react-native-fs')
 
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    implementation project(':react-native-image-size')
+
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'

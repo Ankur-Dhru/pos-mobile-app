@@ -1,9 +1,9 @@
-import React from "react";
+import React, {useState} from "react";
 
 import {Platform, SafeAreaView, View} from "react-native";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
-import {Card} from "react-native-paper";
+import {Card, Paragraph} from "react-native-paper";
 import {
     ACTIONS,
     composeValidators,
@@ -14,22 +14,24 @@ import {
     supportedPrinterList
 } from "../../libs/static";
 import Button from "../../components/Button";
-import {connect} from "react-redux";
+import {connect, useDispatch} from "react-redux";
 import {appLog, getTemplate, saveLocalSettings} from "../../libs/function";
 import InputField from "../../components/InputField";
 import {Container} from "../../components";
 import KeyboardScroll from "../../components/KeyboardScroll";
 import {useNavigation} from "@react-navigation/native";
 import CheckBox from "../../components/CheckBox";
-import BlueToothPrinter from "./BlueToothPrinter";
+import BlueToothList from "./BlueToothList";
 import BleManager from "react-native-ble-manager";
 import {EscPos} from "escpos-xml";
 import EscPosPrinter, {getPrinterSeriesByName} from "react-native-esc-pos-printer";
 import apiService from "../../libs/api-service";
 import {sendDataToPrinter} from "../../libs/Network";
 import store from "../../redux-store/store";
-import {setAlert} from "../../redux-store/reducer/component";
+import {setAlert, setBottomSheet} from "../../redux-store/reducer/component";
 import Mustache from "mustache";
+import Sample from "../sample";
+import ItemDetail from "../Items/ItemDetail";
 
 
 const Index = (props: any) => {
@@ -39,6 +41,33 @@ const Index = (props: any) => {
     const type = props?.route?.params?.type
 
     const navigation = useNavigation()
+    const dispatch = useDispatch()
+
+    const [init,setInit]:any =useState(
+        {
+            printertype: 'network',
+            bluetoothdetail: {},
+            macid: '',
+            ip: '',
+            host: '',
+            broadcastip:'',
+            printername: 'TM-T82',
+            port: '9100',
+            printsize: '48',
+            noofprint: '1',
+            printoncancel: true,
+            ...printers[type.departmentid]
+        }
+    )
+
+    const setMacId = (bt:any) => {
+        setInit({
+            ...init,
+            printertype:'bluetooth',
+            bluetoothdetail:bt.bluetoothdevice,
+            macid:bt.bluetoothdevice.value
+        })
+    }
 
     const handleSubmit = async (values: any) => {
 
@@ -51,25 +80,11 @@ const Index = (props: any) => {
         })
     }
 
-
-    let initialValues = {
-        printertype: 'network',
-        bluetoothdetail: {},
-        macid: '',
-        ip: '',
-        host: '',
-        broadcastip:'',
-        printername: 'TM-T82',
-        port: '9100',
-        printsize: '48',
-        noofprint: '1',
-        printoncancel: true,
-        ...printers[type.departmentid]
-    }
-
     navigation.setOptions({
         headerTitle:`${type.departmentid === PRINTER.INVOICE ? 'Invoice' : 'KOT'} Printer`
     })
+
+
 
     //{value: 'shared', label: 'Shared Printer'},
 
@@ -91,7 +106,7 @@ const Index = (props: any) => {
     return <Container>
         <SafeAreaView>
             <Form
-                initialValues={initialValues}
+                initialValues={init}
                 onSubmit={handleSubmit}
                 render={({handleSubmit, submitting, values, ...more}: any) => (
                     <View style={[styles.middle]}>
@@ -103,7 +118,6 @@ const Index = (props: any) => {
 
                                         <Card style={[styles.card]}>
                                             <Card.Content style={[styles.cardContent]}>
-
 
 
                                         <View>
@@ -120,6 +134,20 @@ const Index = (props: any) => {
                                                         listtype={'other'}
                                                         onChange={(value: any) => {
                                                             props.input.onChange(value);
+
+                                                            setInit({
+                                                                ...init,
+                                                                printertype:value
+                                                            })
+
+                                                            if(value === 'bluetooth'){
+                                                                dispatch(setBottomSheet({
+                                                                    visible: true,
+                                                                    height: '80%',
+                                                                    component: () => <BlueToothList setMacId={setMacId}   />
+                                                                }))
+                                                            }
+
                                                         }}>
                                                     </InputField>
                                                 )}
@@ -132,7 +160,7 @@ const Index = (props: any) => {
                                             </Card.Content>
                                         </Card>
 
-                                        {values.printertype === 'broadcast' ? <>
+                                        {Boolean(values.printertype === 'broadcast')  && <>
 
                                         <Card style={[styles.card]}>
                                             <Card.Content style={[styles.cardContent]}>
@@ -150,21 +178,40 @@ const Index = (props: any) => {
                                                         />
                                                     )}
                                                 </Field>
+
+
                                             </Card.Content>
                                         </Card>
 
-                                        </> : <>
+                                        </>}
 
-                                            <Card style={[styles.card]}>
+
+
+                                        {Boolean(values.bluetoothdetail?.value) && <>
+                                            <Card style={[styles.card]} onPress={()=>{
+                                                dispatch(setBottomSheet({
+                                                    visible: true,
+                                                    height: '80%',
+                                                    component: () => <BlueToothList setMacId={setMacId}   />
+                                                }))
+                                            }}>
+                                                <Card.Content style={[styles.cardContent]}>
+                                                     <>
+                                                        <View>
+                                                            <Paragraph style={[styles.paragraph,styles.bold]}>
+                                                                {values.bluetoothdetail?.label}
+                                                            </Paragraph>
+                                                        </View>
+                                                    </>
+                                                </Card.Content>
+                                            </Card>
+                                            </>}
+
+
+                                            {Boolean(values.printertype === 'network') &&   <><Card style={[styles.card]}>
                                                 <Card.Content style={[styles.cardContent]}>
 
-                                                    {values.printertype === 'bluetooth' ? <>
-                                                        <Field name="macid">
-                                                            {props => (
-                                                                <><BlueToothPrinter values={values} fieldprops={props}/></>
-                                                            )}
-                                                        </Field>
-                                                    </> : <>
+
                                                         <View style={[styles.grid, styles.justifyContent]}>
                                                             <View style={[styles.flexGrow]}>
 
@@ -201,39 +248,13 @@ const Index = (props: any) => {
                                                         </View>
 
 
-                                                        {/*<View>
-                                                            <View>
-                                                                <Field name="printername">
-                                                                    {props => (
-                                                                        <InputField
-                                                                            label={'Printer Name'}
-                                                                            mode={'flat'}
-                                                                            list={supportedPrinterList.map((item: any) => {
-                                                                                return {label: item, value: item}
-                                                                            })}
-                                                                            value={props.input.value}
-                                                                            selectedValue={props.input.value}
-                                                                            displaytype={'pagelist'}
-                                                                            inputtype={'dropdown'}
-                                                                            listtype={'other'}
-                                                                            onChange={(value: any) => {
-                                                                                props.input.onChange(value);
-                                                                            }}>
-                                                                        </InputField>
-                                                                    )}
-                                                                </Field>
-                                                            </View>
-
-                                                        </View>*/}
-
-                                                    </>}
-
 
                                                 </Card.Content>
-                                            </Card>
+                                            </Card></>}
 
 
-                                            <Card style={[styles.card]}>
+                                            {(Boolean(values.printertype === 'network') || Boolean(values.printertype === 'bluetooth')) &&   <>
+                                                <Card style={[styles.card]}>
                                                 <Card.Content style={[styles.cardContent]}>
 
                                                     <View style={[styles.grid, styles.justifyContent]}>
@@ -307,10 +328,10 @@ const Index = (props: any) => {
 
                                                 </Card.Content>
                                             </Card>
+                                            </>}
 
 
-                                            {type.departmentid === PRINTER.INVOICE &&
-
+                                            {(type.departmentid === PRINTER.INVOICE && Boolean(values.printertype !== 'broadcast')) &&
                                                 <Card style={[styles.card]}>
                                                     <Card.Content style={[styles.cardContent]}>
                                                         <View style={[styles.grid, styles.justifyContent]}>
@@ -344,10 +365,8 @@ const Index = (props: any) => {
                                                         </View>
                                                     </Card.Content>
                                                 </Card>
-
                                             }
 
-                                        </>}
 
 
                                     </View>
@@ -479,12 +498,11 @@ const connectToDevice = async (peripheral: any) => {
                 await BleManager.connect(peripheral.id).then(() => {
                     resolve(true)
                 }).catch((error) => {
-                    appLog('Connection error', error);
-                    resolve(false)
+                    resolve(error)
                 });
             }
         } else {
-            resolve(false)
+            resolve('Connection Error')
         }
     })
 }
@@ -512,6 +530,9 @@ export const readyforPrint = async (peripheral: any) => {
                         }, 200);
                     }
                 });
+            }
+            else{
+                resolve(false)
             }
         })
 

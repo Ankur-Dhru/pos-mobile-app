@@ -20,16 +20,16 @@ const Index = (props: any) => {
 
     device.navigation = navigation;
 
-    getDatabaseName().then(async (dbname: any) => {
+    navigation.replace('Sample')
+
+
+    /*getDatabaseName().then(async (dbname: any) => {
 
 
 
         let screen = 'SetupStackNavigator';
         if (Boolean(dbname)) {
             db.name = dbname;
-
-            appLog('db.name',db.name)
-
 
             //////// check license and set workspace and staffdata
             await retrieveData(db.name).then(async (data: any) => {
@@ -67,7 +67,7 @@ const Index = (props: any) => {
         dispatch(hideLoader())
         navigation.replace(screen)
 
-    })
+    })*/
 
 
     return <Container style={{padding: 0}}><View style={[styles.center, styles.h_100, styles.middle]}>

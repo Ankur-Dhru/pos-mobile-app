@@ -58,6 +58,7 @@ import ScanItem from "../Items/ScanItem";
 import AddExpense from "../../pages/Expense"
 import DateTimePicker from "./DateTimePicker";
 import AskPermission from "../Pin/AskPermission";
+import BlueToothList from "../PrinterSettings/BlueToothList";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -70,28 +71,7 @@ const MainStackNavigator = () => {
 
 
     intervalInvoice();
-   /* const dispatch = useDispatch();
 
-    let interval: any = null;
-    useEffect(() => {
-        if (!interval) {
-            interval = setInterval(() => {
-                if (Boolean(db?.name)) {
-                    getOrders().then((orders: any) => {
-                        if (!isEmpty(orders)) {
-                            let invoice: any = Object.values(orders)[0]
-                            syncInvoice(invoice).then()
-                        }
-                    })
-                }
-            }, 10000);
-        }
-        CheckConnectivity()
-        return () => {
-            clearInterval(interval);
-            interval = null;
-        };
-    }, []);*/
 
     return (
         <Stack.Navigator
@@ -254,6 +234,9 @@ const ProfileSettingsNavigator = (props: any) => {
             <Stack.Screen name={'GeneralSettings'} component={GeneralSettings} options={{title: 'General Settings'}}/>
 
             <Stack.Screen name={'PrinterSettings'} component={PrinterSettings} options={{title: ''}}/>
+
+            <Stack.Screen name={'BlueToothList'} component={BlueToothList} options={{title: 'Bluetooth Devices'}}/>
+
             <Stack.Screen name={'DropDownList'} component={DropDownList}
                           options={{headerShown: false, headerTitle: 'Select'}}/>
 

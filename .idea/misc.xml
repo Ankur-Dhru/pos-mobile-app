@@ -4,8 +4,10 @@
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="web" url="file://$PROJECT_DIR$/app/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@brooons/react-native-bluetooth-escpos-printer/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@heasy/react-native-sunmi-printer/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@react-native-async-storage/async-storage/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@react-native-community/datetimepicker/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@react-native-community/image-editor/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@react-native-community/netinfo/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-ble-manager/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-camera/android" />
@@ -13,11 +15,13 @@
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-device-info/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-esc-pos-printer/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-extra-dimensions-android/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-fs/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-gesture-handler/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-get-random-values/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-gradle-plugin" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-haptic-feedback/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-html-to-pdf/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-image-size/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-pager-view/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-permissions/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-print/android" />
@@ -25,9 +29,11 @@
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-safe-area-context/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-screens/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-share/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-slice-image/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-sound/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-sqlite-storage/platforms/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-sqlite-storage/platforms/android-native" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-sunmi-inner-printer/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-svg/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-tcp-socket/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-vector-icons/android" />

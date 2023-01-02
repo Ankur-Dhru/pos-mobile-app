@@ -52,8 +52,13 @@ const Index = (props: any) => {
 
             const {kots, tableorderid,invoiceitems}: any = store.getState().cartData;
 
+            const declienedStatus = getTicketStatus(TICKET_STATUS.DECLINED);
+
             kots.map((kot: any) => {
-                printKOT({...kot, cancelreason: cancelreason, cancelled: true, adminid: adminid,});
+                printKOT({...kot,
+                    ticketstatus: declienedStatus?.statusid,
+                    ticketstatusname: declienedStatus?.ticketstatusname,
+                    cancelreason: cancelreason, cancelled: true, adminid: adminid,});
             });
 
            await store.dispatch(updateCartField({
@@ -89,13 +94,13 @@ const Index = (props: any) => {
             invoiceitemsdeleted = []
         }
 
-        const openTicketStatus = getTicketStatus(TICKET_STATUS.DECLINED);
+        const declienedStatus = getTicketStatus(TICKET_STATUS.DECLINED);
 
         const totalseleted = kot.ticketitems.filter((item:any)=>{ return item.selected }).length;
 
         const cancelJson = {
-            ticketstatus: openTicketStatus?.statusid,
-            ticketstatusname: "Cancel",
+            ticketstatus: declienedStatus?.statusid,
+            ticketstatusname: declienedStatus?.ticketstatusname,
             cancelreason: cancelreason,
             reasonname:cancelreason,
             cancelled: true,
@@ -112,12 +117,9 @@ const Index = (props: any) => {
             }
         }
 
-        appLog('step 1')
-
         kot?.ticketitems?.map((item:any,index:any)=>{
             if(item.selected && !item.cancelled) {
 
-                appLog('step 2')
                 item = {
                     ...item,
                     ...cancelJson
@@ -125,7 +127,7 @@ const Index = (props: any) => {
 
 
                 invoiceitems = invoiceitems.map((invoiceitem:any)=>{
-                    if(invoiceitem.key === item.item_ref_id){
+                    if(invoiceitem.key === item.ref_id){
                         invoiceitem = {
                             ...invoiceitem,
                             cancelled :true

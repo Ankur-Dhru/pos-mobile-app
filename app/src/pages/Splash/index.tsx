@@ -20,10 +20,10 @@ const Index = (props: any) => {
 
     device.navigation = navigation;
 
-    navigation.replace('Sample')
+    //navigation.replace('Sample')
 
 
-    /*getDatabaseName().then(async (dbname: any) => {
+    getDatabaseName().then(async (dbname: any) => {
 
 
 
@@ -67,7 +67,7 @@ const Index = (props: any) => {
         dispatch(hideLoader())
         navigation.replace(screen)
 
-    })*/
+    })
 
 
     return <Container style={{padding: 0}}><View style={[styles.center, styles.h_100, styles.middle]}>

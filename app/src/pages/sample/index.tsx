@@ -14,15 +14,11 @@ import InputField from "../../components/InputField";
 
 export default function App() {
 
-    const [cropheight,setCropHeight]:any = useState(103)
-
-
+    const [cropheight,setCropHeight]:any = useState(300)
 
 
     return (
         <View>
-
-
             <ScrollView>
 
                 <View style={[{marginTop:10,width:300}]}>
@@ -43,9 +39,6 @@ export default function App() {
                 </View>
 
             </ScrollView>
-
-
-
 
         </View>
     );

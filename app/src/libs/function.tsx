@@ -364,7 +364,11 @@ export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = t
         vouchernotes: voucherTypeData?.defaultcustomernotes,
         toc: voucherTypeData?.defaultterms,
         selectedtemplate: voucherTypeData?.printtemplate,
-        edit: true
+        edit: true,
+        "updatecart": false,
+        "debugPrint": true,
+        "shifttable": false,
+        "taxInvoice": false,
     }
 
     if (isPayment) {
@@ -1412,11 +1416,13 @@ export const generateKOT = async () => {
                         tableorderid,
                         tableid,
                         tablename,
+                        clientid,
                         clientname,
                         client,
                         ordertype,
                         kots,
                         commonkotnote,
+                        vouchernotes,
                     } = cartData;
 
 
@@ -1453,7 +1459,7 @@ export const generateKOT = async () => {
                                 }
                             });
 
-                            const openTicketStatus = getTicketStatus(TICKET_STATUS.DONE);
+                            const openTicketStatus = getTicketStatus(TICKET_STATUS.OPEN);
 
                             let length = kitchens.length;
 
@@ -1467,6 +1473,7 @@ export const generateKOT = async () => {
                                 });
 
                                 let kotitems: any = [];
+                                let tickettotal = 0;
 
                                 itemForKot.forEach((itemL1: any, index: any) => {
 
@@ -1491,8 +1498,10 @@ export const generateKOT = async () => {
                                             itemid,
                                             itemname,
                                             itemaddon,
-                                            itemtags
+                                            itemtags,
                                         } = itemL1;
+
+                                        tickettotal += (productratedisplay * productqnt) || 0;
 
                                         const kot: any = {
                                             "productid": itemid,
@@ -1502,13 +1511,13 @@ export const generateKOT = async () => {
                                             "productqntunitid": itemunit,
                                             "related": 0,
                                             "selected":true,
-                                            "item_ref_id": itemL1.key,
+                                            "ref_id": itemL1.key,
                                             "staffid": adminid,
                                             "productdisplayname": itemname,
                                             "itemgroupname": groupname,
                                             "instruction": notes || '',
                                             predefinenotes: notes || '',
-                                            ref_id,
+
                                             key: itemL1.key,
                                         };
 
@@ -1519,10 +1528,11 @@ export const generateKOT = async () => {
                                                           productrate,
                                                           productratedisplay,
                                                           productqntunitid,
-
                                                           productdisplayname,
                                                           productqnt
                                                       }: any) => {
+
+                                                    tickettotal += (productratedisplay * productqnt)
 
                                                     return {
                                                         productid,
@@ -1556,13 +1566,17 @@ export const generateKOT = async () => {
 
                                 });
 
-                                const department = findObject(departments, 'departmentid', k, true)
+                                appLog('departments',k,departments)
+
+                                const department = findObject(departments, 'departmentid', k, true);
+
+                                appLog('department',department)
 
                                 newkot = {
                                     tickettypeid: currentTicketType?.tickettypeid,
                                     ticketnumberprefix: currentTicketType?.ticketnumberprefix,
                                     ticketstatus: openTicketStatus?.statusid,
-                                    ticketstatusname: "Close",
+                                    ticketstatusname: openTicketStatus?.ticketstatusname,
                                     ticketitems: kotitems,
                                     ticketdate: moment().format(dateFormat()),
                                     tickettime: moment().format("hh:mm A"),
@@ -1573,7 +1587,11 @@ export const generateKOT = async () => {
                                     print: 0,
                                     commonkotnote: commonkotnote,
                                     status: "pending",
-                                    table: `${tablename} (${clientname} ${Boolean(client?.phone) ? client?.phone : ''})`,
+                                    table: `${tablename}`,
+                                    "clientid": clientid,
+                                    "clientname": `${clientname} ${Boolean(client?.phone) ? `(${client?.phone})` : ''}`,
+                                    "tickettotal":tickettotal,
+                                    "vouchernotes":vouchernotes,
                                     departmentid: k,
                                     departmentname: department?.name,
                                     staffid: adminid,
@@ -1581,7 +1599,10 @@ export const generateKOT = async () => {
                                     ordertype: ordertype,
                                 };
 
+                                appLog('newkot',newkot)
+
                                 kots = [...kots, newkot];
+
 
                                 printkot.push(newkot);
 

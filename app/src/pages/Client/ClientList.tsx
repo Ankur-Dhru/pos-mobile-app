@@ -33,20 +33,29 @@ const Item = memo(({client}: any) => {
             description={client.phone}
             onPress={() => {
 
-                if(client.phonebook === 1){
-                    client.phone = client.clientid;
-                    client.clientid = 0;
-                }
+
+
 
                let clientdetail = {
                     phone: client?.phone,
                     displayname: client?.displayname,
                     clientid:  client?.clientid,
+                    label: `${client?.displayname} ${client?.phone ? `(${client.phone})` : ''}`,
+                    value:  client?.clientid,
                     thumbnailPath:client?.thumbnailPath,
                     clienttype: 0,
                 }
 
-                appLog('clientdetail',clientdetail)
+                if(client.phonebook === 1){
+
+                    client.phone = client.clientid;
+                    client.clientid = client.value = 0;
+
+                    clientdetail = {
+                        ...clientdetail,
+                        ...client
+                    }
+                }
 
                 store.dispatch(updateCartField({newclient: Boolean(client.phonebook),clientid: client.clientid,clientname: client.displayname,client:clientdetail}));
                 navigation.goBack();

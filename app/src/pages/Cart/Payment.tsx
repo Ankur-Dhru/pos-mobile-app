@@ -3,8 +3,8 @@ import {
     appLog,
     clone,
     getDefaultCurrency,
-    getFloatValue,
-    isEmpty, printInvoice,
+    getFloatValue, getTicketStatus,
+    isEmpty, printInvoice, printKOT,
 
     saveLocalOrder,
     toCurrency
@@ -15,7 +15,7 @@ import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {Button, Container} from "../../components";
 import {CommonActions, useNavigation} from "@react-navigation/native";
-import {device, ItemDivider, localredux} from "../../libs/static";
+import {device, ItemDivider, localredux, TICKET_STATUS} from "../../libs/static";
 import store from "../../redux-store/store";
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
 import {setCartData} from "../../redux-store/reducer/cart-data";
@@ -133,11 +133,25 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
                 }
             ];
 
+
+            if(Boolean(cartData?.kots.length)) {
+                const DONEStatus = getTicketStatus(TICKET_STATUS.DONE);
+                cartData.kots = cartData?.kots?.map((kot: any, key: any) => {
+                    return {
+                        ...kot,
+                        ticketstatus: DONEStatus?.statusid,
+                        ticketstatusname: DONEStatus?.ticketstatusname
+                    }
+                });
+            }
+
             cartData.paidamount = paidamount;
 
 
             ////////// SAVE FINAL DATA //////////
             dispatch(showLoader())
+
+            appLog('cartData.client',cartData.client)
 
             saveLocalOrder(clone(cartData)).then(async (order:any) => {
                 if (config?.print) {

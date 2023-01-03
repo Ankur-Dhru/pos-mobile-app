@@ -25,6 +25,7 @@ const Index = (props: any) => {
     const {cancelkot}:any = localredux?.authData?.settings;
 
     let [kot, setKot]: any = useState(kt);
+
     const reprint = async (kot: any) => {
         kot.print = kot.print + 1;
 

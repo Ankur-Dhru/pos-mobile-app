@@ -340,6 +340,9 @@ export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = t
 
     let local = utcDate;
 
+    const {state} =  initData.general
+
+
     let data: any = {
         localdatetime: local,
         date,
@@ -351,7 +354,9 @@ export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = t
         currentDecimalPlace: currencyData?.decimalplace || 2,
         locationid: licenseData?.data?.location_id,
         terminalid: localredux?.licenseData?.data?.terminal_id,
+        terminalname: localredux?.licenseData?.data?.terminal_name,
         staffid: parseInt(loginuserData?.adminid),
+        staffname: parseInt(loginuserData?.username),
         vouchercurrencyrate: currencyData.rate,
         vouchertaxtype: voucherTypeData?.defaulttaxtype || Object.keys(taxTypes)[0],
         roundoffselected: voucherTypeData?.voucherroundoff,
@@ -365,6 +370,7 @@ export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = t
         toc: voucherTypeData?.defaultterms,
         selectedtemplate: voucherTypeData?.printtemplate,
         edit: true,
+        "placeofsupply": state,
         "updatecart": false,
         "debugPrint": true,
         "shifttable": false,
@@ -382,6 +388,7 @@ export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = t
 export const assignOption = (label: any, value: any, defaultoption?: any, space?: any, isDisabled?: any, disabled?: any, selected?: any) => {
     return {label, value, space, isDisabled, disabled, selected}
 };
+
 export const options_itc: any = [
     assignOption("Eligible for ITC", "eligible"),
     assignOption("Ineligible - As per Section 17(5)", "ineligible17"),
@@ -811,7 +818,8 @@ export const setItemRowData = (data: any) => {
 
         let isInward: boolean = false;
         let companyCurrency = getDefaultCurrency();
-
+        const {unit}: any = localredux.initData;
+        let unittype = unit[data?.itemunit]
 
         let {cartData, localSettings}: any = store.getState();
         let {localSettingsData}: any = localredux;
@@ -881,6 +889,7 @@ export const setItemRowData = (data: any) => {
             minqnt: Boolean(itemminqnt) ? parseFloat(itemminqnt) : undefined,
             maxqnt: Boolean(itemmaxqnt) ? parseFloat(itemmaxqnt) : undefined,
             productqntunitid,
+            displayunitcode:unittype?.unitcode || '',
             "accountid": 2,
             clientid: cartData?.clientid,
             productdiscounttype: "%",
@@ -1566,11 +1575,7 @@ export const generateKOT = async () => {
 
                                 });
 
-                                appLog('departments',k,departments)
-
                                 const department = findObject(departments, 'departmentid', k, true);
-
-                                appLog('department',department)
 
                                 newkot = {
                                     tickettypeid: currentTicketType?.tickettypeid,
@@ -1589,7 +1594,7 @@ export const generateKOT = async () => {
                                     status: "pending",
                                     table: `${tablename}`,
                                     "clientid": clientid,
-                                    "clientname": `${clientname} ${Boolean(client?.phone) ? `(${client?.phone})` : ''}`,
+                                    "clientname": `${clientname}`,
                                     "tickettotal":tickettotal,
                                     "vouchernotes":vouchernotes,
                                     departmentid: k,
@@ -1598,8 +1603,6 @@ export const generateKOT = async () => {
                                     staffname: username,
                                     ordertype: ordertype,
                                 };
-
-                                appLog('newkot',newkot)
 
                                 kots = [...kots, newkot];
 
@@ -1959,6 +1962,7 @@ export const printKOT = async (kot?: any) => {
                 if (Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip)) {
                     const template: any = getPrintTemplate('KOT');
                     sendDataToPrinter(printJson, template, printer).then((msg) => {
+                        store.dispatch(setAlert({visible: true, message: msg}))
                         resolve(msg)
                     });
                 } else {

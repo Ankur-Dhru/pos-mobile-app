@@ -21,8 +21,6 @@ import {updateCartField} from "../../redux-store/reducer/cart-data";
 import store from "../../redux-store/store";
 import {CommonActions} from "@react-navigation/native";
 import Container from "../../components/Container";
-import {hideLoader, setAlert} from "../../redux-store/reducer/component";
-
 
 const Index = (props: any) => {
 
@@ -117,7 +115,7 @@ const Index = (props: any) => {
             }
         }
 
-        kot?.ticketitems?.map((item:any,index:any)=>{
+        kot.ticketitems =  kot?.ticketitems?.map((item:any,index:any)=>{
             if(item.selected && !item.cancelled) {
 
                 item = {
@@ -137,7 +135,7 @@ const Index = (props: any) => {
                 })
 
             }
-            kot.ticketitems[index] = item
+            return item
         })
 
         const index = kots.findIndex(function (item: any) {

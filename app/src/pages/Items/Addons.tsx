@@ -6,6 +6,7 @@ import {TouchableOpacity, View} from "react-native";
 import {appLog, clone, findObject, setItemRowData, toCurrency} from "../../libs/function";
 import {ProIcon} from "../../components";
 import {localredux} from "../../libs/static";
+import {v4 as uuid} from "uuid";
 
 
 const Index = ({addtags, itemaddon,updateProduct}: any) => {
@@ -55,22 +56,30 @@ const Index = ({addtags, itemaddon,updateProduct}: any) => {
     const updateQnt = (key: any, action: any) => {
         let productqnt = moreaddon[key].productqnt || 0;
 
+        const {unit}: any = localredux.initData;
+
+
         if (action === 'add') {
             productqnt = productqnt + 1
         } else if (action === 'remove') {
             productqnt = productqnt - 1
         }
 
+        let unittype = unit[moreaddon[key]?.itemunit]
+        let uuidn = uuid();
         moreaddon[key] = {
             ...moreaddon[key],
-            productqnt: productqnt
+            displayunitcode:unittype?.unitcode || '',
+            productqnt: productqnt,
+            key: uuidn,
+            ref_id:uuidn
         }
 
         const selectedAddons = Object.values(moreaddon).filter((addon: any) => {
             return addon.productqnt > 0
         })
 
-        itemaddon = selectedAddons
+        itemaddon = selectedAddons;
 
         setMoreAddon(clone(moreaddon));
         updateProduct({itemaddon:selectedAddons})

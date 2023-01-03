@@ -1,4 +1,4 @@
-import {device, ItemDivider} from "../../libs/static";
+import {device, ItemDivider, localredux} from "../../libs/static";
 import React, {memo, useEffect,  useState} from "react";
 import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
 import {Card, Divider, List, Paragraph} from "react-native-paper";
@@ -19,10 +19,10 @@ import Avatar from "../../components/Avatar";
 import Button from "../../components/Button";
 import Search from "../../components/SearchBox";
 
-
 const Item = memo(({client}: any) => {
 
     const navigation = useNavigation();
+
 
     return (
         <List.Item
@@ -33,8 +33,7 @@ const Item = memo(({client}: any) => {
             description={client.phone}
             onPress={() => {
 
-
-
+                const {state} =  localredux.initData.general
 
                let clientdetail = {
                     phone: client?.phone,
@@ -57,7 +56,13 @@ const Item = memo(({client}: any) => {
                     }
                 }
 
-                store.dispatch(updateCartField({newclient: Boolean(client.phonebook),clientid: client.clientid,clientname: client.displayname,client:clientdetail}));
+                store.dispatch(updateCartField({
+                    newclient: Boolean(client.phonebook),
+                    clientid: clientdetail.clientid,
+                    clientname: clientdetail.label,
+                    client:clientdetail,
+                    "placeofsupply": client.state || state,
+                }));
                 navigation.goBack();
 
             }}

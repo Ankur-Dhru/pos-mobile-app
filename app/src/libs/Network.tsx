@@ -4,9 +4,8 @@ import store from "../redux-store/store";
 import {setAlert} from "../redux-store/reducer/component";
 import EscPosPrinter, {getPrinterSeriesByName} from "react-native-esc-pos-printer";
 import BleManager from "react-native-ble-manager";
-import {readyforPrint} from "../pages/PrinterSettings/Setting";
 import apiService from "./api-service";
-import {ACTIONS, METHOD} from "./static";
+import {ACTIONS, METHOD, STATUS} from "./static";
 import {appLog, getTemplate} from "./function";
 
 global.Buffer = require('buffer').Buffer;
@@ -14,9 +13,6 @@ const net = require('react-native-tcp-socket');
 
 
 export const sendDataToPrinter = async (input: any, template: string, printer: any) => {
-
-
-
 
     return await new Promise(async (resolve) => {
         try {
@@ -40,10 +36,6 @@ Powered By Dhru ERP</text><line-feed/></align>`;
 
                         if(Boolean(findSC)) {
                             BleManager.write(peripheral.id, findSC?.service, findSC?.characteristic, [...buffer]).then(() => {
-                                /*BleManager.disconnect(peripheral.id).then(() => {console.log("Disconnected");})
-                                    .catch((error) => {// Failure code
-                                        console.log(error);
-                                    });*/
                                 resolve('Print Successful')
                             });
                         }
@@ -56,37 +48,45 @@ Powered By Dhru ERP</text><line-feed/></align>`;
             }
             else if(printer?.printertype === 'broadcast'){
 
-                apiService({
-                    method: METHOD.POST,
-                    action: input?.printinvoice ? ACTIONS.PRINT : ACTIONS.KOT_PRINT,
-                    body:{
-                        buffer: [...buffer],
-                        kot:input,
-                        debugPrint: true,
-                        displayQR: true,
-                        vouchertotaldisplay: input?.vouchertotaldisplay,
-                        invoice_display_number: input?.invoice_display_number,
-                        terminalname: input?.terminalname,
-                    },
-                    other:{url:`http://${printer?.broadcastip}:8081/`},
-                    queryString:{remoteprint:true}
-                }).then((response: any) => {
-                    resolve('Print Successful')
-                })
+                if(Boolean(printer?.broadcastip)) {
+                    apiService({
+                        method: METHOD.POST,
+                        action: input?.printinvoice ? ACTIONS.PRINT : ACTIONS.KOT_PRINT,
+                        body: {
+                            buffer: [...buffer],
+                            kot: input,
+                            debugPrint: true,
+                            displayQR: true,
+                            vouchertotaldisplay: input?.vouchertotaldisplay,
+                            invoice_display_number: input?.invoice_display_number,
+                            terminalname: input?.terminalname,
+                        },
+                        other: {url: `http://${printer?.broadcastip}:8081/`},
+                        queryString: {remoteprint: true}
+                    }).then((response: any) => {
+
+                        if(response.status === STATUS.ERROR){
+                            resolve(response.message)
+                        }
+                        else{
+                            resolve('Print Successful')
+                        }
+
+                    })
+                }
+                else{
+                    resolve('printer broadcast IP not set')
+                }
 
             }
             else{
+
                 if (Boolean(printer?.host)) {
                     return await connectToPrinter(printer, (buffer as unknown) as Buffer).then(async (msg:any) => {
-                        if(Boolean(msg)) {
-                            resolve(msg)
-                        }
-                        else{
-                            store.dispatch(setAlert({visible: true, message: msg}))
-                        }
+                        resolve(msg)
                     });
                 } else {
-                    resolve('printer not set')
+                    resolve('printer IP not set')
                 }
             }
         } catch (err) {
@@ -116,7 +116,7 @@ const connectToPrinter = async (printer: any, buffer: Buffer,): Promise<unknown>
                 });
 
                 device.on('timeout', () => {
-                    device.end();
+                    device?.end();
                     res('Printer connection timeout');
                 });
 
@@ -131,7 +131,7 @@ const connectToPrinter = async (printer: any, buffer: Buffer,): Promise<unknown>
                             device.emit('close');
                         })
                     });
-                    await device.setTimeout(5000)
+                    await device.setTimeout(1000)
                 }
             }
 
@@ -142,6 +142,62 @@ const connectToPrinter = async (printer: any, buffer: Buffer,): Promise<unknown>
     });
 
 };
+
+
+
+
+
+const connectToDevice = async (peripheral: any) => {
+    return await new Promise(async (resolve) => {
+        if (peripheral) {
+            if (peripheral.connected) {
+                resolve(true)
+            } else {
+                await BleManager.connect(peripheral.id).then(() => {
+                    resolve(true)
+                }).catch((error) => {
+                    resolve(error)
+                });
+            }
+        } else {
+            resolve('Connection Error')
+        }
+    })
+}
+
+export const readyforPrint = async (peripheral: any) => {
+
+    return await new Promise(async (resolve) => {
+
+        connectToDevice(peripheral).then(async (connected) => {
+            if (connected) {
+
+                BleManager.retrieveServices(peripheral.id).then((peripheralInfo: any) => {
+
+                    const findSC = peripheralInfo?.characteristics?.find((sc: any) => sc?.characteristic?.length === 36 && sc?.service?.length === 36)
+                    if (findSC?.service && findSC?.characteristic) {
+                        setTimeout(() => {
+                            BleManager.startNotification(peripheral.id, findSC?.service, findSC?.characteristic).then(() => {
+                                setTimeout(() => {
+                                    resolve(findSC)
+                                }, 200)
+                            }).catch((error) => {
+                                appLog('Notification error', error);
+                                resolve(false)
+                            });
+                        }, 200);
+                    }
+                });
+            }
+            else{
+                resolve(false)
+            }
+        })
+
+    })
+}
+
+
 
 export const paperCut = async (printer: any) => {
 
@@ -174,3 +230,4 @@ export const paperCut = async (printer: any) => {
 
 
 }
+

@@ -107,7 +107,7 @@ const Index = ({setMacId}: any) => {
 
 
     useEffect(() => {
-        BleManager.start({showAlert: true});
+        BleManager.start({showAlert: false});
 
         bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', handleDiscoverPeripheral);
         bleManagerEmitter.addListener('BleManagerStopScan', handleStopScan );
@@ -180,11 +180,17 @@ const Index = ({setMacId}: any) => {
                             }}> Retrieve connected peripherals
                     </Button>
                 </View>
-*/}
+                */}
                 <View style={[styles.w_auto]}>
                     <Button more={{color: 'black',backgroundColor:styles.secondary.color}}
                             onPress={() => {
-                                startScan()
+                                PermissionsAndroid.requestMultiple([PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN]).then((result) => {
+                                    if (result) {
+                                        startScan()
+                                    } else {
+                                        console.log("User refuse");
+                                    }
+                                });
                             }}> {isScanning ? 'Scanning' : 'Start Scan'}
                     </Button>
                 </View>

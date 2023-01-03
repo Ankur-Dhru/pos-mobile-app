@@ -4,34 +4,18 @@ import {Platform, SafeAreaView, View} from "react-native";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
 import {Card, Paragraph} from "react-native-paper";
-import {
-    ACTIONS,
-    composeValidators,
-    defaultInvoiceTemplate, defaultTestTemplate,
-    METHOD,
-    PRINTER,
-    required,
-    supportedPrinterList
-} from "../../libs/static";
+import {composeValidators, defaultTestTemplate, PRINTER, required} from "../../libs/static";
 import Button from "../../components/Button";
 import {connect, useDispatch} from "react-redux";
-import {appLog, getTemplate, saveLocalSettings} from "../../libs/function";
+import {errorAlert, saveLocalSettings} from "../../libs/function";
 import InputField from "../../components/InputField";
 import {Container} from "../../components";
 import KeyboardScroll from "../../components/KeyboardScroll";
 import {useNavigation} from "@react-navigation/native";
 import CheckBox from "../../components/CheckBox";
 import BlueToothList from "./BlueToothList";
-import BleManager from "react-native-ble-manager";
-import {EscPos} from "escpos-xml";
-import EscPosPrinter, {getPrinterSeriesByName} from "react-native-esc-pos-printer";
-import apiService from "../../libs/api-service";
 import {sendDataToPrinter} from "../../libs/Network";
-import store from "../../redux-store/store";
-import {setAlert, setBottomSheet} from "../../redux-store/reducer/component";
-import Mustache from "mustache";
-import Sample from "../sample";
-import ItemDetail from "../Items/ItemDetail";
+import {setBottomSheet} from "../../redux-store/reducer/component";
 
 
 const Index = (props: any) => {
@@ -43,14 +27,14 @@ const Index = (props: any) => {
     const navigation = useNavigation()
     const dispatch = useDispatch()
 
-    const [init,setInit]:any =useState(
+    const [init, setInit]: any = useState(
         {
             printertype: 'network',
             bluetoothdetail: {},
             macid: '',
             ip: '',
             host: '',
-            broadcastip:'',
+            broadcastip: '',
             printername: 'TM-T82',
             port: '9100',
             printsize: '48',
@@ -60,12 +44,12 @@ const Index = (props: any) => {
         }
     )
 
-    const setMacId = (bt:any) => {
+    const setMacId = (bt: any) => {
         setInit({
             ...init,
-            printertype:'bluetooth',
-            bluetoothdetail:bt.bluetoothdevice,
-            macid:bt.bluetoothdevice.value
+            printertype: 'bluetooth',
+            bluetoothdetail: bt.bluetoothdevice,
+            macid: bt.bluetoothdevice.value
         })
     }
 
@@ -75,15 +59,16 @@ const Index = (props: any) => {
             ...printers,
             [type.departmentid]: values
         }
-        await saveLocalSettings('printers', printers).then(() => {
-            navigation.goBack()
-        })
+        if (!values.test) {
+            await saveLocalSettings('printers', printers).then(() => {
+                navigation.goBack()
+            })
+        }
     }
 
     navigation.setOptions({
-        headerTitle:`${type.departmentid === PRINTER.INVOICE ? 'Invoice' : 'KOT'} Printer`
+        headerTitle: `${type.departmentid === PRINTER.INVOICE ? 'Invoice' : 'KOT'} Printer`
     })
-
 
 
     //{value: 'shared', label: 'Shared Printer'},
@@ -91,12 +76,12 @@ const Index = (props: any) => {
     let printerTypes = [{
         value: 'network',
         label: 'Network Printer'
-    },{
+    }, {
         value: 'broadcast',
         label: 'Broadcast Printer'
     }]
 
-    if(Platform.OS !== 'ios'){
+    if (Platform.OS !== 'ios') {
         printerTypes.push({
             value: 'bluetooth',
             label: 'Bluetooth Printer'
@@ -120,141 +105,138 @@ const Index = (props: any) => {
                                             <Card.Content style={[styles.cardContent]}>
 
 
-                                        <View>
-                                            <Field name="printertype">
-                                                {props => (
-                                                    <InputField
-                                                        label={'Printer Type'}
-                                                        mode={'flat'}
-                                                        list={printerTypes}
-                                                        value={props.input.value}
-                                                        selectedValue={props.input.value}
-                                                        displaytype={'pagelist'}
-                                                        inputtype={'dropdown'}
-                                                        listtype={'other'}
-                                                        onChange={(value: any) => {
-                                                            props.input.onChange(value);
+                                                <View>
+                                                    <Field name="printertype">
+                                                        {props => (
+                                                            <InputField
+                                                                label={'Printer Type'}
+                                                                mode={'flat'}
+                                                                list={printerTypes}
+                                                                value={props.input.value}
+                                                                selectedValue={props.input.value}
+                                                                displaytype={'pagelist'}
+                                                                inputtype={'dropdown'}
+                                                                listtype={'other'}
+                                                                onChange={(value: any) => {
+                                                                    props.input.onChange(value);
 
-                                                            setInit({
-                                                                ...init,
-                                                                printertype:value
-                                                            })
+                                                                    setInit({
+                                                                        ...init,
+                                                                        printertype: value
+                                                                    })
 
-                                                            if(value === 'bluetooth'){
-                                                                dispatch(setBottomSheet({
-                                                                    visible: true,
-                                                                    height: '80%',
-                                                                    component: () => <BlueToothList setMacId={setMacId}   />
-                                                                }))
-                                                            }
+                                                                    if (value === 'bluetooth') {
+                                                                        dispatch(setBottomSheet({
+                                                                            visible: true,
+                                                                            height: '80%',
+                                                                            component: () => <BlueToothList
+                                                                                setMacId={setMacId}/>
+                                                                        }))
+                                                                    }
 
-                                                        }}>
-                                                    </InputField>
-                                                )}
-                                            </Field>
-                                        </View>
-
-
-
-
-                                            </Card.Content>
-                                        </Card>
-
-                                        {Boolean(values.printertype === 'broadcast')  && <>
-
-                                        <Card style={[styles.card]}>
-                                            <Card.Content style={[styles.cardContent]}>
-                                                <Field name="broadcastip" validate={composeValidators(required)}>
-                                                    {props => (
-                                                        <InputField
-                                                            {...props}
-                                                            label={'Broadcast IP'}
-                                                            value={props.input.value}
-                                                            inputtype={'textbox'}
-
-                                                            onChange={(value: any) => {
-                                                                props.input.onChange(value)
-                                                            }}
-                                                        />
-                                                    )}
-                                                </Field>
+                                                                }}>
+                                                            </InputField>
+                                                        )}
+                                                    </Field>
+                                                </View>
 
 
                                             </Card.Content>
                                         </Card>
+
+                                        {Boolean(values.printertype === 'broadcast') && <>
+
+                                            <Card style={[styles.card]}>
+                                                <Card.Content style={[styles.cardContent]}>
+                                                    <Field name="broadcastip" validate={composeValidators(required)}>
+                                                        {props => (
+                                                            <InputField
+                                                                {...props}
+                                                                label={'Broadcast IP'}
+                                                                value={props.input.value}
+                                                                inputtype={'textbox'}
+
+                                                                onChange={(value: any) => {
+                                                                    props.input.onChange(value)
+                                                                }}
+                                                            />
+                                                        )}
+                                                    </Field>
+
+
+                                                </Card.Content>
+                                            </Card>
 
                                         </>}
 
 
-
-                                        {Boolean(values.bluetoothdetail?.value) && <>
-                                            <Card style={[styles.card]} onPress={()=>{
+                                        {Boolean(values.bluetoothdetail?.value) && Boolean(values.printertype === 'bluetooth') && <>
+                                            <Card style={[styles.card]} onPress={() => {
                                                 dispatch(setBottomSheet({
                                                     visible: true,
                                                     height: '80%',
-                                                    component: () => <BlueToothList setMacId={setMacId}   />
+                                                    component: () => <BlueToothList setMacId={setMacId}/>
                                                 }))
                                             }}>
                                                 <Card.Content style={[styles.cardContent]}>
-                                                     <>
+                                                    <>
                                                         <View>
-                                                            <Paragraph style={[styles.paragraph,styles.bold]}>
+                                                            <Paragraph style={[styles.paragraph, styles.bold]}>
                                                                 {values.bluetoothdetail?.label}
                                                             </Paragraph>
                                                         </View>
                                                     </>
                                                 </Card.Content>
                                             </Card>
-                                            </>}
+                                        </>}
 
 
-                                            {Boolean(values.printertype === 'network') &&   <><Card style={[styles.card]}>
-                                                <Card.Content style={[styles.cardContent]}>
+                                        {Boolean(values.printertype === 'network') && <><Card style={[styles.card]}>
+                                            <Card.Content style={[styles.cardContent]}>
 
 
-                                                        <View style={[styles.grid, styles.justifyContent]}>
-                                                            <View style={[styles.flexGrow]}>
+                                                <View style={[styles.grid, styles.justifyContent]}>
+                                                    <View style={[styles.flexGrow]}>
 
-                                                                <Field name="host" validate={composeValidators(required)}>
-                                                                    {props => (
-                                                                        <InputField
-                                                                            {...props}
-                                                                            label={'IP'}
-                                                                            value={props.input.value}
-                                                                            inputtype={'textbox'}
+                                                        <Field name="host" validate={composeValidators(required)}>
+                                                            {props => (
+                                                                <InputField
+                                                                    {...props}
+                                                                    label={'IP'}
+                                                                    value={props.input.value}
+                                                                    inputtype={'textbox'}
 
-                                                                            onChange={(value: any) => {
-                                                                                props.input.onChange(value)
-                                                                            }}
-                                                                        />
-                                                                    )}
-                                                                </Field>
+                                                                    onChange={(value: any) => {
+                                                                        props.input.onChange(value)
+                                                                    }}
+                                                                />
+                                                            )}
+                                                        </Field>
 
-                                                            </View>
+                                                    </View>
 
-                                                            <View style={[styles.ml_2, {width: '50%'}]}>
-                                                                <Field name="port">
-                                                                    {props => (
-                                                                        <InputField
-                                                                            {...props}
-                                                                            value={props.input.value}
-                                                                            label={'Port'}
-                                                                            inputtype={'textbox'}
-                                                                            onChange={props.input.onChange}
-                                                                        />
-                                                                    )}
-                                                                </Field>
-                                                            </View>
-                                                        </View>
-
-
-
-                                                </Card.Content>
-                                            </Card></>}
+                                                    <View style={[styles.ml_2, {width: '50%'}]}>
+                                                        <Field name="port">
+                                                            {props => (
+                                                                <InputField
+                                                                    {...props}
+                                                                    value={props.input.value}
+                                                                    label={'Port'}
+                                                                    inputtype={'textbox'}
+                                                                    onChange={props.input.onChange}
+                                                                />
+                                                            )}
+                                                        </Field>
+                                                    </View>
+                                                </View>
 
 
-                                            {(Boolean(values.printertype === 'network') || Boolean(values.printertype === 'bluetooth')) &&   <>
-                                                <Card style={[styles.card]}>
+                                            </Card.Content>
+                                        </Card></>}
+
+
+                                        {(Boolean(values.printertype === 'network') || Boolean(values.printertype === 'bluetooth')) && <>
+                                            <Card style={[styles.card]}>
                                                 <Card.Content style={[styles.cardContent]}>
 
                                                     <View style={[styles.grid, styles.justifyContent]}>
@@ -328,45 +310,44 @@ const Index = (props: any) => {
 
                                                 </Card.Content>
                                             </Card>
-                                            </>}
+                                        </>}
 
 
-                                            {(type.departmentid === PRINTER.INVOICE && Boolean(values.printertype !== 'broadcast')) &&
-                                                <Card style={[styles.card]}>
-                                                    <Card.Content style={[styles.cardContent]}>
-                                                        <View style={[styles.grid, styles.justifyContent]}>
-                                                            <View style={[styles.flexGrow]}>
-                                                                <Field name="upiid">
-                                                                    {props => (
-                                                                        <InputField
-                                                                            {...props}
-                                                                            value={props.input.value}
-                                                                            label={'UPI ID'}
-                                                                            inputtype={'textbox'}
-                                                                            onChange={props.input.onChange}
-                                                                        />
-                                                                    )}
-                                                                </Field>
-                                                            </View>
-
-                                                            <View style={[styles.ml_2, {width: '50%'}]}>
-                                                                <Field name="upiname">
-                                                                    {props => (
-                                                                        <InputField
-                                                                            {...props}
-                                                                            value={props.input.value}
-                                                                            label={'UPI Name'}
-                                                                            inputtype={'textbox'}
-                                                                            onChange={props.input.onChange}
-                                                                        />
-                                                                    )}
-                                                                </Field>
-                                                            </View>
+                                        {(type.departmentid === PRINTER.INVOICE && Boolean(values.printertype !== 'broadcast')) &&
+                                            <Card style={[styles.card]}>
+                                                <Card.Content style={[styles.cardContent]}>
+                                                    <View style={[styles.grid, styles.justifyContent]}>
+                                                        <View style={[styles.flexGrow]}>
+                                                            <Field name="upiid">
+                                                                {props => (
+                                                                    <InputField
+                                                                        {...props}
+                                                                        value={props.input.value}
+                                                                        label={'UPI ID'}
+                                                                        inputtype={'textbox'}
+                                                                        onChange={props.input.onChange}
+                                                                    />
+                                                                )}
+                                                            </Field>
                                                         </View>
-                                                    </Card.Content>
-                                                </Card>
-                                            }
 
+                                                        <View style={[styles.ml_2, {width: '50%'}]}>
+                                                            <Field name="upiname">
+                                                                {props => (
+                                                                    <InputField
+                                                                        {...props}
+                                                                        value={props.input.value}
+                                                                        label={'UPI Name'}
+                                                                        inputtype={'textbox'}
+                                                                        onChange={props.input.onChange}
+                                                                    />
+                                                                )}
+                                                            </Field>
+                                                        </View>
+                                                    </View>
+                                                </Card.Content>
+                                            </Card>
+                                        }
 
 
                                     </View>
@@ -377,16 +358,18 @@ const Index = (props: any) => {
                                 {<View style={[styles.grid, styles.justifyContent]}>
                                     <View style={[styles.w_auto]}>
                                         <Button disable={more.invalid}
-                                                more={{color: 'black',backgroundColor:styles.secondary.color}}
+                                                more={{color: 'black', backgroundColor: styles.secondary.color}}
                                                 secondbutton={true} onPress={() => {
+
                                             testPrint(values).then(r => {
-                                                //handleSubmit(values)
+
                                             });
-                                        }}>Test Print  </Button>
+                                        }}>Test Print </Button>
                                     </View>
 
                                     <View style={[styles.w_auto, styles.ml_2]}>
-                                        <Button more={{color: 'white'}} disable={more.invalid} secondbutton={more.invalid}
+                                        <Button more={{color: 'white'}} disable={more.invalid}
+                                                secondbutton={more.invalid}
                                                 onPress={() => {
                                                     handleSubmit(values)
                                                 }}> Save
@@ -416,125 +399,10 @@ export default connect(mapStateToProps)(Index);
 
 
 export const testPrint = async (printer: any) => {
-
-
-
-
-    const {broadcastip, printertype, bluetoothdetail}: any = printer;
-
-    let xmlData = Mustache.render(getTemplate(defaultTestTemplate), {message:'Test Print Success'});
-    const buffer: any = EscPos.getBufferFromXML(xmlData);
-
-    if (printertype === 'bluetooth') {
-        const peripheral = bluetoothdetail.more;
-        readyforPrint(peripheral).then((findSC: any) => {
-
-            BleManager.write(peripheral.id, findSC?.service, findSC?.characteristic, [...buffer]).then(() => {
-                BleManager.disconnect(peripheral.id).then(() => {
-                        console.log("Disconnected");
-                    })
-                    .catch((error) => {
-                        // Failure code
-                        console.log(error);
-                    });
-            });
-        })
-
-    }
-    else if(printertype === 'broadcast'){
-
-        if(Boolean(broadcastip)) {
-            apiService({
-                method: METHOD.POST,
-                action: ACTIONS.PRINT,
-                body: {
-                    buffer: [...buffer],
-                },
-                other: {url: `http://${broadcastip}:8081/`},
-                queryString: {remoteprint: true}
-            }).then((response: any) => {
-                store.dispatch(setAlert({visible: true, message: response.message}))
-                appLog('response', response)
-            })
-        }
-
-    }
-    else {
-
-        sendDataToPrinter({message:'Test Print Success'}, defaultTestTemplate, printer).then((msg) => {
-            store.dispatch(setAlert({visible: true, message: msg}))
-        });
-
-
-        /*await EscPosPrinter.init({
-            target: `TCP:${host}`,
-            seriesName: getPrinterSeriesByName(printername),
-            language: 'EPOS2_LANG_EN',
-        })
-
-        const printing = new EscPosPrinter.printing();
-        let status = printing
-            .initialize()
-            .align('center')
-            .size(2, 2)
-            .line('Test Print')
-            .newline(1)
-            .cut()
-            .addPulse()
-            .send()*/
-
-    }
+    sendDataToPrinter({message: 'Test Print Success', printinvoice: true}, defaultTestTemplate, printer).then((msg) => {
+        errorAlert(msg)
+    });
 }
 
 
 
-
-const connectToDevice = async (peripheral: any) => {
-    return await new Promise(async (resolve) => {
-        if (peripheral) {
-            if (peripheral.connected) {
-                resolve(true)
-            } else {
-                await BleManager.connect(peripheral.id).then(() => {
-                    resolve(true)
-                }).catch((error) => {
-                    resolve(error)
-                });
-            }
-        } else {
-            resolve('Connection Error')
-        }
-    })
-}
-
-export const readyforPrint = async (peripheral: any) => {
-
-    return await new Promise(async (resolve) => {
-
-        connectToDevice(peripheral).then(async (connected) => {
-            if (connected) {
-
-                BleManager.retrieveServices(peripheral.id).then((peripheralInfo: any) => {
-
-                    const findSC = peripheralInfo?.characteristics?.find((sc: any) => sc?.characteristic?.length === 36 && sc?.service?.length === 36)
-                    if (findSC?.service && findSC?.characteristic) {
-                        setTimeout(() => {
-                            BleManager.startNotification(peripheral.id, findSC?.service, findSC?.characteristic).then(() => {
-                                setTimeout(() => {
-                                    resolve(findSC)
-                                }, 200)
-                            }).catch((error) => {
-                                appLog('Notification error', error);
-                                resolve(false)
-                            });
-                        }, 200);
-                    }
-                });
-            }
-            else{
-                resolve(false)
-            }
-        })
-
-    })
-}

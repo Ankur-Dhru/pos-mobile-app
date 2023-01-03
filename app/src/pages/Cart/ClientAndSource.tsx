@@ -529,6 +529,8 @@ const ClientAndSource = (props: any) => {
                                     clientid:  selectedClient?.clientid,
                                     thumbnailPath:selectedClient?.thumbnailPath,
                                     clienttype: 0,
+                                    label:selectedClient?.displayname,
+                                    value:selectedClient.clientid,
                                 }
 
                                 let pass = {

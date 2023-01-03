@@ -70,7 +70,7 @@ const Register = (props: any) => {
             other: {url: loginUrl},
         }).then(async (response: any) => {
             if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
-                appLog('response', response)
+
                 device.token = response.token;
                 device.global_token = response.global_token;
                 store.dispatch(setAlert({visible: true, message: 'Register Successful'}))

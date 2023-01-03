@@ -194,7 +194,7 @@ const ClientAreaStackNavigator = (props: any) => {
                 title: 'select'
             })}/>
 
-            <Stack.Screen name={'DateTimePicker'} component={DateTimePicker}  options={({route}: any) => ({
+            <Stack.Screen name={'DateTimePicker'} component={DateTimePicker} options={({route}: any) => ({
                 presentation: route?.params?.presentation,
             })}/>
 

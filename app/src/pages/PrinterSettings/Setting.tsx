@@ -7,7 +7,7 @@ import {Card, Paragraph} from "react-native-paper";
 import {composeValidators, defaultTestTemplate, PRINTER, required} from "../../libs/static";
 import Button from "../../components/Button";
 import {connect, useDispatch} from "react-redux";
-import {errorAlert, saveLocalSettings} from "../../libs/function";
+import {appLog, errorAlert, saveLocalSettings} from "../../libs/function";
 import InputField from "../../components/InputField";
 import {Container} from "../../components";
 import KeyboardScroll from "../../components/KeyboardScroll";
@@ -16,6 +16,8 @@ import CheckBox from "../../components/CheckBox";
 import BlueToothList from "./BlueToothList";
 import {sendDataToPrinter} from "../../libs/Network";
 import {setBottomSheet} from "../../redux-store/reducer/component";
+import RNFS from "react-native-fs";
+import SunmiPrinter from "@heasy/react-native-sunmi-printer";
 
 
 const Index = (props: any) => {
@@ -399,6 +401,14 @@ export default connect(mapStateToProps)(Index);
 
 
 export const testPrint = async (printer: any) => {
+
+    /*const qrurl = `upi://pay?cu=INR&pa=8866522619@upi&pn=ankurpatel&am=100&tr=100`;
+
+    await RNFS.readFile(qrurl)
+        .then(async (base64result) =>{
+             appLog('base64result',base64result)
+        });*/
+
     sendDataToPrinter({message: 'Test Print Success', printinvoice: true}, defaultTestTemplate, printer).then((msg) => {
         errorAlert(msg)
     });

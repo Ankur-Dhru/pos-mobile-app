@@ -1,20 +1,20 @@
 import React, {memo, useCallback, useEffect, useState} from "react";
 
-import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
+import {FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View} from "react-native";
 
 import {connect, useDispatch} from "react-redux";
 import {styles} from "../../theme";
-import {isRestaurant, selectItem, toCurrency} from "../../libs/function";
+import {appLog, isRestaurant, selectItem, toCurrency} from "../../libs/function";
 import {Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 import Button from "../../components/Button";
+import {localredux} from "../../libs/static";
+import {getCombos} from "./ItemListMobile";
 
 
 
 export const AddItem = ({navigation,search}: any) => {
-
-    const dispatch = useDispatch()
 
     return (
         <View style={[]}>
@@ -34,21 +34,24 @@ export const AddItem = ({navigation,search}: any) => {
 
 
 const Item = memo(({item}: any) => {
+
     const {veg} = item;
     const pricingtype = item?.pricing?.type;
     const baseprice = item?.pricing?.price?.default[0][pricingtype]?.baseprice || 0;
-    const hasRestaurant = isRestaurant()
+    const hasRestaurant = isRestaurant();
+
 
     return (<TouchableOpacity onPress={() => selectItem(item)} style={[styles.flexGrow, styles.center, styles.middle, {
         width: 110,
         padding: 10,
-        margin: 5,
+        margin: 3,
         backgroundColor: styles.secondary.color,
         borderRadius: 5
     }]}>
-        <Paragraph
-            style={[styles.paragraph, styles.bold, styles.text_xs, {textAlign: 'center'}]}>{item.itemname}</Paragraph>
-        {hasRestaurant && <View style={[styles.absolute, {top: 3, right: 3}]}>
+        <Paragraph  style={[styles.paragraph, styles.bold, styles.text_xs, {textAlign: 'center'}]}>
+            {item.itemname}
+        </Paragraph>
+        {hasRestaurant  && !Boolean(item?.comboid) && <View style={[styles.absolute, {top: 3, right: 3}]}>
             <VegNonVeg type={veg}/>
         </View>}
         <Paragraph style={[styles.paragraph, styles.text_xs]}>
@@ -69,43 +72,50 @@ const Index = (props: any) => {
 
     const [dataSource, setDataSource]: any = useState([]);
 
+
     const getItems = async (refresh = false) => {
-        if (Boolean(selectedgroup)) {
-            await getItemsByWhere({itemgroupid: selectedgroup}).then((newitems: any) => {
-                setDataSource(newitems);
-            });
+
+        try {
+
+            const combogroup = getCombos(selectedgroup)
+
+            if (Boolean(selectedgroup)) {
+                await getItemsByWhere({itemgroupid: selectedgroup}).then((newitems: any) => {
+                    setDataSource(newitems.concat(combogroup));
+                });
+            }
+            setLoading(true)
         }
-        setLoading(true)
+        catch (e) {
+            appLog(e)
+        }
     }
 
     useEffect(() => {
-        /*if (sGroup !== selectedgroup) {
-            setDataSource([])
-            setStart(0)
-        }
-        sGroup = selectedgroup;*/
         getItems().then()
-
     }, [selectedgroup]) //start
 
 
     const renderItem = useCallback(({item, index}: any) => {
-        return <Item item={item} index={index} key={item.productid}/>
+        return <Item item={item} index={index} key={item.productid || item.categoryid}/>
     }, [selectedgroup]);
 
-    const onEndReached = () => {
-        // setStart(++start)
-    }
 
     if (!loading) {
         return <></>
     }
 
 
+
     return (
         <>
+
+
             <FlatList
-                data={dataSource}
+                data={dataSource.filter((item:any)=>{
+                    return !Boolean(item.groupid)
+                })}
+
                 renderItem={renderItem}
                 keyboardDismissMode={'on-drag'}
                 keyboardShouldPersistTaps={'always'}

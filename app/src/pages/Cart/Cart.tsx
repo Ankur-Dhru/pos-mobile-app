@@ -72,18 +72,19 @@ const Index = (props: any) => {
                         </View>
                     </View>
 
-                    <View style={[styles.h_100,styles.flex]}>
+                    <View style={[styles.h_100,styles.w_100,styles.flex]}>
                     <View
-                        style={[styles.grid, styles.justifyContent, styles.noWrap, styles.h_100, styles.flex]}>
+                        style={[styles.grid, styles.justifyContent, styles.noWrap, styles.h_100,styles.w_100, styles.flex]}>
 
 
-                        <Card style={[styles.card,styles.w_auto, {minWidth: 120,marginLeft:5}]}>
+                        <Card style={[styles.card,{width: 120,marginLeft:5}]}>
                             <GroupList navigation={navigation}/>
                         </Card>
 
-                        <Card style={[styles.card,styles.flexGrow,  styles.w_auto,{
+                        <Card style={[styles.card,styles.flexGrow,{
                             marginHorizontal:5,
-                            minWidth: '40%'
+                            padding:3,
+                            maxWidth: '45%'
                         }]}>
 
                             {!numpad ?
@@ -92,7 +93,7 @@ const Index = (props: any) => {
                             }
                         </Card>
 
-                        <View style={[styles.w_auto,styles.h_100,styles.flex,{minWidth: '40%',marginRight:5}]}>
+                        <View style={[styles.h_100,styles.flexGrow,styles.w_auto,{marginRight:5}]}>
                             <DetailView />
                         </View>
 

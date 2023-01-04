@@ -5,7 +5,7 @@ import {FlatList, Text, TouchableOpacity, View} from "react-native";
 import {connect} from "react-redux";
 
 import {styles} from "../../theme";
-import {appLog, isRestaurant, selectItem, toCurrency} from "../../libs/function";
+import {appLog, isRestaurant, objToArray, selectItem, toCurrency} from "../../libs/function";
 import {Card, Divider, List, Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
 import AddButton from "./AddButton";
@@ -15,7 +15,7 @@ import {useNavigation} from "@react-navigation/native";
 import GroupListMobile from "./GroupListMobile";
 import CartTotal from "../Cart/CartTotal";
 import Avatar from "../../components/Avatar";
-import {ItemDivider} from "../../libs/static";
+import {ItemDivider, localredux} from "../../libs/static";
 import store from "../../redux-store/store";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
 import GroupHeading from "./GroupHeading";
@@ -32,25 +32,32 @@ export const Item = memo(({item}: any) => {
     return (
         <List.Item
             style={[styles.listitem,{paddingTop:5}]}
-            key={item.itemid}
+            key={item.itemid || item.comboid}
             title={item.itemname}
             titleStyle={[styles.bold,{textTransform: 'capitalize'}]}
             titleNumberOfLines={2}
             description={()=>{
                 return <View style={[styles.grid, styles.middle]}>
-                    {hasRestaurant && <View style={[styles.mr_1]}>
+                    {hasRestaurant && !Boolean(item.comboid) && <View style={[styles.mr_1]}>
                         <VegNonVeg type={item.veg}/>
                     </View>}
                     <Paragraph style={[styles.paragraph, styles.text_xs]}>
                         {toCurrency(baseprice)}
                     </Paragraph>
+                    {
+                        Boolean(item.comboid) && <Paragraph  style={[styles.paragraph, styles.text_xs]}>Group</Paragraph>
+                    }
                 </View>
             }}
             onPress={() => {
                  selectItem(item).then()
             }}
-            left={() => <View style={{marginTop:5}}><Avatar label={item.itemname} value={item.itemid} fontsize={14} size={40}/></View>}
+            left={() => <View style={{marginTop:5}}><Avatar label={item.itemname} value={item.itemid || item.comboid} fontsize={14} size={40}/></View>}
             right={() => {
+
+                if(item.comboid){
+                    return  <List.Icon icon="chevron-right" style={{height:35,width:35,margin:0}} />
+                }
 
                 if(Boolean(item?.productqnt) && !hasKot){
                     return <View><AddButton item={item} page={'itemlist'}/></View>
@@ -65,6 +72,25 @@ export const Item = memo(({item}: any) => {
     return ((r1.item.productqnt === r2.item.productqnt) && (r1.item.itemid === r2.item.itemid));
 })
 
+export const getCombos = (selectedgroup:any) => {
+    let combogroup: any = []
+    if(Boolean(localredux.initData?.combogroup)) {
+        combogroup = Object.keys(localredux.initData?.combogroup).filter((key: any) => {
+            const group = localredux.initData?.combogroup[key];
+            return group.categoryid === selectedgroup
+        }).map((key: any) => {
+            const group = localredux.initData?.combogroup[key];
+            return {
+                itemname: group.itemgroupname,
+                comboid: key,
+                categoryid: group.categoryid,
+                itemid: group.categoryid
+            }
+        });
+    }
+    return combogroup
+}
+
 
 const Index = (props: any) => {
 
@@ -77,6 +103,7 @@ const Index = (props: any) => {
     const [dataSource, setDataSource]: any = useState([]);
 
 
+
     useEffect(() => {
 
         /*if(sGroup!==selectedgroup){
@@ -86,6 +113,8 @@ const Index = (props: any) => {
         }*/
 
         getItemsByWhere({itemgroupid: selectedgroup}).then((newitems: any) => {
+
+            const combogroup = getCombos(selectedgroup)
 
             if (Boolean(newitems.length > 0)) {
                 newitems = newitems?.map((i: any) => {
@@ -97,9 +126,9 @@ const Index = (props: any) => {
                     }
                     return i;
                 })
-                setDataSource([...newitems]); //...dataSource,
+                setDataSource([...newitems,...combogroup]); //...dataSource,
             } else {
-                setDataSource([]);
+                setDataSource([...combogroup]);
             }
             setLoading(true)
         });
@@ -114,7 +143,7 @@ const Index = (props: any) => {
 
 
     const renderItem = useCallback(({item, index}: any) => {
-        return <Item item={item} index={index} key={item.productid}/>
+        return <Item item={item} index={index} key={item.productid || item.comboid}/>
     }, [selectedgroup]);
 
 
@@ -132,7 +161,9 @@ const Index = (props: any) => {
 
                     <View style={[styles.h_100]}>
                     <FlatList
-                        data={dataSource}
+                        data={dataSource.filter((item:any)=>{
+                            return !Boolean(item.groupid)
+                        })}
                         keyboardDismissMode={'on-drag'}
                         keyboardShouldPersistTaps={'always'}
                         renderItem={renderItem}

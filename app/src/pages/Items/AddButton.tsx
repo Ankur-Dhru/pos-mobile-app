@@ -55,7 +55,7 @@ const Index = (props: any) => {
 
     return (
         <>
-            <View style={[styles.grid, styles.middle, {
+            <View style={[styles.grid,  styles.middle, {
                 width: '100%',
                 minWidth: 100,
                 borderRadius: 5,

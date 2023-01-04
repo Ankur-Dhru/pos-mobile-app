@@ -6,7 +6,7 @@ import {TABLE} from "./config";
 
 
 
-export const getItemsByWhere = async ({itemgroupid,itemname,itemid,start}:any) => {
+export const getItemsByWhere = async ({itemgroupid,itemname,itemid,groupid,start}:any) => {
     const db:any = await getDBConnection();
 
     try {
@@ -17,6 +17,9 @@ export const getItemsByWhere = async ({itemgroupid,itemname,itemid,start}:any) =
 
             if(Boolean(itemgroupid)){
               where += ` and itemgroupid = '${itemgroupid}' `;
+            }
+            if(Boolean(groupid)){
+                where += ` and groupid = '${groupid}' `;
             }
             if(Boolean(itemname)){
                 where += ` and (itemname LIKE '%${itemname}%' or uniqueproductcode = '${itemname}') `;

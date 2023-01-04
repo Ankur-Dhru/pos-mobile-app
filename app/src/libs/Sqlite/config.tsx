@@ -50,6 +50,7 @@ export const CREATE_ADDON_TABLE = `create table if not exists ${TABLE.ADDON}
 );`;
 
 
+export const ADD_COLUMN_ITEM_GROUPID = `ALTER TABLE ${TABLE.ITEM} ADD COLUMN groupid TEXT`;
 
 export const CREATE_ITEM_INDEX_ITEMGROUPID = `create index index_itemgroupid on ${TABLE.ITEM} (itemgroupid);`;
 export const CREATE_ITEM_INDEX_ITEMNAME = `create index index_itemname on ${TABLE.ITEM} (itemname);`;

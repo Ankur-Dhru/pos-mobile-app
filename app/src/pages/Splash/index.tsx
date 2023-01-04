@@ -46,6 +46,7 @@ const Index = (props: any) => {
                     if (expired_on >= today && status === 'Active') {
 
                         localredux.initData = initData;
+
                         localredux.localSettingsData = localSettingsData;
 
                         //await getStateAndTaxType(initData.general?.country).then()

@@ -45,13 +45,13 @@ export const insertItems = async (  itemsdata?: any,type:any = 'all') => {
 
           data.itemname = data?.itemname?.replace(regx," ");
           data.groupname =  data?.groupname?.replace(regx," ");
-          let values = `(${data?.itemid}, "${data?.itemname}", "${data?.itemgroupid}", "${data?.uniqueproductcode}", '${JSON.stringify(data)}', "${data?.itemstatus}", ${data?.pricealert})`;
+          let values = `(${data?.itemid}, "${data?.itemname}", "${data?.itemgroupid}", "${data?.uniqueproductcode}", '${JSON.stringify(data)}', "${data?.itemstatus}", ${data?.pricealert}, "${data?.groupid}")`;
 
           if(type === 'all'){
               insertQuery.push(values);
           }
           else{
-              insertQuery = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert") values ${values}`;
+              insertQuery = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert","groupid") values ${values}`;
               try {
                   const results = await db.executeSql(insertQuery);
               }
@@ -64,7 +64,7 @@ export const insertItems = async (  itemsdata?: any,type:any = 'all') => {
       if(type === 'all'){
 
           try {
-              const query = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert") values ${insertQuery.join(', ')}`;
+              const query = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert","groupid") values ${insertQuery.join(', ')}`;
               const results = await db.executeSql(query);
           }
           catch (e) {

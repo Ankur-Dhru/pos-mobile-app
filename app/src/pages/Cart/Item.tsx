@@ -47,7 +47,7 @@ const Index = memo((props: any) => {
 
 
             <View>
-                <View style={[styles.p_4,{borderRadius:5}]}>
+                <View style={[styles.p_2,{borderRadius:5}]}>
                     <View>
 
                         <TouchableOpacity onPress={async () => {
@@ -56,16 +56,12 @@ const Index = memo((props: any) => {
 
                             <View style={[styles.grid,]}>
 
-                                <View>
-                                    <Paragraph style={[styles.paragraph,  styles.bold]}>{index + 1})</Paragraph>
-                                </View>
-
-                                <View style={[styles.cell, styles.w_auto, {paddingLeft: 0}]}>
+                                <View style={[styles.w_auto, {paddingLeft: 0,minWidth:150,maxWidth:250}]}>
 
 
                                     <Paragraph
                                         style={[styles.paragraph,  styles.bold,styles.ml_1, {textTransform:'capitalize'}]}
-                                        numberOfLines={2}>{item?.itemname || item?.productdisplayname}</Paragraph>
+                                        numberOfLines={2}>{index + 1}) {item?.itemname || item?.productdisplayname}</Paragraph>
 
 
 
@@ -199,7 +195,7 @@ const Index = memo((props: any) => {
 
                                 </View>
 
-                                <View style={[{paddingRight: 0}]}>
+                                <View style={[{paddingRight: 0,marginTop:5,marginLeft:'auto'}]}>
 
                                    {!haskot && <AddButton item={item}/>}
 

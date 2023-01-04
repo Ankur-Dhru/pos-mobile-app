@@ -1,8 +1,5 @@
 import {EscPos} from 'escpos-xml';
 import Mustache from "mustache";
-import store from "../redux-store/store";
-import {setAlert} from "../redux-store/reducer/component";
-import EscPosPrinter, {getPrinterSeriesByName} from "react-native-esc-pos-printer";
 import BleManager from "react-native-ble-manager";
 import apiService from "./api-service";
 import {ACTIONS, METHOD, STATUS} from "./static";
@@ -17,7 +14,7 @@ export const sendDataToPrinter = async (input: any, template: string, printer: a
     return await new Promise(async (resolve) => {
         try {
 
-            if(printer?.printertype !== 'broadcast'){
+            if (printer?.printertype !== 'broadcast') {
                 /*if(printer.qrcode){
                     template += `<align  mode="center"><line-feed/><text>Scan to Pay</text><line-feed/></align>`;
                 }*/
@@ -31,24 +28,22 @@ Powered By Dhru ERP</text><line-feed/></align>`;
             if (printer?.printertype === 'bluetooth') {
                 const peripheral = printer?.bluetoothdetail.more;
 
-                BleManager.start({showAlert: false}).then(()=> {
+                BleManager.start({showAlert: false}).then(() => {
                     readyforPrint(peripheral).then((findSC: any) => {
 
-                        if(Boolean(findSC)) {
+                        if (Boolean(findSC)) {
                             BleManager.write(peripheral.id, findSC?.service, findSC?.characteristic, [...buffer]).then(() => {
                                 resolve('Print Successful')
                             });
-                        }
-                        else{
+                        } else {
                             resolve('Connection error')
                         }
 
                     })
                 })
-            }
-            else if(printer?.printertype === 'broadcast'){
+            } else if (printer?.printertype === 'broadcast') {
 
-                if(Boolean(printer?.broadcastip)) {
+                if (Boolean(printer?.broadcastip)) {
                     apiService({
                         method: METHOD.POST,
                         action: input?.printinvoice ? ACTIONS.PRINT : ACTIONS.KOT_PRINT,
@@ -65,24 +60,21 @@ Powered By Dhru ERP</text><line-feed/></align>`;
                         queryString: {remoteprint: true}
                     }).then((response: any) => {
 
-                        if(response.status === STATUS.ERROR){
+                        if (response.status === STATUS.ERROR) {
                             resolve(response.message)
-                        }
-                        else{
+                        } else {
                             resolve('Print Successful')
                         }
 
                     })
-                }
-                else{
+                } else {
                     resolve('printer broadcast IP not set')
                 }
 
-            }
-            else{
+            } else {
 
                 if (Boolean(printer?.host)) {
-                    return await connectToPrinter(printer, (buffer as unknown) as Buffer).then(async (msg:any) => {
+                    return await connectToPrinter(printer, (buffer as unknown) as Buffer).then(async (msg: any) => {
                         resolve(msg)
                     });
                 } else {
@@ -105,7 +97,7 @@ const connectToPrinter = async (printer: any, buffer: Buffer,): Promise<unknown>
 
         try {
             let device = new net.Socket();
-            if(device) {
+            if (device) {
                 device.on('close', async () => {
                     if (device) {
                         device.destroy();
@@ -126,8 +118,8 @@ const connectToPrinter = async (printer: any, buffer: Buffer,): Promise<unknown>
 
                 if (Boolean(printer?.host)) {
                     await device.connect({port, host}, async () => {
-                        device.write( Buffer.concat([buffer,Buffer.from([0x1B,0x6D])]));
-                        setTimeout(()=>{
+                        device.write(Buffer.concat([buffer, Buffer.from([0x1B, 0x6D])]));
+                        setTimeout(() => {
                             device.emit('close');
                         })
                     });
@@ -142,9 +134,6 @@ const connectToPrinter = async (printer: any, buffer: Buffer,): Promise<unknown>
     });
 
 };
-
-
-
 
 
 const connectToDevice = async (peripheral: any) => {
@@ -188,8 +177,7 @@ export const readyforPrint = async (peripheral: any) => {
                         }, 200);
                     }
                 });
-            }
-            else{
+            } else {
                 resolve(false)
             }
         })
@@ -198,8 +186,7 @@ export const readyforPrint = async (peripheral: any) => {
 }
 
 
-
-export const paperCut = async (printer: any) => {
+/*export const paperCut = async (printer: any) => {
 
     return await new Promise(async (resolve) => {
 
@@ -229,5 +216,5 @@ export const paperCut = async (printer: any) => {
     });
 
 
-}
+}*/
 

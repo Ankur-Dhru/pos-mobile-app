@@ -361,7 +361,7 @@ const Index = ({tableorders}: any) => {
                             onRefresh={() => getOrder()}
                         />
                     }*/
-                    numColumns={device.tablet ? 4 : 2}
+                    numColumns={device.tablet ? 3 : 2}
                     getItemLayout={(data, index) => {
                         return {length: 100, offset: 100 * index, index};
                     }}

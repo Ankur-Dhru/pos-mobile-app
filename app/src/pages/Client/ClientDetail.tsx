@@ -13,7 +13,7 @@ const Index = ({clientdetail,clientid,clientname}: any) => {
 
     const navigation = useNavigation()
 
-    return <Card style={[styles.card,{minWidth:360,paddingLeft:10}]} onPress={() => {
+    return <Card style={[styles.card,{minWidth:200,paddingLeft:5}]} onPress={() => {
         navigation.navigate('ClientList');
     }}>
         <List.Item style={[styles.listitem]}

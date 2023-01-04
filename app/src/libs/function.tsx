@@ -64,6 +64,9 @@ import RNFS from "react-native-fs";
 import ImageSize from "react-native-image-size";
 import SunmiPrinter from "@heasy/react-native-sunmi-printer";
 import ImageEditor from "@react-native-community/image-editor";
+import ZeroPriceAlert from "../pages/Items/ZeroPriceAlert";
+import ItemListCombo from "../pages/Items/ItemListCombo";
+import {createTables} from "./Sqlite";
 
 
 let NumberFormat = require('react-number-format');
@@ -503,6 +506,8 @@ export const syncData = async (loader = true) => {
     appLog('sync data')
 
     await retrieveData(db.name).then(async (data: any) => {
+
+        await createTables().then();
 
         try {
 
@@ -1240,12 +1245,20 @@ export const selectItem = async (item: any) => {
     }
 
     const directQnt = arraySome(store.getState()?.localSettings?.defaultAmountOpen, item.salesunit)
-    if (directQnt) {
+
+    if(Boolean(item?.comboid)){
+        store.dispatch(setBottomSheet({
+            visible: true,
+            hidecancel: true,
+            height:'60%',
+            component: () => <ItemListCombo comboitem={item}/>
+        }))
+    } else if (directQnt) {
         onPressNumber(item,'quantity', (productqnt: any) => {
             setItemQnt({...item, productqnt: +productqnt}).then()
             store.dispatch(setDialog({visible: false}))
         })
-    } else if (!Boolean(baseprice)) {
+    } else if (!Boolean(baseprice)){
 
         onPressNumber(item,'amount', (price: any) => {
             const pricingtype = item?.pricing?.type;
@@ -1254,9 +1267,6 @@ export const selectItem = async (item: any) => {
                 store.dispatch(setDialog({visible: false}))
             });
         })
-
-
-
         /*store.dispatch(setDialog({
             visible: true,
             hidecancel: true,

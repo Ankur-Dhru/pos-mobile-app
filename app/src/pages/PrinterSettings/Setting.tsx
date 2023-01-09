@@ -4,7 +4,14 @@ import {Platform, SafeAreaView, View} from "react-native";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
 import {Card, Paragraph} from "react-native-paper";
-import {composeValidators, defaultTestTemplate, PRINTER, required} from "../../libs/static";
+import {
+    composeValidators,
+    defaultTestTemplate,
+    defaultTestTemplateHTML,
+    localredux,
+    PRINTER,
+    required
+} from "../../libs/static";
 import Button from "../../components/Button";
 import {connect, useDispatch} from "react-redux";
 import {appLog, errorAlert, saveLocalSettings} from "../../libs/function";
@@ -24,10 +31,16 @@ const Index = (props: any) => {
 
 
     let {printers}: any = props;
-    const type = props?.route?.params?.type
+    const type = props?.route?.params?.type;
+    const {printingtemplate} =  localredux.initData
 
     const navigation = useNavigation()
     const dispatch = useDispatch()
+
+
+    const templates =  Object.keys(printingtemplate).map((key:any)=>{
+        return {label:printingtemplate[key].templatename,value:key}
+    })
 
     const [init, setInit]: any = useState(
         {
@@ -41,6 +54,8 @@ const Index = (props: any) => {
             port: '9100',
             printsize: '48',
             noofprint: '1',
+            templatetype:'',
+            printpreview:false,
             printoncancel: true,
             ...printers[type.departmentid]
         }
@@ -81,6 +96,9 @@ const Index = (props: any) => {
     }, {
         value: 'broadcast',
         label: 'Broadcast Printer'
+    }, {
+        value: 'sunmi',
+        label: 'Sunmi'
     }]
 
     if (Platform.OS !== 'ios') {
@@ -354,11 +372,66 @@ const Index = (props: any) => {
 
                                     </View>
                                 </View>
+
+
+                                <Card style={[styles.card]}>
+                                    <Card.Content style={[styles.cardContent]}>
+                                        <View>
+                                    <View>
+                                        <Field name="template"  validate={composeValidators(required)}>
+                                            {props => (
+                                                <InputField
+                                                    {...props}
+                                                    label={'Template'}
+                                                    mode={'flat'}
+                                                    list={templates}
+                                                    value={props.input.value}
+                                                    selectedValue={props.input.value}
+                                                    displaytype={'pagelist'}
+                                                    inputtype={'dropdown'}
+                                                    listtype={'other'}
+                                                    onChange={(value: any) => {
+                                                        props.input.onChange(value);
+                                                        setInit({
+                                                            ...init,
+                                                            templatetype:printingtemplate[value].type,
+                                                            printpreview:false,
+                                                            template: value
+                                                        })
+                                                    }}>
+                                                </InputField>
+                                            )}
+                                        </Field>
+                                    </View>
+
+
+                                    <>
+                                        {values.templatetype === 'ThermalHtml' ? <View>
+                                            <Field name="printpreview">
+                                                {props => (
+                                                    <><CheckBox
+                                                        value={props.input.value}
+                                                        label={'Show print preview'}
+                                                        onChange={(value: any) => {
+                                                            values.printpreview = value;
+                                                        }}
+                                                    /></>
+                                                )}
+                                            </Field>
+                                        </View> : <View>
+                                            <Paragraph style={[styles.paragraph,{color:styles.red.color}]}>Disable preview</Paragraph>
+                                        </View>}
+                                    </>
+
+                                </View>
+                                    </Card.Content>
+                                </Card>
+
                             </KeyboardScroll>
                             <View style={[styles.submitbutton]}>
 
                                 {<View style={[styles.grid, styles.justifyContent]}>
-                                    <View style={[styles.w_auto]}>
+                                    {<View style={[styles.w_auto,styles.mr_2]}>
                                         <Button disable={more.invalid}
                                                 more={{color: 'black', backgroundColor: styles.secondary.color}}
                                                 secondbutton={true} onPress={() => {
@@ -367,9 +440,9 @@ const Index = (props: any) => {
 
                                             });
                                         }}>Test Print </Button>
-                                    </View>
+                                    </View>}
 
-                                    <View style={[styles.w_auto, styles.ml_2]}>
+                                    <View style={[styles.w_auto, ]}>
                                         <Button more={{color: 'white'}} disable={more.invalid}
                                                 secondbutton={more.invalid}
                                                 onPress={() => {
@@ -409,7 +482,8 @@ export const testPrint = async (printer: any) => {
              appLog('base64result',base64result)
         });*/
 
-    sendDataToPrinter({message: 'Test Print Success', printinvoice: true}, defaultTestTemplate, printer).then((msg) => {
+    sendDataToPrinter({message: 'Test Print Success', printinvoice: true},printer.templatetype === 'ThermalHtml'? defaultTestTemplateHTML : defaultTestTemplate, printer).then((msg) => {
+        appLog('msg',msg)
         errorAlert(msg)
     });
 }

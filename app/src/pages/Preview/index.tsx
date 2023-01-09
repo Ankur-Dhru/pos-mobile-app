@@ -1,200 +1,230 @@
-import React, {Component} from 'react';
-import { ScrollView, Text,  View,} from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {ScrollView, Text, PixelRatio, View, Image, SafeAreaView, Alert} from 'react-native';
 import {styles} from "../../theme";
 
 import {Container, ProIcon} from "../../components";
 
 
-import {appLog, base64Decode, printPDF, sharePDF,} from "../../libs/function";
-import {Card, Paragraph} from "react-native-paper";
+import {appLog, base64Decode, captureImages, errorAlert, printPDF, sharePDF,} from "../../libs/function";
+import ViewShot from "react-native-view-shot";
+import PageLoader from "../../components/PageLoader";
+import SunmiPrinter from "@heasy/react-native-sunmi-printer";
+import {sendDataToPrinter} from "../../libs/Network";
+import {device} from "../../libs/static";
+import WebView from "react-native-webview";
+import Button from "../../components/Button";
 
-
-import {SIZE} from "../../libs/static";
 import RenderHtml from 'react-native-render-html';
-import parse, {domToReact} from 'html-react-parser';
+import {Paragraph} from "react-native-paper";
 
-//var XMLParser = require('react-xml-parser');
-
-
-class Preview extends Component<any> {
-
-    params: any;
-    data: any = '';
-    state: any = {
-        selectedPrinter: null
-    }
+global.Buffer = require('buffer').Buffer;
 
 
-    constructor(props: any) {
-        super(props);
+const Index = ({navigation, route}: any) => {
 
-        this.state = {isLoading: true}
+    const params = route.params;
+    const ref: any = useRef();
+    const scrollviewRef:any = useRef();
+    const {menu, filename, printer}: any = params;
 
-        const {route}: any = this.props;
-        this.params = route.params;
 
-        this.data = `<!DOCTYPE html>
+    const [loaded, setLoaded] = useState<boolean>(false)
+    const [height,setHeight] = useState(0);
+    const [images,setImages] = useState([])
+
+    const data = `<!DOCTYPE html>
                 <html>
                   <head>
                     <title>Print</title>
+                    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
                     <meta http-equiv="content-type" content="text/html; charset=utf-8">   
                     <style type="text/css">
                       body {
                         margin: 0;
-                        padding: 0;         
+                        padding: 0; 
+                        width:80mm
                       }
-                    </style>
+                      @media (-webkit-device-pixel-ratio: 1){ 
+                        @viewport {                            
+                             width:100%;
+                        }
+                      }
+                    </style> 
                   </head>
-                  <body>
-                     ${this.renderTemplate(base64Decode(this.params.data))}
+                  <body>                     
+                     ${base64Decode(device.printpreview)}
+                     <div><div>Powered By Dhru ERP</div><br/></div>
                   </body>
                 </html>`;
 
+    const snapShot = () => {
+        const {printer}: any = params;
 
-        this.loadPrintData();
-
-    }
-
-    loadPrintData = () => {
-        const {filename, autoprint}: any = this.params
-        if (autoprint) {
-            printPDF({data: this.data, filename}).then()
-        }
-    }
-
-    renderTemplate = (xmlData:any) => {
-
-
-        /*xmlData = xmlData.replaceAll('<align','<div').replaceAll('<text','<div').replaceAll('<bold','<div');
-        xmlData = xmlData.replaceAll('</align','</div').replaceAll('</text','</div').replaceAll('</bold','</div');
-
-        appLog('xmlData',xmlData)
-
-        return xmlData*/
-
+        const isSunmi = (printer?.printertype === 'sunmi')
 
         try {
-            const options = {
-                replace: (domNode: any) => {
-                    const {name, children, attribs, nextSibling} = domNode;
+            ref.current.capture().then(async (uri: any) => {
 
-                    if (name === "img" || name === "image") {
-                        let srcData = nextSibling.data;
-                        nextSibling.data = "";
-                        return <img width={130} src={srcData}/>
-                    }
-                    if (name === "bold") {
-                        return <b>{domToReact(children, options)}</b>
-                    }
-                    if (name === "text") {
-                        if (attribs?.size) {
-                            let sizePx: keyof typeof SIZE = attribs.size
-                            let size: any = SIZE[sizePx];
-                            return <div style={{fontSize: size, lineHeight: size}}>{domToReact(children, options)}</div>
+                isSunmi && await SunmiPrinter.printerInit();
+
+                await captureImages(500, uri).then(async (images: any) => {
+
+                    //setImages(images)
+
+                    for (let key in images) {
+                        const {base64result, width}: any = images[key];
+                        if (isSunmi) {
+                            await SunmiPrinter.printBitmap(base64result, width)
+                        } else {
+                            //await sendDataToPrinter('', '', printer, Buffer.from('data:image/png;base64,' + base64result, 'base64'))
                         }
-                        return <div>{domToReact(children, options)}</div>
                     }
-                    if (name === "align") {
-                        return <div style={{textAlign: attribs?.mode || "left"}}>{domToReact(children, options)}</div>
+                    if (isSunmi) {
+                        await SunmiPrinter.lineWrap(3)
+                        await SunmiPrinter.cutPaper()
                     }
-                    return domNode
-                }
-            }
 
-            appLog('parse(xmlData,options)',parse(xmlData,options))
 
-            return parse(xmlData,options)
-        } catch (e: any) {
-            return `Template Error : ${e?.message}`
+
+                });
+
+            });
+        } catch (e) {
+            appLog('e', e)
         }
-
-
     }
 
 
+    const loadPrintData = () => {
+        const {filename, autoprint, printer}: any = params
+        if (autoprint) {
+            if(height) {
+                appLog('take auto shot')
+                setTimeout(async () => {
+                    await snapShot()
+                    setTimeout(() => {
+                        navigation.goBack()
+                    })
+                },500)
+            }
+            //printPDF({data: data, filename}).then()
+        }
+    }
+
+    useEffect(()=>{
+        loadPrintData();
+    },[height])
 
 
-    render() {
-        const {navigation}: any = this.props;
-        const {menu, filename}: any = this.params;
-
-        navigation.setOptions({
-            headerTitle: `Preview`,
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            setTimeout(() => {
+                setLoaded(true);
+            })
         });
-
-
-        return (
-            <Container>
-
-
-                <View style={[styles.middle]}>
-                    <View style={[styles.middleForm, styles.h_100]}>
-
-                        <ScrollView style={[styles.h_100, styles.flex]}>
-
-                            <Card style={[styles.card, styles.h_100]}>
-                                <Card.Content style={[styles.cardContent]}>
-
-                                    <ScrollView>
-
-                                        <Paragraph>Hello</Paragraph>
-
-
-
-                                        <RenderHtml
-                                            source={{html:`<div style="color:black">25254345</div>`}}
-                                        />
-
-
-                                        <Paragraph>Hello</Paragraph>
-
-                                        {/*<WebView
-
-                                        source={{ uri: 'https://reactnative.dev/' }}
-                                        automaticallyAdjustContentInsets={true}
-                                    />*/}
-
-                                    </ScrollView>
-
-                                </Card.Content>
-
-                            </Card>
-
-                        </ScrollView>
-
-                        <View>
-                            <View style={[styles.submitbutton, styles.row, styles.justifyContent]}>
-                                <View style={[styles.cell, styles.w_auto]}>
-                                    <Text style={{textAlign: 'center'}}>
-                                        <ProIcon name={'share-nodes'}
-                                                 onPress={() => sharePDF({data: this.data, filename})}/>
-                                    </Text>
-                                </View>
-                                <View style={[styles.cell, styles.w_auto]}>
-                                    <Text style={{textAlign: 'center'}}>
-                                        <ProIcon name={'print'} onPress={() => printPDF({data: this.data, filename})}/>
-                                    </Text>
-                                </View>
-                                <View style={[styles.cell, styles.w_auto]}>
-                                    <Text style={{textAlign: 'center'}}>
-                                        <ProIcon name={'download'} onPress={() => this.params.downloadPDF()}/>
-                                    </Text>
-                                </View>
-
-                            </View>
-
-                        </View>
-                    </View>
-
-                </View>
-
-
-            </Container>
-        )
+        return unsubscribe;
+    }, []);
+    if (!loaded) {
+        return <PageLoader/>
     }
+
+
+    /*navigation.setOptions({
+        headerRight:()=>{
+            return (
+                <ProIcon name={'print'} onPress={() =>
+                    snapShot()
+                }/>
+            )
+        }
+    })*/
+
+    const webViewScript = `window.ReactNativeWebView.postMessage(document.body.scrollHeight);
+  true; // note: this is required, or you'll sometimes get silent failures
+`;
+
+    const onProductDetailsWebViewMessage = (event:any) => {
+        setHeight(Number(event.nativeEvent.data) + ((Number(event.nativeEvent.data) * 2 / 100)))
+    }
+
+    /*return    <WebView
+        source={{html: data}}
+        automaticallyAdjustContentInsets={true}
+        scrollEnabled={false}
+        javaScriptEnabled={true}
+        onMessage={onProductDetailsWebViewMessage}
+        domStorageEnabled={true}
+        injectedJavaScript={webViewScript}
+    />*/
+
+
+
+    if(!height) {
+        return  <WebView
+            source={{html: data}}
+            scalesPageToFit={true}
+            mixedContentMode="always"
+            automaticallyAdjustContentInsets={false}
+            scrollEnabled={false}
+            javaScriptEnabled={true}
+            onMessage={onProductDetailsWebViewMessage}
+            injectedJavaScript={webViewScript}
+        />
+    }
+
+
+
+    return (
+        <View style={[styles.h_100,styles.flex,styles.bg_white]}>
+
+            <ScrollView  contentContainerStyle={[styles.px_6]}>
+                <ViewShot ref={ref}  style={{height:height}}   options={{result: "data-uri",   format: "png", quality: 1}}>
+                    <WebView
+                        source={{html: data}}
+                        style={{height:height}}
+                    />
+                </ViewShot>
+            </ScrollView>
+
+            <View>
+                <View style={[styles.submitbutton, styles.row, styles.justifyContent]}>
+                    {/*<View style={[styles.cell, styles.w_auto]}>
+                        <Text style={{textAlign: 'center'}}>
+                            <ProIcon name={'share-nodes'}
+                                     onPress={() => sharePDF({data: data, filename})}/>
+                        </Text>
+                    </View>*/}
+                    <View style={[styles.cell, styles.w_auto,styles.ml_2]}>
+                        <Button more={{color: 'white'}}
+                                onPress={() => {
+                                    snapShot()
+                                }}> Print {height}
+                        </Button>
+                        {/*<Text style={{textAlign: 'center'}}>
+                            <ProIcon name={'print'} onPress={() =>
+                                snapShot()
+                                //printPDF({data: this.data, filename})
+                            }/>
+                        </Text>*/}
+                    </View>
+                    {/*<View style={[styles.cell, styles.w_auto]}>
+                        <Text style={{textAlign: 'center'}}>
+                            <ProIcon name={'download'} onPress={() => params.downloadPDF()}/>
+                        </Text>
+                    </View>*/}
+                </View>
+            </View>
+
+
+
+
+
+        </View>
+    )
+
 }
 
 
-export default Preview;
+export default Index;
 
 

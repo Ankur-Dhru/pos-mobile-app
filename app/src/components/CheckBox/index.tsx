@@ -10,7 +10,7 @@ const CheckBox = (props:any) => {
 
 
     return (
-        <View >
+        <View style={{marginLeft:-20}}>
             <TouchableOpacity onPress={() => {
                 if(editmode && !disabled) {
                     setChecked(!checked);

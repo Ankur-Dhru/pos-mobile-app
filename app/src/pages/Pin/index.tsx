@@ -47,7 +47,7 @@ const Index = (props: any) => {
 
                     await dispatch(showLoader())
 
-                    await gePhonebook();
+                    //await gePhonebook();
 
                     await retrieveData(db.name).then(async (data: any) => {
 

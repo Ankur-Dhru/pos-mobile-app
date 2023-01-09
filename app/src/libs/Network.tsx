@@ -2,87 +2,115 @@ import {EscPos} from 'escpos-xml';
 import Mustache from "mustache";
 import BleManager from "react-native-ble-manager";
 import apiService from "./api-service";
-import {ACTIONS, METHOD, STATUS} from "./static";
-import {appLog, getTemplate} from "./function";
+import {ACTIONS, device, METHOD, STATUS} from "./static";
+import {appLog, base64Encode, getTemplate, printImage} from "./function";
 
 global.Buffer = require('buffer').Buffer;
 const net = require('react-native-tcp-socket');
 
 
-export const sendDataToPrinter = async (input: any, template: string, printer: any) => {
+export const sendDataToPrinter = async (input?: any, template?: string, printer?: any,bufferdata?:any) => {
 
     return await new Promise(async (resolve) => {
-        try {
+        if(Boolean(printer.template)) {
+            try {
 
-            if (printer?.printertype !== 'broadcast') {
-                /*if(printer.qrcode){
-                    template += `<align  mode="center"><line-feed/><text>Scan to Pay</text><line-feed/></align>`;
-                }*/
-                template += `<align  mode="center"><line-feed/><text>
-Powered By Dhru ERP</text><line-feed/></align>`;
-            }
+                let xmlData:any = '';
+                let buffer:any = bufferdata || '';
 
-            let xmlData = Mustache.render(getTemplate(template), input);
-            const buffer = EscPos.getBufferFromXML(xmlData);
+                if(!Boolean(buffer)) {
 
-            if (printer?.printertype === 'bluetooth') {
-                const peripheral = printer?.bluetoothdetail.more;
+                    if (printer?.printertype !== 'broadcast') {
+                        /*if(printer.qrcode){
+                            template += `<align  mode="center"><line-feed/><text>Scan to Pay</text><line-feed/></align>`;
+                        }*/
 
-                BleManager.start({showAlert: false}).then(() => {
-                    readyforPrint(peripheral).then((findSC: any) => {
+                        if (printer?.templatetype !== 'ThermalHtml') {
+                            template += `<align  mode="center"><line-feed/><text>Powered By Dhru ERP</text><line-feed/></align>`;
+                        }
+                    }
 
-                        if (Boolean(findSC)) {
-                            BleManager.write(peripheral.id, findSC?.service, findSC?.characteristic, [...buffer]).then(() => {
+
+
+
+                    if (printer?.templatetype === 'ThermalHtml') {
+                        device.printpreview =  base64Encode(Mustache.render(template, input));
+                        device.navigation.navigate('Preview', {printer:printer, autoprint: !printer?.printpreview});
+                        return true
+                    }
+                    else {
+                        xmlData = Mustache.render(getTemplate(template), input);
+                        buffer = EscPos.getBufferFromXML(xmlData);
+                    }
+
+                }
+
+
+                if (printer?.printertype === 'bluetooth') {
+                    const peripheral = printer?.bluetoothdetail.more;
+
+                    BleManager.start({showAlert: false}).then(() => {
+                        readyforPrint(peripheral).then((findSC: any) => {
+
+                            if (Boolean(findSC)) {
+                                BleManager.write(peripheral.id, findSC?.service, findSC?.characteristic, [...buffer]).then(() => {
+                                    resolve('Print Successful')
+                                });
+                            } else {
+                                resolve('Connection error')
+                            }
+
+                        })
+                    })
+                } else if (printer?.printertype === 'broadcast') {
+
+                    if (Boolean(printer?.broadcastip)) {
+                        apiService({
+                            method: METHOD.POST,
+                            action: input?.printinvoice ? ACTIONS.PRINT : ACTIONS.KOT_PRINT,
+                            body: {
+                                buffer: [...buffer],
+                                kot: input,
+                                debugPrint: true,
+                                displayQR: true,
+                                vouchertotaldisplay: input?.vouchertotaldisplay,
+                                invoice_display_number: input?.invoice_display_number,
+                                terminalname: input?.terminalname,
+                            },
+                            other: {url: `http://${printer?.broadcastip}:8081/`},
+                            queryString: {remoteprint: true}
+                        }).then((response: any) => {
+
+                            if (response.status === STATUS.ERROR) {
+                                resolve(response.message)
+                            } else {
                                 resolve('Print Successful')
-                            });
-                        } else {
-                            resolve('Connection error')
-                        }
+                            }
 
-                    })
-                })
-            } else if (printer?.printertype === 'broadcast') {
+                        })
+                    } else {
+                        resolve('printer broadcast IP not set')
+                    }
 
-                if (Boolean(printer?.broadcastip)) {
-                    apiService({
-                        method: METHOD.POST,
-                        action: input?.printinvoice ? ACTIONS.PRINT : ACTIONS.KOT_PRINT,
-                        body: {
-                            buffer: [...buffer],
-                            kot: input,
-                            debugPrint: true,
-                            displayQR: true,
-                            vouchertotaldisplay: input?.vouchertotaldisplay,
-                            invoice_display_number: input?.invoice_display_number,
-                            terminalname: input?.terminalname,
-                        },
-                        other: {url: `http://${printer?.broadcastip}:8081/`},
-                        queryString: {remoteprint: true}
-                    }).then((response: any) => {
-
-                        if (response.status === STATUS.ERROR) {
-                            resolve(response.message)
-                        } else {
-                            resolve('Print Successful')
-                        }
-
-                    })
                 } else {
-                    resolve('printer broadcast IP not set')
-                }
 
-            } else {
+                    if(printer?.printertype === 'sunmi'){
 
-                if (Boolean(printer?.host)) {
-                    return await connectToPrinter(printer, (buffer as unknown) as Buffer).then(async (msg: any) => {
-                        resolve(msg)
-                    });
-                } else {
-                    resolve('printer IP not set')
+                    }
+                    else if (Boolean(printer?.host)) {
+                        return await connectToPrinter(printer, (buffer as unknown) as Buffer).then(async (msg: any) => {
+                            resolve(msg)
+                        });
+                    } else {
+                        resolve('printer IP not set')
+                    }
                 }
+            } catch (err) {
+                resolve('Check Printer Connection')
             }
-        } catch (err) {
-            resolve('Check Printer Connection')
+        }
+        else{
+            resolve('Please select printer template')
         }
 
     })

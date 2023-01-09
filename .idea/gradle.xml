@@ -50,6 +50,8 @@
             <option value="$PROJECT_DIR$/app/node_modules/react-native-svg/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-tcp-socket/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-vector-icons/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/react-native-view-shot/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/react-native-webview/android" />
           </set>
         </option>
       </GradleProjectSettings>

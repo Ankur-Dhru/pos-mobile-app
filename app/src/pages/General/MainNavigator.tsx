@@ -59,6 +59,7 @@ import AddExpense from "../../pages/Expense"
 import DateTimePicker from "./DateTimePicker";
 import AskPermission from "../Pin/AskPermission";
 import BlueToothList from "../PrinterSettings/BlueToothList";
+import Preview from "../Preview";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -188,6 +189,12 @@ const ClientAreaStackNavigator = (props: any) => {
                           options={{presentation: 'modal', headerTitle: 'Cancel Reason'}}/>
 
 
+            <Stack.Screen name={'Preview'} component={Preview} options={({route}: any) => ({
+                presentation: 'modal',
+                title: 'Preview'
+            })} />
+
+
             <Stack.Screen name={'DropDownList'} component={DropDownList} options={({route}: any) => ({
                 presentation: route?.params?.presentation,
                 headerShown: false,
@@ -216,7 +223,7 @@ const ProfileSettingsNavigator = (props: any) => {
             <Stack.Screen name={'SalesReport'} component={SalesReport} options={{headerTitle: 'Sales Report'}}/>
             <Stack.Screen name={'DayEndReport'} component={DayEndReport} options={{headerTitle: 'Day End Report'}}/>
 
-            {/*<Stack.Screen name={'Preview'} component={Preview} options={{headerTitle: 'Preview'}}/>*/}
+
 
             <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem} options={{headerTitle: 'Add Item'}}/>
             <Stack.Screen name={'AddEditCategory'} component={AddEditCategory} options={{headerTitle: 'Add Category'}}/>
@@ -236,6 +243,8 @@ const ProfileSettingsNavigator = (props: any) => {
             <Stack.Screen name={'PrinterSettings'} component={PrinterSettings} options={{title: ''}}/>
 
             <Stack.Screen name={'BlueToothList'} component={BlueToothList} options={{title: 'Bluetooth Devices'}}/>
+
+            <Stack.Screen name={'Preview'} component={Preview} options={({route}: any) => ({title: 'Preview'})} />
 
             <Stack.Screen name={'DropDownList'} component={DropDownList}
                           options={{headerShown: false, headerTitle: 'Select'}}/>

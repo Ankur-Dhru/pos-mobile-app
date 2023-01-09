@@ -1924,26 +1924,21 @@ export const printInvoice = async (order?: any,preview?:any) => {
 
          return await new Promise(async (resolve) => {
 
-            const template: any = getPrintTemplate('Thermal');
+            const template: any = getPrintTemplate(printer.template);
 
-            if(preview){
-                let xmlData = Mustache.render( template, printJson);
-                resolve(xmlData)
-            }
+             if (Boolean(template)) {
+                 sendDataToPrinter(printJson, template, {
+                     ...printer,
+                     qrcode
+                 }).then((msg) => {
+                     store.dispatch(setAlert({visible: true, message: msg}))
+                     resolve(msg)
+                 });
+             } else {
+                 store.dispatch(setAlert({visible: true, message: 'Invoice Printer not set'}))
+                 resolve(false)
+             }
 
-           if(Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip)) {
-               sendDataToPrinter(printJson, template, {
-                   ...printer,
-                   qrcode
-               }).then((msg) => {
-                   store.dispatch(setAlert({visible: true, message: msg}))
-                   resolve(msg)
-               });
-            }
-           else {
-               store.dispatch(setAlert({visible: true, message: 'Invoice Printer not set'}))
-                resolve(false)
-            }
         })
 
     } catch (e) {
@@ -1970,7 +1965,7 @@ export const printKOT = async (kot?: any) => {
         if ((kot?.cancelled && printer?.printoncancel) || !kot?.cancelled) {
             return new Promise(async (resolve) => {
                 if (Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip)) {
-                    const template: any = getPrintTemplate('KOT');
+                    const template: any = getPrintTemplate(printer.template);
                     sendDataToPrinter(printJson, template, printer).then((msg) => {
                         store.dispatch(setAlert({visible: true, message: msg}))
                         resolve(msg)
@@ -1998,13 +1993,12 @@ export const getPrintTemplateLogo = (type?: any) => {
 }
 
 
-export const getPrintTemplate = (type?: any) => {
-    const {printingtemplates}: any = localredux.localSettingsData || {}
-
-    if (Boolean(printingtemplates) && Boolean(printingtemplates[type])) {
-        return base64Decode(printingtemplates[type]?.content)
+export const getPrintTemplate = (id?: any) => {
+    const {printingtemplate} =  localredux.initData
+    if (Boolean(printingtemplate) && Boolean(printingtemplate[id])) {
+        return base64Decode(printingtemplate[id]?.content)
     }
-    return type === 'KOT' ? defaultKOTTemplate : type === 'Thermal' ? defaultInvoiceTemplate : dayendReportTemplate
+   // return type === 'KOT' ? defaultKOTTemplate : type === 'Thermal' ? defaultInvoiceTemplate : dayendReportTemplate
 }
 
 export const cancelOrder = async (navigation: any) => {
@@ -2537,73 +2531,73 @@ export const intervalInvoice = () => {
 
 
 
-export const printImage = async (cropheight:any = 500,image:any) => {
-
-    const base64result = image.split(',')[1];
-    const path = 'file://'+ RNFS.DocumentDirectoryPath + '/voucher.png';
-
-    await RNFS.writeFile(path, base64result, 'base64')
-        .then((success) => {
-            appLog('FILE WRITTEN!');
-        })
-        .catch((err) => {
-            appLog(err.message);
-        });
+export const captureImages = async (cropheight:any = 500,image:any) => {
 
 
+    return new Promise(async (resolve)=> {
 
-    try {
-        ImageSize.getSize(path).then(async ({width,height}: any) => {
+        const base64result = image.split(',')[1];
+        const path = 'file://'+ RNFS.DocumentDirectoryPath + '/printpreview.png';
 
-            const deviding = height/cropheight;
-            const roundof = Math.floor(height/cropheight)
-            const remainign = Math.floor((deviding - roundof) * cropheight);
+        await RNFS.writeFile(path, base64result, 'base64')
+            .then((success) => {
+                appLog('FILE WRITTEN!');
+            })
+            .catch((err) => {
+                appLog(err.message);
+            });
 
 
 
-            SunmiPrinter.printerInit();
-            let yaxis = 0;
-            let images:any = [];
+        try {
+            ImageSize.getSize(path).then(async ({width,height}: any) => {
 
-            for(let i=0;i <= roundof;i++){
-                yaxis = i * cropheight;
+                const deviding = height/cropheight;
+                const roundof = Math.floor(height/cropheight)
+                const remainign = Math.floor((deviding - roundof) * cropheight);
 
-                try {
+                let yaxis = 0;
+                let images:any = [];
+                let base64:any = [];
 
-                    const croppedImageURI = await ImageEditor.cropImage(
-                        path,
-                        {
-                            offset: {x: 0, y: yaxis },
-                            size: {width: width, height: i === roundof ? remainign: cropheight },
-                            resizeMode: 'contain',
-                        }
-                    );
-                    images.push(croppedImageURI);
+                for(let i=0;i <= roundof;i++){
+                    yaxis = i * cropheight;
 
-                } catch (cropError) {
-                    appLog('cropError',cropError)
+                    try {
+
+                        const croppedImageURI = await ImageEditor.cropImage(
+                            path,
+                            {
+                                offset: {x: 0, y: yaxis },
+                                size: {width: width, height: i === roundof ? remainign: cropheight },
+                                resizeMode: 'contain',
+                            }
+                        );
+                        images.push(croppedImageURI);
+
+                    } catch (cropError) {
+                        appLog('cropError',cropError)
+                    }
+
                 }
 
-            }
+                for(let key in images){
+                    await RNFS.readFile(images[key], 'base64')
+                        .then(async (base64result) =>{
+                            base64.push({base64result:base64result,width:width})
+                        });
+                }
+                resolve(base64)
+            })
 
-            for(let key in images){
-                await RNFS.readFile(images[key], 'base64')
-                    .then(async (base64result) =>{
-                        await SunmiPrinter.printBitmap(base64result, width)
-                    });
-            }
-
-            await SunmiPrinter.lineWrap(3)
-            await SunmiPrinter.cutPaper()
-
-        })
-
-    }
-    catch (e) {
-        appLog(e)
-    }
-
+        }
+        catch (e) {
+            appLog(e)
+            resolve([])
+        }
+    })
 
 
 
 }
+

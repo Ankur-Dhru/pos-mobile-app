@@ -1,9 +1,9 @@
 import React, {memo, useEffect} from "react";
 import {
-    appLog,
+    appLog, base64Encode,
     clone, dateFormat,
     generateKOT, getItem, getLeftRight, getPrintTemplate, getPrintTemplateLogo, getTrimChar,
-    isRestaurant, numberFormat, objToArray, printInvoice,
+    isRestaurant, numberFormat, objToArray, printInvoice, renderTemplate,
 
     retrieveData,
     saveTempLocalOrder, storeData
@@ -18,6 +18,7 @@ import {resetCart, setCartData} from "../../redux-store/reducer/cart-data";
 import {hideLoader, setAlert, setBottomSheet, showLoader} from "../../redux-store/reducer/component";
 import HoldOrders from "./HoldOrders";
 import {db, device, localredux, PRINTER} from "../../libs/static";
+import store from "../../redux-store/store";
 
 
 
@@ -41,6 +42,8 @@ const Index = ({
 
 
     return <View>
+
+
 
         {<View style={[styles.marginOver,{backgroundColor:'white',marginTop:0,marginBottom:0,paddingVertical:5, paddingHorizontal: device.tablet? 10:5}]}>
             <View>
@@ -89,15 +92,21 @@ const Index = ({
 
                                     onPress={async () => {
 
-                                        await generateKOT().then(() => {
+
+
+                                        printInvoice('',true).then((data: any) => {
+                                            saveTempLocalOrder('', {print: Boolean(data)}).then((msg:any) => {
+                                                dispatch(hideLoader())
+                                            })
+                                        });
+
+                                        /*await generateKOT().then(() => {
                                             printInvoice().then((status: any) => {
                                                 saveTempLocalOrder('', {print: Boolean(status)}).then((msg:any) => {
                                                     dispatch(hideLoader())
                                                 })
-
                                             });
-                                        });
-
+                                        });*/
 
                                     }
                                     }

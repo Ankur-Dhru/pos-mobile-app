@@ -151,8 +151,6 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
             ////////// SAVE FINAL DATA //////////
             dispatch(showLoader())
 
-            appLog('cartData.client',cartData.client)
-
             saveLocalOrder(clone(cartData)).then(async (order:any) => {
                 if (config?.print) {
                     printInvoice({...order}).then(() => {});

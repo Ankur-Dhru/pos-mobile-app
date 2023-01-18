@@ -24,7 +24,7 @@ class Index extends Component<any> {
 
 
     onRead = (value?:any) =>{
-        getItemsByWhere({itemname:value}).then((items:any)=>{
+        getItemsByWhere({itemname:value,sku:true}).then((items:any)=>{
             if(Boolean(items.length)) {
                 selectItem(items[0]).then()
             }

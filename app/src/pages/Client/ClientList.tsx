@@ -1,4 +1,4 @@
-import {device, ItemDivider, localredux} from "../../libs/static";
+import {device, ItemDivider, localredux, urls} from "../../libs/static";
 import React, {memo, useEffect,  useState} from "react";
 import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
 import {Card, Divider, List, Paragraph} from "react-native-paper";
@@ -112,7 +112,9 @@ const Index = (props: any) => {
     },[])
 
     const getPhones = async (force:any) => {
-        await gePhonebook(force);
+        if(!Boolean(urls.localserver)) {
+            await gePhonebook(force);
+        }
         force && handleSearch().then()
     }
 

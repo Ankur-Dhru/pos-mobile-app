@@ -12,7 +12,7 @@ import {
     loginUrl,
     METHOD,
     PRINTER,
-    STATUS
+    STATUS, urls
 } from "../../libs/static";
 import apiService from "../../libs/api-service";
 import Button from "../../components/Button";
@@ -36,6 +36,8 @@ const ProfileSettings = () => {
 
     const windowHeight = Dimensions.get('window').height;
     const navigation = useNavigation()
+
+    const hasLocalserver = Boolean(urls.localserver);
 
     const isRes = isRestaurant();
 
@@ -152,7 +154,7 @@ const ProfileSettings = () => {
 
 
                                 <View style={[styles.grid, styles.justifyContent]}>
-                                    <Button style={[styles.w_auto, styles.noshadow]}
+                                    {!hasLocalserver && <Button style={[styles.w_auto,styles.mr_1, styles.noshadow]}
                                             more={{
                                                 backgroundColor: styles.accent.color,
                                                 color: 'white',
@@ -160,8 +162,8 @@ const ProfileSettings = () => {
                                             }} onPress={() => {
                                         navigation.goBack();
                                         syncData().then()
-                                    }}>Sync</Button>
-                                    <Button style={[styles.ml_1, styles.w_auto, styles.noshadow]}
+                                    }}>Sync</Button> }
+                                    <Button style={[ styles.w_auto, styles.noshadow]}
                                             more={{
                                                 backgroundColor: styles.red.color,
                                                 color: 'white',
@@ -176,7 +178,7 @@ const ProfileSettings = () => {
 
                         </View>
 
-                        <View>
+                        {!hasLocalserver && <View>
                             <View>
 
 
@@ -401,7 +403,7 @@ const ProfileSettings = () => {
 
                                 </View>
                             </View>
-                        </View>
+                        </View>}
 
                     </View>
 

@@ -90,13 +90,17 @@ const apiService = async (config: configData) => {
                 }
             }
 
+            if ((response?.status === STATUS.SUCCESS) && !config?.hidealert) {
+                store.dispatch(setAlert({visible: true, message: response.message}))
+            }
+
             if (response?.code === 401) {
                 refreshToken();
                 store.dispatch(setAlert({visible: true, message: 'Something went wrong, Please try again!'}))
             }
 
-
             return response;
+
         })
         .catch(error => {
 

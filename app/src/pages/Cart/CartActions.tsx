@@ -94,19 +94,20 @@ const Index = ({
 
 
 
-                                        printInvoice('',true).then((data: any) => {
+                                        /*printInvoice('',true).then((data: any) => {
                                             saveTempLocalOrder('', {print: Boolean(data)}).then((msg:any) => {
                                                 dispatch(hideLoader())
                                             })
-                                        });
+                                        });*/
 
-                                        /*await generateKOT().then(() => {
+                                        await generateKOT().then(() => {
+                                            dispatch(hideLoader())
                                             printInvoice().then((status: any) => {
                                                 saveTempLocalOrder('', {print: Boolean(status)}).then((msg:any) => {
                                                     dispatch(hideLoader())
                                                 })
                                             });
-                                        });*/
+                                        });
 
                                     }
                                     }
@@ -161,8 +162,8 @@ const Index = ({
                             onPress={() => {
                                 if (Boolean(vouchertotaldisplay)) {
                                     dispatch(showLoader())
-                                    saveTempLocalOrder().then((msg:any) => {
-                                        dispatch(hideLoader())
+                                    saveTempLocalOrder().then((data:any) => {
+                                        dispatch(hideLoader());
                                         navigation.navigate('Payment');
                                     })
                                 }

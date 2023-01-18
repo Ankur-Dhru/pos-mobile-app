@@ -124,11 +124,12 @@ const Index = (props: any) => {
                     </TouchableOpacity>}
 
                     {listtype === 'other' && !multiselect && <TouchableOpacity onPress={() => {
-                        selectItem(item);
+                        !Boolean(item.disable) && selectItem(item);
                     }}>
                         <List.Item
                             title={item.label}
-                            titleStyle={{textTransform: 'capitalize'}}
+                            description={item.description}
+                            titleStyle={{textTransform: 'capitalize',color:item.disable?'#ccc':'#222'}}
                             right={() => (item.value === selected) && <List.Icon icon="check"/>}
                         />
                     </TouchableOpacity>}

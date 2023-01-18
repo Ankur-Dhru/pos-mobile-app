@@ -8,10 +8,10 @@ import {
     appLog,
     gePhonebook,
     getAddons,
-    getClients,
+    getClients, getLocalSettings,
     getOrders,
     getTempOrders,
-    retrieveData,
+    retrieveData, saveLocalSettings,
     syncData
 } from "../../libs/function";
 
@@ -19,11 +19,13 @@ import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/compon
 import {Card, Paragraph, Text} from "react-native-paper";
 import {styles} from "../../theme";
 import moment from "moment/moment";
-import {db, localredux} from "../../libs/static";
+import {ACTIONS, db, localredux, METHOD, port, urls} from "../../libs/static";
 import {setSettings} from "../../redux-store/reducer/local-settings-data";
 
 import {setGroupList} from "../../redux-store/reducer/group-list";
 import {setTableOrdersData} from "../../redux-store/reducer/table-orders-data";
+import apiService from "../../libs/api-service";
+import {useNavigation} from "@react-navigation/native";
 
 
 const md5 = require('md5');
@@ -31,71 +33,120 @@ const md5 = require('md5');
 
 const Index = (props: any) => {
 
-    let {route: {params}, navigation}: any = props;
+    let {route: {params},navigation}: any = props;
 
     const dispatch = useDispatch()
 
     const pinView: any = useRef(null)
     const [enteredPin, setEnteredPin] = useState("")
 
+    const setData = async (data:any) => {
+        const {
+            initData,
+            licenseData,
+            authData,
+            localSettingsData,
+        } = data || {};
+
+        if (Boolean(data) && Boolean(licenseData)) {
+
+            const {license: {expired_on, status}} = licenseData?.data;
+            const today = moment().format('YYYY-MM-DD');
+
+            if (expired_on >= today && status === 'Active') {
+
+                localredux.initData = {...localredux.initData,...initData};
+
+                localredux.licenseData = licenseData;
+                localredux.authData = {...params, ...authData};
+                localredux.localSettingsData = localSettingsData;
+
+                const {itemgroup}: any = localredux.initData;
+                if (Boolean(itemgroup)) {
+                    await dispatch(setGroupList(itemgroup))
+                }
+
+                await getClients().then()
+                await getAddons().then()
+                await getTempOrders().then((orders) => {
+                    dispatch(setTableOrdersData(orders));
+                })
+
+                const {othersettings} = localredux.initData
+                await retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
+                    await dispatch(setSettings({...data,...othersettings}));
+                })
+
+                //await getOrders().then();
+
+            }
+
+        }
+
+        await dispatch(hideLoader())
+        localredux.loginuserData = params;
+        await navigation.replace('ClientAreaStackNavigator');
+    }
+
+    const changeServer = async () => {
+        await saveLocalSettings('serverip','').then();
+        navigation.replace('SetupStackNavigator')
+    }
 
     useEffect(() => {
 
         setTimeout(async () => {
             if (enteredPin.length === 5) {
-                if (md5(enteredPin) === params.loginpin) {
+
+                const {loginpin,adminid}:any = params;
+
+                if (md5(enteredPin) === loginpin) {
 
                     await dispatch(showLoader())
 
-                    //await gePhonebook();
 
-                    await retrieveData(db.name).then(async (data: any) => {
+                    if(Boolean(urls?.localserver)) {
+                        apiService({
+                            method: METHOD.GET,
+                            action: 'loginpin',
+                            queryString: {pin: loginpin, adminid: adminid},
+                            other: {url: urls.localserver},
+                        }).then((response: any) => {
+                            let {data} = response;
+                            if (Boolean(data)) {
 
-                        const {
-                            initData,
-                            licenseData,
-                            authData,
-                            localSettingsData,
-                        } = data || {};
-
-
-                        if (Boolean(data) && Boolean(licenseData)) {
-                            const {license: {expired_on, status}} = licenseData?.data;
-                            const today = moment().format('YYYY-MM-DD');
-                            if (expired_on >= today && status === 'Active') {
-
-
-                                localredux.initData = initData;
-                                localredux.licenseData = licenseData;
-                                localredux.authData = {...params, ...authData};
-                                localredux.localSettingsData = localSettingsData;
-
-                                await getClients().then()
-                                await getAddons().then()
-                                await getTempOrders().then((orders) => {
-                                    dispatch(setTableOrdersData(orders));
+                                let initdata:any = {}
+                                Object.keys(data).forEach((key:any)=>{
+                                    initdata[key] = data[key]?.data || data[key]
                                 })
 
-                                const {itemgroup}: any = localredux.initData;
+                                const locationid = localredux.licenseData?.data?.location_id;
+                                const locations = initdata?.location;
 
-                                if (Boolean(itemgroup)) {
-                                    await dispatch(setGroupList(itemgroup))
+
+                                let printingtemplates: any = {}
+                                Object.values(initdata?.printingtemplate).map((template: any) => {
+                                    if (template?.location === locationid) {
+                                        printingtemplates[template?.printertype] = template
+                                    }
+                                })
+
+                                const localSettingsData = {
+                                    currentLocation: locations[locationid],
+                                        printingtemplates: printingtemplates,
+                                        lastSynctime: moment().unix(),
+                                        terminalname: 'pending',
+                                        isRestaurant: (locations[locationid]?.industrytype === "foodservices"),
                                 }
-
-                                await retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
-                                    await dispatch(setSettings(data));
-                                })
-
-                                await getOrders().then();
-
+                                setData({initData:initdata,licenseData:localredux.licenseData,localSettingsData:localSettingsData})
                             }
-                        }
-
-                        await dispatch(hideLoader())
-                        localredux.loginuserData = params;
-                        await navigation.replace('ClientAreaStackNavigator');
-                    })
-
+                        })
+                    }
+                    else {
+                        await retrieveData(db.name).then(async (data: any) => {
+                            setData(data).then()
+                        })
+                    }
 
                 } else {
                     dispatch(setAlert({visible: true, message: 'Wrong Pin'}));
@@ -103,7 +154,9 @@ const Index = (props: any) => {
                 }
             }
         }, 200)
-    }, [enteredPin])
+    }, [enteredPin]);
+
+
 
     navigation.setOptions({headerShown: !params.onlyone})
 
@@ -161,17 +214,14 @@ const Index = (props: any) => {
                         inputViewStyle={{
                             marginBottom: 0
                         }}
-
-
                     />
                 </View>
 
-                <View style={{marginTop: 10}}>
+                {!Boolean(urls?.localserver) && <View style={{marginTop: 10}}>
                     <TouchableOpacity onPress={() => {
                         syncData().then()
                     }}><Paragraph style={[styles.paragraph]}>Sync Data</Paragraph></TouchableOpacity>
-                </View>
-
+                </View>}
 
             </View>
 

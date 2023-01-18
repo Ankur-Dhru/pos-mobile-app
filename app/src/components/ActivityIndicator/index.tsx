@@ -3,7 +3,6 @@ import {connect} from "react-redux";
 import {  View,ActivityIndicator} from "react-native";
 import {styles} from "../../theme";
 
-
 const Index = (props:any) => {
 
     const {loader}:any = props;
@@ -11,6 +10,8 @@ const Index = (props:any) => {
     if(!loader){
         return <></>
     }
+
+
 
     return <View  style={styles.loader}>
         {<View  style={[styles.screenCenter,styles.h_100,styles.transparent]}>

@@ -1,4 +1,4 @@
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 
 
 import {Image, ScrollView, Text, TouchableOpacity, View} from "react-native";
@@ -17,12 +17,19 @@ import {
     loginUrl,
     METHOD,
     required,
-    STATUS
+    STATUS, urls
 } from "../../libs/static";
 import InputBox from "../../components/InputBox";
 import Button from "../../components/Button";
 import apiService from "../../libs/api-service";
-import {appLog, isEmpty, nextFocus} from "../../libs/function";
+import {
+    appLog,
+    connectToLocalServer,
+    getLocalSettings,
+    isEmpty,
+    nextFocus,
+    saveLocalSettings
+} from "../../libs/function";
 import KAccessoryView from "../../components/KAccessoryView";
 import InputField from "../../components/InputField";
 
@@ -32,6 +39,7 @@ const Index = (props: any) => {
     const {navigation}: any = props;
 
     const [passwordVisible, setPasswordVisible]: any = useState(true)
+    const [loaded, setLoaded] = useState<boolean>(false)
 
     let passwordRef:any = useRef()
 
@@ -44,6 +52,22 @@ const Index = (props: any) => {
         email: '',
         password: ''
     };
+
+
+    useEffect(()=>{
+        getLocalSettings('serverip').then(async (serverip: any) => {
+            if (Boolean(serverip)) {
+                await connectToLocalServer(serverip, navigation).then();
+            }
+            setLoaded(true)
+        })
+    },[])
+
+    if(!loaded){
+        return <></>
+    }
+
+
     const handleSubmit = async (values: any) => {
 
         values = {
@@ -65,6 +89,8 @@ const Index = (props: any) => {
                 localredux.licenseData = {...values, ...response.data}
                 localredux.authData = {...response.data, token: response.token}
                 device.token = response.token;
+                urls.localserver = '';
+                saveLocalSettings('serverip',urls.localserver).then();
                 if (!email_verified) {
                     navigation.navigate('Verification', {userdetail: response.data});
                 } else {
@@ -157,6 +183,20 @@ const Index = (props: any) => {
                                             style={[styles.paragraph, styles.mt_5]}>New User? <Text  style={[{color: styles.primary.color}]}> Create an account </Text>
                                         </Paragraph></TouchableOpacity>
                                     </View>
+
+
+                                    <View style={[styles.mt_5]}>
+                                        <Button style={[ styles.w_auto, styles.noshadow]}
+                                                more={{
+                                                    backgroundColor: styles.primary.color,
+                                                    color: 'white',
+                                                    height: 45,
+                                                }} onPress={() => {
+                                            navigation.navigate('LocalServer')
+                                        }}>Connect to local server</Button>
+
+                                    </View>
+
                                 </View>
 
                             </ScrollView>

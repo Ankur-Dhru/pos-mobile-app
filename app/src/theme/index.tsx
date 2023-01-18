@@ -466,10 +466,15 @@ export const styles: any = StyleSheet.create({
     },
 
     shadow: {
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-        elevation: 5
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 6,
+        },
+        shadowOpacity: 0.39,
+        shadowRadius: 8.30,
+
+        elevation: 13,
     },
 
     bg_light: {backgroundColor: '#F2F2F2'},
@@ -705,5 +710,8 @@ export const styles: any = StyleSheet.create({
     },
     itemadded : {
         backgroundColor:'#eee'
-    }
+    },
+
+
+
 });

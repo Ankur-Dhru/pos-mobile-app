@@ -1,6 +1,6 @@
 import {ScrollView, TouchableOpacity, View} from "react-native";
 import {Caption, Card, List, Paragraph} from "react-native-paper";
-import {useDispatch} from "react-redux";
+import {connect, useDispatch} from "react-redux";
 import {hideLoader, showLoader} from "../../redux-store/reducer/component";
 import {styles} from "../../theme";
 import InputField from "../../components/InputField";
@@ -398,9 +398,6 @@ const ClientInformation = memo(({tabledetails}:any) => {
                             />
                         </View>
                     </View>
-
-
-
                 </>}
             </Card.Content>
         </Card>
@@ -416,8 +413,8 @@ const ClientAndSource = (props: any) => {
     const dispatch = useDispatch()
 
     let {tabledetails, placeOrder, title, edit} = params.params;
-    const [loading,setLoading]:any = useState(false);
-    const [asksources,setAsksources]:any = useState({});
+    const [loading,setLoading]:any = useState(true);
+
     const [index,setIndex]:any = useState(0)
 
     let tabRef = useRef();
@@ -428,7 +425,7 @@ const ClientAndSource = (props: any) => {
     }
 
     const isReserveTable = Boolean(tabledetails?.ordertype == "tableorder");
-    const isSource = Boolean(((tabledetails?.ordertype === "homedelivery") && !asksources?.homedelivery) || ((tabledetails?.ordertype === "takeaway") && !asksources?.takeaway))
+    const isSource = Boolean(((tabledetails?.ordertype === "homedelivery") && !props?.disabledDefaultSourceHomeDelivery) || ((tabledetails?.ordertype === "takeaway") && !props?.disabledDefaultSourceTakeAway))
     const isAdvanceorder = Boolean(tabledetails?.ordertype == "advanceorder")
 
     globalTable = tabledetails;
@@ -438,12 +435,7 @@ const ClientAndSource = (props: any) => {
         headerTitle: tabledetails.tablename,
     })
 
-    useEffect(()=>{
-        getLocalSettings('generalsettings').then(r => {
-            setAsksources(r);
-            setLoading(true)
-        });
-    },[])
+
 
 
     let routes = []
@@ -599,6 +591,9 @@ const ClientAndSource = (props: any) => {
 
 }
 
+const mapStateToProps = (state: any) => ({
+    disabledDefaultSourceTakeAway: state.localSettings?.disabledDefaultSourceTakeAway,
+    disabledDefaultSourceHomeDelivery: state.localSettings?.disabledDefaultSourceHomeDelivery,
+})
 
-export default ClientAndSource;
-
+export default connect(mapStateToProps)(ClientAndSource);

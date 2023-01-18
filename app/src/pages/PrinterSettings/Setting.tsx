@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 
 import {Platform, SafeAreaView, View} from "react-native";
 import {Field, Form} from "react-final-form";
@@ -10,7 +10,7 @@ import {
     defaultTestTemplateHTML,
     localredux,
     PRINTER,
-    required
+    required, supportedPrinterList
 } from "../../libs/static";
 import Button from "../../components/Button";
 import {connect, useDispatch} from "react-redux";
@@ -23,8 +23,11 @@ import CheckBox from "../../components/CheckBox";
 import BlueToothList from "./BlueToothList";
 import {sendDataToPrinter} from "../../libs/Network";
 import {setBottomSheet} from "../../redux-store/reducer/component";
-import RNFS from "react-native-fs";
-import SunmiPrinter from "@heasy/react-native-sunmi-printer";
+
+import QRCode from "react-native-qrcode-svg";
+import {uuid} from "uuidv4";
+import {v4 as uuidv4} from "uuid";
+
 
 
 const Index = (props: any) => {
@@ -32,7 +35,9 @@ const Index = (props: any) => {
 
     let {printers}: any = props;
     const type = props?.route?.params?.type;
-    const {printingtemplate} =  localredux.initData
+    const {printingtemplate} =  localredux.initData;
+
+    //let qrsvg = useRef()
 
     const navigation = useNavigation()
     const dispatch = useDispatch()
@@ -53,6 +58,7 @@ const Index = (props: any) => {
             printername: 'TM-T82',
             port: '9100',
             printsize: '48',
+            webviewwidth:240,
             noofprint: '1',
             templatetype:'',
             printpreview:false,
@@ -70,12 +76,23 @@ const Index = (props: any) => {
         })
     }
 
+    /*const getDataURL = () => {
+        qrsvg.toDataURL((dataURl:any)=>{
+            appLog('dataURl',dataURl)
+        });
+    }*/
+
     const handleSubmit = async (values: any) => {
+
+        if(values.printertype === 'broadcast'){
+            values.broadcastip = `http://${values.broadcastip}:8081`
+        }
 
         printers = {
             ...printers,
             [type.departmentid]: values
         }
+
         if (!values.test) {
             await saveLocalSettings('printers', printers).then(() => {
                 navigation.goBack()
@@ -96,24 +113,25 @@ const Index = (props: any) => {
     }, {
         value: 'broadcast',
         label: 'Broadcast Printer'
-    }, {
-        value: 'sunmi',
-        label: 'Sunmi'
     }]
 
     if (Platform.OS !== 'ios') {
         printerTypes.push({
             value: 'bluetooth',
             label: 'Bluetooth Printer'
+        }, {
+            value: 'sunmi',
+            label: 'Sunmi Built in printer'
         })
     }
+
 
     return <Container>
         <SafeAreaView>
             <Form
                 initialValues={init}
                 onSubmit={handleSubmit}
-                render={({handleSubmit, submitting, values, ...more}: any) => (
+                render={({handleSubmit, submitting, values,form, ...more}: any) => (
                     <View style={[styles.middle]}>
                         <View style={[styles.middleForm]}>
                             <KeyboardScroll>
@@ -160,9 +178,157 @@ const Index = (props: any) => {
                                                     </Field>
                                                 </View>
 
-
                                             </Card.Content>
                                         </Card>
+
+
+                                        {Boolean(values.bluetoothdetail?.value) && Boolean(values.printertype === 'bluetooth') && <>
+                                            <Card style={[styles.card]} onPress={() => {
+                                                dispatch(setBottomSheet({
+                                                    visible: true,
+                                                    height: '80%',
+                                                    component: () => <BlueToothList setMacId={setMacId}/>
+                                                }))
+                                            }}>
+                                                <Card.Content style={[styles.cardContent]}>
+                                                    <>
+                                                        <View>
+                                                            <Paragraph style={[styles.paragraph, styles.bold]}>
+                                                                {values.bluetoothdetail?.label}
+                                                            </Paragraph>
+                                                        </View>
+                                                    </>
+                                                </Card.Content>
+                                            </Card>
+                                        </>}
+
+
+
+
+                                        {values.printertype !== 'broadcast' &&    <Card style={[styles.card]}>
+                                            <Card.Content style={[styles.cardContent]}>
+
+
+
+                                                {values.printertype === 'network' &&  <View>
+                                                    <Field name="printername"  validate={composeValidators(required)}>
+                                                        {props => (
+                                                            <InputField
+                                                                {...props}
+                                                                label={'Printer Serial No.'}
+                                                                mode={'flat'}
+                                                                list={supportedPrinterList.map((item)=>{
+                                                                    return {label:item,value:item}
+                                                                })}
+                                                                value={props.input.value}
+                                                                selectedValue={props.input.value}
+                                                                displaytype={'pagelist'}
+                                                                inputtype={'dropdown'}
+                                                                listtype={'other'}
+                                                                onChange={(value: any) => {
+                                                                    props.input.onChange(value);
+                                                                    form.change('template','');
+                                                                }}>
+                                                            </InputField>
+                                                        )}
+                                                    </Field>
+                                                </View>}
+
+
+
+                                                <View>
+                                                    <View>
+                                                        <Field name="template"  validate={composeValidators(required)}>
+                                                            {props => (
+                                                                <InputField
+                                                                    {...props}
+                                                                    key={values.printername}
+                                                                    label={'Template'}
+                                                                    mode={'flat'}
+                                                                    list={templates.filter((template:any)=>{
+                                                                        if(values.printertype === 'sunmi') {
+                                                                            return printingtemplate[template.value].type === 'ThermalHtml'
+                                                                        }
+                                                                        else {
+                                                                            return true
+                                                                        }
+                                                                    }).map((template:any)=>{
+
+                                                                        const isGeneric = (values.printername === 'Other - Generic - ESC/POS' && printingtemplate[template.value].type === 'ThermalHtml');
+                                                                        const disable = (isGeneric && Platform.OS === 'ios')
+                                                                        return {...template,description:isGeneric?'Android Only':'Android, iOS',disable:disable}
+                                                                    })}
+                                                                    value={props.input.value}
+                                                                    selectedValue={props.input.value}
+                                                                    displaytype={'pagelist'}
+                                                                    inputtype={'dropdown'}
+                                                                    listtype={'other'}
+                                                                    onChange={(value: any) => {
+                                                                        props.input.onChange(value);
+                                                                        setInit({
+                                                                            ...init,
+                                                                            templatetype: printingtemplate[value].type,
+                                                                            printpreview: Boolean(printingtemplate[value].type === 'ThermalHtml'),
+                                                                            template: value
+                                                                        })
+                                                                    }}>
+                                                                </InputField>
+                                                            )}
+                                                        </Field>
+                                                    </View>
+
+                                                    <View>
+                                                        <Field name="printsize">
+                                                        {props => (
+                                                            <InputField
+                                                                label={'Printer Size'}
+                                                                mode={'flat'}
+                                                                list={[
+                                                                    {label: '56mm - 1x', value: '32',webview:150},
+                                                                    {label: '56mm - 2x', value: '32.1',webview:180},
+                                                                    {label: '72mm - 1x', value: '42',webview:195},
+                                                                    {label: '80mm - 1x', value: '48',webview:240},
+                                                                    {label: '80mm - 2x', value: '48.1',webview:390},
+                                                                    {label: '80mm - 3x', value: '48.2',webview:480},
+                                                                    {label: '80mm - 4x', value: '48.3',webview:780},
+                                                                ]}
+                                                                value={props.input.value}
+                                                                selectedValue={props.input.value}
+                                                                displaytype={'pagelist'}
+                                                                inputtype={'dropdown'}
+                                                                listtype={'other'}
+                                                                onChange={(value: any,more:any) => {
+                                                                    appLog('more',more)
+                                                                    values.webviewwidth = more.webview
+                                                                    props.input.onChange(value);
+                                                                }}>
+                                                            </InputField>
+                                                        )}
+                                                    </Field>
+                                                    </View>
+
+                                                    {/*<>
+                                                        {values.templatetype === 'ThermalHtml' ? <View>
+                                                            <Field name="printpreview">
+                                                                {props => (
+                                                                    <><CheckBox
+                                                                        value={props.input.value}
+                                                                        label={'Show preview before print'}
+                                                                        onChange={(value: any) => {
+                                                                            values.printpreview = value;
+                                                                        }}
+                                                                    /></>
+                                                                )}
+                                                            </Field>
+                                                        </View> : <View>
+                                                            {values.template && <Paragraph style={[styles.paragraph,{color:styles.red.color}]}>Preview not available on this template</Paragraph>}
+                                                        </View>}
+                                                    </>*/}
+
+                                                </View>
+                                            </Card.Content>
+                                        </Card> }
+
 
                                         {Boolean(values.printertype === 'broadcast') && <>
 
@@ -190,25 +356,7 @@ const Index = (props: any) => {
                                         </>}
 
 
-                                        {Boolean(values.bluetoothdetail?.value) && Boolean(values.printertype === 'bluetooth') && <>
-                                            <Card style={[styles.card]} onPress={() => {
-                                                dispatch(setBottomSheet({
-                                                    visible: true,
-                                                    height: '80%',
-                                                    component: () => <BlueToothList setMacId={setMacId}/>
-                                                }))
-                                            }}>
-                                                <Card.Content style={[styles.cardContent]}>
-                                                    <>
-                                                        <View>
-                                                            <Paragraph style={[styles.paragraph, styles.bold]}>
-                                                                {values.bluetoothdetail?.label}
-                                                            </Paragraph>
-                                                        </View>
-                                                    </>
-                                                </Card.Content>
-                                            </Card>
-                                        </>}
+
 
 
                                         {Boolean(values.printertype === 'network') && <><Card style={[styles.card]}>
@@ -259,33 +407,9 @@ const Index = (props: any) => {
                                             <Card style={[styles.card]}>
                                                 <Card.Content style={[styles.cardContent]}>
 
-                                                    <View style={[styles.grid, styles.justifyContent]}>
-                                                        <View style={[styles.flexGrow]}>
+                                                    <View>
 
-                                                            <Field name="printsize">
-                                                                {props => (
-                                                                    <InputField
-                                                                        label={'Printer Size'}
-                                                                        mode={'flat'}
-                                                                        list={[
-                                                                            {label: '56 mm', value: '32'},
-                                                                            {label: '72 mm', value: '42'},
-                                                                            {label: '80 mm', value: '48'}
-                                                                        ]}
-                                                                        value={props.input.value}
-                                                                        selectedValue={props.input.value}
-                                                                        displaytype={'pagelist'}
-                                                                        inputtype={'dropdown'}
-                                                                        listtype={'other'}
-                                                                        onChange={(value: any) => {
-                                                                            props.input.onChange(value);
-                                                                        }}>
-                                                                    </InputField>
-                                                                )}
-                                                            </Field>
-                                                        </View>
-
-                                                        <View style={[styles.ml_2, {width: '50%'}]}>
+                                                        <View>
                                                             <Field name="noofprint">
                                                                 {props => (
                                                                     <InputField
@@ -333,7 +457,7 @@ const Index = (props: any) => {
                                         </>}
 
 
-                                        {(type.departmentid === PRINTER.INVOICE && Boolean(values.printertype !== 'broadcast')) &&
+                                        {/*{(type.departmentid === PRINTER.INVOICE && Boolean(values.printertype !== 'broadcast')) &&
                                             <Card style={[styles.card]}>
                                                 <Card.Content style={[styles.cardContent]}>
                                                     <View style={[styles.grid, styles.justifyContent]}>
@@ -367,70 +491,27 @@ const Index = (props: any) => {
                                                     </View>
                                                 </Card.Content>
                                             </Card>
-                                        }
+                                        }*/}
 
+                                        {/*<QRCode
+                                            value="Just some string value"
+                                            getRef={(c) => (qrsvg = c)}
+                                        />*/}
 
                                     </View>
                                 </View>
 
 
-                                <Card style={[styles.card]}>
-                                    <Card.Content style={[styles.cardContent]}>
-                                        <View>
-                                    <View>
-                                        <Field name="template"  validate={composeValidators(required)}>
-                                            {props => (
-                                                <InputField
-                                                    {...props}
-                                                    label={'Template'}
-                                                    mode={'flat'}
-                                                    list={templates}
-                                                    value={props.input.value}
-                                                    selectedValue={props.input.value}
-                                                    displaytype={'pagelist'}
-                                                    inputtype={'dropdown'}
-                                                    listtype={'other'}
-                                                    onChange={(value: any) => {
-                                                        props.input.onChange(value);
-                                                        setInit({
-                                                            ...init,
-                                                            templatetype:printingtemplate[value].type,
-                                                            printpreview:false,
-                                                            template: value
-                                                        })
-                                                    }}>
-                                                </InputField>
-                                            )}
-                                        </Field>
-                                    </View>
 
-
-                                    <>
-                                        {values.templatetype === 'ThermalHtml' ? <View>
-                                            <Field name="printpreview">
-                                                {props => (
-                                                    <><CheckBox
-                                                        value={props.input.value}
-                                                        label={'Show print preview'}
-                                                        onChange={(value: any) => {
-                                                            values.printpreview = value;
-                                                        }}
-                                                    /></>
-                                                )}
-                                            </Field>
-                                        </View> : <View>
-                                            <Paragraph style={[styles.paragraph,{color:styles.red.color}]}>Disable preview</Paragraph>
-                                        </View>}
-                                    </>
-
-                                </View>
-                                    </Card.Content>
-                                </Card>
 
                             </KeyboardScroll>
                             <View style={[styles.submitbutton]}>
 
+
                                 {<View style={[styles.grid, styles.justifyContent]}>
+
+
+
                                     {<View style={[styles.w_auto,styles.mr_2]}>
                                         <Button disable={more.invalid}
                                                 more={{color: 'black', backgroundColor: styles.secondary.color}}

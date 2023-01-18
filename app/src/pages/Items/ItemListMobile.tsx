@@ -16,8 +16,6 @@ import GroupListMobile from "./GroupListMobile";
 import CartTotal from "../Cart/CartTotal";
 import Avatar from "../../components/Avatar";
 import {ItemDivider, localredux} from "../../libs/static";
-import store from "../../redux-store/store";
-import {updateCartField} from "../../redux-store/reducer/cart-data";
 import GroupHeading from "./GroupHeading";
 
 
@@ -73,13 +71,17 @@ export const Item = memo(({item}: any) => {
 })
 
 export const getCombos = (selectedgroup:any) => {
-    let combogroup: any = []
+    let combogroup: any = [];
     if(Boolean(localredux.initData?.combogroup)) {
+
         combogroup = Object.keys(localredux.initData?.combogroup).filter((key: any) => {
             const group = localredux.initData?.combogroup[key];
             return group.categoryid === selectedgroup
         }).map((key: any) => {
             const group = localredux.initData?.combogroup[key];
+
+            appLog('group',group)
+
             return {
                 itemname: group.itemgroupname,
                 comboid: key,
@@ -88,6 +90,7 @@ export const getCombos = (selectedgroup:any) => {
             }
         });
     }
+
     return combogroup
 }
 
@@ -103,43 +106,37 @@ const Index = (props: any) => {
     const [dataSource, setDataSource]: any = useState([]);
 
 
+    const updateItems = (items:any) => {
+        return  items?.map((i: any) => {
+            const find = invoiceitems.filter((ii: any) => {
+                return ((+i.itemid === +ii.itemid) && Boolean(ii.added));
+            })
+            if (Boolean(find) && Boolean(find[0])) {
+                return find[0]
+            }
+            return i;
+        })
+    }
+
+    useEffect(() => {
+       let newitems = updateItems(dataSource)
+        setDataSource([...newitems]);
+    }, [invoiceitems])
+
 
     useEffect(() => {
 
-        /*if(sGroup!==selectedgroup){
-            setDataSource([])
-            setStart(0)
-            sGroup = selectedgroup;
-        }*/
-
         getItemsByWhere({itemgroupid: selectedgroup}).then((newitems: any) => {
-
             const combogroup = getCombos(selectedgroup)
-
             if (Boolean(newitems.length > 0)) {
-                newitems = newitems?.map((i: any) => {
-                    const find = invoiceitems.filter((ii: any) => {
-                        return ((+i.itemid === +ii.itemid) && Boolean(ii.added));
-                    })
-                    if (Boolean(find) && Boolean(find[0])) {
-                        return find[0]
-                    }
-                    return i;
-                })
-                setDataSource([...newitems,...combogroup]); //...dataSource,
+                let items = updateItems(newitems)
+                setDataSource([...items,...combogroup]);
             } else {
                 setDataSource([...combogroup]);
             }
             setLoading(true)
         });
-
-
-    }, [selectedgroup, invoiceitems])
-
-
-    /*const onEndReached = () => {
-        setStart(++start)
-    }*/
+    }, [selectedgroup])
 
 
     const renderItem = useCallback(({item, index}: any) => {
@@ -162,7 +159,7 @@ const Index = (props: any) => {
                     <View style={[styles.h_100]}>
                     <FlatList
                         data={dataSource.filter((item:any)=>{
-                            return !Boolean(item.groupid)
+                            return !Boolean(item.groupid) && !item.isGrouped
                         })}
                         keyboardDismissMode={'on-drag'}
                         keyboardShouldPersistTaps={'always'}

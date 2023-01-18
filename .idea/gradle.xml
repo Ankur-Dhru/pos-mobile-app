@@ -26,6 +26,7 @@
             <option value="$PROJECT_DIR$/app/node_modules/@react-native-community/datetimepicker/android" />
             <option value="$PROJECT_DIR$/app/node_modules/@react-native-community/image-editor/android" />
             <option value="$PROJECT_DIR$/app/node_modules/@react-native-community/netinfo/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/@react-native-picker/picker/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-ble-manager/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-camera/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-contacts/android" />
@@ -40,6 +41,7 @@
             <option value="$PROJECT_DIR$/app/node_modules/react-native-image-size/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-pager-view/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-permissions/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/react-native-ping/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-print/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-reanimated/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-safe-area-context/android" />
@@ -49,6 +51,7 @@
             <option value="$PROJECT_DIR$/app/node_modules/react-native-sqlite-storage/platforms/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-svg/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-tcp-socket/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/react-native-thermal-receipt-printer-image-qr/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-vector-icons/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-view-shot/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-webview/android" />

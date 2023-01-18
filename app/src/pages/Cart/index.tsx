@@ -9,8 +9,8 @@ import {
     voucherData
 } from "../../libs/function";
 import Cart from "./Cart";
-import {device, localredux, PRODUCTCATEGORY, VOUCHER} from "../../libs/static";
-import {useDispatch} from "react-redux";
+import {device, localredux, METHOD, PRODUCTCATEGORY, STATUS, urls, VOUCHER} from "../../libs/static";
+import {connect, useDispatch} from "react-redux";
 import {Appbar, Menu, withTheme} from "react-native-paper";
 import {setSelected} from "../../redux-store/reducer/selected-data";
 import {refreshCartData, setCartData} from "../../redux-store/reducer/cart-data";
@@ -24,6 +24,7 @@ import Paxes from "../Tables/Paxes";
 import {setTableOrders} from "../../redux-store/reducer/table-orders-data";
 import HoldOrders from "./HoldOrders";
 import DeleteButton from "../../components/Button/DeleteButton";
+import apiService from "../../libs/api-service";
 
 const Index = (props: any) => {
 
@@ -43,14 +44,15 @@ const Index = (props: any) => {
         const voucherDataJson: any = voucherData(VOUCHER.INVOICE, false);
         dispatch(refreshCartData({...tabledetails, ...voucherDataJson}));
 
-        if(tabledetails?.printcounter && !device.tablet){
-            navigation.navigate('DetailViewNavigator')
-        }
 
-        if(tabledetails?.invoiceitems.length === 0 && (tabledetails?.ordertype === 'tableorder')){
 
-            getLocalSettings('generalsettings').then((r:any) => {
-                if(!r.paxes) {
+            if (tabledetails?.printcounter && !device.tablet) {
+                navigation.navigate('DetailViewNavigator')
+            }
+
+            if (tabledetails?.invoiceitems.length === 0 && (tabledetails?.ordertype === 'tableorder')) {
+
+                if (!props.disabledpax) {
                     dispatch(setDialog({
                         visible: true,
                         title: "Paxes",
@@ -58,10 +60,8 @@ const Index = (props: any) => {
                         component: () => <Paxes/>
                     }))
                 }
-            });
 
-
-        }
+            }
 
         dispatch(setSelected({value: mainproductgroupid, field: 'group'}))
 
@@ -146,4 +146,9 @@ const Index = (props: any) => {
 }
 
 
-export default withTheme(Index);
+const mapStateToProps = (state: any) => ({
+    disabledpax: state.localSettings?.disabledpax,
+})
+
+export default connect(mapStateToProps)(Index);
+

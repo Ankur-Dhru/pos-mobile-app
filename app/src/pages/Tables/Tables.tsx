@@ -1,12 +1,12 @@
-import {current, device, localredux} from "../../libs/static";
+import {current, db, device, localredux, METHOD, urls} from "../../libs/static";
 import React, {memo, useCallback, useEffect, useState} from "react";
 import {
     appLog,
-    dateFormat,
+    dateFormat, getOrders,
     getTempOrders,
     isEmpty,
     isRestaurant,
-    saveTempLocalOrder,
+    saveTempLocalOrder, syncInvoice,
     toCurrency
 } from "../../libs/function";
 import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
@@ -26,8 +26,9 @@ import ReserveList from "./ReserveList";
 import Tabs from "../../components/TabView";
 import HoldOrders from "../Cart/HoldOrders";
 import {TabBar, TabView} from "react-native-tab-view";
+import apiService from "../../libs/api-service";
 
-
+let interval:any = ''
 const Index = ({tableorders}: any) => {
 
 
@@ -59,9 +60,19 @@ const Index = ({tableorders}: any) => {
 
 
     useEffect(() => {
-        getOrder().then(()=>{
+        /*if (!interval) {
+            interval = setInterval(() => {
+                getOrder().then(()=>{})
+            }, 10000);
+        }
+        return () => {
+            clearInterval(interval);
+            interval = null;
+        };*/
 
-        })
+        getOrder().then(()=>{})
+
+
     }, [tableorders,currentLocation.tables])
 
     const resetTables = () => {
@@ -110,7 +121,7 @@ const Index = ({tableorders}: any) => {
             await getTempOrders().then(async (tableorders:any)=>{
 
                 Object.values(tableorders).map((table: any) => {
-                    let findTableIndex = tables?.findIndex((t: any) => t.tableid == table.tableid)
+                    let findTableIndex = tables?.findIndex((t: any) => t.tableid == table.tableid);
                     if (findTableIndex != -1) {
                         newtables[findTableIndex] = table;
                     } else {
@@ -175,6 +186,27 @@ const Index = ({tableorders}: any) => {
 
     }
 
+    const setTableOrderDetail = async (tabledetails: any) => {
+
+
+
+        if(Boolean(urls.localserver) && Boolean(tabledetails.tableorderid)) {
+
+           await  apiService({
+                method: METHOD.GET,
+                action: 'tableorder',
+                queryString:{key:'tableid',value:tabledetails.tableid},
+                other: {url: urls.localserver},
+            }).then((response: any) => {
+               tabledetails = {
+                   ...tabledetails,
+                   ...response?.data
+               }
+            })
+        }
+
+        navigation.navigate('CartStackNavigator', tabledetails)
+    }
 
     const Item = memo(
         (props: any) => {
@@ -212,14 +244,14 @@ const Index = ({tableorders}: any) => {
                 <Card style={[styles.card,styles.m_2,styles.mb_3,  styles.noshadow, {
                     marginTop:0,
                     maxWidth: '100%', minWidth:185,
-                    backgroundColor: Boolean(item.kots?.length) ? styles.yellow.color : Boolean(item.invoiceitems?.length) ? styles.secondary.color : styles.white.color,
+                    backgroundColor: Boolean(item?.printcounter) ? styles.yellow.color : Boolean(item.clientname) ? styles.secondary.color : styles.white.color,
                     borderRadius: 5
                 }, styles.flexGrow,]} key={item.tableid}>
                     {<TouchableOpacity
                         style={{minHeight: 120}}
                         onPress={() => {
                             current.table = {invoiceitems: [], kots: [], ...item};
-                            !shifttable ? navigation.navigate('CartStackNavigator', current.table) : Boolean(shifting) ? shiftTo(props) : shiftFrom(item.tableorderid)
+                            !shifttable ? setTableOrderDetail(current.table) : Boolean(shifting) ? shiftTo(props) : shiftFrom(item.tableorderid)
                         }}>
                         {((shiftstart || shifting) || !shifttable) && <View style={[styles.p_4]}>
                             <View style={[styles.grid, styles.mb_3]}>
@@ -227,7 +259,7 @@ const Index = ({tableorders}: any) => {
                                     style={[styles.badge, styles.px_5, {backgroundColor: styles.primary.color}]}>
                                     <Text
                                         style={[styles.paragraph, styles.text_xs, {color: 'white'}]}>{item.tablename || 'Retail'} </Text></View></View>
-                            {Boolean(item.invoiceitems?.length) && <>
+                            {Boolean(item.clientname) && <>
                                 <Paragraph><ProIcon align={'left'} name={'user'} action_type={'text'}
                                                     size={13}/> {item.paxes} x {item.clientname}</Paragraph>
 
@@ -245,7 +277,7 @@ const Index = ({tableorders}: any) => {
 
                             </>}
 
-                            {item.printcounter &&
+                            {Boolean(item?.printcounter) &&
                                 <View style={[styles.absolute, {right: 10, top: 12}]}><Text><ProIcon size={15}
                                                                                                      name={'print'}
                                                                                                      type={'solid'}
@@ -355,12 +387,12 @@ const Index = ({tableorders}: any) => {
                     renderItem={renderItem}
                     keyboardDismissMode={'on-drag'}
                     keyboardShouldPersistTaps={'always'}
-                    /*refreshControl={
+                    refreshControl={
                         <RefreshControl
                             refreshing={refreshing}
                             onRefresh={() => getOrder()}
                         />
-                    }*/
+                    }
                     numColumns={device.tablet ? 3 : 2}
                     getItemLayout={(data, index) => {
                         return {length: 100, offset: 100 * index, index};

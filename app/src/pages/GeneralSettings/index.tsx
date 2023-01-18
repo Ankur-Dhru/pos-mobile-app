@@ -47,7 +47,7 @@ const Index = () => {
                         <Card style={[styles.card]}>
                             <Card.Content style={[styles.cardContent]}>
 
-                                <Field name="homedelivery">
+                                <Field name="disabledDefaultSourceHomeDelivery">
                                     {props => (
                                         <><CheckBox
                                             value={props.input.value}
@@ -55,7 +55,7 @@ const Index = () => {
                                             onChange={(value: any) => {
                                                 initdata = {
                                                     ...initdata,
-                                                    homedelivery: value
+                                                    disabledDefaultSourceHomeDelivery: value
                                                 }
                                                 saveLocalSettings("generalsettings", initdata).then();
                                             }}
@@ -64,7 +64,7 @@ const Index = () => {
                                 </Field>
 
 
-                                <Field name="takeaway">
+                                <Field name="disabledDefaultSourceTakeAway">
                                     {props => (
                                         <><CheckBox
                                             value={props.input.value}
@@ -72,7 +72,7 @@ const Index = () => {
                                             onChange={(value: any) => {
                                                 initdata = {
                                                     ...initdata,
-                                                    takeaway: value
+                                                    disabledDefaultSourceTakeAway: value
                                                 }
                                                 saveLocalSettings("generalsettings", initdata).then();
                                             }}
@@ -80,15 +80,15 @@ const Index = () => {
                                     )}
                                 </Field>
 
-                                <Field name="paxes">
+                                <Field name="disabledpax">
                                     {props => (
                                         <><CheckBox
                                             value={props.input.value}
-                                            label={'Pax optional for Table order'}
+                                            label={'Disable Paxes'}
                                             onChange={(value: any) => {
                                                 initdata = {
                                                     ...initdata,
-                                                    paxes: value
+                                                    disabledpax: value
                                                 }
                                                 saveLocalSettings("generalsettings", initdata).then();
                                             }}

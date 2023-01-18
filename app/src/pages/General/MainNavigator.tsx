@@ -48,7 +48,7 @@ import ClientAndSource from "../Cart/ClientAndSource";
 import PrinterSettings from "../PrinterSettings/Setting";
 import SearchItem from "../Items/SearchItem";
 import AddTable from "../Tables/AddTable";
-import sample from "../sample";
+import Sample from "../sample";
 import CancelReason from "../Cart/CancelReason";
 import ClientList from "../Client/ClientList";
 import KotNote from "../Cart/KotNote";
@@ -60,6 +60,9 @@ import DateTimePicker from "./DateTimePicker";
 import AskPermission from "../Pin/AskPermission";
 import BlueToothList from "../PrinterSettings/BlueToothList";
 import Preview from "../Preview";
+import LocalserverConnection from  "../LocalserverConnection";
+import ConnectWith from "../SetupWorkspace/ConnectWith";
+import LocalServer from "../Setup/LocalServer";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -84,6 +87,8 @@ const MainStackNavigator = () => {
 
             <Stack.Screen name="SetupStackNavigator" component={SetupStackNavigator}/>
 
+
+
             <Stack.Screen name="PinStackNavigator" component={PinStackNavigator}/>
 
             <Stack.Screen name="ClientAreaStackNavigator" component={ClientAreaStackNavigator}/>
@@ -92,7 +97,7 @@ const MainStackNavigator = () => {
                           options={{headerShown: false, presentation: 'modal', headerTitle: 'Settings'}}/>
 
 
-            <Stack.Screen name="Sample" component={sample}/>
+            <Stack.Screen name="Sample" component={Sample}/>
 
 
         </Stack.Navigator>
@@ -112,8 +117,13 @@ const SplashStackNavigator = () => {
 const SetupStackNavigator = () => {
     return (
         <Stack.Navigator initialRouteName={'Login'} screenOptions={screenOptions}>
-            <Stack.Screen name="Login" component={Login}
-                          options={{headerShown: false}}/>
+
+            {/*<Stack.Screen name="ConnectWith"  component={ConnectWith}  options={{headerShown: false}}/>*/}
+
+            <Stack.Screen name="Login" component={Login}  options={{headerShown: false}}/>
+
+            <Stack.Screen name="LocalServer" component={LocalServer}  options={{headerTitle: 'Local Server IP'}}/>
+
             <Stack.Screen name="Register" component={Register} options={{headerTitle: 'Create an account'}}/>
 
             <Stack.Screen name="Verification" component={Verification} options={{headerTitle: 'Verify Email'}}/>
@@ -133,6 +143,8 @@ const SetupStackNavigator = () => {
 
             <Stack.Screen name="Terminal" component={Terminal} options={{headerTitle: 'Terminal'}}/>
 
+
+
             <Stack.Screen name={'DropDownList'} component={DropDownList}
                           options={{headerShown: false, headerTitle: 'Select'}}/>
 
@@ -147,7 +159,6 @@ const PinStackNavigator = () => {
                           options={{headerTitle: 'Staff Member', headerLargeTitle: false,}}/>
             <Stack.Screen name="Pin" component={Pin}
                           options={({route}: any) => ({title: route.params.username})}/>
-
         </Stack.Navigator>
     );
 };

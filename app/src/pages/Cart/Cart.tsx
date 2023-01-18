@@ -17,7 +17,7 @@ import SearchItem from "../Items/SearchItem";
 import GroupHeading from "../Items/GroupHeading";
 import ClientDetail from "../Client/ClientDetail";
 import {useNavigation} from "@react-navigation/native";
-import {cancelOrder, isRestaurant, saveTempLocalOrder} from "../../libs/function";
+import {appLog, cancelOrder, isRestaurant, saveTempLocalOrder} from "../../libs/function";
 import NumPad from "../Items/NumPad";
 import ItemListMobile from "../Items/ItemListMobile";
 import ItemListTablet from "../Items/ItemListTablet";
@@ -35,8 +35,7 @@ const Index = (props: any) => {
 
     const hasrestaurant = isRestaurant();
 
-    const dispatch = useDispatch()
-
+    const dispatch = useDispatch();
 
     return <>
 

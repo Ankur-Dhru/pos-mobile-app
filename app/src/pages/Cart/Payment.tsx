@@ -133,6 +133,10 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
                 }
             ];
 
+            cartData.paymentmethod = cartData?.payments[0]?.paymentgateways.map((method:any)=>{
+                return method.gid
+            }).join(',');
+
 
             if(Boolean(cartData?.kots.length)) {
                 const DONEStatus = getTicketStatus(TICKET_STATUS.DONE);

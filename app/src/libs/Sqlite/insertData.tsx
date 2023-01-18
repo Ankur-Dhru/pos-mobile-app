@@ -1,6 +1,7 @@
-
 import {appLog} from "../function";
 import {closeDB, getDBConnection} from "./index";
+import apiService from "../api-service";
+import {METHOD, STATUS, urls} from "../static";
 
 
 export const insertInit = async (  initdata?: any) => {
@@ -157,20 +158,43 @@ export const insertClients = async (  clientsdata?: any,type:any = 'all') => {
 export const insertTempOrder =  (data?: any) => {
 
     return new Promise<any>(async (resolve)=> {
-        const db:any = await getDBConnection();
 
-        let values = `('${data?.tableorderid}', '${JSON.stringify(data)}')`;
-        let insertQuery = `INSERT OR REPLACE INTO tblTempOrder("tableorderid","data") values ${values}`;
+        let order = data;
 
-        try {
-            await db.executeSql(insertQuery);
+        if(Boolean(urls.localserver)) {
 
-        } catch (e) {
-            appLog('ERROR', insertQuery)
+            await apiService({
+                method: data?.tableorderid ? METHOD.PUT : METHOD.POST,
+                action: 'tableorder',
+                body:data,
+                other: {url: urls.localserver},
+            }).then((response: any) => {
+                const {status}:any = response;
+                if (status === STATUS.SUCCESS) {
+                    order = response?.data
+                }
+            })
+
         }
-        closeDB(db);
+        else {
 
-        resolve('Inset Temp Order')
+            const db: any = await getDBConnection();
+
+            let values = `('${data?.tableorderid}', '${JSON.stringify(data)}')`;
+            let insertQuery = `INSERT
+            OR REPLACE INTO tblTempOrder("tableorderid","data") values
+            ${values}`;
+
+            try {
+                await db.executeSql(insertQuery);
+
+            } catch (e) {
+                appLog('ERROR', insertQuery)
+            }
+            closeDB(db);
+
+        }
+        resolve(order)
     })
 };
 

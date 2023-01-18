@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {FlatList, Text, View} from "react-native";
-import {Card, Paragraph} from "react-native-paper"
-import {dateFormat, printDayEndReport, toCurrency} from "../../libs/function";
+import {Caption, Card, Paragraph} from "react-native-paper"
+import {appLog, dateFormat, groupBy, objToArray, printDayEndReport, toCurrency} from "../../libs/function";
 import Container from "../../components/Container";
 import {styles} from "../../theme";
 import {ACTIONS, ItemDivider, localredux, METHOD, urls} from "../../libs/static";
@@ -21,7 +21,7 @@ const Index = ({navigation}: any) => {
         licenseData,
     }: any = localredux;
 
-    const {workspace}: any = localredux.initData;
+    const {workspace,voucher}: any = localredux.initData;
     const {token}: any = localredux.authData;
     const {terminal_id}: any = licenseData?.data;
 
@@ -56,14 +56,18 @@ const Index = ({navigation}: any) => {
         }).then((response: any) => {
 
             const {info, data}: any = response;
+
             if (Boolean(info)) {
+
                 setData({
-                    order: data, info: Object.keys(info).map((key: any) => {
+                    order:Object.values(data),
+                    groupbyorder: groupBy(Object.values(data),'vouchertypeid'),
+                    info: Object.keys(info).map((key: any) => {
                         return {label: key, value: info[key]}
                     })
                 })
             } else {
-                setData({order: [], info: []})
+                setData({order: [],groupbyorder:[], info: []})
             }
             setLoader(true)
         })
@@ -209,27 +213,35 @@ const Index = ({navigation}: any) => {
 
         <KeyboardScroll>
 
-            <Card style={[styles.card]}>
-                <Card.Content style={[styles.cardContent]}>
-                    <FlatList
-                        style={[styles.listitem]}
-                        data={Boolean(data.order) && Object.values(data.order) || []}
-                        keyboardDismissMode={'on-drag'}
-                        keyboardShouldPersistTaps={'always'}
-                        renderItem={renderItem}
-                        ListEmptyComponent={<View>
-                            <View style={[styles.p_6]}>
-                                <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>No
-                                    any
-                                    items found</Text>
-                            </View>
-                        </View>}
-                        ItemSeparatorComponent={ItemDivider}
-                    />
-                </Card.Content>
-            </Card>
-
+            {
+                Boolean(data.groupbyorder) && Object.keys(data.groupbyorder).map((vouchertype:any)=>{
+                    const orders = data.groupbyorder[vouchertype];
+                    return (
+                        <Card style={[styles.card]}>
+                            <Card.Content style={[styles.cardContent]}>
+                                <Caption style={[styles.caption]}>{voucher[vouchertype].vouchertypename}</Caption>
+                                <FlatList
+                                    style={[styles.listitem]}
+                                    data={orders || []}
+                                    keyboardDismissMode={'on-drag'}
+                                    keyboardShouldPersistTaps={'always'}
+                                    renderItem={renderItem}
+                                    ListEmptyComponent={<View>
+                                        <View style={[styles.p_6]}>
+                                            <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>No
+                                                any
+                                                items found</Text>
+                                        </View>
+                                    </View>}
+                                    ItemSeparatorComponent={ItemDivider}
+                                />
+                            </Card.Content>
+                        </Card>
+                    )
+                })
+            }
         </KeyboardScroll>
+
 
         {Boolean(data.order) && <><Card style={[styles.card, {marginTop: 10}]}>
             <Card.Content>
@@ -255,8 +267,6 @@ const Index = ({navigation}: any) => {
                         )
                     })
                 }
-
-
             </Card.Content>
         </Card>
 

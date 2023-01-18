@@ -116,8 +116,8 @@ class ListView extends Component<any> {
                         this.selectItem(item);
                     }}>
                         <List.Item title={() => <View
-                            style={[styles.listitem]}
-                            style={[styles.flexwidth, {backgroundColor: item.color, borderRadius: 3}]}><Paragraph
+
+                            style={[styles.listitem,styles.flexwidth, {backgroundColor: item.color, borderRadius: 3}]}><Paragraph
                             style={[styles.paragraph, {color: 'white'}]}>  {item.label}  </Paragraph></View>}
                                    titleStyle={{textTransform: 'capitalize'}}
                                    right={() => item.value === selected &&

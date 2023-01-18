@@ -100,20 +100,15 @@ const SalesReport = ({ordersData,navigation}: any) => {
             other: {url: urls.posUrl},
         }).then(async (result) => {
 
-
-
             if (result.status === STATUS.SUCCESS) {
-
                 let data:any = result.data?.result;
-
                 const {voucheritems, receipt}: any = data;
-
                 const payment = Boolean(receipt) ? Object.values(receipt)?.map((payment: any) => {
                     return {paymentAmount: payment.amount, paymentby: payment.payment}
                 }) : []
-
                 data = {
                     ...data,
+                    clientname:data.client,
                     invoiceitems: Object.values(voucheritems)?.map((item: any) => {
                         return {...item, change: true}
                     }),
@@ -123,14 +118,9 @@ const SalesReport = ({ordersData,navigation}: any) => {
                 printInvoice(data).then((xmlData:any)=>{
                     //navigation.push('Preview',{data:base64Encode(xmlData)})
                 })
-
             }
-
         });
-
-
     }
-
 
     if (!loader) {
         return <PageLoader/>

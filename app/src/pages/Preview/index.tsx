@@ -1,95 +1,161 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {ScrollView, Text, PixelRatio, View, Image, SafeAreaView, Alert} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {Alert, ScrollView, View,ActivityIndicator} from 'react-native';
 import {styles} from "../../theme";
 
-import {Container, ProIcon} from "../../components";
 
-
-import {appLog, base64Decode, captureImages, errorAlert, printPDF, sharePDF,} from "../../libs/function";
+import {appLog, base64Decode, captureImages,} from "../../libs/function";
 import ViewShot from "react-native-view-shot";
 import PageLoader from "../../components/PageLoader";
 import SunmiPrinter from "@heasy/react-native-sunmi-printer";
-import {sendDataToPrinter} from "../../libs/Network";
 import {device} from "../../libs/static";
 import WebView from "react-native-webview";
 import Button from "../../components/Button";
 
-import RenderHtml from 'react-native-render-html';
-import {Paragraph} from "react-native-paper";
+
+import EscPosPrinter, {getPrinterSeriesByName,} from 'react-native-esc-pos-printer';
+import {useDispatch} from "react-redux";
+import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
+
 
 global.Buffer = require('buffer').Buffer;
 
 
+import {Platform} from 'react-native';
+import {BLEPrinter, NetPrinter, USBPrinter} from "react-native-thermal-receipt-printer-image-qr";
+import ZigzagLines from "../../components/ZigZag";
+import ZigZag from "../../components/ZigZag";
+import {Paragraph} from "react-native-paper";
+import store from "../../redux-store/store";
+
+let printerList:any = ''
+
+if(Platform.OS === 'android') {
+    import("react-native-thermal-receipt-printer-image-qr").then(({BLEPrinter, NetPrinter, USBPrinter})=>{
+        printerList =   {
+            ble: BLEPrinter,
+            net: NetPrinter,
+            usb: USBPrinter,
+        };
+    });
+}
+
 const Index = ({navigation, route}: any) => {
+
+
 
     const params = route.params;
     const ref: any = useRef();
-    const scrollviewRef:any = useRef();
+    const scrollviewRef: any = useRef();
     const {menu, filename, printer}: any = params;
 
+    const Printer: typeof NetPrinter = printerList['net'] || {};
 
     const [loaded, setLoaded] = useState<boolean>(false)
-    const [height,setHeight] = useState(0);
-    const [images,setImages] = useState([])
+    const [height, setHeight] = useState(0);
+
+    const dispatch = useDispatch()
+
 
     const data = `<!DOCTYPE html>
                 <html>
                   <head>
                     <title>Print</title>
-                    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+                    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
                     <meta http-equiv="content-type" content="text/html; charset=utf-8">   
                     <style type="text/css">
                       body {
                         margin: 0;
-                        padding: 0; 
-                        width:80mm
-                      }
-                      @media (-webkit-device-pixel-ratio: 1){ 
-                        @viewport {                            
-                             width:100%;
-                        }
-                      }
-                    </style> 
+                        padding: 0;                                                                                              
+                      }                
+                    </style>  
                   </head>
-                  <body>                     
+                  <body>   
+                    <div>                  
                      ${base64Decode(device.printpreview)}
-                     <div><div>Powered By Dhru ERP</div><br/></div>
+                     <div><div style="text-align: center;font-size: 0.3em;font-weight: bold;font-family: Arial">Powered By Dhru ERP</div></div>
+                     </div>
                   </body>
                 </html>`;
+
+
+    const handleConnectSelectedPrinter = async () => {
+        const connect = async () => {
+            await Printer.init();
+            try {
+                await Printer.connectPrinter(printer?.host || '', 9100);
+            } catch (err) {
+                Alert.alert('Printer Connection error!');
+            } finally {
+
+            }
+        };
+        await connect();
+    };
+
 
     const snapShot = () => {
         const {printer}: any = params;
 
-        const isSunmi = (printer?.printertype === 'sunmi')
+        dispatch(showLoader())
+
+        const isSunmi = (printer?.printertype === 'sunmi');
+        const isGeneric = (printer.printername === 'Other - Generic - ESC/POS')
 
         try {
             ref.current.capture().then(async (uri: any) => {
 
-                isSunmi && await SunmiPrinter.printerInit();
-
-                await captureImages(500, uri).then(async (images: any) => {
+                await captureImages(isGeneric ? 2000 : 1000, uri).then(async (images: any) => {
 
                     //setImages(images)
 
-                    for (let key in images) {
-                        const {base64result, width}: any = images[key];
-                        if (isSunmi) {
-                            await SunmiPrinter.printBitmap(base64result, width)
-                        } else {
-                            //await sendDataToPrinter('', '', printer, Buffer.from('data:image/png;base64,' + base64result, 'base64'))
-                        }
-                    }
                     if (isSunmi) {
+                        await SunmiPrinter.printerInit();
+                        for (let key in images) {
+                            const {base64result, width}: any = images[key];
+                            await SunmiPrinter.printBitmap(base64result, width)
+                        }
                         await SunmiPrinter.lineWrap(3)
                         await SunmiPrinter.cutPaper()
+                    } else {
+
+                        if (!isGeneric) {
+                            await EscPosPrinter.init({
+                                target: `TCP:${printer.host}`,
+                                seriesName: getPrinterSeriesByName(printer.printername),
+                                language: 'EPOS2_LANG_EN',
+                            })
+
+                            let printing = new EscPosPrinter.printing();
+                            await printing.initialize().align('center')
+
+                            for (let key in images) {
+                                const {base64result, width}: any = images[key];
+                                await printing.image({uri: 'data:image/png;base64,' + base64result}, {width: width})
+                            }
+
+                            await printing.cut().send();
+                        } else {
+                            handleConnectSelectedPrinter().then(async () => {
+                                for (let key in images) {
+                                    const {base64result, width}: any = images[key];
+                                    await Printer.printImageBase64(base64result, {
+                                        imageWidth: width,
+                                    })
+                                }
+                               await Printer.printBill("", {beep: false});
+                            })
+                        }
                     }
-
-
-
                 });
+
+                dispatch(setAlert({visible: true, message: 'Print Successful'}))
+
+                navigation.goBack()
+                dispatch(hideLoader())
 
             });
         } catch (e) {
+            dispatch(hideLoader())
             appLog('e', e)
         }
     }
@@ -98,22 +164,22 @@ const Index = ({navigation, route}: any) => {
     const loadPrintData = () => {
         const {filename, autoprint, printer}: any = params
         if (autoprint) {
-            if(height) {
+            if (height) {
                 appLog('take auto shot')
                 setTimeout(async () => {
                     await snapShot()
                     setTimeout(() => {
                         navigation.goBack()
                     })
-                },500)
+                }, 1000)
             }
             //printPDF({data: data, filename}).then()
         }
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         loadPrintData();
-    },[height])
+    }, [height])
 
 
     useEffect(() => {
@@ -129,96 +195,79 @@ const Index = ({navigation, route}: any) => {
     }
 
 
-    /*navigation.setOptions({
-        headerRight:()=>{
-            return (
-                <ProIcon name={'print'} onPress={() =>
-                    snapShot()
-                }/>
-            )
-        }
-    })*/
 
     const webViewScript = `window.ReactNativeWebView.postMessage(document.body.scrollHeight);
   true; // note: this is required, or you'll sometimes get silent failures
 `;
 
-    const onProductDetailsWebViewMessage = (event:any) => {
-        setHeight(Number(event.nativeEvent.data) + ((Number(event.nativeEvent.data) * 2 / 100)))
+    const onProductDetailsWebViewMessage = (event: any) => {
+        setHeight(Number(event.nativeEvent.data))
     }
 
-    /*return    <WebView
-        source={{html: data}}
-        automaticallyAdjustContentInsets={true}
-        scrollEnabled={false}
-        javaScriptEnabled={true}
-        onMessage={onProductDetailsWebViewMessage}
-        domStorageEnabled={true}
-        injectedJavaScript={webViewScript}
-    />*/
+
+    const {webviewwidth} = printer
 
 
+    if (!height) {
+        return <View style={[styles.h_100, styles.bg_light, styles.middle]}>
 
-    if(!height) {
-        return  <WebView
-            source={{html: data}}
-            scalesPageToFit={true}
-            mixedContentMode="always"
-            automaticallyAdjustContentInsets={false}
-            scrollEnabled={false}
-            javaScriptEnabled={true}
-            onMessage={onProductDetailsWebViewMessage}
-            injectedJavaScript={webViewScript}
-        />
+            <View style={[styles.h_100, {width: webviewwidth}]}>
+
+
+                <WebView
+                    source={{html: data}}
+                    automaticallyAdjustContentInsets={false}
+                    scalesPageToFit={true}
+                    scrollEnabled={false}
+                    javaScriptEnabled={true}
+                    onMessage={onProductDetailsWebViewMessage}
+                    injectedJavaScript={webViewScript}
+                />
+
+
+                <View  style={[styles.loader,styles.bg_light]}>
+                    {<View  style={[styles.screenCenter,styles.h_100,styles.transparent]}>
+                        <View style={{borderRadius:50}}>
+                            <ActivityIndicator style={styles.m_1} color={'#016EFE'} size='large' animating={true}/>
+                        </View>
+                    </View> }
+                </View>
+
+
+            </View>
+        </View>
     }
-
 
 
     return (
-        <View style={[styles.h_100,styles.flex,styles.bg_white]}>
+        <View style={[styles.h_100, styles.flex,styles.w_100, styles.bg_light, styles.middle,]}>
 
-            <ScrollView  contentContainerStyle={[styles.px_6]}>
-                <ViewShot ref={ref}  style={{height:height}}   options={{result: "data-uri",   format: "png", quality: 1}}>
-                    <WebView
-                        source={{html: data}}
-                        style={{height:height}}
-                    />
-                </ViewShot>
+            <ScrollView>
+                <View style={[styles.h_100,styles.flex,styles.border,  {width: webviewwidth, marginVertical:20,backgroundColor:'white'}]}>
+                    <ZigZag></ZigZag>
+                    <View style={[styles.p_5]}>
+                        <ViewShot ref={ref}   options={{result: "data-uri", format: "jpg", quality: 1}}>
+                            <WebView
+                                source={{html: data}}
+                                style={{height: height}}
+                            />
+                        </ViewShot>
+                    </View>
+                    <ZigZag position={'bottom'}></ZigZag>
+                </View>
             </ScrollView>
 
             <View>
                 <View style={[styles.submitbutton, styles.row, styles.justifyContent]}>
-                    {/*<View style={[styles.cell, styles.w_auto]}>
-                        <Text style={{textAlign: 'center'}}>
-                            <ProIcon name={'share-nodes'}
-                                     onPress={() => sharePDF({data: data, filename})}/>
-                        </Text>
-                    </View>*/}
-                    <View style={[styles.cell, styles.w_auto,styles.ml_2]}>
+                    <View style={[styles.cell, styles.w_auto, styles.ml_2]}>
                         <Button more={{color: 'white'}}
                                 onPress={() => {
                                     snapShot()
-                                }}> Print {height}
+                                }}> Print
                         </Button>
-                        {/*<Text style={{textAlign: 'center'}}>
-                            <ProIcon name={'print'} onPress={() =>
-                                snapShot()
-                                //printPDF({data: this.data, filename})
-                            }/>
-                        </Text>*/}
                     </View>
-                    {/*<View style={[styles.cell, styles.w_auto]}>
-                        <Text style={{textAlign: 'center'}}>
-                            <ProIcon name={'download'} onPress={() => params.downloadPDF()}/>
-                        </Text>
-                    </View>*/}
                 </View>
             </View>
-
-
-
-
-
         </View>
     )
 

@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="app/android/app/src/main/res/drawable/rn_edit_text_material.xml" value="0.1975" />
+      </map>
+    </option>
+  </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="web" url="file://$PROJECT_DIR$/app/android" />
@@ -9,6 +16,7 @@
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@react-native-community/datetimepicker/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@react-native-community/image-editor/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@react-native-community/netinfo/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@react-native-picker/picker/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-ble-manager/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-camera/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-contacts/android" />
@@ -24,6 +32,7 @@
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-image-size/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-pager-view/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-permissions/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-ping/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-print/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-reanimated/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-safe-area-context/android" />
@@ -36,6 +45,7 @@
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-sunmi-inner-printer/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-svg/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-tcp-socket/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-thermal-receipt-printer-image-qr/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-vector-icons/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-view-shot/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-webview/android" />

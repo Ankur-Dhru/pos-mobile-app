@@ -11,8 +11,6 @@ const Index = ({orders}:any) => {
 
     const [name, setName] = useState('Helo');
 
-    console.log('orders',orders)
-
     return <View>
         <Paragraph style={[styles.paragraph, styles.mb_5]}>Cart</Paragraph>
     </View>

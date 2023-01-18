@@ -1,152 +1,296 @@
 
-import {appLog} from "../function";
+import {appLog, objToArray} from "../function";
 import {closeDB, getDBConnection} from "./index";
 import {TABLE} from "./config";
+import {localredux, METHOD, urls} from "../static";
+import apiService from "../api-service";
+import moment from "moment";
 
 
 
 
-export const getItemsByWhere = async ({itemgroupid,itemname,itemid,groupid,start}:any) => {
-    const db:any = await getDBConnection();
+export const getItemsByWhere = async ({itemgroupid,itemname,itemid,groupid,start,sku}:any) => {
 
-    try {
-        let items:any=[];
-        await db.transaction(function (txn:any) {
 
-            let where=' 1 = 1 ';
+    if(Boolean(urls.localserver)){
+
+        let querystring = {}
+
+        return new Promise(resolve => {
 
             if(Boolean(itemgroupid)){
-              where += ` and itemgroupid = '${itemgroupid}' `;
-            }
-            if(Boolean(groupid)){
-                where += ` and groupid = '${groupid}' `;
+                querystring = {
+                    ...querystring,
+                    itemgroupid: itemgroupid
+                }
             }
             if(Boolean(itemname)){
-                where += ` and (itemname LIKE '%${itemname}%' or uniqueproductcode = '${itemname}') `;
-            }
-            if(Boolean(itemid)){
-                where += ` and (itemid = '${itemid}') `;
-            }
-
-           const query = `SELECT * FROM ${TABLE.ITEM} where  ${where}`; // limit ${start*20},20
-
-            txn.executeSql(
-                query,
-                [],
-                function (tx:any, res:any) {
-                    for (let i = 0; i < res.rows.length; ++i) {
-                        items.push(JSON.parse(res.rows.item(i).data))
-                    }
+                querystring = {
+                    ...querystring,
+                    search: itemname,
+                    sku:Boolean(sku)
                 }
-            );
-        });
-        return items
-    } catch (e) {
-        appLog('e', e)
-    }
-    closeDB(db);
-}
+            }
 
-export const getAddonByWhere = async ({itemgroupid,itemname,start}:any) => {
-    const db:any = await getDBConnection();
-
-    try {
-        let items:any={};
-        await db.transaction(function (txn:any) {
-
-            let where=' 1 = 1 ';
-
-            const query = `SELECT * FROM ${TABLE.ADDON} where  ${where}`; // limit ${start*20},20
-
-            txn.executeSql(
-                query,
-                [],
-                function (tx:any, res:any) {
-                    for (let i = 0; i < res.rows.length; ++i) {
-                        const {itemid,data} = res.rows.item(i);
-                        items[itemid] = JSON.parse(data)
-                    }
+            apiService({
+                method: METHOD.GET,
+                action: 'item',
+                queryString: querystring,
+                hidealert:true,
+                other: {url: urls.localserver},
+            }).then((response: any) => {
+                if(Boolean(response?.data)) {
+                    let items = Object.values(response?.data).map((item:any)=>{
+                        return item
+                    })
+                    resolve(items)
                 }
-            );
-        });
+                resolve([])
+            })
+        })
 
-        return items
-    } catch (e) {
-        appLog('e', e)
     }
-    closeDB(db);
-}
+    else {
 
-export const getClientsByWhere = async ({displayname,phone,search,clienttype,start}:any) => {
-    const db:any = await getDBConnection();
-
-    try {
-        let items:any=[];
-        await db.transaction(function (txn:any) {
-
-            let where=' 1 = 1 ';
-
-            if(Boolean(phone)){
-                where += ` and (phone LIKE '%${phone}%') `;
-            }
-            if(Boolean(displayname)){
-                where += ` and (displayname LIKE '%${displayname}%') `;
-            }
-            if(Boolean(search)){
-                where += ` and ((displayname LIKE '%${search}%') or (phone LIKE '%${search}') or (clientid LIKE '%${search}'))`;
-            }
-            if(Boolean(clienttype)){
-                where += ` and ((clienttype = '${clienttype}'))`;
-            }
-
-            const query = `SELECT * FROM ${TABLE.CLIENT} where  ${where}`; // limit ${start*20},20
-
-            txn.executeSql(
-                query,
-                [],
-                function (tx:any, res:any) {
-                    for (let i = 0; i < res.rows.length; ++i) {
-                        items.push(JSON.parse(res.rows.item(i).data))
-                    }
-                }
-            );
-        });
-        return items
-    } catch (e) {
-        appLog('get clients', e)
-    }
-    closeDB(db);
-}
-
-export const getTempOrdersByWhere = async () => {
-
-    return new Promise<any>(async (resolve, reject)=>{
-        const db:any = await getDBConnection();
-        let items:any={};
+        const db: any = await getDBConnection();
 
         try {
-            await db.transaction(function (txn:any) {
+            let items: any = [];
+            await db.transaction(function (txn: any) {
 
-                let where=' 1 = 1 ';
-                const query = `SELECT * FROM ${TABLE.TEMPORDER} where  ${where}`;
+                let where = ' 1 = 1 ';
+
+                if (Boolean(itemgroupid)) {
+                    where += ` and itemgroupid = '${itemgroupid}' `;
+                }
+                if (Boolean(groupid)) {
+                    where += ` and groupid = '${groupid}' `;
+                }
+                if (Boolean(itemname)) {
+                    where += ` and (itemname LIKE '%${itemname}%' or uniqueproductcode = '${itemname}') `;
+                }
+                if (Boolean(itemid)) {
+                    where += ` and (itemid = '${itemid}') `;
+                }
+
+                const query = `SELECT *
+                               FROM ${TABLE.ITEM}
+                               where ${where}`; // limit ${start*20},20
+
                 txn.executeSql(
                     query,
                     [],
-                    function (tx:any, res:any) {
+                    function (tx: any, res: any) {
                         for (let i = 0; i < res.rows.length; ++i) {
-                            const {tableorderid,data}:any = res.rows.item(i);
-                            items[tableorderid] = JSON.parse(data)
+                            items.push(JSON.parse(res.rows.item(i).data))
+                        }
+                    }
+                );
+            });
+            return items
+        } catch (e) {
+            appLog('e', e)
+        }
+        closeDB(db);
+
+    }
+
+}
+
+export const getAddonByWhere = async ({itemgroupid,itemname,start}:any) => {
+
+    if(Boolean(urls.localserver)){
+
+        let querystring = {}
+
+        return new Promise(resolve => {
+
+            apiService({
+                method: METHOD.GET,
+                action: 'addon',
+                queryString: querystring,
+                hidealert:true,
+                other: {url: urls.localserver},
+            }).then((response: any) => {
+                if(Boolean(response?.data)) {
+                    resolve(response?.data)
+                }
+                resolve([])
+            })
+        })
+
+    }
+    else {
+
+        const db: any = await getDBConnection();
+
+        try {
+            let items: any = {};
+            await db.transaction(function (txn: any) {
+
+                let where = ' 1 = 1 ';
+
+                const query = `SELECT *
+                               FROM ${TABLE.ADDON}
+                               where ${where}`; // limit ${start*20},20
+
+                txn.executeSql(
+                    query,
+                    [],
+                    function (tx: any, res: any) {
+                        for (let i = 0; i < res.rows.length; ++i) {
+                            const {itemid, data} = res.rows.item(i);
+                            items[itemid] = JSON.parse(data)
                         }
                     }
                 );
             });
 
+            return items
         } catch (e) {
-            appLog('get temp orders', e)
+            appLog('e', e)
+        }
+        closeDB(db);
+    }
+}
+
+export const getClientsByWhere = async ({displayname,phone,search,clienttype,start}:any) => {
+
+
+    if(Boolean(urls.localserver)){
+
+
+
+        return new Promise(resolve => {
+            let querystring = {}
+            if(Boolean(search)){
+                querystring = {
+                    ...querystring,
+                    search: search,
+                    clienttype:0
+                }
+            }
+
+            apiService({
+                method: METHOD.GET,
+                action: 'client',
+                hidealert:true,
+                queryString:querystring,
+                other: {url: urls.localserver},
+            }).then((response: any) => {
+                if(Boolean(response?.data)) {
+                    let clients = Object.values(response?.data).map((client:any)=>{
+                        return client
+                    })
+                    resolve(clients)
+                }
+                resolve([])
+            })
+        })
+
+    }
+    else {
+
+
+        const db: any = await getDBConnection();
+
+        try {
+            let items: any = [];
+            await db.transaction(function (txn: any) {
+
+                let where = ' 1 = 1 ';
+
+                if (Boolean(phone)) {
+                    where += ` and (phone LIKE '%${phone}%') `;
+                }
+                if (Boolean(displayname)) {
+                    where += ` and (displayname LIKE '%${displayname}%') `;
+                }
+                if (Boolean(search)) {
+                    where += ` and ((displayname LIKE '%${search}%') or (phone LIKE '%${search}') or (clientid LIKE '%${search}'))`;
+                }
+                if (Boolean(clienttype)) {
+                    where += ` and ((clienttype = '${clienttype}'))`;
+                }
+
+                const query = `SELECT *
+                               FROM ${TABLE.CLIENT}
+                               where ${where}`; // limit ${start*20},20
+
+                txn.executeSql(
+                    query,
+                    [],
+                    function (tx: any, res: any) {
+                        for (let i = 0; i < res.rows.length; ++i) {
+                            items.push(JSON.parse(res.rows.item(i).data))
+                        }
+                    }
+                );
+            });
+            return items
+        } catch (e) {
+            appLog('get clients', e)
+        }
+        closeDB(db);
+    }
+}
+
+export const getTempOrdersByWhere = async () => {
+
+    return new Promise<any>(async (resolve, reject)=>{
+
+        let items: any = {};
+
+        if(Boolean(urls.localserver)) {
+
+           await apiService({
+                method: METHOD.GET,
+                action: 'tableorder',
+                other: {url: urls.localserver},
+            }).then((response: any) => {
+                if(Boolean(response?.data)) {
+                    Object.values(response?.data).map((item:any)=>{
+                         items[item.tableorderid] = item;
+                    })
+                }
+            })
+            resolve(items)
+        }
+        else{
+
+            const db: any = await getDBConnection();
+
+            try {
+                await db.transaction(function (txn: any) {
+
+                    let where = ' 1 = 1 ';
+                    const query = `SELECT *
+                                   FROM ${TABLE.TEMPORDER}
+                                   where ${where}`;
+                    txn.executeSql(
+                        query,
+                        [],
+                        function (tx: any, res: any) {
+                            for (let i = 0; i < res.rows.length; ++i) {
+                                const {tableorderid, data}: any = res.rows.item(i);
+                                items[tableorderid] = JSON.parse(data)
+                            }
+                        }
+                    );
+                });
+
+            } catch (e) {
+                appLog('get temp orders', e)
+            }
+
+            closeDB(db);
+
         }
 
-        closeDB(db);
         resolve(items)
+
+
+
     })
 
 

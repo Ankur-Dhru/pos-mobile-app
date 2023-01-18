@@ -10,13 +10,13 @@ import KeyboardScroll from "../../components/KeyboardScroll";
 import {localredux} from "../../libs/static";
 
 
-
 const Index = (props: any) => {
 
     const {navigation}: any = props;
-    let {staff}: any = localredux.initData;
 
-    staff = Object.values(staff).filter((staf:any)=>{
+    let {staff}: any = localredux?.initData;
+
+    staff = Boolean(staff) && Object.values(staff).filter((staf:any)=>{
         return !staf.support
     })
 

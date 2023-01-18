@@ -2,14 +2,23 @@ import {EscPos} from 'escpos-xml';
 import Mustache from "mustache";
 import BleManager from "react-native-ble-manager";
 import apiService from "./api-service";
-import {ACTIONS, device, METHOD, STATUS} from "./static";
+import {ACTIONS, device, METHOD, STATUS, urls} from "./static";
 import {appLog, base64Encode, getTemplate, printImage} from "./function";
+import EscPosPrinter from "react-native-esc-pos-printer";
 
 global.Buffer = require('buffer').Buffer;
 const net = require('react-native-tcp-socket');
 
 
 export const sendDataToPrinter = async (input?: any, template?: string, printer?: any,bufferdata?:any) => {
+
+    /*if(Boolean(urls.localserver)){
+        printer = {
+            ...printer,
+            printertype:'broadcast',
+            broadcastip:urls.localserver
+        }
+    }*/
 
     return await new Promise(async (resolve) => {
         if(Boolean(printer.template)) {
@@ -18,9 +27,12 @@ export const sendDataToPrinter = async (input?: any, template?: string, printer?
                 let xmlData:any = '';
                 let buffer:any = bufferdata || '';
 
+
+
                 if(!Boolean(buffer)) {
 
                     if (printer?.printertype !== 'broadcast') {
+
                         /*if(printer.qrcode){
                             template += `<align  mode="center"><line-feed/><text>Scan to Pay</text><line-feed/></align>`;
                         }*/
@@ -29,9 +41,6 @@ export const sendDataToPrinter = async (input?: any, template?: string, printer?
                             template += `<align  mode="center"><line-feed/><text>Powered By Dhru ERP</text><line-feed/></align>`;
                         }
                     }
-
-
-
 
                     if (printer?.templatetype === 'ThermalHtml') {
                         device.printpreview =  base64Encode(Mustache.render(template, input));
@@ -77,7 +86,7 @@ export const sendDataToPrinter = async (input?: any, template?: string, printer?
                                 invoice_display_number: input?.invoice_display_number,
                                 terminalname: input?.terminalname,
                             },
-                            other: {url: `http://${printer?.broadcastip}:8081/`},
+                            other: {url: `${printer?.broadcastip}`},
                             queryString: {remoteprint: true}
                         }).then((response: any) => {
 
@@ -94,7 +103,11 @@ export const sendDataToPrinter = async (input?: any, template?: string, printer?
 
                 } else {
 
+
+
                     if(printer?.printertype === 'sunmi'){
+
+
 
                     }
                     else if (Boolean(printer?.host)) {
@@ -145,6 +158,11 @@ const connectToPrinter = async (printer: any, buffer: Buffer,): Promise<unknown>
                 const {port, host}: any = printer;
 
                 if (Boolean(printer?.host)) {
+
+
+                    let printing = new EscPosPrinter.printing();
+                    await printing.initialize().align('center')
+
                     await device.connect({port, host}, async () => {
                         device.write(Buffer.concat([buffer, Buffer.from([0x1B, 0x6D])]));
                         setTimeout(() => {

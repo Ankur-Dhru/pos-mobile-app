@@ -13,14 +13,16 @@ import {
     getTicketStatus,
     objToArray, printInvoice,
     printKOT,
-    saveLocalOrder,
+    saveLocalOrder, saveTempLocalOrder,
     voucherTotal
 } from "../../libs/function";
-import {ItemDivider, localredux, TICKET_STATUS} from "../../libs/static";
-import {updateCartField} from "../../redux-store/reducer/cart-data";
+import {ItemDivider, localredux, METHOD, STATUS, TICKET_STATUS, urls} from "../../libs/static";
+import {setCartData, updateCartField} from "../../redux-store/reducer/cart-data";
 import store from "../../redux-store/store";
 import {CommonActions} from "@react-navigation/native";
 import Container from "../../components/Container";
+import apiService from "../../libs/api-service";
+import {setAlert} from "../../redux-store/reducer/component";
 
 const Index = (props: any) => {
 
@@ -65,9 +67,26 @@ const Index = (props: any) => {
             }))
 
 
-            await saveLocalOrder().then(async () => {
-                await deleteTempLocalOrder(tableorderid).then();
-            })
+            if(Boolean(urls.localserver)){
+                apiService({
+                    method: METHOD.DELETE,
+                    action: 'tableorder',
+                    queryString: {tableorderid:tableorderid, reasonid:cancelreasonid,reasonname:cancelreason},
+                    body:{kots},
+                    other: {url: urls.localserver},
+                }).then((response: any) => {
+                    store.dispatch(setAlert({visible: true, message: response.message}))
+                })
+            }
+            else {
+                await saveLocalOrder().then(async () => {
+                    await deleteTempLocalOrder(tableorderid).then();
+                })
+            }
+
+
+
+
 
 
             navigation.dispatch(
@@ -87,7 +106,9 @@ const Index = (props: any) => {
 
     const cancelKOT = ({cancelreason, cancelreasonid, kot}: any) => {
 
-        let {invoiceitems, invoiceitemsdeleted, kots, vouchertaxtype}: any = store.getState().cartData;
+        const {cartData} = store.getState();
+        let {invoiceitems, invoiceitemsdeleted, kots, vouchertaxtype}: any = cartData;
+
         if (!Boolean(invoiceitemsdeleted)) {
             invoiceitemsdeleted = []
         }
@@ -116,16 +137,15 @@ const Index = (props: any) => {
         }
 
         kot.ticketitems =  kot?.ticketitems?.map((item:any,index:any)=>{
-            if(item.selected && !item.cancelled) {
+            if((item.selected && !item.cancelled) || (kot.ticketitems.length === 1)) {
 
                 item = {
                     ...item,
                     ...cancelJson
                 }
 
-
                 invoiceitems = invoiceitems.map((invoiceitem:any)=>{
-                    if(invoiceitem.key === item.ref_id){
+                    if(invoiceitem.key === item.key){
                         invoiceitem = {
                             ...invoiceitem,
                             cancelled :true
@@ -138,6 +158,7 @@ const Index = (props: any) => {
             return item
         })
 
+
         const index = kots.findIndex(function (item: any) {
             return item.kotid === kot.kotid
         });
@@ -146,6 +167,7 @@ const Index = (props: any) => {
             ...kots,
             [index]: kot
         }
+
 
         printKOT(kot).then();
 
@@ -169,7 +191,12 @@ const Index = (props: any) => {
             invoiceitemsdeleted: newdeletedinvoiceitems
         }))
 
+        if(Boolean(urls.localserver)) {
+            saveTempLocalOrder().then()
+        }
+
         navigation.goBack()
+
     }
 
 

@@ -20,7 +20,7 @@ const Index = (props: any) => {
 
     device.navigation = navigation;
 
-    //navigation.replace('Sample')
+    // navigation.replace('Sample')
 
 
     getDatabaseName().then(async (dbname: any) => {
@@ -28,6 +28,7 @@ const Index = (props: any) => {
 
 
         let screen = 'SetupStackNavigator';
+
         if (Boolean(dbname)) {
             db.name = dbname;
 
@@ -44,19 +45,12 @@ const Index = (props: any) => {
                     const {license: {expired_on, status}} = licenseData.data;
                     const today = moment().format('YYYY-MM-DD');
                     if (expired_on >= today && status === 'Active') {
-
                         localredux.initData = initData;
-
                         localredux.localSettingsData = localSettingsData;
-
-                        //await getStateAndTaxType(initData.general?.country).then()
-
                         screen = 'PinStackNavigator';
-
-                        await retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
+                        /*await retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
                             await dispatch(setSettings(data));
-                        })
-
+                        })*/
                     }
                 }
 

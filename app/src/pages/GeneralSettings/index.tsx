@@ -7,23 +7,24 @@ import {connect, useDispatch} from "react-redux";
 import CheckBox from "../../components/CheckBox";
 import {Field, Form} from "react-final-form";
 
-import {getLocalSettings, saveLocalSettings, setAPIUrl} from "../../libs/function";
+import {getLocalSettings, retrieveData, saveLocalSettings, setAPIUrl} from "../../libs/function";
+import {setSettings} from "../../redux-store/reducer/local-settings-data";
+import InputField from "../../components/InputField";
 
 
 const Index = () => {
 
     const dispatch = useDispatch();
-    let [initdata, setInitdata]: any = useState({homedelivery: false, takeaway: false, betamode: false,paxes:false})
+    let [initdata, setInitdata]: any = useState({disabledDefaultSourceHomeDelivery: false, disabledDefaultSourceTakeAway: false, betamode: false,disabledpax:false,kotongenerateinvoice:'Enable'})
 
     const [loading, setLoading]: any = useState(false)
 
 
     useEffect(() => {
-        getLocalSettings('generalsettings').then(r => {
-            setInitdata(r);
-            setLoading(true)
-        });
-
+         retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
+            setInitdata(data);
+            setLoading(true);
+        })
     }, [])
 
     const handleSubmit = () => {
@@ -57,7 +58,8 @@ const Index = () => {
                                                     ...initdata,
                                                     disabledDefaultSourceHomeDelivery: value
                                                 }
-                                                saveLocalSettings("generalsettings", initdata).then();
+                                                dispatch(setSettings(initdata));
+                                                saveLocalSettings("disabledDefaultSourceHomeDelivery", value).then();
                                             }}
                                         /></>
                                     )}
@@ -74,7 +76,8 @@ const Index = () => {
                                                     ...initdata,
                                                     disabledDefaultSourceTakeAway: value
                                                 }
-                                                saveLocalSettings("generalsettings", initdata).then();
+                                                dispatch(setSettings(initdata));
+                                                saveLocalSettings("disabledDefaultSourceTakeAway", value).then();
                                             }}
                                         /></>
                                     )}
@@ -90,11 +93,44 @@ const Index = () => {
                                                     ...initdata,
                                                     disabledpax: value
                                                 }
-                                                saveLocalSettings("generalsettings", initdata).then();
+                                                dispatch(setSettings(initdata));
+                                                saveLocalSettings("disabledpax", value).then();
                                             }}
                                         /></>
                                     )}
                                 </Field>
+
+
+                                <View>
+                                    <Field name="kotongenerateinvoice">
+                                        {props => {
+                                            return (<>
+                                                <InputField
+                                                    label={'KOT print on generate Invoice'}
+                                                    divider={true}
+                                                    displaytype={'bottomlist'}
+                                                    inputtype={'dropdown'}
+                                                    list={[
+                                                        {value: 'Enable',label: 'Enable'},
+                                                        {value: 'Disable', label: 'Disable'},
+                                                        {value: 'Ask On Place', label: 'Ask On Place'}
+                                                    ]}
+                                                    search={false}
+                                                    listtype={'other'}
+                                                    selectedValue={props.input.value}
+                                                    onChange={(value: any) => {
+                                                        initdata = {
+                                                            ...initdata,
+                                                            kotongenerateinvoice: value
+                                                        }
+                                                        dispatch(setSettings(initdata));
+                                                        saveLocalSettings("kotongenerateinvoice", value).then();
+                                                    }}
+                                                />
+                                            </>)
+                                        }}
+                                    </Field>
+                                </View>
 
 
                             </Card.Content>
@@ -115,7 +151,8 @@ const Index = () => {
                                                     betamode: value
                                                 }
                                                 setAPIUrl(value)
-                                                saveLocalSettings("generalsettings", initdata).then();
+                                                dispatch(setSettings(initdata));
+                                                saveLocalSettings("betamode", value).then();
                                             }}
                                         /></>
                                     )}

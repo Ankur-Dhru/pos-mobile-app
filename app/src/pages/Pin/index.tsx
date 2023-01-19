@@ -5,7 +5,7 @@ import Container from "../../components/Container";
 import ReactNativePinView from "react-native-pin-view"
 import {useDispatch} from "react-redux";
 import {
-    appLog,
+    appLog, errorAlert,
     gePhonebook,
     getAddons,
     getClients, getLocalSettings,
@@ -40,6 +40,8 @@ const Index = (props: any) => {
     const pinView: any = useRef(null)
     const [enteredPin, setEnteredPin] = useState("")
 
+    let isRestaurant = false;
+
     const setData = async (data:any) => {
         const {
             initData,
@@ -72,7 +74,10 @@ const Index = (props: any) => {
                     dispatch(setTableOrdersData(orders));
                 })
 
-                const {othersettings} = localredux.initData
+                const {othersettings} = localredux.initData;
+
+                isRestaurant = (localredux.localSettingsData.industrytype === 'foodservices');
+
                 await retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
                     await dispatch(setSettings({...data,...othersettings}));
                 })
@@ -85,7 +90,17 @@ const Index = (props: any) => {
 
         await dispatch(hideLoader())
         localredux.loginuserData = params;
-        await navigation.replace('ClientAreaStackNavigator');
+
+        appLog('isRestaurant',isRestaurant)
+
+        if(isRestaurant){
+            await navigation.replace('ClientAreaStackNavigator');
+        }
+        else{
+            urls.localserver = '';
+            errorAlert('Remote Terminal not support for retail')
+            navigation.replace('SetupStackNavigator')
+        }
     }
 
     const changeServer = async () => {
@@ -158,7 +173,7 @@ const Index = (props: any) => {
 
 
 
-    navigation.setOptions({headerShown: !params.onlyone})
+    navigation.setOptions({headerShown: !params.onlyone || Boolean(urls.localserver)})
 
 
     return <Container style={{padding: 0}}>

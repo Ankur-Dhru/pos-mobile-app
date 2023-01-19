@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {FlatList, Keyboard, ScrollView, TouchableOpacity, View} from 'react-native';
 import {styles} from "../../theme";
 
@@ -11,19 +11,26 @@ import {Field, Form} from 'react-final-form';
 import {composeValidators, ItemDivider, required,} from "../../libs/static";
 
 import KAccessoryView from "../../components/KAccessoryView";
-import {chevronRight, connectToLocalServer} from "../../libs/function";
+import {appLog, chevronRight, connectToLocalServer, getLocalSettings} from "../../libs/function";
 import {useNavigation} from "@react-navigation/native";
 
 export default function LocalServer(props: any) {
     const navigation = useNavigation();
 
     const [serverip, setServerip] = useState()
+    let [servers,setServers]:any = useState()
 
     const handleSubmit = (values: any) => {
         Keyboard.dismiss();
-        const {serverip}: any = values
+        const {serverip}: any = values;
         connectToLocalServer(serverip, navigation).then();
     }
+
+    useEffect(()=>{
+        getLocalSettings('recentserverips').then((ips:any)=>{
+            setServers(ips);
+        })
+    },[])
 
     const renderitems = ({item}: any) => {
 
@@ -57,8 +64,9 @@ export default function LocalServer(props: any) {
                                     <Card style={[styles.card]}>
                                         <Card.Content style={[styles.cardContent]}>
 
+                                            <View style={[styles.grid,styles.justifyContent,styles.middle]}>
 
-                                            <View>
+                                            <View style={[styles.w_auto]}>
 
                                                 <Field name="serverip"
                                                        validate={composeValidators(required)}>
@@ -66,14 +74,14 @@ export default function LocalServer(props: any) {
                                                         <InputBox
                                                             {...props}
                                                             value={props.input.value}
-                                                            label={'Local Server IP'}
+                                                            label={'Remote Terminal IP'}
                                                             autoFocus={false}
+                                                            keyboardType={'numeric'}
                                                             autoCapitalize='none'
-                                                            /*onSubmitEditing={(e:any) => {
-                                                                this.handleSubmit(values)
+                                                            onSubmitEditing={(e:any) => {
+                                                                handleSubmit(values)
                                                             }}
                                                             returnKeyType={'go'}
-                                                            */
                                                             onChange={props.input.onChange}
                                                         />
                                                     )}
@@ -81,17 +89,32 @@ export default function LocalServer(props: any) {
 
                                             </View>
 
+                                            <View style={[styles.ml_2]}>
+                                                <Button more={{color: 'white'}} disable={more.invalid}
+                                                        secondbutton={more.invalid} onPress={() => {
+                                                    handleSubmit(values)
+                                                }}>Connect</Button>
+                                            </View>
+
+                                            </View>
+
+                                            <View style={[styles.mt_5]}>
+                                                <Paragraph style={[styles.muted,]}>
+                                                   Connect to remote terminal, remote terminal ip address is required and both device must be in same local network.
+                                                </Paragraph>
+                                            </View>
+
                                         </Card.Content>
                                     </Card>
 
 
-                                    <Card style={[styles.card]}>
+                                    {Boolean(servers) &&   <Card style={[styles.card]}>
                                         <Card.Content style={[styles.cardContent]}>
 
                                             <Caption style={[styles.caption]}>Recently Used</Caption>
 
                                             <FlatList
-                                                data={['10.0.51.61', '192.168.29.10', '10.7.35.57']}
+                                                data={Object.values(servers)}
                                                 keyboardDismissMode={'on-drag'}
                                                 keyboardShouldPersistTaps={'always'}
                                                 renderItem={renderitems}
@@ -101,19 +124,19 @@ export default function LocalServer(props: any) {
 
 
                                         </Card.Content>
-                                    </Card>
+                                    </Card>}
 
 
                                 </ScrollView>
 
-                                <KAccessoryView>
+                                {/*<KAccessoryView>
                                     <View style={[styles.submitbutton]}>
                                         <Button more={{color: 'white'}} disable={more.invalid}
                                                 secondbutton={more.invalid} onPress={() => {
                                             handleSubmit(values)
                                         }}>Next</Button>
                                     </View>
-                                </KAccessoryView>
+                                </KAccessoryView>*/}
 
                             </View>
                         </View>

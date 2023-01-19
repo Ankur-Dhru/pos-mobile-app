@@ -1,4 +1,4 @@
-import {appLog, refreshToken} from "../function";
+import {appLog, refreshToken, wait} from "../function";
 import {ACTIONS, device, METHOD, STATUS} from "../static";
 import store from "../../redux-store/store";
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
@@ -22,6 +22,7 @@ const apiService = async (config: configData) => {
 
     controller = new AbortController();
     const signal = controller.signal;
+    let apiresponse:any = false;
 
     let headers: any = {
         'Accept': 'application/json',
@@ -41,9 +42,10 @@ const apiService = async (config: configData) => {
         method: config.method,
         redirect: 'follow',
         headers: new Headers(headers),
-        timeout: 5000,
+        timeout: 10000,
         signal
     };
+
 
 
     let apiPath: any = "http://localhost:8081/";
@@ -75,11 +77,24 @@ const apiService = async (config: configData) => {
 
     appLog('apiPath', apiPath)
 
+
+
+
+    wait(requestOptions.timeout, signal)
+        .then(() => {
+            if(!apiresponse){
+                controller.abort();
+            }
+        })
+        .catch(() => {
+            appLog('Waiting was interrupted');
+        });
+
     return await fetch(apiPath, requestOptions)
         .then(response => response.json())
         .then((response: any) => {
 
-
+            apiresponse = true
             store.dispatch(hideLoader());
 
             if (response?.message && (response?.status === STATUS.ERROR) && !config?.hidealert) {

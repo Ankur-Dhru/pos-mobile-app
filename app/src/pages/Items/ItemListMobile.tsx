@@ -136,7 +136,7 @@ const Index = (props: any) => {
             }
             setLoading(true)
         });
-    }, [selectedgroup])
+    }, [selectedgroup,invoiceitems.length])
 
 
     const renderItem = useCallback(({item, index}: any) => {

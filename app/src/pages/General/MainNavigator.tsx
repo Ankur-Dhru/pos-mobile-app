@@ -122,7 +122,7 @@ const SetupStackNavigator = () => {
 
             <Stack.Screen name="Login" component={Login}  options={{headerShown: false}}/>
 
-            <Stack.Screen name="LocalServer" component={LocalServer}  options={{headerTitle: 'Local Server IP'}}/>
+            <Stack.Screen name="LocalServer" component={LocalServer}  options={{headerTitle: 'Remote Terminal'}}/>
 
             <Stack.Screen name="Register" component={Register} options={{headerTitle: 'Create an account'}}/>
 

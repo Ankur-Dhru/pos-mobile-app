@@ -46,7 +46,7 @@ const ProfileSettings = () => {
             CommonActions.reset({
                 index: 0,
                 routes: [
-                    {name: 'PinStackNavigator'},
+                    {name: Boolean(urls.localserver) ? 'SetupStackNavigator':'PinStackNavigator'},
                 ],
             })
         );

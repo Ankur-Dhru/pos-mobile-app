@@ -8,7 +8,7 @@ import {
     retrieveData,
     saveTempLocalOrder, storeData
 } from "../../libs/function";
-import {View} from "react-native";
+import {Alert, View} from "react-native";
 import {Card, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
@@ -27,6 +27,7 @@ const Index = ({
                    ordertype,
                    printcounter,
                    vouchertotaldisplay,
+                   kotongenerateinvoice,
                    theme: {colors}
                }: any) => {
 
@@ -39,6 +40,18 @@ const Index = ({
             navigation.navigate('Payment')
         }
     }, [])
+
+
+    const KOTActions = (cancelkotprint:any) => {
+        generateKOT(cancelkotprint).then(() => {
+            dispatch(hideLoader())
+            printInvoice().then((status: any) => {
+                saveTempLocalOrder('', {print: Boolean(status)}).then((msg:any) => {
+                    dispatch(hideLoader())
+                })
+            });
+        });
+    }
 
 
     return <View>
@@ -89,29 +102,24 @@ const Index = ({
                         </View>
                         {ordertype !== 'qsr' && <View style={[styles.w_auto, styles.ml_1]}>
                             <Button disable={!Boolean(vouchertotaldisplay)}
-
                                     onPress={async () => {
 
-
-
-                                        /*printInvoice('',true).then((data: any) => {
-                                            saveTempLocalOrder('', {print: Boolean(data)}).then((msg:any) => {
-                                                dispatch(hideLoader())
-                                            })
-                                        });*/
-
-                                        await generateKOT().then(() => {
-                                            dispatch(hideLoader())
-                                            printInvoice().then((status: any) => {
-                                                saveTempLocalOrder('', {print: Boolean(status)}).then((msg:any) => {
-                                                    dispatch(hideLoader())
-                                                })
-                                            });
-                                        });
+                                        if(kotongenerateinvoice === 'Ask On Place'){
+                                            await Alert.alert(
+                                                "Alert",
+                                                'Want to print KOT?',
+                                                [
+                                                    {text: "Cancel",onPress: () => {KOTActions(true)},style:'cancel'},
+                                                    {text: "Print", onPress: () => KOTActions(false)}
+                                                ]
+                                            );
+                                        }
+                                        else{
+                                            KOTActions(kotongenerateinvoice === 'Disable')
+                                        }
 
                                     }
-                                    }
-
+                                 }
                                     more={{backgroundColor: styles.accent.color, color: 'white',height:50}}
                             >Print Bill {`${printcounter ? '(' + printcounter + ')' : ''}`}</Button>
                         </View>}
@@ -186,6 +194,7 @@ const mapStateToProps = (state: any) => {
         vouchertotaldisplay: state.cartData.vouchertotaldisplay,
         printcounter: state.cartData?.printcounter,
         ordertype: state.cartData.ordertype,
+        kotongenerateinvoice: state.localSettings?.kotongenerateinvoice,
     }
 }
 

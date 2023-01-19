@@ -473,7 +473,52 @@ const Index = ({tableorders}: any) => {
         />
     );
 
-    let routes = [{key: 'all', title: 'All'},{key: 'tableorder', title: 'Tables'},{key: 'homedelivery', title: 'Homedelivery'},{key: 'takeaway', title: 'Takeaway'},{key: 'advanceorder', title: 'Advance Order'}]
+    let routes = [{key: 'all', title: 'All'},{key: 'tableorder', title: 'Tables'},{key: 'homedelivery', title: 'Homedelivery'},{key: 'takeaway', title: 'Takeaway'}]
+
+    let actions = [
+        {
+            icon: 'truck',
+            label: 'Home Delivery',
+            onPress: () => setOrderSetting("Home Delivery", {
+                'label': 'Home Delivery',
+                value: 'homedelivery'
+            }),
+        },
+        {
+            icon: 'sack',
+            label: 'Takeaway',
+            onPress: () => setOrderSetting("Takeaway", {'label': 'Takeaway', value: 'takeaway'}),
+        },
+        {
+            icon: 'popcorn',
+            label: '+ QSR / Quick Bill',
+            onPress: () => setOrderSetting("+ QSR / Quick Bill", {
+                'label': '+ QSR / Quick Bill',
+                value: 'qsr'
+            }),
+        },
+        {
+            icon: 'table',
+            label: 'Table Reservation',
+            onPress: () => setOrderSetting("Table Reservation", {
+                'label': 'Table Reservation',
+                value: 'tableorder'
+            }),
+        },
+    ]
+
+    if(!Boolean(urls.localserver)){
+        routes.push({key: 'advanceorder', title: 'Advance Order'});
+        actions.push({
+            icon: 'sack',
+            label: 'Advance Order',
+            onPress: () => setOrderSetting("Advanced Order", {
+                'label': 'Advance Order',
+                value: 'advanceorder'
+            }),
+        })
+    }
+
 
     return (
         <>
@@ -510,45 +555,7 @@ const Index = ({tableorders}: any) => {
                 fabStyle={{backgroundColor: 'black', marginBottom: 10}}
                 backdropColor={'#00000070'}
                 icon={'plus'}
-                actions={[
-                    {
-                        icon: 'truck',
-                        label: 'Home Delivery',
-                        onPress: () => setOrderSetting("Home Delivery", {
-                            'label': 'Home Delivery',
-                            value: 'homedelivery'
-                        }),
-                    },
-                    {
-                        icon: 'sack',
-                        label: 'Takeaway',
-                        onPress: () => setOrderSetting("Takeaway", {'label': 'Takeaway', value: 'takeaway'}),
-                    },
-                    {
-                        icon: 'sack',
-                        label: 'Advance Order',
-                        onPress: () => setOrderSetting("Advanced Order", {
-                            'label': 'Advance Order',
-                            value: 'advanceorder'
-                        }),
-                    },
-                    {
-                        icon: 'popcorn',
-                        label: '+ QSR / Quick Bill',
-                        onPress: () => setOrderSetting("+ QSR / Quick Bill", {
-                            'label': '+ QSR / Quick Bill',
-                            value: 'qsr'
-                        }),
-                    },
-                    {
-                        icon: 'table',
-                        label: 'Table Reservation',
-                        onPress: () => setOrderSetting("Table Reservation", {
-                            'label': 'Table Reservation',
-                            value: 'tableorder'
-                        }),
-                    },
-                ]}
+                actions={actions}
                 onStateChange={() => {
                     setFloating(!floating)
                 }}

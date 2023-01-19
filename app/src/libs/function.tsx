@@ -371,15 +371,17 @@ export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = t
         vouchernotes: voucherTypeData?.defaultcustomernotes,
         toc: voucherTypeData?.defaultterms,
         selectedtemplate: voucherTypeData?.printtemplate,
+        paymentmethod:payment[0]?.paymentmethod,
+        payment : payment,
         edit: true,
+        area:'Default',
+        paxes:1,
         "placeofsupply": state,
         "updatecart": false,
         "debugPrint": true,
         "shifttable": false,
         "taxInvoice": false,
     }
-
-    data.payment = payment;
 
     return data;
 }
@@ -998,6 +1000,7 @@ export const saveLocalOrder = (order?: any) => {
                 other: {url: urls.localserver},
             }).then((response: any) => {
                 if(Boolean(response?.data)) {
+                    store.dispatch(resetCart())
                     resolve(response?.data)
                 }
             })
@@ -1409,7 +1412,7 @@ export const getLeftRight = (left: string, right: string, large: boolean = false
 }
 
 
-export const generateKOT = async () => {
+export const generateKOT = async (cancelkotprint?:any) => {
 
     return new Promise(async (resolve, reject) => {
 
@@ -1417,12 +1420,11 @@ export const generateKOT = async () => {
         store.dispatch(showLoader())
         let cartData = store.getState().cartData;
 
-
         if(Boolean(urls.localserver)){
             await apiService({
                 method: METHOD.POST,
                 action: 'remote/printkot',
-                body:cartData,
+                body: {...cartData,cancelkotprint:Boolean(cancelkotprint)},
                 other: {url: urls.localserver},
             }).then((response: any) => {
                 const {status}:any = response;
@@ -1651,6 +1653,7 @@ export const generateKOT = async () => {
                                         staffid: adminid,
                                         staffname: username,
                                         ordertype: ordertype,
+
                                     };
 
                                     kots = [...kots, newkot];
@@ -1658,7 +1661,7 @@ export const generateKOT = async () => {
 
                                     printkot.push(newkot);
 
-                                    await printKOT(newkot).then(async (msg) => {
+                                    await printKOT(newkot,cancelkotprint).then(async (msg) => {
 
                                         if (i < length - 1) {
                                             recursive(++i).then()
@@ -2014,7 +2017,7 @@ export const printInvoice = async (order?: any) => {
 }
 
 
-export const printKOT = async (kot?: any) => {
+export const printKOT = async (kot?: any,cancelkotprint?:any) => {
 
     if(Boolean(urls.localserver)){
         await apiService({
@@ -2042,20 +2045,27 @@ export const printKOT = async (kot?: any) => {
             const printer = PRINTERS[kot?.departmentid];
             PAGE_WIDTH = printer?.printsize || 48;
 
-            if ((kot?.cancelled && printer?.printoncancel) || !kot?.cancelled) {
-                return new Promise(async (resolve) => {
-                    if (Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip || Boolean(printer?.template))) {
-                        const template: any = getPrintTemplate(printer?.template);
-                        sendDataToPrinter(printJson, template, printer).then((msg) => {
-                            store.dispatch(setAlert({visible: true, message: msg}))
-                            resolve(msg)
-                        });
-                    } else {
-                        store.dispatch(setAlert({visible: true, message: 'Kitchen Printer not set'}))
-                        resolve('No printer set')
+            return new Promise(async (resolve) => {
+
+                if(!cancelkotprint) {
+                    if ((kot?.cancelled && printer?.printoncancel) || !kot?.cancelled) {
+
+                        if (Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip || Boolean(printer?.template))) {
+                            const template: any = getPrintTemplate(printer?.template);
+                            sendDataToPrinter(printJson, template, printer).then((msg) => {
+                                store.dispatch(setAlert({visible: true, message: msg}))
+                                resolve(msg)
+                            });
+                        } else {
+                            store.dispatch(setAlert({visible: true, message: 'Kitchen Printer not set'}))
+                            resolve('No printer set')
+                        }
                     }
-                })
-            }
+                }
+                else{
+                    resolve('Cancel Print KOT')
+                }
+            })
 
         } catch (e) {
             appLog("printKOT Error", e);
@@ -2682,27 +2692,60 @@ export const captureImages = async (cropheight:any = 500,image:any) => {
 }
 
 export const  connectToLocalServer = async (serverip:any,navigation:any) => {
+
         await apiService({
             method: METHOD.GET,
             action: ACTIONS.LICENSE,
             other: {url: `http://${serverip}:${port}/`},
         }).then((response: any) => {
             const {data} = response;
-
             if (Boolean(data) && Boolean(data.data)) {
-                const {license: {expired_on, status}} = data.data;
-                const today = moment().format('YYYY-MM-DD');
-                if (expired_on >= today && status === 'Active') {
-                    localredux.initData = {staff:data.staffs};
-                    localredux.licenseData = {data:data.data};
-                    saveLocalSettings('serverip',serverip).then();
-                    urls.localserver = `http://${serverip}:${port}/`
-                    navigation.navigate('PinStackNavigator');
+                try {
+                    const {license: {expired_on, status}} = data.data;
+                    const today = moment().format('YYYY-MM-DD');
+                    if (expired_on >= today && status === 'Active') {
+                        localredux.initData = {staff: data.staffs};
+                        localredux.licenseData = {data: data.data};
+                        saveLocalSettings('serverip', serverip).then();
+                        getLocalSettings('recentserverips').then((ips: any) => {
+                            if (!Boolean(ips)) {
+                                ips = []
+                            }
+                            ips = {
+                                ...ips,
+                                [serverip]: serverip
+                            }
+                            saveLocalSettings('recentserverips', ips)
+                        })
+                        urls.localserver = `http://${serverip}:${port}/`
+                        navigation.navigate('PinStackNavigator');
+                    }
+                    else{
+                        urls.localserver = ''
+                    }
+                }
+                catch (e) {
+                    appLog('e',e)
                 }
             }
+        }).catch(()=>{
+            errorAlert('Something went wrong')
         })
     }
 
+
+
+export const  wait = (time: number, signal?: AbortSignal) => {
+    return new Promise<void>((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+            resolve();
+        }, time);
+        signal?.addEventListener('abort', () => {
+            clearTimeout(timeoutId);
+            reject();
+        });
+    });
+}
 
 
 export const getDefaultPayment = () => {
@@ -2730,3 +2773,5 @@ export const getDefaultPayment = () => {
     }
     return payment;
 }
+
+

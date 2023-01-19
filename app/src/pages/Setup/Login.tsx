@@ -184,19 +184,6 @@ const Index = (props: any) => {
                                         </Paragraph></TouchableOpacity>
                                     </View>
 
-
-                                    <View style={[styles.mt_5]}>
-                                        <Button style={[ styles.w_auto, styles.noshadow]}
-                                                more={{
-                                                    backgroundColor: styles.primary.color,
-                                                    color: 'white',
-                                                    height: 45,
-                                                }} onPress={() => {
-                                            navigation.navigate('LocalServer')
-                                        }}>Connect to local server</Button>
-
-                                    </View>
-
                                 </View>
 
                             </ScrollView>
@@ -208,6 +195,21 @@ const Index = (props: any) => {
                                                 handleSubmit(values)
                                             }}> Login
                                     </Button>
+
+                                    <View style={[styles.mt_2]}>
+                                        <Button style={[ styles.w_auto, styles.noshadow]}
+                                                more={{
+                                                    backgroundColor: 'white',
+                                                    borderColor:styles.primary.color,
+                                                    borderWidth:1,
+                                                    color: 'black',
+                                                    height: 45,
+                                                }} onPress={() => {
+                                            navigation.navigate('LocalServer')
+                                        }}>Connect To Remote Terminal</Button>
+
+                                    </View>
+
                                 </View>
 
                             </KAccessoryView>

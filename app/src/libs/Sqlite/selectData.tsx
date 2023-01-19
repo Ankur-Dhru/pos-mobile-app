@@ -24,7 +24,13 @@ export const getItemsByWhere = async ({itemgroupid,itemname,itemid,groupid,start
                     itemgroupid: itemgroupid
                 }
             }
-            if(Boolean(itemname)){
+            else if(Boolean(groupid)){
+                querystring = {
+                    ...querystring,
+                    groupid: groupid
+                }
+            }
+            else if(Boolean(itemname)){
                 querystring = {
                     ...querystring,
                     search: itemname,
@@ -159,14 +165,12 @@ export const getClientsByWhere = async ({displayname,phone,search,clienttype,sta
 
     if(Boolean(urls.localserver)){
 
-
-
         return new Promise(resolve => {
             let querystring = {}
-            if(Boolean(search)){
+            if(Boolean(search) || Boolean(phone)){
                 querystring = {
                     ...querystring,
-                    search: search,
+                    search: search || phone,
                     clienttype:0
                 }
             }

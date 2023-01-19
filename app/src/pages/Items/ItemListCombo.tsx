@@ -10,6 +10,7 @@ import {Item} from "./ItemListMobile";
 import {connect, useDispatch} from "react-redux";
 import {Button} from "../../components";
 import {setBottomSheet} from "../../redux-store/reducer/component";
+import {appLog} from "../../libs/function";
 
 
 const Index = (props: any) => {
@@ -22,6 +23,7 @@ const Index = (props: any) => {
     const dispatch = useDispatch()
 
     useEffect(() => {
+
 
         getItemsByWhere({groupid: comboitem.comboid}).then((newitems: any) => {
 

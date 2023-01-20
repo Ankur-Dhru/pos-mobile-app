@@ -317,7 +317,7 @@ const Index = ({tableorders}: any) => {
                         closeMenu()
                         setShifttable(false)
                     }} title="Disable Shift"/>}
-                    <Menu.Item onPress={onClickReserveTable} title="Reserve Tables"/>
+                    {Boolean(!urls.localserver) && <Menu.Item onPress={onClickReserveTable} title="Reserve Tables"/>}
                     {/*{!isRestaurant() && <Menu.Item onPress={async () => {
                         await dispatch(setBottomSheet({
                             visible: true,
@@ -497,19 +497,19 @@ const Index = ({tableorders}: any) => {
                 value: 'qsr'
             }),
         },
-        {
+
+    ]
+
+    if(!Boolean(urls.localserver)){
+        routes.push({key: 'advanceorder', title: 'Advance Order'});
+        actions.push({
             icon: 'table',
             label: 'Table Reservation',
             onPress: () => setOrderSetting("Table Reservation", {
                 'label': 'Table Reservation',
                 value: 'tableorder'
             }),
-        },
-    ]
-
-    if(!Boolean(urls.localserver)){
-        routes.push({key: 'advanceorder', title: 'Advance Order'});
-        actions.push({
+        },{
             icon: 'sack',
             label: 'Advance Order',
             onPress: () => setOrderSetting("Advanced Order", {

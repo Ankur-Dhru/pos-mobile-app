@@ -972,7 +972,7 @@ export const saveTempLocalOrder = (order?: any, config?: any) => {
     });
 }
 
-export const deleteTempLocalOrder = (tableorderid: any) => {
+export const deleteTempLocalOrder = (tableorderid?: any) => {
     return new Promise<any>(async (resolve) => {
         await deleteTable(TABLE.TEMPORDER, `tableorderid = '${tableorderid}'`).then(() => {
             store.dispatch(resetCart())
@@ -2114,12 +2114,26 @@ export const cancelOrder = async (navigation: any) => {
                 })
             );
 
-            if (tableorderid) {
-                deleteTempLocalOrder(tableorderid).then(() => {})
+            if (Boolean(tableorderid)) {
+
+                if(Boolean(urls.localserver)){
+                    apiService({
+                        method: METHOD.DELETE,
+                        action: 'tableorder',
+                        queryString: {tableorderid:tableorderid},
+                        other: {url: urls.localserver},
+                    }).then((response: any) => {
+                        store.dispatch(setAlert({visible: true, message: response.message}))
+                    })
+                }
+                else {
+                    deleteTempLocalOrder(tableorderid).then(() => {})
+                }
             }
             else{
                 store.dispatch(resetCart())
             }
+
         } else {
             navigation.navigate('CancelReason', {type: 'ordercancelreason'})
         }

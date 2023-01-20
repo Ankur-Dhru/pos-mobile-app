@@ -113,7 +113,7 @@ const Index = (props: any) => {
 
             <FlatList
                 data={dataSource.filter((item:any)=>{
-                    return !Boolean(item.groupid)
+                    return !Boolean(item.groupid) && !item.isGrouped
                 })}
 
                 renderItem={renderItem}

@@ -63,6 +63,7 @@ import Preview from "../Preview";
 import LocalserverConnection from  "../LocalserverConnection";
 import ConnectWith from "../SetupWorkspace/ConnectWith";
 import LocalServer from "../Setup/LocalServer";
+import GettingStarted from "../Splash/GettingStarted";
 
 const screenOptions = {...screenOptionStyle};
 
@@ -89,6 +90,8 @@ const MainStackNavigator = () => {
 
 
 
+
+
             <Stack.Screen name="PinStackNavigator" component={PinStackNavigator}/>
 
             <Stack.Screen name="ClientAreaStackNavigator" component={ClientAreaStackNavigator}/>
@@ -110,6 +113,9 @@ const SplashStackNavigator = () => {
         <Stack.Navigator initialRouteName={'Splash'} screenOptions={screenOptions}>
             <Stack.Screen name="Splash" component={Splash}
                           options={{headerShown: false}}/>
+
+            <Stack.Screen name="GettingStarted" component={GettingStarted}  options={{headerShown: false}}/>
+
         </Stack.Navigator>
     );
 };
@@ -117,8 +123,6 @@ const SplashStackNavigator = () => {
 const SetupStackNavigator = () => {
     return (
         <Stack.Navigator initialRouteName={'Login'} screenOptions={screenOptions}>
-
-            {/*<Stack.Screen name="ConnectWith"  component={ConnectWith}  options={{headerShown: false}}/>*/}
 
             <Stack.Screen name="Login" component={Login}  options={{headerShown: false}}/>
 

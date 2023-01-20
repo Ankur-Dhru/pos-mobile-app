@@ -26,6 +26,7 @@ import {setGroupList} from "../../redux-store/reducer/group-list";
 import {setTableOrdersData} from "../../redux-store/reducer/table-orders-data";
 import apiService from "../../libs/api-service";
 import {useNavigation} from "@react-navigation/native";
+import PageLoader from "../../components/PageLoader";
 
 
 const md5 = require('md5');
@@ -39,6 +40,7 @@ const Index = (props: any) => {
 
     const pinView: any = useRef(null)
     const [enteredPin, setEnteredPin] = useState("")
+    const [loader,setLoader] = useState(false)
 
     let isRestaurant = false;
 
@@ -75,8 +77,7 @@ const Index = (props: any) => {
                 })
 
                 const {othersettings} = localredux.initData;
-
-                isRestaurant = (localredux.localSettingsData.industrytype === 'foodservices');
+                isRestaurant = (localredux.localSettingsData?.currentLocation?.industrytype === 'foodservices');
 
                 await retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
                     await dispatch(setSettings({...data,...othersettings}));
@@ -91,8 +92,6 @@ const Index = (props: any) => {
         await dispatch(hideLoader())
         localredux.loginuserData = params;
 
-        appLog('isRestaurant',isRestaurant)
-
         if(isRestaurant){
             await navigation.replace('ClientAreaStackNavigator');
         }
@@ -101,12 +100,9 @@ const Index = (props: any) => {
             errorAlert('Remote Terminal not support for retail')
             navigation.replace('SetupStackNavigator')
         }
+
     }
 
-    const changeServer = async () => {
-        await saveLocalSettings('serverip','').then();
-        navigation.replace('SetupStackNavigator')
-    }
 
     useEffect(() => {
 
@@ -171,10 +167,7 @@ const Index = (props: any) => {
         }, 200)
     }, [enteredPin]);
 
-
-
     navigation.setOptions({headerShown: !params.onlyone || Boolean(urls.localserver)})
-
 
     return <Container style={{padding: 0}}>
 

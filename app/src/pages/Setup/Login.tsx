@@ -178,17 +178,10 @@ const Index = (props: any) => {
 
                                     </View>
 
-                                    <View style={[styles.middle, styles.mt_5, {marginBottom: 20}]}>
-                                        <TouchableOpacity onPress={() => navigation.navigate('Register')}><Paragraph
-                                            style={[styles.paragraph, styles.mt_5]}>New User? <Text  style={[{color: styles.primary.color}]}> Create an account </Text>
-                                        </Paragraph></TouchableOpacity>
-                                    </View>
 
-                                </View>
 
-                            </ScrollView>
 
-                            <KAccessoryView>
+
                                 <View style={[styles.submitbutton]}>
                                     <Button more={{color: 'white'}} disable={more.invalid} secondbutton={more.invalid}
                                             onPress={() => {
@@ -196,7 +189,7 @@ const Index = (props: any) => {
                                             }}> Login
                                     </Button>
 
-                                    <View style={[styles.mt_2]}>
+                                    <View style={[styles.mt_5]}>
                                         <Button style={[ styles.w_auto, styles.noshadow]}
                                                 more={{
                                                     backgroundColor: 'white',
@@ -206,11 +199,25 @@ const Index = (props: any) => {
                                                     height: 45,
                                                 }} onPress={() => {
                                             navigation.navigate('LocalServer')
-                                        }}>Connect To Remote Terminal</Button>
+                                        }}
+                                        >Connect To Remote Terminal</Button>
 
                                     </View>
 
                                 </View>
+
+                                <View style={[styles.middle, styles.mt_5, {marginBottom: 20}]}>
+                                    <TouchableOpacity onPress={() => navigation.navigate('Register')}><Paragraph
+                                        style={[styles.paragraph, styles.mt_5]}>New User? <Text  style={[{color: styles.primary.color}]}> Create an account </Text>
+                                    </Paragraph></TouchableOpacity>
+                                </View>
+
+                                </View>
+
+                            </ScrollView>
+
+                            <KAccessoryView>
+
 
                             </KAccessoryView>
 

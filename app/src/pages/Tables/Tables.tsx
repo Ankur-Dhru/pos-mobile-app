@@ -27,6 +27,7 @@ import Tabs from "../../components/TabView";
 import HoldOrders from "../Cart/HoldOrders";
 import {TabBar, TabView} from "react-native-tab-view";
 import apiService from "../../libs/api-service";
+import {Container} from "../../components";
 
 let interval:any = ''
 const Index = ({tableorders}: any) => {
@@ -241,11 +242,11 @@ const Index = ({tableorders}: any) => {
 
 
             return (
-                <Card style={[styles.card,styles.m_2,styles.mb_3,  styles.noshadow, {
+                <Card style={[styles.card,styles.m_1,styles.mb_2,  {
                     marginTop:0,
                     maxWidth: '100%', minWidth:185,
-                    backgroundColor: Boolean(item?.printcounter) ? styles.yellow.color : Boolean(item.clientname) ? styles.secondary.color : styles.white.color,
-                    borderRadius: 5
+                    backgroundColor: Boolean(item?.printcounter) ? styles.yellow.color : Boolean(item.clientname) ? styles.secondary.color : styles.light.color,
+                    borderRadius: 5,
                 }, styles.flexGrow,]} key={item.tableid}>
                     {<TouchableOpacity
                         style={{minHeight: 120}}
@@ -256,10 +257,10 @@ const Index = ({tableorders}: any) => {
                         {((shiftstart || shifting) || !shifttable) && <View style={[styles.p_4]}>
                             <View style={[styles.grid, styles.mb_3]}>
                                 <View
-                                    style={[styles.badge, styles.px_5, {backgroundColor: styles.primary.color}]}>
+                                    style={[styles.badge, styles.px_5, {backgroundColor: 'black'}]}>
                                     <Text
                                         style={[styles.paragraph, styles.text_xs, {color: 'white'}]}>{item.tablename || 'Retail'} </Text></View></View>
-                            {Boolean(item.clientname) && <>
+                            {Boolean(item.vouchertotaldisplay) && <>
                                 <Paragraph><ProIcon align={'left'} name={'user'} action_type={'text'}
                                                     size={13}/> {item.paxes} x {item.clientname}</Paragraph>
 
@@ -528,6 +529,7 @@ const Index = ({tableorders}: any) => {
                 onIndexChange={setIndex}
                 renderScene={renderScene}
                 renderTabBar={renderTabBar}
+                style={styles.bg_white}
             />
 
 

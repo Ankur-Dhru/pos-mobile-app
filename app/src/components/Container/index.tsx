@@ -27,7 +27,7 @@ const Index = ({children,surface,hideappbar,navigation,config,style,theme:{color
                 </View>
             </View>*/}
 
-            <Surface style={[styles.coverScreen,{backgroundColor:'#eee',...style}]}>
+            <Surface style={[styles.coverScreen,{backgroundColor:'#fff',...style}]}>
 
                     {children}
 

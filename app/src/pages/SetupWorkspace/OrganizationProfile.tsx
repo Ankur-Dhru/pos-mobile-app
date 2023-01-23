@@ -259,7 +259,7 @@ class Index extends Component<any, any> {
 
 
         return (
-            <Container>
+            <Container    style={styles.bg_white}>
 
                 <Form
                     onSubmit={this.validate}
@@ -267,7 +267,7 @@ class Index extends Component<any, any> {
                     render={({handleSubmit, submitting, values, ...more}: any) => (
 
                         <View style={[styles.middle,]}>
-                            <View style={[styles.middleForm]}>
+                            <View style={[styles.middleForm, {maxWidth: 400,}]}>
                                 <KeyboardScroll>
 
 

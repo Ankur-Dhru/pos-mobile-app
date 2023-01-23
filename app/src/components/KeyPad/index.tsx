@@ -13,8 +13,6 @@ let numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Clear", "0", "."]
 
 const index = (props: any) => {
 
-    appLog('props',props)
-
     const {defaultValue, onPressCancel, onPressOK, defaultInputValues,defaultInputAmounts, customNumber, rate,defaultTab,unitname} = props;
 
     const [numPadValue, setNumPadValue] = useState<any>(defaultValue || "");

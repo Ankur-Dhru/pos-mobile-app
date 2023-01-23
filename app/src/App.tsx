@@ -72,8 +72,8 @@ const App = () => {
             elevation: 2,
             screenbg: '#f4f4f4',
             surface: '#fff',
-            primary: '#222A55',
-            accent: '#2d71d2',
+            primary: '#0E4194',
+            accent: '#0E4194',
             secondary: '#c4dcff',
             thirdary: '#fbb360',
             forthary: '#6eabfd',
@@ -125,7 +125,7 @@ const App = () => {
             <SafeAreaView style={[styles.h_100]}>
                 <PaperProvider theme={CombinedDefaultTheme}>
 
-                    <StatusBar />
+                    <StatusBar backgroundColor={styles.primary.color} />
 
                         <NavigationContainer>
                             <MainStackNavigator/>

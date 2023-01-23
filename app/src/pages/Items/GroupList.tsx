@@ -26,8 +26,8 @@ const GroupItem = (props: any) => {
         <List.Item
 
             title={item.label}
-            titleNumberOfLines={3}
-            titleStyle={[styles.text_sm, {color: selected ? 'white' : 'black'}]}
+            titleNumberOfLines={2}
+            titleStyle={[styles.bold, styles.text_xs,{color: selected ? 'white' : 'black'}]}
         />
 
     </TouchableOpacity>

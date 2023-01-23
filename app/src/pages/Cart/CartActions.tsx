@@ -58,7 +58,7 @@ const Index = ({
 
 
 
-        {<View style={[styles.marginOver,{backgroundColor:'white',marginTop:0,marginBottom:0,paddingVertical:5, paddingHorizontal: device.tablet? 10:5}]}>
+        {<View style={[{backgroundColor:'white',marginTop:0,marginBottom:0,paddingVertical:5, paddingHorizontal: 5}]}>
             <View>
                 <View style={[styles.grid, styles.justifyContent, styles.noWrap]}>
 

@@ -15,30 +15,29 @@ import {decode} from 'html-entities';
 import {hideLoader, setAlert, setBottomSheet, setDialog, showLoader} from "../redux-store/reducer/component";
 import apiService from "./api-service";
 import {
-    ACTIONS, dayendReportTemplate,
+    ACTIONS,
+    dayendReportTemplate,
     db,
-    defaultInvoiceTemplate,
-    defaultKOTTemplate, image6000,
     isDevelopment,
     localredux,
-    METHOD, port,
-    posUrl,
+    METHOD,
+    port,
     PRINTER,
     STATUS,
     taxTypes,
     TICKET_STATUS,
-    TICKETS_TYPE, urls,
+    TICKETS_TYPE,
+    urls,
     VOUCHER
 } from "./static";
 
 import {setSettings} from "../redux-store/reducer/local-settings-data";
 import React, {useEffect} from "react";
-import {Alert, PermissionsAndroid, Platform,  Text} from "react-native";
-import {deleteOrder, setTableOrders, setTableOrdersData} from "../redux-store/reducer/table-orders-data";
+import {Alert, PermissionsAndroid, Platform, Text} from "react-native";
 import {v4 as uuid} from "uuid";
 import SyncingInfo from "../pages/Pin/SyncingInfo";
 import {setSyncDetail} from "../redux-store/reducer/sync-data";
-import {setOrder, setOrdersData} from "../redux-store/reducer/orders-data";
+import {setOrder} from "../redux-store/reducer/orders-data";
 import {getProductData, itemTotalCalculation} from "./item-calculation";
 import CancelReason from "../pages/Cart/CancelReason";
 import {setItemDetail} from "../redux-store/reducer/item-detail";
@@ -58,13 +57,9 @@ import {TABLE} from "./Sqlite/config";
 import RNHTMLtoPDF from "react-native-html-to-pdf";
 import RNPrint from "react-native-print";
 import Share from "react-native-share";
-
-import Mustache from "mustache";
 import RNFS from "react-native-fs";
 import ImageSize from "react-native-image-size";
-import SunmiPrinter from "@heasy/react-native-sunmi-printer";
 import ImageEditor from "@react-native-community/image-editor";
-import ZeroPriceAlert from "../pages/Items/ZeroPriceAlert";
 import ItemListCombo from "../pages/Items/ItemListCombo";
 import {createTables} from "./Sqlite";
 
@@ -343,7 +338,7 @@ export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = t
 
     let local = utcDate;
 
-    const {state} =  initData.general
+    const {state} = initData.general
 
     let data: any = {
         localdatetime: local,
@@ -371,11 +366,11 @@ export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = t
         vouchernotes: voucherTypeData?.defaultcustomernotes,
         toc: voucherTypeData?.defaultterms,
         selectedtemplate: voucherTypeData?.printtemplate,
-        paymentmethod:payment[0]?.paymentmethod,
-        payment : payment,
+        paymentmethod: payment[0]?.paymentmethod,
+        payment: payment,
         edit: true,
-        area:'Default',
-        paxes:1,
+        area: 'Default',
+        paxes: 1,
         "placeofsupply": state,
         "updatecart": false,
         "debugPrint": true,
@@ -892,7 +887,7 @@ export const setItemRowData = (data: any) => {
             minqnt: Boolean(itemminqnt) ? parseFloat(itemminqnt) : undefined,
             maxqnt: Boolean(itemmaxqnt) ? parseFloat(itemmaxqnt) : undefined,
             productqntunitid,
-            displayunitcode:unittype?.unitcode || '',
+            displayunitcode: unittype?.unitcode || '',
             "accountid": 2,
             clientid: cartData?.clientid,
             productdiscounttype: "%",
@@ -961,7 +956,7 @@ export const saveTempLocalOrder = (order?: any, config?: any) => {
                 ...order,
                 terminalid: localredux?.licenseData?.data?.terminal_id
             }
-            insertTempOrder(order).then((data:any) => {
+            insertTempOrder(order).then((data: any) => {
                 store.dispatch(setCartData(data));
                 resolve(data)
             })
@@ -991,22 +986,21 @@ export const saveLocalOrder = (order?: any) => {
             order = clone(store.getState().cartData)
         }
 
-        if(Boolean(urls.localserver)){
+        if (Boolean(urls.localserver)) {
 
             apiService({
                 method: METHOD.POST,
                 action: 'order',
-                body:order,
+                body: order,
                 other: {url: urls.localserver},
             }).then((response: any) => {
-                if(Boolean(response?.data)) {
+                if (Boolean(response?.data)) {
                     store.dispatch(resetCart())
                     resolve(response?.data)
                 }
             })
 
-        }
-        else {
+        } else {
             if (!Boolean(order.orderid)) {
                 order = {
                     ...order,
@@ -1042,13 +1036,14 @@ export const saveLocalOrder = (order?: any) => {
                     let nextno = clone(order.invoice_display_number);
 
                     vouchers = {...vouchers, [order.vouchertypeid]: ++nextno}
-                    await storeData(`${db.name}-vouchernos`, vouchers).then(async () => {});
+                    await storeData(`${db.name}-vouchernos`, vouchers).then(async () => {
+                    });
                 })
             }
             ///////// CREATE LOCALORDER ID //////////
 
-            deleteTempLocalOrder(order.tableorderid).then(async (msg:any) => {
-                await insertOrder(order).then(()=>{
+            deleteTempLocalOrder(order.tableorderid).then(async (msg: any) => {
+                await insertOrder(order).then(() => {
                     resolve(order)
                 });
                 syncInvoice(order)
@@ -1056,9 +1051,6 @@ export const saveLocalOrder = (order?: any) => {
         }
 
     })
-
-
-
 
 
 }
@@ -1075,7 +1067,8 @@ export const getDatabaseName = async () => {
 
 
 export const saveDatabaseName = async (databasename: any) => {
-    await storeData(`fusion-pro-database`, databasename).then(async () => {});
+    await storeData(`fusion-pro-database`, databasename).then(async () => {
+    });
 }
 
 
@@ -1095,19 +1088,18 @@ export const saveLocalSettings = async (key: any, setting?: any) => {
 export const getLocalSettings = async (key: any) => {
     return new Promise(async resolve => {
         await retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
-            if(Boolean(data) && Boolean(data[key])) {
+            if (Boolean(data) && Boolean(data[key])) {
                 resolve(data[key])
-            }
-            else{
+            } else {
                 resolve(false)
             }
         })
     })
 }
 
-export const setAPIUrl = (betamode:any) => {
+export const setAPIUrl = (betamode: any) => {
     let apiUrl = isDevelopment ? ".api.dhru.io" : ".api.dhru.com";
-    if(betamode){
+    if (betamode) {
         apiUrl = ".api.dhru.net";
     }
     urls.posUrl = `${apiUrl}/pos/v1/`;
@@ -1160,7 +1152,7 @@ export const removeItem = async (unique: any) => {
             await store.dispatch(updateCartItems(clone(filtered)));
         } else {
             //await store.dispatch(setBottomSheet({visible: false}))
-           // Boolean(current.table?.tableorderid) && await deleteTempLocalOrder(current.table?.tableorderid);
+            // Boolean(current.table?.tableorderid) && await deleteTempLocalOrder(current.table?.tableorderid);
             await store.dispatch(updateCartField({invoiceitems: []}))
         }
     } catch (e) {
@@ -1209,7 +1201,7 @@ export const selectItem = async (item: any) => {
 
             item = {
                 ...item,
-                added:true,
+                added: true,
                 key: uuid()
             }
 
@@ -1263,24 +1255,24 @@ export const selectItem = async (item: any) => {
 
     const directQnt = arraySome(store.getState()?.localSettings?.defaultAmountOpen, item.salesunit)
 
-    if(Boolean(item?.comboid)){
+    if (Boolean(item?.comboid)) {
         store.dispatch(setBottomSheet({
             visible: true,
             hidecancel: true,
-            height:'60%',
+            height: '60%',
             component: () => <ItemListCombo comboitem={item}/>
         }))
     } else if (directQnt) {
-        onPressNumber(item,'quantity', (productqnt: any) => {
+        onPressNumber(item, 'quantity', (productqnt: any) => {
             setItemQnt({...item, productqnt: +productqnt}).then()
             store.dispatch(setDialog({visible: false}))
         })
-    } else if (!Boolean(baseprice)){
+    } else if (!Boolean(baseprice)) {
 
-        onPressNumber(item,'amount', (price: any) => {
+        onPressNumber(item, 'amount', (price: any) => {
             const pricingtype = item?.pricing?.type;
-            item.pricing.price.default[0] = {[pricingtype]:{baseprice:price}};
-            selectItem(item).then(()=>{
+            item.pricing.price.default[0] = {[pricingtype]: {baseprice: price}};
+            selectItem(item).then(() => {
                 store.dispatch(setDialog({visible: false}))
             });
         })
@@ -1412,7 +1404,7 @@ export const getLeftRight = (left: string, right: string, large: boolean = false
 }
 
 
-export const generateKOT = async (cancelkotprint?:any) => {
+export const generateKOT = async (cancelkotprint?: any) => {
 
     return new Promise(async (resolve, reject) => {
 
@@ -1420,19 +1412,19 @@ export const generateKOT = async (cancelkotprint?:any) => {
         store.dispatch(showLoader())
         let cartData = store.getState().cartData;
 
-        if(Boolean(urls.localserver)){
+        if (Boolean(urls.localserver)) {
             await apiService({
                 method: METHOD.POST,
                 action: 'remote/printkot',
-                body: {...cartData,cancelkotprint:Boolean(cancelkotprint)},
+                body: {...cartData, cancelkotprint: Boolean(cancelkotprint)},
                 other: {url: urls.localserver},
             }).then((response: any) => {
-                const {status}:any = response;
+                const {status}: any = response;
 
                 if (status === STATUS.SUCCESS) {
 
                     let cartData = response?.data;
-                    if(Boolean(cartData)) {
+                    if (Boolean(cartData)) {
                         cartData.invoiceitems = cartData.invoiceitems.map((item: any) => {
                             return {...item, added: false}
                         })
@@ -1441,8 +1433,7 @@ export const generateKOT = async (cancelkotprint?:any) => {
                 }
             })
             resolve('broadcast generate KOT')
-        }
-        else {
+        } else {
             const {currentLocation: {departments}} = localredux.localSettingsData;
 
             const currentTicketType = localredux.initData?.tickets[TICKETS_TYPE.KOT];
@@ -1570,7 +1561,7 @@ export const generateKOT = async (cancelkotprint?:any) => {
                                                 "productqnt": productqnt,
                                                 "productqntunitid": itemunit,
                                                 "related": 0,
-                                                "selected":true,
+                                                "selected": true,
                                                 "ref_id": itemL1.key,
                                                 "staffid": adminid,
                                                 "productdisplayname": itemname,
@@ -1646,8 +1637,8 @@ export const generateKOT = async (cancelkotprint?:any) => {
                                         table: `${tablename}`,
                                         "clientid": clientid,
                                         "clientname": `${clientname}`,
-                                        "tickettotal":tickettotal,
-                                        "vouchernotes":vouchernotes,
+                                        "tickettotal": tickettotal,
+                                        "vouchernotes": vouchernotes,
                                         departmentid: k,
                                         departmentname: department?.name,
                                         staffid: adminid,
@@ -1661,7 +1652,7 @@ export const generateKOT = async (cancelkotprint?:any) => {
 
                                     printkot.push(newkot);
 
-                                    await printKOT(newkot,cancelkotprint).then(async (msg) => {
+                                    await printKOT(newkot, cancelkotprint).then(async (msg) => {
 
                                         if (i < length - 1) {
                                             recursive(++i).then()
@@ -1673,7 +1664,7 @@ export const generateKOT = async (cancelkotprint?:any) => {
                                                     item = {
                                                         ...item,
                                                         kotid: find.kotid,
-                                                        added:false,
+                                                        added: false,
                                                     }
                                                 }
                                                 return item
@@ -1719,15 +1710,15 @@ export const printInvoice = async (order?: any) => {
         cartData = await itemTotalCalculation(clone(cartData), undefined, undefined, undefined, undefined, 2, 2, false, false);
 
 
-        if(Boolean(urls.localserver)){
+        if (Boolean(urls.localserver)) {
             return await new Promise(async (resolve) => {
                 await apiService({
                     method: METHOD.POST,
                     action: 'remote/printinvoice',
-                    body:cartData,
+                    body: cartData,
                     other: {url: urls.localserver},
                 }).then((response: any) => {
-                    const {status}:any = response;
+                    const {status}: any = response;
                     if (status === STATUS.SUCCESS) {
                         store.dispatch(setAlert({visible: true, message: response.data.message}))
                     }
@@ -1735,8 +1726,7 @@ export const printInvoice = async (order?: any) => {
                 })
 
             })
-        }
-        else {
+        } else {
 
             const PRINTERS: any = store.getState()?.localSettings?.printers || [];
 
@@ -2017,22 +2007,21 @@ export const printInvoice = async (order?: any) => {
 }
 
 
-export const printKOT = async (kot?: any,cancelkotprint?:any) => {
+export const printKOT = async (kot?: any, cancelkotprint?: any) => {
 
-    if(Boolean(urls.localserver)){
+    if (Boolean(urls.localserver)) {
         await apiService({
             method: METHOD.POST,
             action: 'remote/cancelkot',
-            body:[kot],
+            body: [kot],
             other: {url: urls.localserver},
         }).then((response: any) => {
-            const {status}:any = response;
+            const {status}: any = response;
             if (status === STATUS.SUCCESS) {
                 store.dispatch(setAlert({visible: true, message: response.data.message}))
             }
         })
-    }
-    else {
+    } else {
 
         try {
             const PRINTERS: any = store.getState().localSettings?.printers || [];
@@ -2047,7 +2036,7 @@ export const printKOT = async (kot?: any,cancelkotprint?:any) => {
 
             return new Promise(async (resolve) => {
 
-                if(!cancelkotprint) {
+                if (!cancelkotprint) {
                     if ((kot?.cancelled && printer?.printoncancel) || !kot?.cancelled) {
 
                         if (Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip || Boolean(printer?.template))) {
@@ -2061,8 +2050,7 @@ export const printKOT = async (kot?: any,cancelkotprint?:any) => {
                             resolve('No printer set')
                         }
                     }
-                }
-                else{
+                } else {
                     resolve('Cancel Print KOT')
                 }
             })
@@ -2085,17 +2073,16 @@ export const getPrintTemplateLogo = (type?: any) => {
 
 
 export const getPrintTemplate = (id?: any) => {
-    const {printingtemplate} =  localredux.initData
+    const {printingtemplate} = localredux.initData
     if (Boolean(printingtemplate) && Boolean(printingtemplate[id])) {
         return base64Decode(printingtemplate[id]?.content)
     }
-   // return type === 'KOT' ? defaultKOTTemplate : type === 'Thermal' ? defaultInvoiceTemplate : dayendReportTemplate
+    // return type === 'KOT' ? defaultKOTTemplate : type === 'Thermal' ? defaultInvoiceTemplate : dayendReportTemplate
 }
 
 export const cancelOrder = async (navigation: any) => {
 
     let cartData = store.getState().cartData;
-
 
 
     try {
@@ -2116,21 +2103,20 @@ export const cancelOrder = async (navigation: any) => {
 
             if (Boolean(tableorderid)) {
 
-                if(Boolean(urls.localserver)){
+                if (Boolean(urls.localserver)) {
                     apiService({
                         method: METHOD.DELETE,
                         action: 'tableorder',
-                        queryString: {tableorderid:tableorderid},
+                        queryString: {tableorderid: tableorderid},
                         other: {url: urls.localserver},
                     }).then((response: any) => {
                         store.dispatch(setAlert({visible: true, message: response.message}))
                     })
+                } else {
+                    deleteTempLocalOrder(tableorderid).then(() => {
+                    })
                 }
-                else {
-                    deleteTempLocalOrder(tableorderid).then(() => {})
-                }
-            }
-            else{
+            } else {
                 store.dispatch(resetCart())
             }
 
@@ -2150,14 +2136,12 @@ export const arraySome = (arrayList: any[], key: string) => {
 }
 
 
-
-
 export const refreshToken = () => {
 
     const {workspace}: any = localredux.initData;
     const {token}: any = localredux.authData;
 
-    appLog('old token',token)
+    appLog('old token', token)
 
     return apiService({
         method: METHOD.GET,
@@ -2166,12 +2150,12 @@ export const refreshToken = () => {
         token: token,
         hideLoader: true,
         other: {url: urls.posUrl},
-    }).then((response:any) => {
-        const {newtoken}:any = response?.data
+    }).then((response: any) => {
+        const {newtoken}: any = response?.data
 
-        appLog('newtoken',newtoken)
+        appLog('newtoken', newtoken)
 
-        if(Boolean(newtoken)) {
+        if (Boolean(newtoken)) {
             updateToken(newtoken).then()
         }
 
@@ -2179,7 +2163,7 @@ export const refreshToken = () => {
 }
 
 
-export const updateToken = async (token:any) => {
+export const updateToken = async (token: any) => {
 
     appLog('updateToken')
 
@@ -2187,14 +2171,15 @@ export const updateToken = async (token:any) => {
     await retrieveData(db.name).then(async (data: any) => {
         data = {
             ...data,
-            authData:localredux.authData
+            authData: localredux.authData
         }
-        storeData(db.name, data).then(async () => {});
+        storeData(db.name, data).then(async () => {
+        });
     })
 }
 
-export const createDatabaseName = ({workspace,locationid}:any) => {
-    return workspace+''+locationid
+export const createDatabaseName = ({workspace, locationid}: any) => {
+    return workspace + '' + locationid
 }
 
 
@@ -2271,7 +2256,7 @@ export const getAddons = async (refresh = false) => {
 }
 
 export const getTempOrders = (refresh = false) => {
-    return new Promise((resolve)=>{
+    return new Promise((resolve) => {
         getTempOrdersByWhere().then((orders: any) => {
             resolve(orders)
         });
@@ -2280,7 +2265,7 @@ export const getTempOrders = (refresh = false) => {
 }
 
 export const getOrders = (refresh = false) => {
-    return new Promise((resolve)=> {
+    return new Promise((resolve) => {
         getOrdersByWhere().then((orders: any) => {
             resolve(orders)
         });
@@ -2380,19 +2365,19 @@ export const syncInvoice = async (invoiceData: any) => {
     const {workspace}: any = localredux.initData;
     const {token}: any = localredux.authData;
 
-    if(Boolean(invoiceData.cancelreason) && Boolean(invoiceData.invoiceitems.length === 0)){
+    if (Boolean(invoiceData.cancelreason) && Boolean(invoiceData.invoiceitems.length === 0)) {
         invoiceData.vouchernotes = {
             "reasonid": invoiceData.cancelreasonid,
             "reasonname": invoiceData.cancelreason
         },
-        invoiceData.deletedorder = true
+            invoiceData.deletedorder = true
     }
 
-    const syncstatus:any = await getLocalSettings('sync_in_process')
+    const syncstatus: any = await getLocalSettings('sync_in_process')
 
     return new Promise((resolve) => {
 
-        if(syncstatus){
+        if (syncstatus) {
             appLog('sync in progress')
             resolve('sync in progress')
         }
@@ -2413,7 +2398,7 @@ export const syncInvoice = async (invoiceData: any) => {
 
             if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
 
-                deleteTable(TABLE.ORDER,`orderid = '${invoiceData?.orderid}'`).then(async ()=>{
+                deleteTable(TABLE.ORDER, `orderid = '${invoiceData?.orderid}'`).then(async () => {
                     store.dispatch(setOrder({...invoiceData, synced: true}))
                     resolve('synced')
                 });
@@ -2427,17 +2412,15 @@ export const syncInvoice = async (invoiceData: any) => {
         })
 
 
-
     })
 }
 
 
-export const nextFocus = (ref:any) => {
-    setTimeout(()=>{
+export const nextFocus = (ref: any) => {
+    setTimeout(() => {
         ref?.current?.focus()
     })
 }
-
 
 
 export const printPDF = async ({data, filename}: any) => {
@@ -2470,8 +2453,6 @@ export const sharePDF = async ({data, filename}: any) => {
 }
 
 
-
-
 export const getStateList = async (country: any) => {
     const {workspace}: any = localredux.initData;
     const {token}: any = localredux.authData;
@@ -2485,41 +2466,39 @@ export const getStateList = async (country: any) => {
         token: token,
         hideLoader: true,
         other: {url: urls.adminUrl},
-    }).then((result:any)=>{
-        if(result.status === STATUS.SUCCESS && Boolean(result?.data)){
+    }).then((result: any) => {
+        if (result.status === STATUS.SUCCESS && Boolean(result?.data)) {
             localredux.statelist = Object.keys(result.data).map((k: any) => assignOption(result.data[k].name, k));
-            saveLocalSettings('statelist',localredux.statelist).then()
+            saveLocalSettings('statelist', localredux.statelist).then()
         }
     })
 }
 
 export const getStateAndTaxType = async (country: any, reset?: boolean) => {
 
-    return new Promise(async (resolve, reject)=>{
+    return new Promise(async (resolve, reject) => {
 
         let queryString = {country};
 
-        await getLocalSettings('statelist').then(async (statelist)=>{
+        await getLocalSettings('statelist').then(async (statelist) => {
 
-            if(Boolean(statelist) && !reset){
+            if (Boolean(statelist) && !reset) {
 
                 localredux.statelist = statelist
-            }
-            else{
+            } else {
 
                 await getStateList(country)
             }
         })
 
-        await getLocalSettings('taxtypelist').then(async (taxtypelist)=>{
-            if(Boolean(taxtypelist)  && !reset){
+        await getLocalSettings('taxtypelist').then(async (taxtypelist) => {
+            if (Boolean(taxtypelist) && !reset) {
                 localredux.taxtypelist = taxtypelist
-            }
-            else{
+            } else {
                 const {workspace}: any = localredux.initData;
                 const {token}: any = localredux.authData;
 
-                appLog('token',token)
+                appLog('token', token)
 
                 await apiService({
                     method: METHOD.GET,
@@ -2534,7 +2513,7 @@ export const getStateAndTaxType = async (country: any, reset?: boolean) => {
 
                     if (result.data) {
                         localredux.taxtypelist = result.data;
-                        saveLocalSettings('taxtypelist',localredux.taxtypelist).then()
+                        saveLocalSettings('taxtypelist', localredux.taxtypelist).then()
                     }
                 })
             }
@@ -2547,8 +2526,7 @@ export const getStateAndTaxType = async (country: any, reset?: boolean) => {
 }
 
 
-
-export const printDayEndReport = ({date:date,data:data}:any) => {
+export const printDayEndReport = ({date: date, data: data}: any) => {
     try {
 
         const {
@@ -2559,27 +2537,27 @@ export const printDayEndReport = ({date:date,data:data}:any) => {
         const {general: {legalname}}: any = localredux.initData;
         const {terminal_name}: any = localredux.licenseData.data;
         const decimalPlace = 2;
-        let total:any=0;
+        let total: any = 0;
 
         let printJson = {
             date: moment(date).format(dateFormat()),
             locationname,
             legalname,
-            printinvoice:true,
+            printinvoice: true,
             terminalname: terminal_name,
-            invoicetype:'Retail Invoice',
-            head: () => getLeftRight("#ID | Name","Amount"),
-            isItems:true,
+            invoicetype: 'Retail Invoice',
+            head: () => getLeftRight("#ID | Name", "Amount"),
+            isItems: true,
             items: Object.values(data.order)?.map((item: any) => {
                     total += +item.vouchertotal;
-                    return  getLeftRight(item.voucherdisplayid+' | '+item.client, numberFormat(item.vouchertotal,false, decimalPlace))
+                    return getLeftRight(item.voucherdisplayid + ' | ' + item.client, numberFormat(item.vouchertotal, false, decimalPlace))
                 }
             ),
-            isSummary:true,
-            gateways:()=> data?.info?.map((pm: any) => {
-                return getLeftRight(pm.label, numberFormat(pm?.value,false,decimalPlace))
+            isSummary: true,
+            gateways: () => data?.info?.map((pm: any) => {
+                return getLeftRight(pm.label, numberFormat(pm?.value, false, decimalPlace))
             }),
-            finaltotal: () => getLeftRight("Total",numberFormat(total,false,decimalPlace)),
+            finaltotal: () => getLeftRight("Total", numberFormat(total, false, decimalPlace)),
             line: () => "<text>" + getTrimChar(0, "-") + "\n</text>",
         }
 
@@ -2589,10 +2567,9 @@ export const printDayEndReport = ({date:date,data:data}:any) => {
         PAGE_WIDTH = printer?.printsize || 48;
 
 
-
         return new Promise(async (resolve) => {
             if (Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip)) {
-                sendDataToPrinter(printJson, dayendReportTemplate, {...printer,templatetype:''}).then((msg) => {
+                sendDataToPrinter(printJson, dayendReportTemplate, {...printer, templatetype: ''}).then((msg) => {
                     resolve(msg)
                 });
             } else {
@@ -2605,7 +2582,6 @@ export const printDayEndReport = ({date:date,data:data}:any) => {
         appLog("print Error", e);
     }
 }
-
 
 
 export const intervalInvoice = () => {
@@ -2633,15 +2609,13 @@ export const intervalInvoice = () => {
 }
 
 
+export const captureImages = async (cropheight: any = 500, image: any) => {
 
 
-export const captureImages = async (cropheight:any = 500,image:any) => {
-
-
-    return new Promise(async (resolve)=> {
+    return new Promise(async (resolve) => {
 
         const base64result = image.split(',')[1];
-        const path = 'file://'+ RNFS.DocumentDirectoryPath + '/printpreview.jpg';
+        const path = 'file://' + RNFS.DocumentDirectoryPath + '/printpreview.jpg';
 
         await RNFS.writeFile(path, base64result, 'base64')
             .then((success) => {
@@ -2652,19 +2626,18 @@ export const captureImages = async (cropheight:any = 500,image:any) => {
             });
 
 
-
         try {
-            ImageSize.getSize(path).then(async ({width,height}: any) => {
+            ImageSize.getSize(path).then(async ({width, height}: any) => {
 
-                const deviding = height/cropheight;
-                const roundof = Math.floor(height/cropheight)
+                const deviding = height / cropheight;
+                const roundof = Math.floor(height / cropheight)
                 const remainign = Math.floor((deviding - roundof) * cropheight);
 
                 let yaxis = 0;
-                let images:any = [];
-                let base64:any = [];
+                let images: any = [];
+                let base64: any = [];
 
-                for(let i=0;i <= roundof;i++){
+                for (let i = 0; i <= roundof; i++) {
                     yaxis = i * cropheight;
 
                     try {
@@ -2672,84 +2645,79 @@ export const captureImages = async (cropheight:any = 500,image:any) => {
                         const croppedImageURI = await ImageEditor.cropImage(
                             path,
                             {
-                                offset: {x: 0, y: yaxis },
-                                size: {width: width, height: i === roundof ? remainign: cropheight },
+                                offset: {x: 0, y: yaxis},
+                                size: {width: width, height: i === roundof ? remainign : cropheight},
                                 resizeMode: 'contain',
                             }
                         );
                         images.push(croppedImageURI);
 
                     } catch (cropError) {
-                        appLog('cropError',cropError)
+                        appLog('cropError', cropError)
                     }
 
                 }
 
-                for(let key in images){
+                for (let key in images) {
                     await RNFS.readFile(images[key], 'base64')
-                        .then(async (base64result) =>{
-                            base64.push({base64result:base64result,width:width})
+                        .then(async (base64result) => {
+                            base64.push({base64result: base64result, width: width})
                         });
                 }
                 resolve(base64)
             })
 
-        }
-        catch (e) {
+        } catch (e) {
             appLog(e)
             resolve([])
         }
     })
 
 
-
 }
 
-export const  connectToLocalServer = async (serverip:any,navigation:any) => {
+export const connectToLocalServer = async (serverip: any, navigation: any) => {
 
-        await apiService({
-            method: METHOD.GET,
-            action: ACTIONS.LICENSE,
-            other: {url: `http://${serverip}:${port}/`},
-        }).then((response: any) => {
-            const {data} = response;
-            if (Boolean(data) && Boolean(data.data)) {
-                try {
-                    const {license: {expired_on, status}} = data.data;
-                    const today = moment().format('YYYY-MM-DD');
-                    if (expired_on >= today && status === 'Active') {
-                        localredux.initData = {staff: data.staffs};
-                        localredux.licenseData = {data: data.data};
-                        saveLocalSettings('serverip', serverip).then();
-                        getLocalSettings('recentserverips').then((ips: any) => {
-                            if (!Boolean(ips)) {
-                                ips = []
-                            }
-                            ips = {
-                                ...ips,
-                                [serverip]: serverip
-                            }
-                            saveLocalSettings('recentserverips', ips)
-                        })
-                        urls.localserver = `http://${serverip}:${port}/`
-                        navigation.navigate('PinStackNavigator');
-                    }
-                    else{
-                        urls.localserver = ''
-                    }
+    await apiService({
+        method: METHOD.GET,
+        action: ACTIONS.LICENSE,
+        other: {url: `http://${serverip}:${port}/`},
+    }).then((response: any) => {
+        const {data} = response;
+        if (Boolean(data) && Boolean(data.data)) {
+            try {
+                const {license: {expired_on, status}} = data.data;
+                const today = moment().format('YYYY-MM-DD');
+                if (expired_on >= today && status === 'Active') {
+                    localredux.initData = {staff: data.staffs};
+                    localredux.licenseData = {data: data.data};
+                    saveLocalSettings('serverip', serverip).then();
+                    getLocalSettings('recentserverips').then((ips: any) => {
+                        if (!Boolean(ips)) {
+                            ips = []
+                        }
+                        ips = {
+                            ...ips,
+                            [serverip]: serverip
+                        }
+                        saveLocalSettings('recentserverips', ips)
+                    })
+                    urls.localserver = `http://${serverip}:${port}/`
+                    navigation.navigate('PinStackNavigator');
+                } else {
+                    urls.localserver = ''
                 }
-                catch (e) {
-                    appLog('e',e)
-                }
+            } catch (e) {
+                appLog('e', e)
             }
-        }).catch(()=>{
-            errorAlert('Something went wrong')
-        })
-    }
+        }
+    }).catch(() => {
+        errorAlert('Something went wrong')
+    })
+}
 
 
-
-export const  wait = (time: number, signal?: AbortSignal) => {
+export const wait = (time: number, signal?: AbortSignal) => {
     return new Promise<void>((resolve, reject) => {
         const timeoutId = setTimeout(() => {
             resolve();
@@ -2763,7 +2731,7 @@ export const  wait = (time: number, signal?: AbortSignal) => {
 
 
 export const getDefaultPayment = () => {
-    let {initData, localSettingsData}: any =localredux;
+    let {initData, localSettingsData}: any = localredux;
     let defaultPaymentKey = localSettingsData?.currentLocation?.defaultpaymentgateway;
     let payment: any = []
     let paymentmethod = Object.keys(initData?.paymentgateway).find((key: any) => {
@@ -2787,5 +2755,4 @@ export const getDefaultPayment = () => {
     }
     return payment;
 }
-
 

@@ -21,16 +21,17 @@ class Index extends React.Component<any> {
                     value={value}
                     ref={customRef}
                     defaultValue={defaultValue}
-                    style={[styles.input,{width:width,backgroundColor:colors.backgroundColor,...extrastyle}]}
-                    mode={'flat'}
-                    outlineColor="transparent"
+                    style={[styles.input,{width:width,...extrastyle}]}
+                    mode={'outlined'}
+                    outlineColor={underlineColor}
+                    underlineColor={underlineColor}
+                    activeOutlineColor={styles.primary.color}
                     dense={true}
                     disabled={!editmode}
 
-                    underlineColor={underlineColor}
                     onChangeText={(e:any) => { onChange(e) }}
                     {...this.props}
-                    label={<Text style={labelstyle}>{label}</Text>}
+                    /*label={<Text style={labelstyle}>{label}</Text>}*/
                 />
                 <ItemDivider/>
             </View>

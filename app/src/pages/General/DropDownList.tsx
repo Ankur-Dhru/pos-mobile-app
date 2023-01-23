@@ -173,7 +173,7 @@ const Index = (props: any) => {
 
     return (
 
-        <Container style={{backgroundColor:'white'}}>
+        <Container   style={styles.bg_white}>
 
             <View>
                 <View style={[styles.grid,styles.middle,styles.justifyContent]}>

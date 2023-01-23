@@ -1,29 +1,39 @@
-import React, {useEffect, useState} from "react";
+import React, {memo, useEffect, useState} from "react";
 import {appLog, chevronRight} from "../../libs/function";
-import {View} from "react-native";
-import {Card, List, Paragraph, Text} from "react-native-paper";
+import {TouchableOpacity, View} from "react-native";
+import {Card, List, Paragraph, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect} from "react-redux";
 import Avatar from "../../components/Avatar";
 import {useNavigation} from "@react-navigation/native";
+import {ProIcon} from "../../components";
 
 
-const Index = ({clientdetail,clientid,clientname}: any) => {
+const Index = ({clientdetail,clientid,clientname,commonkotnote,vouchernotes,vehicleno}: any) => {
 
 
     const navigation = useNavigation()
 
-    return <Card style={[styles.card,{minWidth:200,paddingLeft:5}]} onPress={() => {
+    return <Card style={[styles.card,styles.px_5,{minWidth:280,}]} onPress={() => {
         navigation.navigate('ClientList');
     }}>
-        <List.Item style={[styles.listitem]}
-                   titleStyle={[styles.bold]}
-                   title={clientname || clientdetail?.displayname}
-                   left={() => <View style={{marginTop:8}}>
-                       <Avatar label={clientname || clientdetail?.displayname} thumbnailPath={clientdetail?.thumbnailPath} value={clientid || clientdetail?.clientid} fontsize={14} size={40}/>
-                   </View>}
-                   right={()=> <List.Icon icon="chevron-right"/>  }
-        />
+        <View style={[styles.grid,styles.middle]}>
+            <View style={[styles.w_auto]}>
+                <List.Item style={[styles.listitem]}
+                           titleStyle={[styles.bold]}
+                           title={clientname || clientdetail?.displayname}
+                           left={() => <View style={{marginTop:8}}>
+                               <Avatar label={clientname || clientdetail?.displayname} thumbnailPath={clientdetail?.thumbnailPath} value={clientid || clientdetail?.clientid} fontsize={14} size={40}/>
+                           </View>}
+                           right={()=> <List.Icon icon="chevron-right"/>  }
+                />
+            </View>
+            <TouchableOpacity onPress={()=>{
+                navigation.navigate('KotNote',{commonkotnote:commonkotnote,vouchernotes:vouchernotes,vehicleno:vehicleno})
+            }}>
+                <ProIcon name={'notes'}/>
+            </TouchableOpacity>
+        </View>
     </Card>
 
 
@@ -69,8 +79,8 @@ const Index = ({clientdetail,clientid,clientname}: any) => {
 const mapStateToProps = (state: any) => ({
     clientid:state.cartData.clientid,
     clientname:state.cartData.clientname,
-    clientdetail:state.cartData.client
+    clientdetail:state.cartData.client,
+    commonkotnote:state.cartData?.commonkotnote,
 })
 
-
-export default connect(mapStateToProps)(Index);
+export default connect(mapStateToProps)(withTheme(memo(Index)));

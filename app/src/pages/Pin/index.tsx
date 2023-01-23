@@ -4,29 +4,29 @@ import {Image, TouchableOpacity, View} from "react-native";
 import Container from "../../components/Container";
 import ReactNativePinView from "react-native-pin-view"
 import {useDispatch} from "react-redux";
-import {
-    appLog, errorAlert,
-    gePhonebook,
-    getAddons,
-    getClients, getLocalSettings,
-    getOrders,
-    getTempOrders,
-    retrieveData, saveLocalSettings,
-    syncData
-} from "../../libs/function";
+import {errorAlert, getAddons, getClients, getTempOrders, retrieveData, syncData} from "../../libs/function";
 
-import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
+import {hideLoader, setAlert, setBottomSheet, showLoader} from "../../redux-store/reducer/component";
 import {Card, Paragraph, Text} from "react-native-paper";
 import {styles} from "../../theme";
 import moment from "moment/moment";
-import {ACTIONS, db, localredux, METHOD, port, urls} from "../../libs/static";
+import {db, localredux, METHOD, urls} from "../../libs/static";
 import {setSettings} from "../../redux-store/reducer/local-settings-data";
 
 import {setGroupList} from "../../redux-store/reducer/group-list";
 import {setTableOrdersData} from "../../redux-store/reducer/table-orders-data";
 import apiService from "../../libs/api-service";
-import {useNavigation} from "@react-navigation/native";
-import PageLoader from "../../components/PageLoader";
+import Icon from "react-native-fontawesome-pro";
+import {
+    CodeField,
+    Cursor, isLastFilledCell,
+    MaskSymbol,
+    useBlurOnFulfill,
+    useClearByFocusCell
+} from "react-native-confirmation-code-field";
+import Avatar from "../../components/Avatar";
+import Button from "../../components/Button";
+import HoldOrders from "../Cart/HoldOrders";
 
 
 const md5 = require('md5');
@@ -34,17 +34,17 @@ const md5 = require('md5');
 
 const Index = (props: any) => {
 
-    let {route: {params},navigation}: any = props;
+    let {route: {params}, navigation}: any = props;
 
     const dispatch = useDispatch()
 
     const pinView: any = useRef(null)
-    const [enteredPin, setEnteredPin] = useState("")
-    const [loader,setLoader] = useState(false)
+
+    const [loader, setLoader] = useState(false)
 
     let isRestaurant = false;
 
-    const setData = async (data:any) => {
+    const setData = async (data: any) => {
         const {
             initData,
             licenseData,
@@ -59,7 +59,7 @@ const Index = (props: any) => {
 
             if (expired_on >= today && status === 'Active') {
 
-                localredux.initData = {...localredux.initData,...initData};
+                localredux.initData = {...localredux.initData, ...initData};
 
                 localredux.licenseData = licenseData;
                 localredux.authData = {...params, ...authData};
@@ -80,7 +80,7 @@ const Index = (props: any) => {
                 isRestaurant = (localredux.localSettingsData?.currentLocation?.industrytype === 'foodservices');
 
                 await retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
-                    await dispatch(setSettings({...data,...othersettings}));
+                    await dispatch(setSettings({...data, ...othersettings}));
                 })
 
                 //await getOrders().then();
@@ -92,10 +92,9 @@ const Index = (props: any) => {
         await dispatch(hideLoader())
         localredux.loginuserData = params;
 
-        if(isRestaurant){
+        if (isRestaurant) {
             await navigation.replace('ClientAreaStackNavigator');
-        }
-        else{
+        } else {
             urls.localserver = '';
             errorAlert('Remote Terminal not support for retail')
             navigation.replace('SetupStackNavigator')
@@ -104,19 +103,30 @@ const Index = (props: any) => {
     }
 
 
+
+
+    navigation.setOptions({headerShown: !params.onlyone || Boolean(urls.localserver)})
+
+
+    const [value, setValue]:any = useState("")
+    const ref = useBlurOnFulfill({value, cellCount: 5});
+    const [props1, getCellOnLayoutHandler] = useClearByFocusCell({
+        value,
+        setValue,
+    });
+
     useEffect(() => {
-
         setTimeout(async () => {
-            if (enteredPin.length === 5) {
+            if (value.length === 5) {
 
-                const {loginpin,adminid}:any = params;
+                const {loginpin, adminid}: any = params;
 
-                if (md5(enteredPin) === loginpin) {
+                if (md5(value) === loginpin) {
 
                     await dispatch(showLoader())
 
 
-                    if(Boolean(urls?.localserver)) {
+                    if (Boolean(urls?.localserver)) {
                         apiService({
                             method: METHOD.GET,
                             action: 'loginpin',
@@ -126,8 +136,8 @@ const Index = (props: any) => {
                             let {data} = response;
                             if (Boolean(data)) {
 
-                                let initdata:any = {}
-                                Object.keys(data).forEach((key:any)=>{
+                                let initdata: any = {}
+                                Object.keys(data).forEach((key: any) => {
                                     initdata[key] = data[key]?.data || data[key]
                                 })
 
@@ -144,16 +154,19 @@ const Index = (props: any) => {
 
                                 const localSettingsData = {
                                     currentLocation: locations[locationid],
-                                        printingtemplates: printingtemplates,
-                                        lastSynctime: moment().unix(),
-                                        terminalname: 'pending',
-                                        isRestaurant: (locations[locationid]?.industrytype === "foodservices"),
+                                    printingtemplates: printingtemplates,
+                                    lastSynctime: moment().unix(),
+                                    terminalname: 'pending',
+                                    isRestaurant: (locations[locationid]?.industrytype === "foodservices"),
                                 }
-                                setData({initData:initdata,licenseData:localredux.licenseData,localSettingsData:localSettingsData})
+                                setData({
+                                    initData: initdata,
+                                    licenseData: localredux.licenseData,
+                                    localSettingsData: localSettingsData
+                                })
                             }
                         })
-                    }
-                    else {
+                    } else {
                         await retrieveData(db.name).then(async (data: any) => {
                             setData(data).then()
                         })
@@ -165,76 +178,98 @@ const Index = (props: any) => {
                 }
             }
         }, 200)
-    }, [enteredPin]);
+    }, [value]);
 
-    navigation.setOptions({headerShown: !params.onlyone || Boolean(urls.localserver)})
 
-    return <Container style={{padding: 0}}>
+    const renderCell = ({index, symbol, isFocused}:any) => {
+        let textChild = null;
 
-        <Card style={[styles.card, {marginBottom: 0}]}>
+        if (symbol) {
+            textChild = (
+                <MaskSymbol
+                    maskSymbol="*️"
+                    isLastFilledCell={isLastFilledCell({index, value})}>
+                    {symbol}
+                </MaskSymbol>
+            );
+        } else if (isFocused) {
+            textChild = <Cursor />;
+        }
 
-            <View style={[styles.center, styles.h_100, styles.middle]}>
+        return (
+            <Text
+                key={index}
+                style={[styles.cellBox, isFocused && styles.focusCell]}
+                onLayout={getCellOnLayoutHandler(index)}>
+                {textChild}
+            </Text>
+        );
+    };
 
-                <View style={{width: 300}}>
+    return <Container    style={styles.bg_white}>
 
-                    <View style={[styles.grid, styles.center,]}>
-                        <Image
-                            style={[{width: 60, height: 60, margin: 'auto', marginBottom: 5}]}
-                            source={require('../../assets/dhru-logo-22.png')}
+
+
+            <View style={[styles.h_100,styles.middle]}>
+
+                <View style={{width:300,marginTop:40}}>
+
+
+
+                    <View style={[styles.middle]}>
+
+                        {params.onlyone && <View  style={[styles.middle]}>
+                            <Avatar label={params.username} value={1}  fontsize={30} size={60}/>
+
+                            <Paragraph style={[styles.paragraph,styles.bold,{textTransform:'capitalize'}]}>{params.username}</Paragraph>
+
+
+                        </View>}
+
+                    </View>
+
+                    <View>
+                        <CodeField
+                            ref={ref}
+                            {...props1}
+                            // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
+                            value={value}
+                            onChangeText={setValue}
+                            cellCount={5}
+                            autoFocus={true}
+                            rootStyle={styles.codeFieldRoot}
+                            keyboardType="number-pad"
+                            textContentType="oneTimeCode"
+                            renderCell={renderCell}
                         />
                     </View>
 
-                    {params.onlyone && <View>
-                        <Paragraph
-                            style={[styles.paragraph, styles.bold, {textAlign: 'center'}]}>{params.username} </Paragraph>
-                        <Paragraph
-                            style={[styles.paragraph, styles.text_sm, {textAlign: 'center'}]}>{params.loginpin === 'b0baee9d279d34fa1dfd71aadb908c3f' &&
-                            <Text style={[styles.paragraph, styles.muted, styles.text_xs, {textAlign: 'center'}]}>Default
-                                PIN is
-                                11111</Text>}</Paragraph>
-                    </View>}
+                    <View  style={[styles.middle]}>
+                    <Paragraph>{params.loginpin === 'b0baee9d279d34fa1dfd71aadb908c3f' &&
+                        <Text style={[styles.paragraph, styles.muted, styles.text_xs, {textAlign: 'center'}]}>default pin is 11111</Text>}</Paragraph>
+                    </View>
 
-                    <ReactNativePinView
-                        inputSize={12}
-                        ref={pinView}
-                        pinLength={5}
-                        onValueChange={value => value.length === 5 && setEnteredPin(value)}
-                        inputViewEmptyStyle={{
-                            backgroundColor: "transparent",
-                            borderWidth: 1,
-                            borderColor: "#ccc",
-                        }}
-                        inputViewFilledStyle={{
-                            backgroundColor: "#222",
-                        }}
-                        buttonViewStyle={{
-                            borderWidth: 0,
-                            backgroundColor: styles.secondary.color,
-                            borderColor: styles.secondary.color,
-                            width: 60,
-                            height: 60,
-                            borderRadius: 50
-                        }}
-                        buttonTextStyle={{
-                            color: "#222",
-                            fontSize: 18,
-                        }}
-                        inputViewStyle={{
-                            marginBottom: 0
-                        }}
-                    />
-                </View>
-
-                {!Boolean(urls?.localserver) && <View style={{marginTop: 10}}>
-                    <TouchableOpacity onPress={() => {
-                        syncData().then()
-                    }}><Paragraph style={[styles.paragraph]}>Sync Data</Paragraph></TouchableOpacity>
-                </View>}
 
             </View>
 
+                <View  style={[styles.mt_auto,styles.p_6,styles.w_100,{maxWidth:320}]}>
 
-        </Card>
+                    {!Boolean(urls?.localserver) && <Button style={[styles.noshadow]}
+                            more={{
+                                backgroundColor: 'white',
+                                borderColor:styles.primary.color,
+                                borderWidth:1,
+                                color: styles.primary.color,
+                                height: 45,
+                            }} onPress={() => {
+                        syncData().then()
+                    }}
+                    >Synchronize</Button>}
+
+                </View>
+
+        </View>
+
     </Container>
 }
 

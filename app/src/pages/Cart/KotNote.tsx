@@ -1,51 +1,135 @@
-import React, {memo, useState} from "react";
-import {ScrollView, View} from "react-native";
-import {Card, Divider, Text, withTheme} from "react-native-paper";
+import React, {memo, useRef} from "react";
+import {View} from "react-native";
+import {withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
-import { TextInput as TextInputReact } from 'react-native';
+
 import Button from "../../components/Button";
 import {useNavigation} from "@react-navigation/native";
 import {Container} from "../../components";
-import {useDispatch} from "react-redux";
+import {connect, useDispatch} from "react-redux";
+import InputField from "../../components/InputField";
+import KeyboardScroll from "../../components/KeyboardScroll";
+import KAccessoryView from "../../components/KAccessoryView";
+import {Field, Form} from "react-final-form";
+import {nextFocus} from "../../libs/function";
 
 
 const Index = (props: any) => {
 
-    const commonkotnote = props.route?.params?.commonkotnote;
+    const commonkotnote = props.commonkotnote;
+    const vouchernotes = props.vouchernotes;
+    const vehicleno = props.vehicleno;
 
-    const dispatch:any = useDispatch();
-    const navigation:any = useNavigation()
-    const [note,setNote]:any = useState(commonkotnote)
+    let inputRef = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef()];
+
+    const dispatch: any = useDispatch();
+    const navigation: any = useNavigation()
+
+
+    const initialValues = {
+        commonkotnote: commonkotnote,
+        vouchernotes: vouchernotes,
+        vehicleno: vehicleno,
+    }
+
+    const handleSubmit = async (values: any) => {
+        dispatch(updateCartField(values))
+        navigation.goBack()
+    }
 
     return (
-        <Container>
-            <Card style={[styles.card,styles.flex,styles.h_100]}>
+        <Container style={styles.bg_white}>
 
-                <Card.Content  style={[styles.cardContent,styles.h_100]}>
+            <Form
+                onSubmit={handleSubmit}
+                initialValues={initialValues}
+                render={({handleSubmit, submitting, values, ...more}: any) => (
+                    <View style={[styles.middle,]}>
+                        <View style={[styles.middleForm, {maxWidth: 400,}]}>
+                            <KeyboardScroll>
 
-                        <TextInputReact
-                            onChangeText={(e:any) => { setNote(e) }}
-                            defaultValue={note}
-                            placeholder={'KOT Note'}
-                            multiline={true}
-                            autoFocus={true}
-                            autoCapitalize='words'
-                            style={{color:'black'}}
-                        />
 
-                </Card.Content>
+                                <View>
+                                    <Field name="vehicleno">
+                                        {props => (
+                                            <InputField
+                                                {...props}
+                                                returnKeyType={'next'}
+                                                onSubmitEditing={() => nextFocus(inputRef[0])}
+                                                label={'Vehicle No'}
+                                                inputtype={'textbox'}
+                                                onChange={(value: any) => {
+                                                    props.input.onChange(value);
+                                                }}
+                                            />
+                                        )}
+                                    </Field>
+                                </View>
 
-            </Card>
 
-            {<View   style={[styles.submitbutton]}>
-                <Button       onPress={()=>{
-                    dispatch(updateCartField({commonkotnote:note}))
-                    navigation.goBack()
-                }}> Save  </Button>
-            </View>}
+                                <View>
+                                    <Field name="vouchernotes">
+                                        {props => (
+                                            <InputField
+                                                {...props}
+                                                returnKeyType={'next'}
+                                                onSubmitEditing={() => nextFocus(inputRef[0])}
+                                                label={'Client Note'}
+                                                inputtype={'textbox'}
+                                                onChange={(value: any) => {
+                                                    props.input.onChange(value);
+                                                }}
+                                            />
+                                        )}
+                                    </Field>
+                                </View>
+
+                                <View>
+                                    <Field name="commonkotnote">
+                                        {props => (
+                                            <InputField
+                                                {...props}
+                                                returnKeyType={'go'}
+                                                label={'Common KOT Note'}
+                                                inputtype={'textbox'}
+                                                onChange={(value: any) => {
+                                                    props.input.onChange(value);
+                                                }}
+                                            />
+                                        )}
+                                    </Field>
+                                </View>
+
+
+                            </KeyboardScroll>
+
+                            <KAccessoryView>
+                                <View style={[styles.submitbutton]}>
+                                    <Button disable={more.invalid} secondbutton={more.invalid}
+                                            more={{color: 'white'}}
+                                            onPress={() => {
+                                                handleSubmit(values)
+                                            }}> Continue
+                                    </Button>
+                                </View>
+                            </KAccessoryView>
+                        </View>
+                    </View>
+                )}
+            >
+
+            </Form>
+
         </Container>
     );
 }
 
-export default withTheme(Index);
+
+const mapStateToProps = (state: any) => ({
+    vehicleno:state.cartData.vehicleno,
+    vouchernotes:state.cartData.vouchernotes,
+    commonkotnote:state.cartData?.commonkotnote,
+})
+
+export default connect(mapStateToProps)(withTheme(memo(Index)));

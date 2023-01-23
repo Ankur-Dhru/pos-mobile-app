@@ -55,9 +55,10 @@ const Index = ({navigation}: any) => {
             other: {url: urls.posUrl},
         }).then((response: any) => {
 
+
             const {info, data}: any = response;
 
-            if (Boolean(info)) {
+            if (Boolean(info) && Boolean(data)) {
 
                 setData({
                     order:Object.values(data),

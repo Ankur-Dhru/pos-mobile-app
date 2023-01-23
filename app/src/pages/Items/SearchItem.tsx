@@ -111,9 +111,9 @@ const Index = ({navigation, invoiceitems}: any) => {
                 </Card>
 
 
-                {!device.tablet && <View style={[styles.p_3]}>
+                {!device.tablet &&
                     <CartTotal/>
-                </View>}
+                 }
 
             </View>
         </Container>

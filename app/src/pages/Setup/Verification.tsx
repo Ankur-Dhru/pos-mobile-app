@@ -74,7 +74,7 @@ class Index extends Component<any> {
 
 
         return (
-            <Container>
+            <Container    style={styles.bg_white}>
 
                 <Form
                     onSubmit={this.handleSubmit}
@@ -83,7 +83,7 @@ class Index extends Component<any> {
                         <>
 
                             <View style={[styles.middle]}>
-                                <View style={[styles.middleForm]}>
+                                <View style={[styles.middleForm, {maxWidth: 400,}]}>
 
                                     <ScrollView>
 
@@ -91,7 +91,7 @@ class Index extends Component<any> {
                                             <Card.Content style={[styles.cardContent]}>
 
                                         <View>
-                                            <Paragraph style={[styles.paragraph]}>Your Registered Email </Paragraph>
+                                            <Paragraph style={[styles.paragraph,styles.muted]}>Your Registered Email </Paragraph>
                                             <View style={[styles.grid, styles.middle]}>
                                                 <Paragraph>
                                                     {this.initdata.email} -
@@ -110,7 +110,7 @@ class Index extends Component<any> {
                                         </View>
 
 
-                                        <View>
+                                        <View style={[styles.mt_5]}>
                                             <Field name="code">
                                                 {props => (
                                                     <InputField

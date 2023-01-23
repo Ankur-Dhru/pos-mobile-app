@@ -117,7 +117,7 @@ const ProfileSettings = () => {
 
         <View style={[styles.middle]}>
 
-            <View style={[styles.middleForm]}>
+            <View style={[styles.middleForm,{maxWidth:600}]}>
 
 
 

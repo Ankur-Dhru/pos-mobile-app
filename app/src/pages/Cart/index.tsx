@@ -25,6 +25,8 @@ import {setTableOrders} from "../../redux-store/reducer/table-orders-data";
 import HoldOrders from "./HoldOrders";
 import DeleteButton from "../../components/Button/DeleteButton";
 import apiService from "../../libs/api-service";
+import {Container} from "../../components";
+import {styles} from "../../theme";
 
 const Index = (props: any) => {
 
@@ -142,7 +144,8 @@ const Index = (props: any) => {
         })
     }
 
-    return <Cart tabledetails={tabledetails}/>
+    return    <Cart tabledetails={tabledetails}/>
+
 }
 
 

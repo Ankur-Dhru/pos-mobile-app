@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 
-import {ScrollView, TouchableOpacity, View} from "react-native";
+import {Image, ScrollView, TouchableOpacity, View} from "react-native";
 import Container from "../../components/Container";
 import {Field, Form} from "react-final-form";
 import {styles} from "../../theme";
@@ -120,22 +120,39 @@ const Register = (props: any) => {
     }
 
 
-    return <Container hideappbar={true}>
+    return <Container    style={styles.bg_white}>
 
         <Form
             onSubmit={handleSubmit}
             initialValues={initialValues}
             render={({handleSubmit, submitting, values, ...more}: any) => (
                 <View style={[styles.middle,]}>
-                    <View style={[styles.middleForm]}>
+                    <View style={[styles.middleForm, {maxWidth: 400,}]}>
                         <KeyboardScroll>
 
                             <View>
+
+
 
                                 <View>
 
                                     <Card style={[styles.card]}>
                                         <Card.Content style={[styles.cardContent]}>
+
+                                            <View>
+                                                <Image
+                                                    style={[{width: 25, height: 25}]}
+                                                    source={require('../../assets/dhru-logo-22.png')}
+                                                />
+                                                <Title style={[styles.mt_5,{fontSize:30}]}>Sign Up </Title>
+                                            </View>
+
+                                            <View style={[{marginBottom: 30}]}>
+                                                <TouchableOpacity onPress={() => navigation.replace('Login')}><Paragraph
+                                                    style={[styles.paragraph, styles.mt_5]}>Already have an account? <Text
+                                                    style={[{color: styles.primary.color}]}> Sign In </Text>
+                                                </Paragraph></TouchableOpacity>
+                                            </View>
 
                                     <View>
                                         <Field name="email" validate={composeValidators(required, isEmail)}>
@@ -276,8 +293,8 @@ const Register = (props: any) => {
 
                                     <View style={[styles.mt_5]}>
                                         <View>
-                                            <Text
-                                                style={[styles.text_xs, styles.muted, {marginBottom: -25}]}>Mobile</Text>
+                                            <Paragraph
+                                                style={[styles.text_xs, styles.muted, {marginTop: -20}]}>Mobile</Paragraph>
                                             <View style={[styles.grid, styles.middle, styles.justifyContent]}>
                                                 <View>
                                                     <InputField
@@ -322,12 +339,7 @@ const Register = (props: any) => {
 
                                 </View>
 
-                                <View style={[styles.middle, {marginBottom: 30}]}>
-                                    <TouchableOpacity onPress={() => navigation.replace('Login')}><Paragraph
-                                        style={[styles.paragraph, styles.mt_5]}>Already have an account? <Text
-                                        style={[{color: styles.primary.color}]}> Sign In </Text>
-                                    </Paragraph></TouchableOpacity>
-                                </View>
+
 
                             </View>
 

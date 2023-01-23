@@ -44,9 +44,9 @@ class Index extends Component<any> {
                     />
                 </>
 
-                {!device.tablet && <View style={[styles.p_3]}>
+                {!device.tablet &&
                     <CartTotal/>
-                </View>}
+                 }
 
             </Container>
         )

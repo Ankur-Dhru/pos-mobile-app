@@ -74,7 +74,7 @@ const Index = (props: any) => {
     return (
         <View style={[{minWidth: '100%', marginBottom: 4}]}>
             <View>
-                <View style={[styles.px_5, styles.py_4]}>
+                <View style={[styles.py_4]}>
 
                     <View>
                         {Boolean(kot.cancelreason) &&
@@ -82,11 +82,11 @@ const Index = (props: any) => {
                                 : {kot.cancelreason}</Paragraph></View>}
                         <View style={[styles.grid,styles.mb_2,styles.justifyContent]}>
                             <Paragraph style={[styles.bold]}>{ticketnumberprefix}-{kotid} ({tickettime})</Paragraph>
-                            <Paragraph style={[styles.ml_1]}> {tablename}</Paragraph>
+                            <Paragraph>{tablename}</Paragraph>
                         </View>
                     </View>
 
-                    <View style={[styles.mt_2]}>
+                    <View>
                         {
                            Boolean(ticketitems.length) && ticketitems?.map((item: any, index: any) => {
                                 return <View key={index}>
@@ -96,18 +96,18 @@ const Index = (props: any) => {
                         }
                         {Boolean(commonkotnote) && <View><Text>{commonkotnote}</Text></View>}
 
-                        <View style={[styles.mt_2,styles.grid]}><Paragraph style={[styles.paragraph,styles.text_xs,styles.muted]}>Kitchen : {departmentname}</Paragraph>
-                        {Boolean(staffname) && <Paragraph  style={[styles.paragraph,styles.text_xs,styles.ml_1,styles.muted]}>({staffname})</Paragraph>}
+                        <View style={[styles.mt_2,styles.grid,styles.justifyContent]}><Paragraph style={[styles.paragraph,styles.text_xs,styles.muted]}>Kitchen : {departmentname}</Paragraph>
+                        {Boolean(staffname) && <Paragraph  style={[styles.paragraph,styles.text_xs,styles.muted]}>({staffname})</Paragraph>}
                         </View>
                     </View>
 
-                    <View style={[styles.grid, styles.justifyContentSpaceBetween, styles.mt_4]}>
-                        <View>
-                            <Button more={{color:'white',height:40}}  onPress={() => {
+                    <View style={[styles.grid, styles.justifyContentSpaceBetween]}>
+                        <View style={[styles.mt_1]}>
+                            <Button more={{color:'white',height:35}}  onPress={() => {
                                 reprint(kot)
                             }}> Reprint {kot.print ? '(' + (kot.print) + ')' : ''}</Button>
                         </View>
-                        <View>
+                        <View  style={[styles.mt_1]}>
                             {!Boolean(kot.cancelreason) && <Button onPress={() => {
                                if(kot?.ticketitems?.length === 1) {
                                    cancelKOTDialog(kot).then()
@@ -119,7 +119,7 @@ const Index = (props: any) => {
                                        component: () => <KOTItemListforCancel kot={kot} cancelKOTDialog={cancelKOTDialog}/>
                                    }))
                                }
-                            }} more={{backgroundColor: styles.bg_red.backgroundColor,color:'white',height:40}}>Cancel KOT</Button>}
+                            }} more={{backgroundColor: styles.bg_red.backgroundColor,color:'white',height:35}}>Cancel KOT</Button>}
                         </View>
                     </View>
 

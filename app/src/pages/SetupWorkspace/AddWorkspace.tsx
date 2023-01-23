@@ -56,7 +56,7 @@ class AddWorkspace extends Component<any> {
     render() {
 
         return (
-            <Container>
+            <Container    style={styles.bg_white}>
                 <Form
                     onSubmit={this.handleSubmit}
 
@@ -65,7 +65,7 @@ class AddWorkspace extends Component<any> {
                         <>
 
                             <View style={[styles.middle,]}>
-                                <View style={[styles.middleForm]}>
+                                <View style={[styles.middleForm, {maxWidth: 400,}]}>
 
                                     <ScrollView>
 

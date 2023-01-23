@@ -22,21 +22,23 @@ const Index = ({vouchertotaldisplay, invoiceitems, theme: {colors}}: any) => {
     }
 
     return (
-        <TouchableOpacity onPress={() => navigation.navigate('DetailViewNavigator')}>
-            <View style={[styles.grid, styles.justifyContent, styles.p_5,styles.mt_4, {
-                backgroundColor: colors.primary,
-                borderRadius: 7
-            }]}>
-                <View>
-                    <Text style={[styles.mb_2, styles.text_xs, {color: colors.surface}]}>{totalqnt} ITEMS</Text>
-                    <Text style={[{color: colors.surface}, styles.text_md]}>{toCurrency(vouchertotaldisplay)} </Text>
+        <View style={[styles.p_3]}>
+            <TouchableOpacity onPress={() => navigation.navigate('DetailViewNavigator')}>
+                <View style={[styles.grid, styles.justifyContent, styles.p_5,styles.mt_4, {
+                    backgroundColor: colors.primary,
+                    borderRadius: 7
+                }]}>
+                    <View>
+                        <Text style={[styles.mb_2, styles.text_xs, {color: colors.surface}]}>{totalqnt} ITEMS</Text>
+                        <Text style={[{color: colors.surface}, styles.text_md]}>{toCurrency(vouchertotaldisplay)} </Text>
+                    </View>
+                    <View style={[styles.grid, styles.middle, styles.center]}>
+                        <Paragraph style={[{color: colors.surface}, styles.text_lg]}>Next </Paragraph>
+                        <Paragraph style={[]}> <ProIcon color={'white'} type={'solid'} size={15} action_type={'text'}  name={'play'}/> </Paragraph>
+                    </View>
                 </View>
-                <View style={[styles.grid, styles.middle, styles.center]}>
-                    <Paragraph style={[{color: colors.surface}, styles.text_lg]}>Next </Paragraph>
-                    <Paragraph style={[]}> <ProIcon color={'white'} type={'solid'} size={15} action_type={'text'}  name={'play'}/> </Paragraph>
-                </View>
-            </View>
-        </TouchableOpacity>
+            </TouchableOpacity>
+        </View>
     )
 }
 

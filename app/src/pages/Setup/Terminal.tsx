@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from "react";
+import React, {useEffect} from "react";
 
 import {Alert, ScrollView, View} from "react-native";
 import Container from "../../components/Container";
@@ -7,7 +7,8 @@ import {styles} from "../../theme";
 import {Caption, Card} from "react-native-paper";
 import {
     ACTIONS,
-    composeValidators, db,
+    composeValidators,
+    db,
     defaultInputAmounts,
     defaultInputValues,
     localredux,
@@ -20,11 +21,12 @@ import Button from "../../components/Button";
 import {useDispatch} from "react-redux";
 import apiService from "../../libs/api-service";
 import {
-    appLog,
-    base64Encode, createDatabaseName, errorAlert,
-    findObject, getStateAndTaxType,
+    createDatabaseName,
+    findObject,
+    getStateAndTaxType,
     isEmpty,
-    retrieveData, saveDatabaseName,
+    retrieveData,
+    saveDatabaseName,
     saveLocalSettings,
     selectItemObject,
     storeData,
@@ -35,9 +37,7 @@ import InputField from "../../components/InputField";
 import KAccessoryView from "../../components/KAccessoryView"
 import {createTables} from "../../libs/Sqlite";
 
-import { getUniqueId } from 'react-native-device-info';
-import {setDialog} from "../../redux-store/reducer/component";
-
+import {getUniqueId} from 'react-native-device-info';
 
 
 let uniqueDeviceId = '';
@@ -50,18 +50,15 @@ const Terminal = (props: any) => {
     const {initData, authData}: any = localredux;
 
 
-
-
     const handleSubmit = async (values: any) => {
-
 
 
         const location = findObject(locationList, 'value', values.locationid, true)
         const isRestaurant = (location.industrytype === "foodservices");
 
-        values = {...values, timezone: values?.timezone, locationid: values?.locationid,deviceid:uniqueDeviceId}
+        values = {...values, timezone: values?.timezone, locationid: values?.locationid, deviceid: uniqueDeviceId}
 
-        const useThis = async (response:any) => {
+        const useThis = async (response: any) => {
             const licensedata = {
                 data: response.data,
                 token: response.token
@@ -76,7 +73,7 @@ const Terminal = (props: any) => {
             saveLocalSettings("defaultInputValues", defaultInputValues).then()
             saveLocalSettings("defaultInputAmounts", defaultInputAmounts).then();
 
-            db.name =  createDatabaseName({workspace:initData.workspace,locationid:values?.locationid});
+            db.name = createDatabaseName({workspace: initData.workspace, locationid: values?.locationid});
 
             await saveDatabaseName(db.name).then();
 
@@ -126,27 +123,29 @@ const Terminal = (props: any) => {
             other: {url: urls.adminUrl},
         }).then(async (response: any) => {
 
-            if(response.status === STATUS.SUCCESS){
-                if(Boolean(response?.data?.deviceid)) {
+            if (response.status === STATUS.SUCCESS) {
+                if (Boolean(response?.data?.deviceid)) {
                     Alert.alert(
                         "Alert",
                         response.message,
                         [
-                            {text: "Setup New",onPress: () => {
-                                    storeData(`${db.name}-vouchernos`, 0).then(async () => {});
-                                    storeData(`${db.name}-kotno`, 0).then(async () => {});
+                            {
+                                text: "Setup New", onPress: () => {
+                                    storeData(`${db.name}-vouchernos`, 0).then(async () => {
+                                    });
+                                    storeData(`${db.name}-kotno`, 0).then(async () => {
+                                    });
                                     handleSubmit({...values, bypass: 1})
-                                }},
+                                }
+                            },
                             {text: "Resume", onPress: () => useThis(response).then()}
                         ]
                     );
-                }
-                else{
+                } else {
                     useThis(response).then()
                 }
             }
         })
-
 
 
     }
@@ -173,11 +172,11 @@ const Terminal = (props: any) => {
         locationid = locationList[0].value
     }
 
-    useEffect(()=>{
-        getUniqueId().then((deviceid)=>{
+    useEffect(() => {
+        getUniqueId().then((deviceid) => {
             uniqueDeviceId = deviceid
         })
-    },[])
+    }, [])
 
 
     const initialValues = {
@@ -187,7 +186,7 @@ const Terminal = (props: any) => {
     }
 
 
-    return <Container>
+    return <Container    style={styles.bg_white}>
 
         <Form
             initialValues={initialValues}
@@ -197,7 +196,7 @@ const Terminal = (props: any) => {
                 <>
 
                     <View style={[styles.middle,]}>
-                        <View style={[styles.middleForm]}>
+                        <View style={[styles.middleForm, {maxWidth: 400,}]}>
 
 
                             <ScrollView>
@@ -205,10 +204,10 @@ const Terminal = (props: any) => {
                                 <Card style={[styles.card]}>
                                     <Card.Content style={[styles.cardContent]}>
                                         <View>
-                                            <Caption style={[styles.caption]}>{initData.workspace}  </Caption>
+                                            <Caption style={[styles.caption]}>Workspace : {initData.workspace}  </Caption>
 
                                             <View style={[styles.mt_3]}>
-                                                <View style={[styles.mb_5]}>
+                                                <View>
                                                     <Field name="terminalname" validate={composeValidators(required)}>
                                                         {props => (
                                                             <InputField
@@ -223,7 +222,7 @@ const Terminal = (props: any) => {
                                                     </Field>
                                                 </View>
 
-                                                <View style={[styles.mb_5]}>
+                                                <View>
                                                     <Field name="locationid">
                                                         {props => (
                                                             <InputField

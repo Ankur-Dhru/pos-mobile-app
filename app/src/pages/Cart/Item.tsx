@@ -56,7 +56,7 @@ const Index = memo((props: any) => {
 
                             <View style={[styles.grid,]}>
 
-                                <View style={[styles.w_auto, {paddingLeft: 0,minWidth:150,maxWidth:250}]}>
+                                <View style={[styles.flexGrow,styles.w_auto,{paddingLeft: 0,paddingRight:10,minWidth:200}]}>
 
 
                                     <Paragraph
@@ -195,7 +195,7 @@ const Index = memo((props: any) => {
 
                                 </View>
 
-                                <View style={[{paddingRight: 0,marginTop:5,marginLeft:'auto'}]}>
+                                <View style={[styles.flexGrow,{paddingRight: 0,marginTop:5,minWidth:100}]}>
 
                                    {!haskot && <AddButton item={item}/>}
 

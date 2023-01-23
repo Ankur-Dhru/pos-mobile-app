@@ -1,26 +1,48 @@
 import React, {useEffect, useState} from "react";
-import {Dimensions, Image, Text, View} from "react-native";
+import {Dimensions, Image, Platform, ScrollView, Text, View} from "react-native";
 import {styles} from "../../theme";
 import Container from "../../components/Container";
 import {db, device, localredux,} from "../../libs/static";
 import Button from "../../components/Button";
-import {appLog, connectToLocalServer, getDatabaseName, getLocalSettings, retrieveData} from "../../libs/function";
+import {
+    appLog,
+    connectToLocalServer,
+    getDatabaseName,
+    getLocalSettings,
+    retrieveData,
+} from "../../libs/function";
 import moment from "moment/moment";
 
+
 import PageLoader from "../../components/PageLoader";
+import {Paragraph} from "react-native-paper";
+
+
+
+
 
 const Index = (props: any) => {
 
     const {navigation} = props
+    device.navigation = navigation;
+    const [loader,setLoader]:any = useState(false);
+
 
     const isPortrait = () => {
         const dim = Dimensions.get('screen');
         return (dim.height >= dim.width) ? 'portrait' : 'landscape';
     };
 
-    device.navigation = navigation;
-    const [loader,setLoader]:any = useState(false);
-    const [oriantation,setoriantation] = useState(isPortrait())
+
+    const [oriantation,setOrientation] = useState(isPortrait())
+
+
+    useEffect(()=>{
+        Dimensions.addEventListener('change', () => {
+            setOrientation(isPortrait())
+        });
+    })
+
 
     getDatabaseName().then(async (dbname: any) => {
 
@@ -64,19 +86,37 @@ const Index = (props: any) => {
     })
 
 
-
-
-    appLog('oriantation',oriantation)
-
     if(!loader){
         return <PageLoader/>
     }
 
-    return <Container style={{padding: 0, backgroundColor: '#0E4194'}}>
 
-        <View style={[styles.grid,styles.flex,styles.h_100]}>
+/*    return <Container  style={{padding: 0}}>
+        <View style={[styles.grid,styles.h_100,styles.border,styles.flex]}>
+            <View style={[styles.border,styles.w_100,styles.flexGrow,{backgroundColor:'red',minHeight:200,maxWidth:420}]}>
+                <Paragraph>Helo</Paragraph>
+            </View>
+            <View style={[styles.border,styles.flexGrow,styles.h_100,{backgroundColor:'green',minWidth:'50%'}]}>
+                <View style={[styles.h_100,styles.flex]}>
+                    <View style={[]}>
+                        <Paragraph>Helo2</Paragraph>
+                        <Paragraph>Helo2</Paragraph>
+                        <Paragraph>Helo2</Paragraph>
+                    </View>
+                    <View style={[styles.mt_auto]}>
+                        <Paragraph>Helo2</Paragraph>
+                    </View>
+                </View>
+            </View>
+        </View>
+    </Container>*/
 
-            <View style={[{padding: 40,minWidth:360,height:180}]}>
+
+    return <Container style={{padding: 0, backgroundColor: '#0E4194',height:'100%',display:'flex'}}>
+
+        <View style={[styles.flex,styles.h_100,oriantation === 'landscape' && styles.grid]}>
+
+            <View style={[{padding: 40,minWidth:360,height:220}]}>
                 <View>
                     <Image
                         style={[{width: 50, height: 50}]}
@@ -84,16 +124,19 @@ const Index = (props: any) => {
                     />
                     <View style={[styles.mt_5]}>
                         <Text style={{fontSize: 25,fontWeight:'bold', color: 'white'}}>
-                            Start selling with Dhru POS
+                            Start selling with
+                        </Text>
+                        <Text  style={{fontSize: 25,fontWeight:'bold', color: 'white'}}>
+                            Dhru ERP
                         </Text>
                     </View>
                 </View>
             </View>
 
 
-            <View style={[styles.h_100,styles.flex,  styles.middle,styles.flexGrow,styles.w_auto, {position: 'relative',minWidth:400}]}>
+            <View style={[styles.flex,styles.h_100,styles.middle,styles.flexGrow,styles.w_auto,oriantation === 'landscape'?styles.bg_white:'', {position: 'relative',minWidth:400,}]}>
 
-                {oriantation === 'portrait' && <View style={{
+                {<View style={{
                     backgroundColor: 'white',
                     position: 'absolute',
                     top: 0,
@@ -114,13 +157,18 @@ const Index = (props: any) => {
                             />
                         </View>
 
-                        <View style={[styles.p_5,{width: '100%'}]}>
-                            <Button
-                                onPress={async () => {
-                                    navigation.replace('SetupStackNavigator')
-                                }}
-                                more={{backgroundColor: '#0E4194', color: 'white', height: 50, borderRadius: 30}}
-                            > Get Started </Button>
+
+                    </View>
+
+
+                    <View style={[styles.p_5,{width: '100%',marginTop:'auto'}]}>
+                        <View style={{marginHorizontal:20,marginBottom:20}}>
+                        <Button
+                            onPress={async () => {
+                                navigation.replace('SetupStackNavigator')
+                            }}
+                            more={{backgroundColor: '#0E4194', color: 'white', height: 50, borderRadius: 30}}
+                        > Get Started </Button>
                         </View>
                     </View>
 

@@ -162,14 +162,14 @@ const Index = (props: any) => {
 
 
     return (
-        <Container>
+        <Container style={styles.bg_white}>
             <SafeAreaView>
                 <Form
                     onSubmit={handleSubmit}
                     initialValues={initdata}
                     render={({handleSubmit, submitting, values, ...more}: any) => (
                         <View style={[styles.middle]}>
-                            <View style={[styles.middleForm]}>
+                            <View style={[styles.middleForm,{maxWidth:400}]}>
 
                                 <ScrollView>
 

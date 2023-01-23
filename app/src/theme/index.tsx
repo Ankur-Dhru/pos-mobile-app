@@ -250,7 +250,7 @@ export const styles: any = StyleSheet.create({
     input: {
         flexGrow: 1,
         flexShrink: 1,
-        backgroundColor: '#fff',
+
         paddingHorizontal: 0
         // borderColor:'#ccc',
         // borderWidth:1,
@@ -403,7 +403,7 @@ export const styles: any = StyleSheet.create({
     red: {color: '#980202'},
     green: {color: '#28a745'},
     yellow: {color: '#F6DF8AFF'},
-    primary: {color: '#222A55'},
+    primary: {color: '#0E4194'},
     accent: {color: '#2d71d2'},
     secondary:{color:'#c4dcff'},
 
@@ -421,11 +421,11 @@ export const styles: any = StyleSheet.create({
         backgroundColor: 'transparent',
     },
 
-    border: {borderColor: '#f3f3f3', borderStyle: 'solid', borderWidth: 1},
-    borderTop: {borderTopColor: '#f3f3f32d', borderTopWidth: 1},
-    borderBottom: {borderBottomColor: '#f3f3f32d', borderBottomWidth: 1,borderStyle: 'solid',},
-    borderLeft: {borderLeftColor: '#f3f3f32d', borderLeftWidth: 1,borderStyle: 'solid',},
-    borderRight: {borderRightColor: '#f3f3f32d', borderRightWidth: 1,borderStyle: 'solid',},
+    border: {borderColor: '#eee', borderStyle: 'solid', borderWidth: 1},
+    borderTop: {borderTopColor: '#eee', borderTopWidth: 1},
+    borderBottom: {borderBottomColor: '#eee', borderBottomWidth: 1,borderStyle: 'solid',},
+    borderLeft: {borderLeftColor: '#eee', borderLeftWidth: 1,borderStyle: 'solid',},
+    borderRight: {borderRightColor: '#eee', borderRightWidth: 1,borderStyle: 'solid',},
     dottedBorder:{borderColor: '#980202', borderStyle: 'dashed', borderWidth: 1},
     light_paragraph: {
         lineHeight: 14,
@@ -447,7 +447,7 @@ export const styles: any = StyleSheet.create({
     card: {
         elevation: 0,
         borderRadius: 7,
-        marginBottom: hp('1%'),
+        marginBottom: hp('0.2%'),
     },
     overdue:{
         backgroundColor:'#ffe8dc'
@@ -607,14 +607,17 @@ export const styles: any = StyleSheet.create({
     root: {flex: 1, padding: 20},
     title: {textAlign: 'center', fontSize: 30},
     codeFieldRoot: {marginTop: 20},
+
     cellBox: {
-        width: 40,
-        height: 40,
-        lineHeight: 38,
+        width: 50,
+        height: 50,
+        borderRadius:5,
+        lineHeight: 45,
         fontSize: 24,
-        borderWidth: 2,
+        borderWidth: 1,
         borderColor: '#00000030',
         textAlign: 'center',
+        margin:5
     },
     focusCell: {
         borderColor: '#000',

@@ -101,7 +101,7 @@ const Index = (props: any) => {
     }
 
 
-    return <Container style={{backgroundColor:'white'}}>
+    return <Container   style={styles.bg_white}>
 
 
         <Form
@@ -113,19 +113,24 @@ const Index = (props: any) => {
                     <View style={[styles.middle,]}>
                         <View style={[styles.middleForm, {maxWidth: 400,}]}>
 
-                            <ScrollView>
 
-                                <View style={[styles.px_5]}>
-                                    <View style={[styles.middle, {marginBottom: 30, marginTop: 30}]}>
+                                <View style={[styles.px_5,styles.h_100,styles.flex]}>
+                                    <View style={[{marginTop: 20}]}>
                                         <Image
-                                            style={[{width: 70, height: 70}]}
+                                            style={[{width: 25, height: 25}]}
                                             source={require('../../assets/dhru-logo-22.png')}
                                         />
-                                        <Title style={[styles.mt_5]}>Login with email </Title>
-                                        <Text style={[styles.muted]}>account.dhru.com</Text>
+                                        <Title style={[styles.mt_5,{fontSize:30}]}>Sign In </Title>
+                                        {/*<Text style={[styles.muted]}>account.dhru.com</Text>*/}
                                     </View>
 
-                                    <View style={[styles.py_5]}>
+                                    <View>
+                                        <TouchableOpacity onPress={() => navigation.navigate('Register')}><Paragraph
+                                            style={[styles.paragraph, styles.mt_5]}>New User? <Text  style={[{color: styles.primary.color}]}> Create an account </Text>
+                                        </Paragraph></TouchableOpacity>
+                                    </View>
+
+                                    <View style={[styles.mt_5]}>
                                         <View>
                                             <Field name="email" validate={composeValidators(required, isEmail)}>
                                                 {props => (
@@ -182,39 +187,49 @@ const Index = (props: any) => {
 
 
 
-                                <View style={[styles.submitbutton]}>
-                                    <Button more={{color: 'white'}} disable={more.invalid} secondbutton={more.invalid}
+                                <View style={[styles.submitbutton,styles.mb_5]}>
+                                    <Button more={{color: 'white',backgroundColor:styles.primary.color}} disable={more.invalid} secondbutton={more.invalid}
                                             onPress={() => {
                                                 handleSubmit(values)
                                             }}> Login
                                     </Button>
 
-                                    <View style={[styles.mt_5]}>
+
+
+                                </View>
+
+
+                                    <View style={[styles.bg_light,styles.p_5,styles.mt_5,{borderRadius:5,}]}>
+
+                                        <View >
+
+                                        <Paragraph style={{marginBottom:10}}>
+                                            Connect to remote terminal, remote terminal ip address is required and both device must be in same local network.
+                                        </Paragraph>
+
                                         <Button style={[ styles.w_auto, styles.noshadow]}
                                                 more={{
                                                     backgroundColor: 'white',
                                                     borderColor:styles.primary.color,
                                                     borderWidth:1,
-                                                    color: 'black',
+                                                    color: styles.primary.color,
                                                     height: 45,
                                                 }} onPress={() => {
                                             navigation.navigate('LocalServer')
                                         }}
                                         >Connect To Remote Terminal</Button>
 
+                                        </View>
+
                                     </View>
 
-                                </View>
 
-                                <View style={[styles.middle, styles.mt_5, {marginBottom: 20}]}>
-                                    <TouchableOpacity onPress={() => navigation.navigate('Register')}><Paragraph
-                                        style={[styles.paragraph, styles.mt_5]}>New User? <Text  style={[{color: styles.primary.color}]}> Create an account </Text>
-                                    </Paragraph></TouchableOpacity>
-                                </View>
 
                                 </View>
 
-                            </ScrollView>
+
+
+
 
                             <KAccessoryView>
 

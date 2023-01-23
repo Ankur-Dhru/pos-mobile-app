@@ -75,7 +75,7 @@ class Index extends Component<any> {
 
 
         return (
-            <Container>
+            <Container    style={styles.bg_white}>
 
 
                 <Form
@@ -84,20 +84,16 @@ class Index extends Component<any> {
                     render={({handleSubmit, submitting, values, ...more}: any) => (
                         <>
                             <View style={[styles.middle]}>
-                                <View style={[styles.middleForm]}>
+                                <View style={[styles.middleForm, {maxWidth: 400,}]}>
                                     <KeyboardScroll>
 
                                         <Card style={[styles.card]}>
                                             <Card.Content style={[styles.cardContent]}>
-
-
                                                 <View>
-
                                                     <Paragraph style={[styles.paragraph]}>Select your base currency and
                                                         you can
                                                         start revolutionising
                                                         your Business with DHRU</Paragraph>
-
 
                                                     <View>
                                                         <Field name="currency" validate={required}>

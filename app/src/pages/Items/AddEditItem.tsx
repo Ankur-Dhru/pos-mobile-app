@@ -222,7 +222,7 @@ const Index = (props: any) => {
     let isRetailIndustry = !isRestaurant();
     return (
 
-        <Container>
+        <Container style={styles.bg_white}>
             <SafeAreaView>
                 <Form
                     onSubmit={handleSubmit}
@@ -231,7 +231,7 @@ const Index = (props: any) => {
                         <>
 
                             <View style={[styles.middle,]}>
-                                <View style={[styles.middleForm]}>
+                                <View style={[styles.middleForm,{maxWidth:400}]}>
 
                                     <KeyboardScroll>
 
@@ -559,8 +559,7 @@ const Index = (props: any) => {
                                                             {<View style={[styles.fieldspace]}>
                                                                 <Field name={'trackinventory'}>
                                                                     {props => (<View style={{
-                                                                        marginLeft: -25,
-                                                                        marginTop: -10,
+
                                                                         marginBottom: 5
                                                                     }}><CheckBox
                                                                         value={props.input.value}
@@ -766,9 +765,9 @@ const Index = (props: any) => {
                                                                             <InputField
                                                                                 label={'Outward Account'}
                                                                                 mode={'flat'}
-                                                                                list={chartofaccount.filter((account: any) => {
+                                                                                list={Boolean(chartofaccount.length) && chartofaccount?.filter((account: any) => {
                                                                                     return account.accounttype === 'income'
-                                                                                }).map((t: any) => assignOption(t.accountname, t.accountid))}
+                                                                                }).map((t: any) => assignOption(t.accountname, t.accountid)) || []}
                                                                                 value={props.input.value}
                                                                                 selectedValue={props.input.value}
                                                                                 displaytype={'pagelist'}
@@ -789,9 +788,9 @@ const Index = (props: any) => {
                                                                             <InputField
                                                                                 label={'Inward Account '}
                                                                                 mode={'flat'}
-                                                                                list={chartofaccount.filter((account: any) => {
+                                                                                list={Boolean(chartofaccount.length) && chartofaccount?.filter((account: any) => {
                                                                                     return account.accounttype === 'expense'
-                                                                                }).map((t: any) => assignOption(t.accountname, t.accountid))}
+                                                                                }).map((t: any) => assignOption(t.accountname, t.accountid)) || []}
                                                                                 value={props.input.value}
                                                                                 selectedValue={props.input.value}
                                                                                 displaytype={'pagelist'}

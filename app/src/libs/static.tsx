@@ -2,6 +2,7 @@ import {getType} from "@reduxjs/toolkit";
 import {appLog, assignOption, getDatabaseName, getLocalSettings, setAPIUrl, setDB} from "./function";
 import React from "react";
 import {View} from "react-native";
+import {styles} from "../theme";
 
 
 export const isDevelopment = process.env.NODE_ENV === "development";
@@ -221,12 +222,13 @@ export const screenOptionStyle: any = {
     stackPresentation: 'push',
     screenOrientation: 'portrait',
     headerTopInsetEnabled: false,
-    headerHideShadow: true,
+    headerHideShadow: false,
     headerLargeTitleHideShadow: true,
     headerShadowVisible:false,
     headerStyle: {
         /*shadowOpacity: 0,
         elevation: 0,*/
+        backgroundColor:'#fff',
     },
 
 };
@@ -2042,7 +2044,7 @@ export const ItemDivider = () => {
             style={{
                 height: 1,
                 width: "100%",
-                backgroundColor: "#efefef",
+                backgroundColor: "#eee",
             }}
         />
     );

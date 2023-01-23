@@ -1,28 +1,24 @@
 import React, {useState} from "react";
-import {TouchableOpacity, View} from "react-native";
+import {View} from "react-native";
 import {styles} from "../../theme";
 import DetailView from "./DetailView";
 import GroupList from "../Items/GroupList";
 import {useDispatch} from "react-redux";
-import {Card, List, Paragraph} from "react-native-paper";
+import {Card, List} from "react-native-paper";
 import Button from "../../components/Button";
-import CartTotal from "./CartTotal";
 
 
 import {device} from "../../libs/static";
 
 import CartActions from "./CartActions";
-import {Container, ProIcon} from "../../components";
+import {Container} from "../../components";
 import SearchItem from "../Items/SearchItem";
-import GroupHeading from "../Items/GroupHeading";
 import ClientDetail from "../Client/ClientDetail";
 import {useNavigation} from "@react-navigation/native";
-import {appLog, cancelOrder, isRestaurant, saveTempLocalOrder} from "../../libs/function";
+import {cancelOrder, isRestaurant, saveTempLocalOrder} from "../../libs/function";
 import NumPad from "../Items/NumPad";
 import ItemListMobile from "../Items/ItemListMobile";
 import ItemListTablet from "../Items/ItemListTablet";
-import GroupListMobile from "../Items/GroupListMobile";
-import Icon from "react-native-fontawesome-pro";
 
 
 const Index = (props: any) => {
@@ -39,65 +35,81 @@ const Index = (props: any) => {
 
     return <>
 
-        <View style={[styles.h_100, styles.flex,styles.w_100]}>
+        <View style={[styles.h_100, styles.flex, styles.w_100]}>
 
             {
                 device.tablet ? <>
 
-                    <View style={[styles.grid,styles.w_100,styles.justifyContent,styles.p_3]}>
+                    <View style={[styles.grid, styles.w_100, styles.justifyContent,{backgroundColor:styles.light.color,padding:5}]}>
                         {hasrestaurant ?
-                            <Card style={[styles.card,{marginRight:5}]} onPress={() => {
-                                saveTempLocalOrder().then(() => {navigation.goBack();})
+                            <Card style={[styles.card,{padding:0,marginRight:5}]} onPress={() => {
+                                saveTempLocalOrder().then(() => {
+                                    navigation.goBack();
+                                })
                             }}>
-                                <List.Item style={[styles.listitem]}  title={tabledetails?.tablename} left={()=><List.Icon icon={'chevron-left'}/>}/>
+                                <List.Item style={[styles.listitem]} title={tabledetails?.tablename}
+                                           left={() => <List.Icon icon={'chevron-left'}/>}/>
                             </Card>
-                          :
-                            <Card style={[styles.card,styles.w_auto,{maxWidth:60,marginRight:5}]}  onPress={() => navigation.navigate('ProfileSettingsNavigator')}>
-                                <List.Item style={[styles.listitem]}  title={''} left={()=><List.Icon icon={'menu'}/>}/>
-                        </Card>}
-                        <Card style={[styles.card,styles.w_auto,{minWidth: 120,marginRight:5,paddingLeft:10}]}  onPress={() => navigation.navigate('SearchItem')}>
-                            <List.Item style={[styles.listitem]} titleStyle={[styles.bold]}  title={'Search Item'} right={()=> <List.Icon icon="text-search"/>  }/>
+                            :
+                            <Card style={[styles.card, styles.w_auto, {maxWidth: 60, marginRight: 5}]}
+                                  onPress={() => navigation.navigate('ProfileSettingsNavigator')}>
+                                <List.Item style={[styles.listitem]} title={''}
+                                           left={() => <List.Icon icon={'menu'}/>}/>
+                            </Card>}
+                        <Card style={[styles.card, styles.w_auto, {minWidth: 60, marginRight: 5, paddingLeft: 5}]}
+                              onPress={() => navigation.navigate('SearchItem')}>
+                            <List.Item titleStyle={[styles.bold]} title={'Search Item'}
+                                      />
 
                             {/*<TouchableOpacity style={[styles.px_6,{backgroundColor:'white',padding:11,borderRadius:5,marginLeft:5}]} onPress={()=>setNumpad(!numpad)}>
                             <Paragraph><ProIcon name={'keyboard'} color={!numpad?'#ccc':'#000'} action_type={'text'}/></Paragraph>
                         </TouchableOpacity>*/}
                         </Card>
                         <ClientDetail/>
-                        <View style={[{marginLeft:5}]}>
+                        <View style={[{marginLeft: 5}]}>
                             <Button
                                 onPress={() => cancelOrder(navigation).then()}
-                                more={{backgroundColor: styles.red.color, color: 'white',height:55}}
+                                more={{backgroundColor: styles.red.color, color: 'white', height: 50}}
                             > Cancel </Button>
                         </View>
                     </View>
 
-                    <View style={[styles.h_100,styles.w_100,styles.flex]}>
-                    <View
-                        style={[styles.grid, styles.justifyContent, styles.noWrap, styles.h_100,styles.w_100, styles.flex]}>
+                    <View style={[styles.h_100, styles.w_100, styles.flex,{paddingHorizontal:7,paddingBottom:5}]}>
+                        <View
+                            style={[styles.grid, styles.justifyContent, styles.noWrap, styles.h_100, styles.w_100, styles.flex]}>
 
 
-                        <Card style={[styles.card,{width: 120,marginLeft:5}]}>
-                            <GroupList navigation={navigation}/>
-                        </Card>
+                            <View  style={[styles.card,styles.flexGrow]}>
+                                <Card style={[styles.card]}>
 
-                        <Card style={[styles.card,styles.flexGrow,{
-                            marginHorizontal:5,
-                            padding:3,
-                            maxWidth: '45%'
-                        }]}>
+                                    <View style={[styles.grid,styles.justifyContent,]}>
+                                        <View style={[{width:120}]}>
+                                            <GroupList navigation={navigation}/>
+                                        </View>
 
-                            {!numpad ?
-                                <ItemListTablet navigation={navigation}/> :
-                                <NumPad/>
-                            }
-                        </Card>
 
-                        <View style={[styles.h_100,styles.flexGrow,styles.w_auto,{marginRight:5}]}>
-                            <DetailView />
+                                        <View style={[styles.flexGrow,{
+                                            backgroundColor:'#fff',
+                                            padding:3,
+                                            borderRadius:7,
+                                        }]}>
+
+                                            {!numpad ?
+                                                <ItemListTablet navigation={navigation}/> :
+                                                <NumPad/>
+                                            }
+                                        </View>
+                                    </View>
+
+
+                                </Card>
+                            </View>
+
+                            <Card style={[styles.h_100, styles.flexGrow, {marginLeft:7,maxWidth:400}]}>
+                                <DetailView/>
+                            </Card>
+
                         </View>
-
-                    </View>
-
 
 
                     </View>
@@ -105,19 +117,18 @@ const Index = (props: any) => {
                     <CartActions/>
 
 
-                </> : <Container>
+                </> :
 
-                    <View style={[styles.h_100, styles.flex, {flexDirection: 'column'}]}>
-
-
-
+                    <Container style={{padding:0}}>
+                        <View style={[styles.h_100, styles.flex, {flexDirection: 'column'}]}>
 
 
                             <ItemListMobile navigation={navigation}/>
 
 
-                    </View>
-                </Container>
+                        </View>
+                    </Container>
+
             }
 
         </View>

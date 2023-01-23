@@ -149,6 +149,10 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
                 });
             }
 
+            if(Boolean(cartData?.vehicleno)){
+                cartData.vouchernotes += `Vehicle No : ${cartData.vehicleno}`;
+            }
+
             cartData.paidamount = paidamount;
 
 
@@ -212,6 +216,26 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
         })
     }*/
 
+    const paymentSelection = (key:any,pm:any) => {
+        if (remainingAmount > 0) {
+            paymentMethods[key] = {
+                ...pm,
+                paymentAmount: remainingAmount
+            }
+            setPaymentMethods(clone(paymentMethods));
+        } else {
+            let newData = [...paymentMethods.map((data: any) => ({
+                ...data,
+                paymentAmount: 0
+            }))];
+            newData[key] = {
+                ...pm,
+                paymentAmount: vouchertotaldisplay
+            }
+            setPaymentMethods(clone(newData));
+        }
+    }
+
 
     return <Container>
 
@@ -250,7 +274,9 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
 
 
                                 <View style={{width:30}}>
-                                    <TouchableOpacity>
+                                    <TouchableOpacity onPress={() => {
+                                        paymentSelection(key,pm)
+                                    }}>
                                         {
                                             Boolean(paymentMethods[key]?.paymentAmount) ?
                                             <ProIcon name={'circle-check'}   color={styles.green.color}></ProIcon> :
@@ -264,26 +290,8 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
                                 <View style={[styles.w_auto]}>
                                     <View style={[styles.grid,styles.px_5, styles.justifyContent]}>
 
-
-
                                         <TouchableOpacity onPress={() => {
-                                            if (remainingAmount > 0) {
-                                                paymentMethods[key] = {
-                                                    ...pm,
-                                                    paymentAmount: remainingAmount
-                                                }
-                                                setPaymentMethods(clone(paymentMethods));
-                                            } else {
-                                                let newData = [...paymentMethods.map((data: any) => ({
-                                                    ...data,
-                                                    paymentAmount: 0
-                                                }))];
-                                                newData[key] = {
-                                                    ...pm,
-                                                    paymentAmount: vouchertotaldisplay
-                                                }
-                                                setPaymentMethods(clone(newData));
-                                            }
+                                            paymentSelection(key,pm)
                                         }} style={[styles.w_auto]}>
                                             <View style={{paddingVertical:20}}><Paragraph  style={[styles.paragraph, styles.bold,{color:Boolean(paymentMethods[key]?.paymentAmount)?styles.green.color:'black'}]}>{pm.label}</Paragraph></View>
                                         </TouchableOpacity>
@@ -418,7 +426,7 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
 
                 <View style={[styles.w_auto, styles.ml_1]}>
                     <Button
-                        more={{color:'white',height:55}}
+                        more={{color:'white',backgroundColor:styles.primary.color,height:55}}
                         onPress={() => {
                             validatePayment({print: true}).then()
                         }}>Print & Generate Invoice</Button>

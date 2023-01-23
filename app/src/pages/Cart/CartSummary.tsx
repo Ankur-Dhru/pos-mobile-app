@@ -47,16 +47,16 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
 
     return (<>
 
-        {isRestaurant() &&
+        {isRestaurant() && Boolean(commonkotnote) &&
             <Card  style={[styles.card]}>
                 <Card.Content style={[styles.cardContent]}>
                     <TouchableOpacity onPress={() => {
                         navigation.navigate('KotNote',{commonkotnote:commonkotnote})
                     }}>
-                        {Boolean(commonkotnote) && <Caption>Common KOT Note</Caption>}
+
                         <View style={[styles.grid, styles.justifyContent, styles.middle,styles.noWrap]}>
                             <Paragraph
-                                style={[styles.paragraph, styles.head]}>{commonkotnote? commonkotnote:'Common KOT Note'}</Paragraph>
+                                style={[styles.paragraph, styles.head]}>{commonkotnote}</Paragraph>
                             <View>
                                 {chevronRight}
                             </View>
@@ -91,7 +91,7 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
 
 
 
-        <Card style={[styles.card,styles.p_6,{marginTop:0},!device.tablet && styles.marginOver,{marginBottom:device.tablet? 7 :0}]}>
+        <Card style={[styles.card,styles.p_5]}>
             <TouchableOpacity  onPress={() => {
                 viewSummary().then()
             }}>
@@ -101,9 +101,9 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
                 <View ref={moreSummaryRef}><CartSummaryMore/></View>
 
                 <View style={[styles.grid, styles.justifyContent,styles.middle]}>
-                    <View style={{width: '40%'}}><Paragraph
+                    <View><Paragraph
                         style={[styles.paragraph, styles.bold]}>Total </Paragraph></View>
-                    <View style={{width: '40%'}}><Paragraph
+                    <View><Paragraph
                         style={[styles.paragraph, styles.bold, styles.text_lg, styles.green, {textAlign: 'right'}]}>{toCurrency(vouchertotaldisplay || '0')}</Paragraph></View>
                 </View>
             </TouchableOpacity>

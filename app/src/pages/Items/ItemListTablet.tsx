@@ -1,6 +1,6 @@
 import React, {memo, useCallback, useEffect, useState} from "react";
 
-import {FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import {Dimensions, FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View} from "react-native";
 
 import {connect, useDispatch} from "react-redux";
 import {styles} from "../../theme";
@@ -41,10 +41,12 @@ const Item = memo(({item}: any) => {
     const hasRestaurant = isRestaurant();
 
 
-    return (<TouchableOpacity onPress={() => selectItem(item)} style={[styles.flexGrow, styles.center, styles.middle, {
+    return (<TouchableOpacity onPress={() => selectItem(item)} style={[styles.flexGrow, styles.center, styles.middle,  {
         width: 110,
         padding: 10,
-        margin: 3,
+        borderColor:'white',
+        margin:2,
+        marginBottom:1,
         backgroundColor: styles.secondary.color,
         borderRadius: 5
     }]}>
@@ -71,6 +73,21 @@ const Index = (props: any) => {
     const [loading, setLoading]: any = useState(false);
 
     const [dataSource, setDataSource]: any = useState([]);
+
+
+    const isPortrait = () => {
+        const dim = Dimensions.get('screen');
+        return (dim.height >= dim.width) ? 'portrait' : 'landscape';
+    };
+
+
+    const [oriantation,setOrientation] = useState(isPortrait())
+
+    useEffect(()=>{
+        Dimensions.addEventListener('change', () => {
+            setOrientation(isPortrait())
+        });
+    },[])
 
 
     const getItems = async (refresh = false) => {
@@ -108,7 +125,7 @@ const Index = (props: any) => {
 
 
     return (
-        <>
+        <View key={oriantation}>
 
 
             <FlatList
@@ -119,22 +136,10 @@ const Index = (props: any) => {
                 renderItem={renderItem}
                 keyboardDismissMode={'on-drag'}
                 keyboardShouldPersistTaps={'always'}
-                numColumns={3}
+                numColumns={oriantation === 'landscape'?3:2}
                 getItemLayout={(data, index) => {
                     return {length: 100, offset: 100 * index, index};
                 }}
-                /*ListFooterComponent={() => {
-                    return dataSource.length !== 0 ? <View>
-                        <TouchableOpacity onPress={async () => {
-                            navigation.navigate('AddEditItem')
-
-                        }}>
-                            <Paragraph  style={[styles.paragraph, styles.p_6, styles.muted, {textAlign: 'center'}]}>+ Add Item</Paragraph>
-                        </TouchableOpacity>
-                    </View> : <></>
-                }}*/
-                /*onMomentumScrollEnd={onEndReached}
-                onEndReachedThreshold={0.5}*/
                 refreshControl={
                     <RefreshControl
                         refreshing={false}
@@ -151,9 +156,10 @@ const Index = (props: any) => {
                     <AddItem navigation={navigation}/>
                 </View>}
                 keyExtractor={item => item.itemid}
+
             />
 
-        </>
+        </View>
     )
 }
 

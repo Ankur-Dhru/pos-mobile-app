@@ -30,7 +30,7 @@ const Index = (props: any) => {
     }
 
 
-    return <Container>
+    return <Container  style={styles.bg_white}>
 
                 <Card style={[styles.card,styles.h_100]}>
 

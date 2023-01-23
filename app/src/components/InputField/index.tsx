@@ -243,9 +243,9 @@ class Index extends React.Component<any, any> {
 
                             }}><View>
                             {Boolean(render) ?
-                                <Render/> : <View>
-                                    <Text style={[labelstyle, {marginBottom: -3}]}>{label}</Text>
-                                    <View style={[styles.grid, styles.middle, styles.justifyContent, styles.noWrap]}>
+                                <Render/> : <View style={[]}>
+                                    <Text style={[labelstyle, {marginBottom: -8,zIndex:999,paddingLeft:12}]}>{label}</Text>
+                                    <View style={[styles.grid,styles.bg_light,styles.px_5,styles.py_4, styles.middle, styles.justifyContent, styles.noWrap,{borderRadius:5}]}>
                                         {!multiselect && <Text>{selectedLabel}</Text>}
                                         {(multiselect && getType(selectedValue) === 'array') &&
                                             <Text>{selectedValue?.join(", ")}</Text>}
@@ -255,8 +255,8 @@ class Index extends React.Component<any, any> {
                                             </Text> : <Paragraph style={[{height: 26}]}>{}</Paragraph>}
                                         </View>
                                     </View>
-                                    {divider &&
-                                        <ItemDivider/>}
+                                    {/*{divider &&
+                                        <ItemDivider/>}*/}
                                 </View>
                             }</View>
                         </TouchableWithoutFeedback>

@@ -222,7 +222,7 @@ const Index = (props: any) => {
         }
     }
 
-    return <Container>
+    return <Container style={styles.bg_white}>
         <SafeAreaView>
             <Form
                 initialValues={{cancelreason: cancelreason.data, cancelreasonid: cancelreason.key}}
@@ -230,7 +230,7 @@ const Index = (props: any) => {
 
                 render={({handleSubmit, submitting, values, ...more}: any) => (
                     <View style={[styles.middle]}>
-                        <View style={[styles.middleForm]}>
+                        <View style={[styles.middleForm,{maxWidth:400}]}>
                             <View style={[styles.h_100, styles.flex]}>
                                 <View>
 

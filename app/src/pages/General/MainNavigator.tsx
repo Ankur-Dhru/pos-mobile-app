@@ -60,8 +60,7 @@ import DateTimePicker from "./DateTimePicker";
 import AskPermission from "../Pin/AskPermission";
 import BlueToothList from "../PrinterSettings/BlueToothList";
 import Preview from "../Preview";
-import LocalserverConnection from  "../LocalserverConnection";
-import ConnectWith from "../SetupWorkspace/ConnectWith";
+
 import LocalServer from "../Setup/LocalServer";
 import GettingStarted from "../Splash/GettingStarted";
 
@@ -196,7 +195,7 @@ const ClientAreaStackNavigator = (props: any) => {
             <Stack.Screen name={'ClientAndSource'} {...params} component={ClientAndSource}
                           options={{headerTitle: 'Order Source'}}/>
 
-            <Stack.Screen name={'KotNote'} component={KotNote} options={{headerTitle: 'KOT Note'}}/>
+            <Stack.Screen name={'KotNote'} component={KotNote} options={{headerTitle: 'Notes'}}/>
 
             <Stack.Screen name={'Payment'} component={Payment} options={{headerTitle: 'Payment'}}/>
 

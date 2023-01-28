@@ -46,6 +46,7 @@ const Index = ({
         generateKOT(cancelkotprint).then(() => {
             dispatch(hideLoader())
             printInvoice().then((status: any) => {
+                appLog('status',status)
                 saveTempLocalOrder('', {print: Boolean(status)}).then((msg:any) => {
                     dispatch(hideLoader())
                 })

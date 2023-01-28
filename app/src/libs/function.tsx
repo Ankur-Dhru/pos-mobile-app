@@ -33,7 +33,7 @@ import {
 
 import {setSettings} from "../redux-store/reducer/local-settings-data";
 import React, {useEffect} from "react";
-import {Alert, PermissionsAndroid, Platform, Text} from "react-native";
+import {Alert, Keyboard, PermissionsAndroid, Platform, Text} from "react-native";
 import {v4 as uuid} from "uuid";
 import SyncingInfo from "../pages/Pin/SyncingInfo";
 import {setSyncDetail} from "../redux-store/reducer/sync-data";
@@ -496,9 +496,10 @@ export const CheckConnectivity = () => {
 
 export const syncData = async (loader = true) => {
 
-    appLog('sync data')
+    Keyboard.dismiss()
 
     await retrieveData(db.name).then(async (data: any) => {
+
 
         await createTables().then();
 
@@ -1413,6 +1414,7 @@ export const generateKOT = async (cancelkotprint?: any) => {
         let cartData = store.getState().cartData;
 
         if (Boolean(urls.localserver)) {
+
             await apiService({
                 method: METHOD.POST,
                 action: 'remote/printkot',
@@ -1720,9 +1722,9 @@ export const printInvoice = async (order?: any) => {
                 }).then((response: any) => {
                     const {status}: any = response;
                     if (status === STATUS.SUCCESS) {
-                        store.dispatch(setAlert({visible: true, message: response.data.message}))
+                        store.dispatch(setAlert({visible: true, message: response.message}))
                     }
-                    resolve(response?.data?.message)
+                    resolve(response?.message)
                 })
 
             })
@@ -2394,6 +2396,8 @@ export const syncInvoice = async (invoiceData: any) => {
             hidealert: true,
             other: {url: urls.posUrl},
         }).then(async (response: any) => {
+
+
             await saveLocalSettings({sync_in_process: false})
 
             if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
@@ -2548,7 +2552,9 @@ export const printDayEndReport = ({date: date, data: data}: any) => {
             invoicetype: 'Retail Invoice',
             head: () => getLeftRight("#ID | Name", "Amount"),
             isItems: true,
-            items: Object.values(data.order)?.map((item: any) => {
+            items: Object.values(data.order).filter((order:any)=>{
+                return order.vouchertypeid === VOUCHER.INVOICE
+            })?.map((item: any) => {
                     total += +item.vouchertotal;
                     return getLeftRight(item.voucherdisplayid + ' | ' + item.client, numberFormat(item.vouchertotal, false, decimalPlace))
                 }
@@ -2756,3 +2762,5 @@ export const getDefaultPayment = () => {
     return payment;
 }
 
+
+export const sortByGroup = (a: any, b: any) => a.order < b.order ? -1 : a.order > b.order ? 1 : 0

@@ -27,6 +27,8 @@ const Index = ({navigation}:any) => {
         ...voucherData(VOUCHER.EXPENSE,false),
     }
 
+    appLog('initdata',initdata)
+
     const {paymentgateway,chartofaccount,tax}: any = localredux.initData;
 
 
@@ -75,7 +77,8 @@ const Index = ({navigation}:any) => {
             2,
             2,
             false,
-            false)
+            false);
+
 
         appLog('ExpenseJSON',ExpenseJSON)
 
@@ -108,7 +111,7 @@ const Index = ({navigation}:any) => {
                     <>
 
                         <View style={[styles.middle,]}>
-                            <View style={[styles.middleForm]}>
+                            <View style={[styles.middleForm,{maxWidth:400}]}>
 
                                 <KeyboardScroll>
 

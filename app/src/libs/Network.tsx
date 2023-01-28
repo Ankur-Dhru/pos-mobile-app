@@ -21,7 +21,9 @@ export const sendDataToPrinter = async (input?: any, template?: string, printer?
     }*/
 
     return await new Promise(async (resolve) => {
-        if(Boolean(printer.template)) {
+
+
+        if(Boolean(printer?.template)) {
             try {
 
                 let xmlData:any = '';
@@ -112,6 +114,7 @@ export const sendDataToPrinter = async (input?: any, template?: string, printer?
                     }
                     else if (Boolean(printer?.host)) {
                         return await connectToPrinter(printer, (buffer as unknown) as Buffer).then(async (msg: any) => {
+                            appLog('msg',msg)
                             resolve(msg)
                         });
                     } else {
@@ -133,6 +136,8 @@ export const sendDataToPrinter = async (input?: any, template?: string, printer?
 
 
 const connectToPrinter = async (printer: any, buffer: Buffer,): Promise<unknown> => {
+
+    appLog('connectToPrinter')
 
     return new Promise(async (res: (value: unknown) => void, rej) => {
 

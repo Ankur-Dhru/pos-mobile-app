@@ -84,7 +84,7 @@ const Index = (props: any) => {
 
     const handleSubmit = async (values: any) => {
 
-        if(values.printertype === 'broadcast'){
+        if(values?.printertype === 'broadcast'){
             values.broadcastip = `http://${values.broadcastip}:8081`
         }
 

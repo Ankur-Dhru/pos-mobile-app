@@ -440,6 +440,7 @@ export const styles: any = StyleSheet.create({
     },
 
     radiusTop: {borderTopLeftRadius: 5, borderTopRightRadius: 5},
+    radiusBottom: {borderBottomLeftRadius: 5, borderBottomRightRadius: 5},
     borderRadius_0: {borderTopLeftRadius: 0, borderTopRightRadius: 0},
 
     selected: {backgroundColor: '#ffc107'},
@@ -477,7 +478,7 @@ export const styles: any = StyleSheet.create({
         elevation: 13,
     },
 
-    bg_light: {backgroundColor: '#F2F2F2'},
+    bg_light: {backgroundColor: '#eee'},
     bg_dark: {backgroundColor: '#000000'},
     bg_green: {backgroundColor: '#238551'},
     bg_red: {backgroundColor: '#cd4246'},

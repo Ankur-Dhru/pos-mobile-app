@@ -8,7 +8,7 @@ import {device, localredux} from "../../libs/static";
 import CartActions from "./CartActions";
 import CartSummary from "./CartSummary";
 import {useNavigation} from "@react-navigation/native";
-import {Appbar, Card, Menu} from "react-native-paper";
+import {Appbar, Card, Menu, Paragraph} from "react-native-paper";
 import {Alert, TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
 import ProIcon from "../../components/ProIcon";
@@ -87,19 +87,27 @@ const Index = (props: any) => {
     })
 
     let tablet:any;
-
+    let mobile:any;
     if(device.tablet){
-        tablet = {padding:0}
+        tablet = {paddingHorizontal: 5,paddingVertical: 5}
+    }
+    else{
+        mobile = {backgroundColor:styles.bg_light.backgroundColor,padding:5}
     }
 
-    return <Container style={{...tablet}}>
+    return <Container style={{padding: 0}}>
         {!device.tablet && <ClientDetail/>}
-        <Card style={[styles.card,styles.flex,]}>
-            <Card.Content style={[styles.cardContent,{paddingHorizontal: 5,paddingVertical: 5}]}>
-                <CartItems/>
-            </Card.Content>
-        </Card>
-        <CartSummary navigation={navigation}/>
+        <View style={[styles.h_100,styles.flex,mobile]}>
+            <View style={[styles.bg_white,styles.flex,{borderRadius:5}]}>
+                <View style={[styles.cardContent,styles.h_100,styles.flex,tablet]}>
+                    <CartItems/>
+                </View>
+
+            <CartSummary navigation={navigation}/>
+        </View>
+
+
+        </View>
         {!device.tablet && <CartActions/>}
     </Container>
 }

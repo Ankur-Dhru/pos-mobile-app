@@ -1,7 +1,7 @@
 import React, {memo, useEffect, useState} from "react";
 import {
     appLog,
-    clone,
+    clone, errorAlert,
     getDefaultCurrency,
     getFloatValue, getTicketStatus,
     isEmpty, printInvoice, printKOT,
@@ -18,11 +18,11 @@ import {CommonActions, useNavigation} from "@react-navigation/native";
 import {device, ItemDivider, localredux, TICKET_STATUS} from "../../libs/static";
 import store from "../../redux-store/store";
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
-import {resetCart, setCartData} from "../../redux-store/reducer/cart-data";
+import {cartData, resetCart, setCartData} from "../../redux-store/reducer/cart-data";
 import ProIcon from "../../components/ProIcon";
 
 
-const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: any) => {
+const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate,clientid}: any) => {
 
     const dispatch = useDispatch();
     const navigation: any = useNavigation()
@@ -74,8 +74,7 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
         }, 0);
 
         setRemainingAmount(vouchertotaldisplay - sum);
-
-        let paidSelected = Boolean(payment[0]?.paymentby === "Pay Later");
+        let paidSelected = Boolean((payment[0]?.paymentby === "Pay Later") || (sum === 0));
         if (paidSelected) {
             paidSelected = !paymentMethods.some((pm: any) => Boolean(pm.paymentAmount))
         }
@@ -237,7 +236,7 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
     }
 
 
-    return <Container>
+    return <Container style={{padding: 0}}>
 
 
         <ScrollView>
@@ -274,7 +273,7 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
 
 
                                 <View style={{width:30}}>
-                                    <TouchableOpacity onPress={() => {
+                                    {<TouchableOpacity onPress={() => {
                                         paymentSelection(key,pm)
                                     }}>
                                         {
@@ -282,7 +281,7 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
                                             <ProIcon name={'circle-check'}   color={styles.green.color}></ProIcon> :
                                             <ProIcon name={'circle'} ></ProIcon>
                                         }
-                                    </TouchableOpacity>
+                                    </TouchableOpacity>}
                                 </View>
 
 
@@ -341,7 +340,7 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
                                 </View>
 
                                 <View style={{width:50}}>
-                                    {Boolean(paymentMethods[key]?.paymentAmount) &&
+                                    {Boolean(paymentMethods[key]?.paymentAmount) && paymentMethods.length > 1 && (clientid !== 1) &&
                                         <TouchableOpacity onPress={() => {
                                             paymentMethods[key].paymentAmount = 0;
                                             paymentMethods[key].bankCharges = 0;
@@ -374,14 +373,19 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
 
                     <View style={[styles.w_auto]}>
                         <TouchableOpacity onPress={() => {
-                            let newDA = paymentMethods.map((pm: any) => ({...pm, paymentAmount: 0}))
-                            setPaymentMethods(newDA);
-                            dispatch(setCartData({
-                                payment: [{
-                                    paymentby: "Pay Later",
-                                    paymentAmount: vouchertotaldisplay
-                                }]
-                            }));
+                            if(+clientid !== 1) {
+                                let newDA = paymentMethods.map((pm: any) => ({...pm, paymentAmount: 0}))
+                                setPaymentMethods(newDA);
+                                dispatch(setCartData({
+                                    payment: [{
+                                        paymentby: "Pay Later",
+                                        paymentAmount: vouchertotaldisplay
+                                    }]
+                                }));
+                            }
+                            else{
+                                errorAlert('Please select client')
+                            }
                         }} style={[styles.px_5]}>
                             <View style={[styles.grid, styles.justifyContent,{paddingVertical:20}]}>
                                 <View><Paragraph style={[styles.paragraph, styles.bold,{color:Boolean(activePayLater)?styles.green.color:'black'}]}>Pay later</Paragraph></View>
@@ -416,7 +420,7 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
         <View>
 
 
-            {<View style={[styles.grid, styles.justifyContent]}>
+            {<View style={[styles.grid, styles.justifyContent,styles.p_4]}>
 
                 <View style={[styles.w_auto]}>
                     <Button more={{backgroundColor: styles.secondary.color, color: 'black',height:55}} onPress={() => {
@@ -447,6 +451,7 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate}: 
 const mapStateToProps = (state: any) => ({
     payment: state?.cartData?.payment,
     payments: state?.cartData?.payments,
+    clientid: state?.cartData?.clientid,
     vouchertotaldisplay: state.cartData.vouchertotaldisplay,
     paidamount: state.cartData.paidamount,
     voucherid: state.cartData.voucherid,

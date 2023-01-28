@@ -48,12 +48,11 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
     return (<>
 
         {isRestaurant() && Boolean(commonkotnote) &&
-            <Card  style={[styles.card]}>
+            <Card  style={[styles.card,styles.borderTop]}>
                 <Card.Content style={[styles.cardContent]}>
                     <TouchableOpacity onPress={() => {
                         navigation.navigate('KotNote',{commonkotnote:commonkotnote})
                     }}>
-
                         <View style={[styles.grid, styles.justifyContent, styles.middle,styles.noWrap]}>
                             <Paragraph
                                 style={[styles.paragraph, styles.head]}>{commonkotnote}</Paragraph>
@@ -68,7 +67,7 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
 
 
         {Boolean(advanceorder?.date) &&
-            <Card style={[styles.card]}>
+            <Card style={[styles.card,styles.border]}>
                 <Card.Content style={[styles.cardContent]}>
                     <TouchableOpacity
                           onPress={() => {
@@ -91,23 +90,21 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
 
 
 
-        <Card style={[styles.card,styles.p_5]}>
-            <TouchableOpacity  onPress={() => {
+        <View>
+            <TouchableOpacity style={[styles.p_5,styles.radiusBottom,{backgroundColor:styles.yellow.color}]} onPress={() => {
                 viewSummary().then()
             }}>
-                <View><Paragraph style={[styles.absolute, {top: 0, left: '50%', marginLeft: -10}]}><ProIcon
-                    name={'chevron-up'} action_type={'text'} size={15}/></Paragraph></View>
 
                 <View ref={moreSummaryRef}><CartSummaryMore/></View>
 
                 <View style={[styles.grid, styles.justifyContent,styles.middle]}>
                     <View><Paragraph
-                        style={[styles.paragraph, styles.bold]}>Total </Paragraph></View>
+                        style={[styles.paragraph, styles.bold]}>Total  </Paragraph></View>
                     <View><Paragraph
-                        style={[styles.paragraph, styles.bold, styles.text_lg, styles.green, {textAlign: 'right'}]}>{toCurrency(vouchertotaldisplay || '0')}</Paragraph></View>
+                        style={[styles.paragraph, styles.bold, styles.text_lg]}>{toCurrency(vouchertotaldisplay || '0')}</Paragraph></View>
                 </View>
             </TouchableOpacity>
-        </Card></>)
+        </View></>)
 }
 
 const mapStateToProps = (state: any) => ({

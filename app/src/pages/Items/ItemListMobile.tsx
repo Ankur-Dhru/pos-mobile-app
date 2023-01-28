@@ -150,7 +150,7 @@ const Index = (props: any) => {
 
     return (
         <>
-            <Card style={[styles.card,styles.h_100, styles.flex,{marginBottom:0}]}>
+            <Card style={[styles.card,styles.h_100, styles.flex,]}>
 
                 <Card.Content style={[styles.cardContent]}>
 
@@ -178,8 +178,7 @@ const Index = (props: any) => {
                             <View style={[styles.p_6]}>
                                 <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> Start
                                     building your item library.</Text>
-                                <Text style={[styles.paragraph, styles.text_xs, styles.muted, {textAlign: 'center'}]}> Tap
-                                    Create Item to begin.</Text>
+
                             </View>
                             <AddItem navigation={navigation}/>
                         </View>}

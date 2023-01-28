@@ -70,9 +70,10 @@ const Index = ({navigation, route}: any) => {
                     </style>  
                   </head>
                   <body>   
-                    <div>                  
-                     ${base64Decode(device.printpreview)}
-                     <div><div style="text-align: center;font-size: 0.3em;font-weight: bold;font-family: Arial">Powered By Dhru ERP</div></div>
+                    <div>                                        
+                        ${base64Decode(device.printpreview)}
+                       <div style="text-align: center;font-size: 0.3em;font-weight: bold;font-family: Arial">Powered By Dhru ERP</div>
+                       <br/> 
                      </div>
                   </body>
                 </html>`;
@@ -116,39 +117,51 @@ const Index = ({navigation, route}: any) => {
                         }
                         await SunmiPrinter.lineWrap(3)
                         await SunmiPrinter.cutPaper()
+                        dispatch(setAlert({visible: true, message: 'Print Successful'}))
                     } else {
 
+
                         if (!isGeneric) {
-                            await EscPosPrinter.init({
-                                target: `TCP:${printer.host}`,
-                                seriesName: getPrinterSeriesByName(printer.printername),
-                                language: 'EPOS2_LANG_EN',
-                            })
+                            try {
+                                await EscPosPrinter.init({
+                                    target: `TCP:${printer.host}`,
+                                    seriesName: getPrinterSeriesByName(printer.printername),
+                                    language: 'EPOS2_LANG_EN',
+                                })
 
-                            let printing = new EscPosPrinter.printing();
-                            await printing.initialize().align('center')
+                                let printing = new EscPosPrinter.printing();
+                                await printing.initialize().align('center')
 
-                            for (let key in images) {
-                                const {base64result, width}: any = images[key];
-                                await printing.image({uri: 'data:image/png;base64,' + base64result}, {width: width})
-                            }
-
-                            await printing.cut().send();
-                        } else {
-                            handleConnectSelectedPrinter().then(async () => {
                                 for (let key in images) {
                                     const {base64result, width}: any = images[key];
-                                    await Printer.printImageBase64(base64result, {
-                                        imageWidth: width,
-                                    })
+                                    await printing.image({uri: 'data:image/png;base64,' + base64result}, {width: width})
                                 }
-                               await Printer.printBill("", {beep: false});
-                            })
+
+                                await printing.cut().send();
+                                dispatch(setAlert({visible: true, message: 'Print Successful'}))
+                            }
+                            catch (e) {
+                                dispatch(setAlert({visible: true, message: 'Printer connection error'}))
+                            }
+                        } else {
+                            try {
+                                handleConnectSelectedPrinter().then(async () => {
+                                    for (let key in images) {
+                                        const {base64result, width}: any = images[key];
+                                        await Printer.printImageBase64(base64result, {
+                                            imageWidth: width,
+                                        })
+                                    }
+                                    await Printer.printBill("", {beep: false});
+                                })
+                                dispatch(setAlert({visible: true, message: 'Print Successful'}))
+                            }
+                            catch (e) {
+                                dispatch(setAlert({visible: true, message: 'Printer connection error'}))
+                            }
                         }
                     }
                 });
-
-                dispatch(setAlert({visible: true, message: 'Print Successful'}))
 
                 navigation.goBack()
                 dispatch(hideLoader())
@@ -209,7 +222,7 @@ const Index = ({navigation, route}: any) => {
 
 
     if (!height) {
-        return <View style={[styles.h_100, styles.bg_light, styles.middle]}>
+        return <View style={[styles.h_100,   styles.middle,{backgroundColor:styles.light.color}]}>
 
             <View style={[styles.h_100, {width: webviewwidth}]}>
 
@@ -240,7 +253,7 @@ const Index = ({navigation, route}: any) => {
 
 
     return (
-        <View style={[styles.h_100, styles.flex,styles.w_100, styles.bg_light, styles.middle,]}>
+        <View style={[styles.h_100, styles.flex,styles.w_100,  styles.middle,{backgroundColor:styles.light.color}]}>
 
             <ScrollView>
                 <View style={[styles.h_100,styles.flex,styles.border,  {width: webviewwidth, marginVertical:20,backgroundColor:'white'}]}>

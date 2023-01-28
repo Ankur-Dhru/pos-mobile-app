@@ -90,7 +90,7 @@ const Index = ({navigation}: any) => {
                     <View style={[styles.grid, styles.noWrap, styles.top]}>
                         <View>
                             <Paragraph
-                                style={[styles.paragraph, styles.bold]}>{`${item.voucherprefix} ${item.voucherdisplayid} - ${item?.client}`} </Paragraph>
+                                style={[styles.paragraph, styles.bold]}>{`${item.voucherprefix} ${item.voucherdisplayid} - ${item?.client?item?.client:''}`} </Paragraph>
                             <Paragraph
                                 style={[styles.paragraph, styles.text_xs]}>{moment(item.date).format(dateFormat(true))}</Paragraph>
                         </View>
@@ -111,14 +111,14 @@ const Index = ({navigation}: any) => {
     }
 
 
-    return <Container>
+    return <Container style={{backgroundColor:styles.bg_light.backgroundColor}}>
         <View style={[styles.marginOver, {marginBottom: 0}]}>
             <Card style={[styles.card]}>
                 <Card.Content style={[styles.cardContent]}>
                     <View style={[styles.grid, styles.justifyContent, styles.middle]}>
 
-                        <View style={[styles.w_auto, styles.grid, styles.p_3, styles.center, {
-                            backgroundColor: '#eee',
+                        <View style={[styles.w_auto, styles.grid, styles.p_3, styles.center,styles.bg_light, {
+
                             borderRadius: 5
                         }]}>
                             <View>
@@ -164,7 +164,7 @@ const Index = ({navigation}: any) => {
                         <View style={[styles.px_3]}><Paragraph style={[styles.paragraph]}>To</Paragraph></View>
 
                         <View style={[styles.w_auto, styles.grid, styles.p_3, styles.center, {
-                            backgroundColor: '#eee',
+                            backgroundColor: styles.light.color,
                             borderRadius: 5
                         }]}>
                             <View>
@@ -218,7 +218,7 @@ const Index = ({navigation}: any) => {
                 Boolean(data.groupbyorder) && Object.keys(data.groupbyorder).map((vouchertype:any)=>{
                     const orders = data.groupbyorder[vouchertype];
                     return (
-                        <Card style={[styles.card]}>
+                        <Card style={[styles.card,styles.mt_2]}>
                             <Card.Content style={[styles.cardContent]}>
                                 <Caption style={[styles.caption]}>{voucher[vouchertype].vouchertypename}</Caption>
                                 <FlatList
@@ -244,7 +244,7 @@ const Index = ({navigation}: any) => {
         </KeyboardScroll>
 
 
-        {Boolean(data.order) && <><Card style={[styles.card, {marginTop: 10}]}>
+        {Boolean(data.order) && <><Card style={[styles.card,styles.mb_3]}>
             <Card.Content>
                 {
                     data?.info?.map((item: any) => {

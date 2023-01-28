@@ -20,7 +20,6 @@ import moment from "moment";
 import ProIcon from "../../components/ProIcon";
 import PageLoader from "../../components/PageLoader";
 
-import {ordersData, setOrdersData} from "../../redux-store/reducer/orders-data";
 
 
 const SalesReport = ({ordersData,navigation}: any) => {
@@ -53,11 +52,14 @@ const SalesReport = ({ordersData,navigation}: any) => {
             action: ACTIONS.REPORT_SALES,
             workspace: workspace,
             token: token,
-            queryString: {terminalid: licenseData?.data?.terminal_id},
+            queryString: {terminalid: licenseData?.data?.terminal_id,vouchertypeid: VOUCHER.INVOICE},
             hideLoader: true,
             hidealert: true,
             other: {url: urls.posUrl},
         }).then((response: any) => {
+
+            appLog('response',response)
+
             setData(Object.values(response?.data).reverse())
             setLoader(true)
         }).catch(()=>{

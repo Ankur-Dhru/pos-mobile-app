@@ -7,6 +7,7 @@ import {connect} from "react-redux";
 import Avatar from "../../components/Avatar";
 import {useNavigation} from "@react-navigation/native";
 import {ProIcon} from "../../components";
+import {device} from "../../libs/static";
 
 
 const Index = ({clientdetail,clientid,clientname,commonkotnote,vouchernotes,vehicleno}: any) => {
@@ -14,21 +15,21 @@ const Index = ({clientdetail,clientid,clientname,commonkotnote,vouchernotes,vehi
 
     const navigation = useNavigation()
 
-    return <Card style={[styles.card,styles.px_5,{minWidth:280,}]} onPress={() => {
+    return <Card style={[styles.card,  {minWidth:310,padding:5,paddingHorizontal:device.tablet?7:15}]} onPress={() => {
         navigation.navigate('ClientList');
     }}>
         <View style={[styles.grid,styles.middle]}>
-            <View style={[styles.w_auto]}>
+            <View style={[styles.w_auto,styles.borderRight]}>
                 <List.Item style={[styles.listitem]}
                            titleStyle={[styles.bold]}
                            title={clientname || clientdetail?.displayname}
-                           left={() => <View style={{marginTop:8}}>
-                               <Avatar label={clientname || clientdetail?.displayname} thumbnailPath={clientdetail?.thumbnailPath} value={clientid || clientdetail?.clientid} fontsize={14} size={40}/>
+                           left={() => <View>
+                               <Avatar label={clientname || clientdetail?.displayname} thumbnailPath={clientdetail?.thumbnailPath} value={clientid || clientdetail?.clientid} fontsize={14} size={35}/>
                            </View>}
-                           right={()=> <List.Icon icon="chevron-right"/>  }
+
                 />
             </View>
-            <TouchableOpacity onPress={()=>{
+            <TouchableOpacity style={{paddingLeft:10}} onPress={()=>{
                 navigation.navigate('KotNote',{commonkotnote:commonkotnote,vouchernotes:vouchernotes,vehicleno:vehicleno})
             }}>
                 <ProIcon name={'notes'}/>

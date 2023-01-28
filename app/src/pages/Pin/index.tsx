@@ -1,13 +1,13 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {memo, useEffect, useRef, useState} from "react";
 
-import {Image, TouchableOpacity, View} from "react-native";
+import {Image, Keyboard, TouchableOpacity, View} from "react-native";
 import Container from "../../components/Container";
 import ReactNativePinView from "react-native-pin-view"
-import {useDispatch} from "react-redux";
-import {errorAlert, getAddons, getClients, getTempOrders, retrieveData, syncData} from "../../libs/function";
+import {connect, useDispatch} from "react-redux";
+import {appLog, errorAlert, getAddons, getClients, getTempOrders, retrieveData, syncData} from "../../libs/function";
 
 import {hideLoader, setAlert, setBottomSheet, showLoader} from "../../redux-store/reducer/component";
-import {Card, Paragraph, Text} from "react-native-paper";
+import {Card, Paragraph, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import moment from "moment/moment";
 import {db, localredux, METHOD, urls} from "../../libs/static";
@@ -34,7 +34,7 @@ const md5 = require('md5');
 
 const Index = (props: any) => {
 
-    let {route: {params}, navigation}: any = props;
+    let {route: {params}, navigation,syncDetail}: any = props;
 
     const dispatch = useDispatch()
 
@@ -83,6 +83,7 @@ const Index = (props: any) => {
                     await dispatch(setSettings({...data, ...othersettings}));
                 })
 
+
                 //await getOrders().then();
 
             }
@@ -101,9 +102,6 @@ const Index = (props: any) => {
         }
 
     }
-
-
-
 
     navigation.setOptions({headerShown: !params.onlyone || Boolean(urls.localserver)})
 
@@ -124,7 +122,6 @@ const Index = (props: any) => {
                 if (md5(value) === loginpin) {
 
                     await dispatch(showLoader())
-
 
                     if (Boolean(urls?.localserver)) {
                         apiService({
@@ -176,6 +173,7 @@ const Index = (props: any) => {
                     dispatch(setAlert({visible: true, message: 'Wrong Pin'}));
                     pinView.current.clearAll()
                 }
+
             }
         }, 200)
     }, [value]);
@@ -218,7 +216,7 @@ const Index = (props: any) => {
 
                     <View style={[styles.middle]}>
 
-                        {params.onlyone && <View  style={[styles.middle]}>
+                        {<View  style={[styles.middle]}>
                             <Avatar label={params.username} value={1}  fontsize={30} size={60}/>
 
                             <Paragraph style={[styles.paragraph,styles.bold,{textTransform:'capitalize'}]}>{params.username}</Paragraph>
@@ -236,7 +234,7 @@ const Index = (props: any) => {
                             value={value}
                             onChangeText={setValue}
                             cellCount={5}
-                            autoFocus={true}
+                            autoFocus={!Boolean(syncDetail?.type)}
                             rootStyle={styles.codeFieldRoot}
                             keyboardType="number-pad"
                             textContentType="oneTimeCode"
@@ -252,7 +250,7 @@ const Index = (props: any) => {
 
             </View>
 
-                <View  style={[styles.mt_auto,styles.p_6,styles.w_100,{maxWidth:320}]}>
+                <View  style={[styles.mt_auto,styles.p_6,styles.w_100,{maxWidth:320,marginBottom:35}]}>
 
                     {!Boolean(urls?.localserver) && <Button style={[styles.noshadow]}
                             more={{
@@ -262,6 +260,7 @@ const Index = (props: any) => {
                                 color: styles.primary.color,
                                 height: 45,
                             }} onPress={() => {
+
                         syncData().then()
                     }}
                     >Synchronize</Button>}
@@ -274,6 +273,10 @@ const Index = (props: any) => {
 }
 
 
-export default Index;
+const mapStateToProps = (state: any) => ({
+    syncDetail: state.syncDetail
+})
+
+export default connect(mapStateToProps)(withTheme(memo(Index)));
 
 //

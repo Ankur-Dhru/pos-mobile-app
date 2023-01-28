@@ -110,7 +110,7 @@ const Index = ({addtags, itemaddon,updateProduct}: any) => {
                                     <View>
                                         <View style={[styles.grid, styles.middle, {
                                             borderRadius: 5,
-                                            backgroundColor: styles.bg_light.backgroundColor,
+                                            backgroundColor: styles.light.color,
                                             width: 120
                                         }]}>
                                             {<TouchableOpacity style={[styles.p_4]} onPress={() => {

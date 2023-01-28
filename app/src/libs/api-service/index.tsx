@@ -67,7 +67,7 @@ const apiService = async (config: configData) => {
         apiPath += jsonToQueryString(config.queryString);
     }
 
-    if (config.body) {
+    if (config?.body) {
         requestOptions.body = JSON.stringify(config.body);
     }
 
@@ -76,6 +76,7 @@ const apiService = async (config: configData) => {
     }
 
     appLog('apiPath', apiPath)
+
 
 
 

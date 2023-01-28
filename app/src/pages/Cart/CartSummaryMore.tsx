@@ -70,26 +70,26 @@ const Index = ({vouchersubtotaldisplay, globaltax, voucherroundoffdisplay, loadi
 
 
     if (loading) {
-        return <View style={{marginTop: 30}}>
+        return <View style={{marginTop: 20}}>
             <View style={[styles.grid, styles.justifyContent, styles.mb_2]}>
-                <View style={[styles.bg_light, styles.flexGrow, styles.w_auto, {height: 20, borderRadius: 5}]}></View>
-                <View style={[styles.bg_light, styles.flexGrow, styles.w_auto, {
+                <View style={[styles.bg_white, styles.flexGrow, styles.w_auto, {height: 20, borderRadius: 5}]}></View>
+                <View style={[styles.bg_white, styles.flexGrow, styles.w_auto, {
                     height: 20,
                     marginLeft: 10,
                     borderRadius: 5
                 }]}></View>
             </View>
-            <View style={[styles.grid, styles.justifyContent, styles.mb_3]}>
-                <View style={[styles.bg_light, styles.flexGrow, styles.w_auto, {height: 20, borderRadius: 5}]}></View>
-                <View style={[styles.bg_light, styles.flexGrow, styles.w_auto, {
+            <View style={[styles.grid, styles.justifyContent, styles.mb_2]}>
+                <View style={[styles.bg_white, styles.flexGrow, styles.w_auto, {height: 20, borderRadius: 5}]}></View>
+                <View style={[styles.bg_white, styles.flexGrow, styles.w_auto, {
                     height: 20,
                     marginLeft: 10,
                     borderRadius: 5
                 }]}></View>
             </View>
-            <View style={[styles.grid, styles.justifyContent, styles.mb_5]}>
-                <View style={[styles.bg_light, styles.flexGrow, styles.w_auto, {height: 20, borderRadius: 5}]}></View>
-                <View style={[styles.bg_light, styles.flexGrow, styles.w_auto, {
+            <View style={[styles.grid, styles.justifyContent, styles.mb_2]}>
+                <View style={[styles.bg_white, styles.flexGrow, styles.w_auto, {height: 20, borderRadius: 5}]}></View>
+                <View style={[styles.bg_white, styles.flexGrow, styles.w_auto, {
                     height: 20,
                     marginLeft: 10,
                     borderRadius: 5

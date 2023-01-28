@@ -245,7 +245,7 @@ class Index extends React.Component<any, any> {
                             {Boolean(render) ?
                                 <Render/> : <View style={[]}>
                                     <Text style={[labelstyle, {marginBottom: -8,zIndex:999,paddingLeft:12}]}>{label}</Text>
-                                    <View style={[styles.grid,styles.bg_light,styles.px_5,styles.py_4, styles.middle, styles.justifyContent, styles.noWrap,{borderRadius:5}]}>
+                                    <View style={[styles.grid,styles.px_5,styles.py_4, styles.middle, styles.justifyContent, styles.noWrap,{borderRadius:5,backgroundColor:styles.light.color}]}>
                                         {!multiselect && <Text>{selectedLabel}</Text>}
                                         {(multiselect && getType(selectedValue) === 'array') &&
                                             <Text>{selectedValue?.join(", ")}</Text>}

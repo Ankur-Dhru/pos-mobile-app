@@ -161,7 +161,7 @@ const PinStackNavigator = () => {
             <Stack.Screen name="StaffList" component={StaffList}
                           options={{headerTitle: 'Staff Member', headerLargeTitle: false,}}/>
             <Stack.Screen name="Pin" component={Pin}
-                          options={({route}: any) => ({title: route.params.username})}/>
+                          options={({route}: any) => ({title: 'Pin'})}/>
         </Stack.Navigator>
     );
 };

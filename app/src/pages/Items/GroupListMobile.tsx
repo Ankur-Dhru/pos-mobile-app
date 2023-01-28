@@ -10,7 +10,7 @@ import {Divider, List, Paragraph} from "react-native-paper";
 import {setSelected} from "../../redux-store/reducer/selected-data";
 import InputField from "../../components/InputField";
 import {ProIcon} from "../../components";
-import {appLog} from "../../libs/function";
+import {appLog, sortByGroup} from "../../libs/function";
 
 
 
@@ -21,17 +21,16 @@ const Index = (props: any) => {
     const {selectedgroup, grouplist} = props;
     const dispatch = useDispatch()
 
-    let groups: any = Object.values(grouplist).map((group: any) => {
+    let groups: any = Object.values(grouplist).sort(sortByGroup).map((group: any) => {
         return {label: group.itemgroupname, value: group.itemgroupid}
     })
-
 
     return <View style={[{marginTop: -55}]}>
         <InputField
             removeSpace={true}
             label={'Category'}
             divider={true}
-            displaytype={'pagelist'}
+            displaytype={'pagelist'}wwwwwww
             inputtype={'dropdown'}
             render={() => <View style={[styles.grid, styles.center, styles.mb_3]}>
                 <View

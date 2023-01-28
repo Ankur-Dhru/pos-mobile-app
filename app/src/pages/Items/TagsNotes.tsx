@@ -63,7 +63,7 @@ const Index = ({tags,notes,itemtags,updateProduct}: any) => {
                                     {<View style={[styles.grid,{display:(selectedTag === tagid)?'flex':'none'}]}>
                                         {
                                            tags?.taglist.map((tag: any, key: any) => {
-                                                return (<Chip key={key} style={[tag.selected?styles.bg_light_blue:styles.bg_light,styles.m_2,styles.p_3]}     icon={tag.selected?'check':'stop'} onPress={() => {
+                                                return (<Chip key={key} style={[tag.selected?styles.bg_light_blue:styles.light.color,styles.m_2,styles.p_3]}     icon={tag.selected?'check':'stop'} onPress={() => {
                                                     tag.selected = !Boolean(tag?.selected)
                                                     setTempTags(clone(temptags))
                                                 }}><Paragraph style={[styles.p_5]}>{tag.name+''}</Paragraph></Chip>)

@@ -7,7 +7,7 @@ import {styles as theme, styles} from "../../theme";
 
 
 import Search from "../../components/SearchBox"
-import {device, ItemDivider} from "../../libs/static";
+import {device, ItemDivider, urls} from "../../libs/static";
 import Avatar from "../../components/Avatar/PhoneAvatar";
 import ProIcon from "../../components/ProIcon";
 import Button from "../../components/Button";
@@ -182,8 +182,8 @@ const Index = (props: any) => {
                               icon={{ source: 'arrow-left', direction: 'auto' }} placeholder={`Search ${label}...`}
                               handleSearch={handleSearch}/>
                     </View>
-                    {Boolean(addItem) &&  <View>
-                        {addItem}
+                    {Boolean(addItem) && <View>
+                        {!Boolean(urls.localserver) && addItem}
                     </View>}
                 </View>
             </View>

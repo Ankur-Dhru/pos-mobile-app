@@ -9,14 +9,14 @@ import {
     saveTempLocalOrder, syncInvoice,
     toCurrency
 } from "../../libs/function";
-import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
+import {Dimensions, FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
 import {Appbar, Card, FAB, Menu, Paragraph, Title, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 
 import {connect, useDispatch} from "react-redux";
 import ProIcon from "../../components/ProIcon";
 import {refreshCartData} from "../../redux-store/reducer/cart-data";
-import {useNavigation} from "@react-navigation/native";
+import {useIsFocused, useNavigation} from "@react-navigation/native";
 import {hideLoader, setAlert, setBottomSheet, setDialog, showLoader} from "../../redux-store/reducer/component";
 import ClientAndSource from "../Cart/ClientAndSource";
 import moment from "moment";
@@ -46,7 +46,6 @@ const Index = ({tableorders}: any) => {
 
 
 
-
     const getOriginalTablesData = () => {
         const {currentLocation} = localredux.localSettingsData;
         let tables;
@@ -59,22 +58,24 @@ const Index = ({tableorders}: any) => {
 
     const [tables, setTables] = useState((isEmpty(currentLocation?.tables) ? [] : getOriginalTablesData()) || []);
 
+    const isFocused = useIsFocused();
+
+
 
     useEffect(() => {
-        /*if (!interval) {
-            interval = setInterval(() => {
-                getOrder().then(()=>{})
-            }, 10000);
+        if(isFocused){
+            if (!interval) {
+                interval = setInterval(() => {
+                    getOrder().then(()=>{})
+                }, 15000);
+            }
+            getOrder().then(()=>{})
+            return () => {
+                clearInterval(interval);
+                interval = null;
+            };
         }
-        return () => {
-            clearInterval(interval);
-            interval = null;
-        };*/
-
-        getOrder().then(()=>{})
-
-
-    }, [tableorders,currentLocation.tables])
+    }, [tableorders,currentLocation.tables,isFocused])
 
     const resetTables = () => {
         shiftStart(false);
@@ -301,7 +302,13 @@ const Index = ({tableorders}: any) => {
         headerTitle:currentLocation?.locationname,
         headerLeft: () =>  <Appbar.Action icon="menu" onPress={() => navigation.navigate('ProfileSettingsNavigator')}/> ,
         headerRight: () => {
-            return <View>
+            return <>
+
+                <View style={[styles.grid,styles.justifyContent,styles.middle]}>
+
+                    <Appbar.Action icon={'refresh'} onPress={() => {
+                        getOrder().then()
+                    }}/>
 
                 <Menu
                     visible={visible}
@@ -328,9 +335,24 @@ const Index = ({tableorders}: any) => {
                     }} title="Holding Orders"/>}*/}
                 </Menu>
 
-            </View>
+                </View>
+
+            </>
         }
     })
+
+    const isPortrait = () => {
+        const dim = Dimensions.get('screen');
+        return (dim.height >= dim.width) ? 'portrait' : 'landscape';
+    };
+
+
+    const [oriantation,setOrientation] = useState(isPortrait())
+    useEffect(()=>{
+        Dimensions.addEventListener('change', () => {
+            setOrientation(isPortrait())
+        });
+    },[])
 
 
     const renderItem = useCallback(({item, index}: any) => <Item shifttable={shifttable}
@@ -376,7 +398,7 @@ const Index = ({tableorders}: any) => {
 
     const TableFlatlist = memo(({type}: any) => {
         return (
-            <View style={[styles.px_2]}>
+            <View style={[styles.px_2]}  key={oriantation}>
                 <FlatList
                     data={tables?.filter((table: any) => {
                         if (type === 'all') {
@@ -394,7 +416,7 @@ const Index = ({tableorders}: any) => {
                             onRefresh={() => getOrder()}
                         />
                     }
-                    numColumns={device.tablet ? 3 : 2}
+                    numColumns={oriantation === 'landscape'?4:2}
                     getItemLayout={(data, index) => {
                         return {length: 100, offset: 100 * index, index};
                     }}
@@ -551,6 +573,7 @@ const Index = ({tableorders}: any) => {
 
                 scrollable={true}
             />*/}
+
 
             <FAB.Group
                 open={floating}

@@ -9,16 +9,19 @@ import {Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 import Button from "../../components/Button";
-import {localredux} from "../../libs/static";
+import {localredux, urls} from "../../libs/static";
 import {getCombos} from "./ItemListMobile";
 
 
 
 export const AddItem = ({navigation,search}: any) => {
 
+    if(Boolean(urls.localserver)){
+        return <></>
+    }
+
     return (
         <View style={[]}>
-
             <View style={[styles.grid, styles.center]}>
                 <Button
                     more={{color:'white'}}
@@ -150,8 +153,7 @@ const Index = (props: any) => {
                     <View style={[styles.p_6]}>
                         <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> Start
                             building your item library.</Text>
-                        <Text style={[styles.paragraph, styles.text_xs, styles.muted, {textAlign: 'center'}]}> Tap
-                            Create Item to begin.</Text>
+
                     </View>
                     <AddItem navigation={navigation}/>
                 </View>}

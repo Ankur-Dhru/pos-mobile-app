@@ -135,12 +135,12 @@ const Index = (props: any) => {
                         <SearchBox handleSearch={handleSearch} onIconPress={() => navigation.goBack()}
                                    icon={{ source: 'arrow-left', direction: 'auto' }} autoFocus={false}  placeholder="Search Client..."/>
                     </View>
-                    <View>
+                    {!Boolean(urls.localserver) &&  <View>
                         <TouchableOpacity onPress={async () => {
                             navigation.navigate('AddEditClient',{search:true});
                         }}>
                             <Paragraph style={[styles.paragraph,{marginTop:10}]}><ProIcon name={'plus'} /></Paragraph></TouchableOpacity>
-                    </View>
+                    </View>}
                 </View>
 
 
@@ -165,6 +165,8 @@ const Index = (props: any) => {
                                     <Text
                                         style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> No
                                         result found</Text>
+
+                                    {!Boolean(urls.localserver) && <>
                                     <Text
                                         style={[styles.paragraph, styles.text_xs, styles.muted, {textAlign: 'center'}]}> Tap
                                         to Create New Client.</Text>
@@ -178,6 +180,7 @@ const Index = (props: any) => {
                                             }}> + Create Client
                                         </Button>
                                     </View>
+                                    </>}
 
                                 </View>
 

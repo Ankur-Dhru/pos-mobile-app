@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {Paragraph, ToggleButton} from 'react-native-paper';
 import {useEffect} from "react";
+import {styles} from "../../theme";
 
 
 const ToggleButtons = (props:any) => {
@@ -12,10 +13,10 @@ const ToggleButtons = (props:any) => {
 
 
     return (
-        <ToggleButton.Row   onValueChange={value => setValue(value)} value={value}>
+        <ToggleButton.Row  onValueChange={value => setValue(value)} value={value}>
             {
                 props?.btns?.map(({label,value}:any)=>{
-                    return <ToggleButton   style={{height:40,width:props.width}}  icon={()=> <Paragraph>{label}</Paragraph>} value={value} />
+                    return <ToggleButton   style={{height:40,width:props.width,borderColor:styles.light.color}}  icon={()=> <Paragraph>{label}</Paragraph>} value={value} />
                 })
             }
         </ToggleButton.Row>

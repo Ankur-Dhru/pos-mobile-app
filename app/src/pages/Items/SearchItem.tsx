@@ -96,9 +96,7 @@ const Index = ({navigation, invoiceitems}: any) => {
                                     <Text
                                         style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> No
                                         result found</Text>
-                                    <Text
-                                        style={[styles.paragraph, styles.text_xs, styles.muted, {textAlign: 'center'}]}> Tap
-                                        to Create New Item.</Text>
+                                     
                                 </View>
                                 <AddItem navigation={navigation} search={search}/>
                             </View> : <View style={[styles.p_6]}>

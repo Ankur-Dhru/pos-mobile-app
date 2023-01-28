@@ -19,7 +19,7 @@ class Index extends Component {
         const {alert}:any = this.props;
         return (
             <Snackbar
-                visible={alert.visible}
+                visible={alert.visible && Boolean(alert?.message)}
                 onDismiss={() => this.onDismiss()}
                 /*action={{
                     label: 'OK',

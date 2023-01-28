@@ -9,6 +9,7 @@ const Index = (props: any) => {
     const {navigation} = props;
 
 
+
     const [loaded, setLoaded] = useState(false)
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {

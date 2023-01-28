@@ -5,7 +5,7 @@ import {ProIcon} from "../../components";
 import {connect} from "react-redux";
 import AddEditCategory from "./AddEditCategory";
 import InputField from "../../components/InputField";
-import {appLog} from "../../libs/function";
+import {appLog, sortByGroup} from "../../libs/function";
 import {v4 as uuidv4} from "uuid";
 import {styles} from "../../theme";
 
@@ -14,7 +14,7 @@ const Index = (props: any) => {
     const {grouplist, fieldprops, navigation}: any = props;
     const [selected,setSelected] = useState(fieldprops.input.value)
 
-    let groups: any = Object.values(grouplist).map((group: any) => {
+    let groups: any = Object.values(grouplist).sort(sortByGroup).map((group: any) => {
         return {label: group.itemgroupname, value: group.itemgroupid}
     })
 

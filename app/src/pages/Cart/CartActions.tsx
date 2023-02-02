@@ -46,7 +46,6 @@ const Index = ({
         generateKOT(cancelkotprint).then(() => {
             dispatch(hideLoader())
             printInvoice().then((status: any) => {
-                appLog('status',status)
                 saveTempLocalOrder('', {print: Boolean(status)}).then((msg:any) => {
                     dispatch(hideLoader())
                 })
@@ -167,7 +166,6 @@ const Index = ({
                         <Button
                             disable={!Boolean(vouchertotaldisplay)}
                             secondbutton={!Boolean(vouchertotaldisplay)}
-
                             onPress={() => {
                                 if (Boolean(vouchertotaldisplay)) {
                                     dispatch(showLoader())
@@ -177,7 +175,6 @@ const Index = ({
                                     })
                                 }
                             }}
-
                             more={{backgroundColor: styles.green.color, color: 'white',height:50}}
                         > Payment Received
                         </Button>

@@ -45,8 +45,8 @@ const Index = (props: any) => {
     const onPressNumberIN = () => {
 
 
-        onPressNumber(item,'quantity', (productqnt: any) => {
-            updateItem({...item, productqnt: +productqnt}, "update").then(() => {
+        onPressNumber(item,'quantity', (productqnt: any,productprice:any) => {
+            updateItem({...item,productrate:productprice,productratedisplay:productprice, productqnt: +productqnt}, "update").then(() => {
                 store.dispatch(setDialog({visible: false}))
             })
         })
@@ -127,12 +127,12 @@ export const updateCartItem = async (values: any, action: any) => {
             product_qnt: values.productqnt,
         }
 
-        if (values.productqnt === 0) {
+        if (values.productqnt <= 0) {
             removeItem(values.key).then(() => {
 
             });
         } else {
-            store.dispatch(changeCartItem({itemIndex: index, item: finditem}));
+            store.dispatch(changeCartItem({itemIndex: index, item: finditem,itemUpdate:true}));
         }
 
 
@@ -148,12 +148,17 @@ export const onPressNumber = (item: any,defaultselected:any, onPressOK: any) => 
     const {unit}: any = localredux.initData;
 
 
+
     let rate =  item?.productratedisplay || item?.pricing?.price?.default[0][item?.pricing?.type].baseprice
-    let unittype = unit[item?.itemunit]
+    let unittype = unit[item?.itemunit];
+
+    appLog('rate',item?.productratedisplay,rate)
 
     if (!isRes){
-        directQnt = arraySome(store.getState()?.localSettings?.defaultAmountOpen, item?.salesunit || item?.productqntunitid)
+
     }
+    directQnt = arraySome(store.getState()?.localSettings?.defaultAmountOpen, item?.salesunit || item?.productqntunitid)
+
 
     store.dispatch(setDialog({
         visible: true,

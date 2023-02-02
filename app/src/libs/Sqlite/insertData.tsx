@@ -1,7 +1,7 @@
 import {appLog} from "../function";
 import {closeDB, getDBConnection} from "./index";
 import apiService from "../api-service";
-import {METHOD, STATUS, urls} from "../static";
+import {device, METHOD, STATUS, urls} from "../static";
 
 
 export const insertInit = async (  initdata?: any) => {
@@ -162,16 +162,19 @@ export const insertTempOrder =  (data?: any) => {
         let order = data;
 
         if(Boolean(urls.localserver)) {
-
             await apiService({
                 method: data?.tableorderid ? METHOD.PUT : METHOD.POST,
                 action: 'tableorder',
-                body:data,
+                body: {...data,deviceid:device.uniqueid},
                 other: {url: urls.localserver},
             }).then((response: any) => {
+
                 const {status}:any = response;
                 if (status === STATUS.SUCCESS) {
                     order = response?.data
+                }
+                else{
+                    order = false
                 }
             })
 

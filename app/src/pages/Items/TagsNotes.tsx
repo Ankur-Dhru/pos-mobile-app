@@ -81,7 +81,7 @@ const Index = ({tags,notes,itemtags,updateProduct}: any) => {
 
             <View style={[styles.mt_5,styles.px_5]}>
                 <InputBox
-                    value={notes}
+                    defaultValue={notes}
                     label={'Notes'}
                     autoFocus={false}
                     onChange={(value:any) => {

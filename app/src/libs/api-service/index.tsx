@@ -120,7 +120,8 @@ const apiService = async (config: configData) => {
         })
         .catch(error => {
 
-            store.dispatch(hideLoader())
+            store.dispatch(hideLoader());
+            store.dispatch(setAlert({visible: true, message: 'Something went wrong'}))
             //appLog("API_CATCH_ERROR", error,navigator.onLine);
 
             /*if(!navigator.onLine){

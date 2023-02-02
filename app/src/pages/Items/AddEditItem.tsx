@@ -91,7 +91,7 @@ const Index = (props: any) => {
         longinfo: "",
         notifyqntreorder: "1",
         outwardaccount: 13,
-        preventstock: "1",
+        preventstock: "0",
         pricingtype: "onetime",
         privatekey: "",
         publickey: "",
@@ -325,7 +325,7 @@ const Index = (props: any) => {
                                                                 </Field>
                                                             </View>
 
-                                                            <View style={[styles.grid, styles.justifyContent]}>
+                                                            <View style={[styles.grid, styles.justifyContent,styles.middle]}>
                                                                 <View style={[styles.w_auto]}>
                                                                     <Field name="itemname" validate={required}>
                                                                         {props => (
@@ -342,7 +342,7 @@ const Index = (props: any) => {
                                                                         )}
                                                                     </Field>
                                                                 </View>
-                                                                <View style={[styles.borderBottom]}>
+                                                                <View>
                                                                     <TouchableOpacity onPress={() => {
                                                                         otherlanguage = !otherlanguage
                                                                         updateComponent(otherlanguageRef, 'display', otherlanguage ? 'flex' : 'none')
@@ -385,8 +385,8 @@ const Index = (props: any) => {
                                                             </View>
 
 
-                                                            <View style={[styles.grid, styles.justifyContent]}>
-                                                                <View style={[styles.w_auto]}>
+                                                            <View >
+                                                                <View>
                                                                     <Field
                                                                         name="pricing.price.default[0].onetime.baseprice"
                                                                         validate={composeValidators(required, mustBeNumber)}>
@@ -410,29 +410,32 @@ const Index = (props: any) => {
                                                                 </View>
 
 
-                                                                <View style={[styles.w_auto, styles.ml_2]}>
-                                                                    <Field name="itemtaxgroupid" validate={required}>
-                                                                        {props => (
-                                                                            <>
-                                                                                <InputField
-                                                                                    {...props}
-                                                                                    label={'Tax Rate'}
-                                                                                    mode={'flat'}
-                                                                                    list={option_taxes}
-                                                                                    value={props.input.value}
-                                                                                    selectedValue={props.input.value}
-                                                                                    displaytype={'pagelist'}
-                                                                                    inputtype={'dropdown'}
-                                                                                    listtype={'other'}
-                                                                                    onChange={(value: any) => {
-                                                                                        props.input.onChange(value)
-                                                                                    }}>
-                                                                                </InputField>
-                                                                            </>
-                                                                        )}
-                                                                    </Field>
 
-                                                                </View>
+                                                            </View>
+
+
+
+                                                            <View>
+                                                                <Field name="itemtaxgroupid" validate={required}>
+                                                                    {props => (
+                                                                        <>
+                                                                            <InputField
+                                                                                {...props}
+                                                                                label={'Tax Rate'}
+                                                                                mode={'flat'}
+                                                                                list={option_taxes}
+                                                                                value={props.input.value}
+                                                                                selectedValue={props.input.value}
+                                                                                displaytype={'pagelist'}
+                                                                                inputtype={'dropdown'}
+                                                                                listtype={'other'}
+                                                                                onChange={(value: any) => {
+                                                                                    props.input.onChange(value)
+                                                                                }}>
+                                                                            </InputField>
+                                                                        </>
+                                                                    )}
+                                                                </Field>
 
                                                             </View>
 
@@ -556,12 +559,9 @@ const Index = (props: any) => {
                                                     <Card.Content style={[styles.cardContent]}>
                                                         <View>
 
-                                                            {<View style={[styles.fieldspace]}>
+                                                            {<View>
                                                                 <Field name={'trackinventory'}>
-                                                                    {props => (<View style={{
-
-                                                                        marginBottom: 5
-                                                                    }}><CheckBox
+                                                                    {props => (<View><CheckBox
                                                                         value={props.input.value}
                                                                         label={'Track Inventory for this item'}
                                                                         onChange={(value: any) => {
@@ -694,7 +694,7 @@ const Index = (props: any) => {
 
 
                                                         <TouchableOpacity
-                                                            style={[styles.grid, styles.middle, styles.justifyContent]}
+                                                            style={[styles.grid, styles.middle, styles.justifyContent,styles.py_5]}
                                                             onPress={() => {
                                                                 isShow = !isShow;
                                                                 updateComponent(advanceRef, 'display', isShow ? 'flex' : 'none')

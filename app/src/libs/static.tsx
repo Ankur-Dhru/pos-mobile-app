@@ -289,7 +289,7 @@ export const composeValidators = (...validators: any) => (value: any) =>
     validators.reduce((error: any, validator: any) => error || validator(value), undefined)
 
 
-export const device: any = {tablet: true, db: '', token: '', global_token: '', navigation: ''}
+export const device: any = {tablet: true, db: '', token: '', global_token: '', navigation: '',uniqueid:''}
 
 export const defaultclient: any = {clientid: 1, clientname: 'Walkin'}
 

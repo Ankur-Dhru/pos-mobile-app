@@ -17,7 +17,7 @@ import apiService from "./api-service";
 import {
     ACTIONS,
     dayendReportTemplate,
-    db,
+    db, device,
     isDevelopment,
     localredux,
     METHOD,
@@ -371,6 +371,7 @@ export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = t
         edit: true,
         area: 'Default',
         paxes: 1,
+        deviceid:device.uniqueid,
         "placeofsupply": state,
         "updatecart": false,
         "debugPrint": true,
@@ -541,6 +542,7 @@ export const syncData = async (loader = true) => {
                     workspace: initData.workspace,
                     token: licenseData?.token,
                     hideLoader: true,
+                    hidealert:true,
                     other: {url: urls.posUrl},
                 }).then(async (response: any) => {
 
@@ -955,10 +957,20 @@ export const saveTempLocalOrder = (order?: any, config?: any) => {
 
             order = {
                 ...order,
-                terminalid: localredux?.licenseData?.data?.terminal_id
+                terminalid: localredux?.licenseData?.data?.terminal_id,
             }
+
+            /*if(!Boolean(order?.payment[0]?.paymentAmount)){
+                order.payment[0].paymentAmount = order.vouchertotaldisplay
+            }*/
+
             insertTempOrder(order).then((data: any) => {
-                store.dispatch(setCartData(data));
+                if(Boolean(data)) {
+                    store.dispatch(setCartData(data));
+                }
+                else{
+                    store.dispatch(resetCart())
+                }
                 resolve(data)
             })
 
@@ -1203,7 +1215,8 @@ export const selectItem = async (item: any) => {
             item = {
                 ...item,
                 added: true,
-                key: uuid()
+                key: uuid(),
+                deviceid:device.uniqueid
             }
 
             let start = moment();
@@ -1254,7 +1267,9 @@ export const selectItem = async (item: any) => {
         }
     }
 
-    const directQnt = arraySome(store.getState()?.localSettings?.defaultAmountOpen, item.salesunit)
+    const {defaultAmountOpen,defaultOpenUnitType}:any = store.getState()?.localSettings || {};
+
+    const directQnt = arraySome(defaultAmountOpen, item.salesunit) && defaultOpenUnitType
 
     if (Boolean(item?.comboid)) {
         store.dispatch(setBottomSheet({

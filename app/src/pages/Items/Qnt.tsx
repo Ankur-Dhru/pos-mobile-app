@@ -24,7 +24,7 @@ const Index = ({productqnt,updateProduct,theme:{colors}}: any) => {
         updateProduct({productqnt: pq});
     }
 
-    return (<View style={{width: 120}}>
+    return (<View style={{width: 160}}>
             <>
                 <View style={[styles.grid, styles.middle, {
                     borderRadius: 5,

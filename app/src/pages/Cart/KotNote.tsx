@@ -58,6 +58,7 @@ const Index = (props: any) => {
                                                 returnKeyType={'next'}
                                                 onSubmitEditing={() => nextFocus(inputRef[0])}
                                                 label={'Vehicle No'}
+                                                autoCapitalize={"characters"}
                                                 inputtype={'textbox'}
                                                 onChange={(value: any) => {
                                                     props.input.onChange(value);
@@ -76,6 +77,7 @@ const Index = (props: any) => {
                                                 returnKeyType={'next'}
                                                 onSubmitEditing={() => nextFocus(inputRef[0])}
                                                 label={'Client Note'}
+                                                multiline={true}
                                                 inputtype={'textbox'}
                                                 onChange={(value: any) => {
                                                     props.input.onChange(value);
@@ -91,6 +93,7 @@ const Index = (props: any) => {
                                             <InputField
                                                 {...props}
                                                 returnKeyType={'go'}
+                                                multiline={true}
                                                 label={'Common KOT Note'}
                                                 inputtype={'textbox'}
                                                 onChange={(value: any) => {

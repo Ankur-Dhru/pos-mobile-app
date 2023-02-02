@@ -21,12 +21,16 @@ const Index = ({itemDetail, index, inittags, sheetRef,edit, theme: {colors}}: an
 
     const dispatch = useDispatch()
     let product = itemDetail;
- 
+
     const {pricing, description, itemname, groupname} = itemDetail;
 
     const selectItem = async () => {
 
         if(edit){
+            product = {
+                ...product,
+                itemUpdate:true,
+            }
             dispatch(changeCartItem({
                 itemIndex: index, item: clone(product)
             }));
@@ -48,6 +52,7 @@ const Index = ({itemDetail, index, inittags, sheetRef,edit, theme: {colors}}: an
             await  dispatch(setCartItems(product))
         }
         await dispatch(setBottomSheet({visible: false}))
+
     }
 
    const updateProduct = (field:any) => {

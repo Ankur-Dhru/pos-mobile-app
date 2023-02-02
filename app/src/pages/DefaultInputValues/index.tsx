@@ -11,7 +11,7 @@ import {ProIcon} from "../../components";
 import {ItemDivider} from "../../libs/static";
 import ToggleButtons from "../../components/ToggleButton";
 
-const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
+const Index = ({defaultInputValues, defaultInputAmount}: any) => {
 
     const dispatch = useDispatch();
     const [inputValues, setInputValues] = useState<any>();
@@ -30,12 +30,12 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
                 newData = clone(defaultInputValues)
             }
         } else {
-            if (!isEmpty(defaultInputAmounts)) {
-                newData = clone(defaultInputAmounts)
+            if (!isEmpty(defaultInputAmount)) {
+                newData = clone(defaultInputAmount)
             }
         }
         if (Boolean(inputValues)) {
-            await saveLocalSettings(isNumSelected ? 'defaultInputValues' : 'defaultInputAmounts', [...newData, inputValues]).then(() => {
+            await saveLocalSettings(isNumSelected ? 'defaultInputValues' : 'defaultInputAmount', [...newData, inputValues]).then(() => {
                 setInputValues("")
             })
         }
@@ -55,7 +55,7 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
                             await saveLocalSettings('defaultInputValues', defaultInputValues.filter((v: any) => v !== item)).then(() => {
                             })
                         } else {
-                            await saveLocalSettings('defaultInputAmounts', defaultInputAmounts.filter((v: any) => v !== item)).then(() => {
+                            await saveLocalSettings('defaultInputAmount', defaultInputAmount.filter((v: any) => v !== item)).then(() => {
                             })
                         }
                     }}>
@@ -119,7 +119,7 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
 
 
                 <FlatList
-                    data={selectedTab === 'num' ? isEmpty(defaultInputValues) ? [] : defaultInputValues : isEmpty(defaultInputAmounts) ? [] : defaultInputAmounts}
+                    data={selectedTab === 'num' ? isEmpty(defaultInputValues) ? [] : defaultInputValues : isEmpty(defaultInputAmount) ? [] : defaultInputAmount}
                     renderItem={renderitem}
                     keyboardDismissMode={'on-drag'}
                     keyboardShouldPersistTaps={'always'}
@@ -141,7 +141,7 @@ const Index = ({defaultInputValues, defaultInputAmounts}: any) => {
 
 const mapStateToProps = (state: any) => ({
     defaultInputValues: state.localSettings?.defaultInputValues || {},
-    defaultInputAmounts: state.localSettings?.defaultInputAmounts || {}
+    defaultInputAmount: state.localSettings?.defaultInputAmount || {}
 })
 
 export default connect(mapStateToProps)(Index);

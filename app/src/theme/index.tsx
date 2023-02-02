@@ -183,9 +183,11 @@ export const styles: any = StyleSheet.create({
         margin: 0,
         padding: 0,
         fontSize: 12,
+
+        color:'black',
         display: 'flex',
         marginBottom: 0,
-        marginTop: 10,
+        backgroundColor:'white'
     },
 
     opacity0: {
@@ -250,8 +252,9 @@ export const styles: any = StyleSheet.create({
     input: {
         flexGrow: 1,
         flexShrink: 1,
-
-        paddingHorizontal: 0
+        backgroundColor:'white',
+        paddingHorizontal: 0,
+        color:'black'
         // borderColor:'#ccc',
         // borderWidth:1,
 

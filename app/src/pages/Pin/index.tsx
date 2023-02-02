@@ -10,7 +10,7 @@ import {hideLoader, setAlert, setBottomSheet, showLoader} from "../../redux-stor
 import {Card, Paragraph, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import moment from "moment/moment";
-import {db, localredux, METHOD, urls} from "../../libs/static";
+import {db, device, localredux, METHOD, urls} from "../../libs/static";
 import {setSettings} from "../../redux-store/reducer/local-settings-data";
 
 import {setGroupList} from "../../redux-store/reducer/group-list";
@@ -27,6 +27,7 @@ import {
 import Avatar from "../../components/Avatar";
 import Button from "../../components/Button";
 import HoldOrders from "../Cart/HoldOrders";
+import {getUniqueId} from "react-native-device-info";
 
 
 const md5 = require('md5');
@@ -83,6 +84,10 @@ const Index = (props: any) => {
                     await dispatch(setSettings({...data, ...othersettings}));
                 })
 
+
+                await getUniqueId().then((deviceid) => {
+                    device.uniqueid = deviceid
+                })
 
                 //await getOrders().then();
 
@@ -161,6 +166,9 @@ const Index = (props: any) => {
                                     licenseData: localredux.licenseData,
                                     localSettingsData: localSettingsData
                                 })
+
+
+
                             }
                         })
                     } else {

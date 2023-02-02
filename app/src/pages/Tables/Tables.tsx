@@ -231,6 +231,7 @@ const Index = ({tableorders}: any) => {
                     tableid,
                     tablename
                 }
+
                 await saveTempLocalOrder(tableorders[shiftingFromtable]).then(() => {
                     dispatch(hideLoader())
                     resetTables()
@@ -306,11 +307,9 @@ const Index = ({tableorders}: any) => {
 
                 <View style={[styles.grid,styles.justifyContent,styles.middle]}>
 
-                    <Appbar.Action icon={'refresh'} onPress={() => {
-                        getOrder().then()
-                    }}/>
 
-                <Menu
+
+                 {!Boolean(urls.localserver) ?  <Menu
                     visible={visible}
                     onDismiss={closeMenu}
                     anchor={<Appbar.Action icon={'dots-vertical'} onPress={() => {
@@ -325,7 +324,8 @@ const Index = ({tableorders}: any) => {
                         closeMenu()
                         setShifttable(false)
                     }} title="Disable Shift"/>}
-                    {Boolean(!urls.localserver) && <Menu.Item onPress={onClickReserveTable} title="Reserve Tables"/>}
+                    <Menu.Item onPress={onClickReserveTable} title="Reserve Tables"/>
+
                     {/*{!isRestaurant() && <Menu.Item onPress={async () => {
                         await dispatch(setBottomSheet({
                             visible: true,
@@ -333,7 +333,9 @@ const Index = ({tableorders}: any) => {
                             component: () => <HoldOrders/>
                         }))
                     }} title="Holding Orders"/>}*/}
-                </Menu>
+                </Menu> : <Appbar.Action icon={'refresh'} onPress={() => {
+                     getOrder().then()
+                 }}/> }
 
                 </View>
 

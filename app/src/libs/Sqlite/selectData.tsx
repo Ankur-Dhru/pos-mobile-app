@@ -250,6 +250,8 @@ export const getTempOrdersByWhere = async () => {
            await apiService({
                 method: METHOD.GET,
                 action: 'tableorder',
+                hidealert:true,
+                hideLoader:true,
                 other: {url: urls.localserver},
             }).then((response: any) => {
                 if(Boolean(response?.data)) {

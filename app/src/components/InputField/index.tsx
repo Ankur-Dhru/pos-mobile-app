@@ -243,17 +243,17 @@ class Index extends React.Component<any, any> {
 
                             }}><View>
                             {Boolean(render) ?
-                                <Render/> : <View style={[]}>
-                                    <Text style={[labelstyle, {marginBottom: -8,zIndex:999,paddingLeft:12}]}>{label}</Text>
-                                    <View style={[styles.grid,styles.px_5,styles.py_4, styles.middle, styles.justifyContent, styles.noWrap,{borderRadius:5,backgroundColor:styles.light.color}]}>
-                                        {!multiselect && <Text>{selectedLabel}</Text>}
-                                        {(multiselect && getType(selectedValue) === 'array') &&
-                                            <Text>{selectedValue?.join(", ")}</Text>}
-                                        <View style={{marginLeft: 'auto'}}>
-                                            {editmode ? <Text>
-                                                {chevronRight}
-                                            </Text> : <Paragraph style={[{height: 26}]}>{}</Paragraph>}
-                                        </View>
+                                <Render/> : <View style={[styles.border,styles.px_5,styles.py_4,styles.grid,styles.justifyContent,{borderRadius:5,paddingBottom: 10}]}>
+                                    <View>
+                                        <Paragraph style={[styles.paragraph,labelstyle,!Boolean(selectedLabel) && {fontSize:15,paddingVertical:7}]}>{label}</Paragraph>
+                                        {selectedLabel && <View style={[styles.grid,styles.middle, styles.justifyContent, styles.noWrap,]}>
+                                            {!multiselect && <Text>{selectedLabel}</Text>}
+                                            {(multiselect && getType(selectedValue) === 'array') &&
+                                                <Text>{selectedValue?.join(", ")}</Text>}
+                                        </View>}
+                                    </View>
+                                    <View>
+                                        {editmode ? <ProIcon name={'chevron-right'} align={'right'}  size={15}/> : <Paragraph style={[{height: 26}]}>{}</Paragraph>}
                                     </View>
                                     {/*{divider &&
                                         <ItemDivider/>}*/}
@@ -361,7 +361,7 @@ class Index extends React.Component<any, any> {
                             }]}
                             {...this.props}
                         />
-                        <ItemDivider/>
+                        {/*<ItemDivider/>*/}
                     </View>
                 }
 
@@ -387,15 +387,20 @@ class Index extends React.Component<any, any> {
                                 })
                                   : this.setState({showDatePicker: true}))}>
                             {Boolean(render) ?
-                                <Render/> : <View>
-                                    <Text style={[labelstyle]}>{label}</Text>
-                                    <View style={[styles.grid, styles.middle, styles.justifyContent]}>
-                                        <Text>{moment(selectedValue).format(mode === "time" ? "HH:mm:ss" : dateformat)} {this._getDays()} </Text>
-                                        <View>{editmode ? <Text>{chevronRight}</Text> :
-                                            <Paragraph style={[{height: 26}]}>{}</Paragraph>}</View>
+                                <Render/> : <View style={[styles.border,styles.px_5,styles.py_4,styles.grid,styles.justifyContent,{borderRadius:5,}]}>
+
+                                    <View>
+                                        <Paragraph style={[styles.paragraph,labelstyle]}>{label}</Paragraph>
+                                        <View style={[styles.grid, styles.middle, styles.justifyContent]}>
+                                            <Text>{moment(selectedValue).format(mode === "time" ? "HH:mm:ss" : dateformat)} {this._getDays()} </Text>
+                                        </View>
                                     </View>
-                                    {divider &&
-                                        <ItemDivider/>}
+                                    <View>
+                                        {editmode ? <ProIcon name={'chevron-down'} align={'right'}  size={15}/> : <Paragraph style={[{height: 26}]}>{}</Paragraph>}
+                                    </View>
+
+                                    {/*{divider && <ItemDivider/>}*/}
+
                                 </View>
                             }
                         </TouchableOpacity>

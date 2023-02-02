@@ -136,7 +136,6 @@ const Index = memo((props: any) => {
                                                         <Paragraph style={[styles.paragraph, styles.text_xs]}>
                                                             {item.productqnt} {!isRestaurant && unit[item.itemunit] && unit[item.itemunit].unitcode} x {toCurrency(item.productratedisplay || '0')}  =
                                                         </Paragraph>
-
                                                     </View>
                                                 </View>
 
@@ -219,8 +218,8 @@ const Index = memo((props: any) => {
     );
 },(r1, r2) => {
         //appLog('r2.item',r2.item)
-        const c1 = {productqnt:r1.item.productqnt,itemaddon:r1.item.itemaddon,itemtags:r1.item.itemtags,notes:r1.item.notes,kotid:r1.item.kotid}
-        const c2 = {productqnt:r2.item.productqnt,itemaddon:r2.item.itemaddon,itemtags:r2.item.itemtags,notes:r2.item.notes,kotid:r2.item.kotid}
+        const c1 = {productqnt:r1.item.productqnt,productrate:r1.item.productrate,itemaddon:r1.item.itemaddon,itemtags:r1.item.itemtags,notes:r1.item.notes,kotid:r1.item.kotid}
+        const c2 = {productqnt:r2.item.productqnt,productrate:r2.item.productrate,itemaddon:r2.item.itemaddon,itemtags:r2.item.itemtags,notes:r2.item.notes,kotid:r2.item.kotid}
 
       return (JSON.stringify(c1)===JSON.stringify(c2));
 })

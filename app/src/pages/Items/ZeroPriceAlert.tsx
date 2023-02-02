@@ -9,8 +9,7 @@ import {styles} from "../../theme";
 import Button from "../../components/Button";
 import {setDialog} from "../../redux-store/reducer/component";
 import {appLog, selectItem} from "../../libs/function";
-import store from "../../redux-store/store";
-import {onPressNumber} from "./AddButton";
+
 
 
 const Index = (props: any) => {

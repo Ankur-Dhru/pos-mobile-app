@@ -48,7 +48,7 @@ export const Item = memo(({item}: any) => {
                 </View>
             }}
             onPress={() => {
-                 selectItem(item).then()
+                !(Boolean(item?.productqnt) && !hasKot) && selectItem(item).then()
             }}
             left={() => <View style={{marginTop:5}}><Avatar label={item.itemname} value={item.itemid || item.comboid} fontsize={14} size={40}/></View>}
             right={() => {
@@ -80,7 +80,6 @@ export const getCombos = (selectedgroup:any) => {
         }).map((key: any) => {
             const group = localredux.initData?.combogroup[key];
 
-            appLog('group',group)
 
             return {
                 itemname: group.itemgroupname,

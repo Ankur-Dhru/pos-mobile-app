@@ -1,26 +1,25 @@
 import React, {memo, useCallback, useEffect, useState} from "react";
 
-import {FlatList, Text, TouchableOpacity, View} from "react-native";
+import {FlatList, Image, Text, TouchableOpacity, View} from "react-native";
 
 import {connect} from "react-redux";
 
 import {styles} from "../../theme";
-import {appLog, isRestaurant, objToArray, selectItem, toCurrency} from "../../libs/function";
+import {appLog, getItemImage, isRestaurant, objToArray, selectItem, toCurrency} from "../../libs/function";
 import {Card, Divider, List, Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
 import AddButton from "./AddButton";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
-import {AddItem} from "./ItemListTablet";
+import {AddItem, ItemWithImage, ItemWithOutImage} from "./ItemListTablet";
 import {useNavigation} from "@react-navigation/native";
 import GroupListMobile from "./GroupListMobile";
 import CartTotal from "../Cart/CartTotal";
 import Avatar from "../../components/Avatar";
-import {ItemDivider, localredux} from "../../libs/static";
+import {ItemDivider, localredux, urls} from "../../libs/static";
 import GroupHeading from "./GroupHeading";
 
 
-export const Item = memo(({item}: any) => {
-    //item = JSON.parse(item?.data);
+export const ItemFlatList = memo(({item}: any) => {
 
     const pricingtype = item?.pricing?.type;
     const baseprice = item?.pricing?.price?.default[0][pricingtype]?.baseprice || 0;
@@ -48,7 +47,7 @@ export const Item = memo(({item}: any) => {
                 </View>
             }}
             onPress={() => {
-                !(Boolean(item?.productqnt) && !hasKot) && selectItem(item).then()
+                (!Boolean(item?.productqnt) && !hasKot) && selectItem(item).then()
             }}
             left={() => <View style={{marginTop:5}}><Avatar label={item.itemname} value={item.itemid || item.comboid} fontsize={14} size={40}/></View>}
             right={() => {
@@ -96,13 +95,15 @@ export const getCombos = (selectedgroup:any) => {
 
 const Index = (props: any) => {
 
-    const {selectedgroup, invoiceitems} = props;
+    const {selectedgroup, invoiceitems,gridview} = props;
 
     const navigation = useNavigation()
 
     const [loading, setLoading]: any = useState(false);
 
     const [dataSource, setDataSource]: any = useState([]);
+
+    const [gridView,setGridView] = useState(gridview || false)
 
 
     const updateItems = (items:any) => {
@@ -117,10 +118,10 @@ const Index = (props: any) => {
         })
     }
 
-    useEffect(() => {
+    /*useEffect(() => {
        let newitems = updateItems(dataSource)
         setDataSource([...newitems]);
-    }, [invoiceitems])
+    }, [invoiceitems])*/
 
 
     useEffect(() => {
@@ -135,12 +136,19 @@ const Index = (props: any) => {
             }
             setLoading(true)
         });
-    }, [selectedgroup,invoiceitems.length])
+    }, [selectedgroup,invoiceitems])
 
 
     const renderItem = useCallback(({item, index}: any) => {
-        return <Item item={item} index={index} key={item.productid || item.comboid}/>
-    }, [selectedgroup]);
+        if(gridView) {
+            return <ItemWithImage item={item}   index={index}
+                                  key={item.productid || item.categoryid}/>
+        }
+        else{
+            return <ItemFlatList item={item}  index={index}
+                                     key={item.productid || item.categoryid}/>
+        }
+    }, [selectedgroup,gridView]);
 
 
     if (!loading) {
@@ -153,9 +161,9 @@ const Index = (props: any) => {
 
                 <Card.Content style={[styles.cardContent]}>
 
-                <GroupHeading/>
+                <GroupHeading setGridView={setGridView} gridView={gridView}/>
 
-                    <View style={[styles.h_100]}>
+                    <View style={[styles.h_100]} key={gridView}>
                     <FlatList
                         data={dataSource.filter((item:any)=>{
                             return !Boolean(item.groupid) && !item.isGrouped
@@ -166,6 +174,7 @@ const Index = (props: any) => {
                         getItemLayout={(data, index) => {
                             return {length: 100, offset: 100 * index, index};
                         }}
+                        numColumns={gridView?3:1}
                         ItemSeparatorComponent={ItemDivider}
                         /*onMomentumScrollEnd={onEndReached}
                         onEndReachedThreshold={0.5}*/
@@ -202,6 +211,7 @@ const Index = (props: any) => {
 const mapStateToProps = (state: any) => ({
     invoiceitems: state.cartData.invoiceitems,
     selectedgroup: state.selectedData.group?.value,
+    gridview: state.localSettings?.gridview,
 })
 
 export default connect(mapStateToProps)(Index);

@@ -58,8 +58,6 @@ const SalesReport = ({ordersData,navigation}: any) => {
             other: {url: urls.posUrl},
         }).then((response: any) => {
 
-            appLog('response',response)
-
             setData(Object.values(response?.data).reverse())
             setLoader(true)
         }).catch(()=>{

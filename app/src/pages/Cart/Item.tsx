@@ -134,7 +134,7 @@ const Index = memo((props: any) => {
                                                 <View>
                                                     <View style={[styles.grid]}>
                                                         <Paragraph style={[styles.paragraph, styles.text_xs]}>
-                                                            {item.productqnt} {!isRestaurant && unit[item.itemunit] && unit[item.itemunit].unitcode} x {toCurrency(item.productratedisplay || '0')}  =
+                                                            { parseFloat(item.productqnt.toFixed(3)) } {!isRestaurant && unit[item.itemunit] && unit[item.itemunit].unitcode} x {toCurrency(item.productratedisplay || '0')}  =
                                                         </Paragraph>
                                                     </View>
                                                 </View>

@@ -29,7 +29,7 @@ const Index = ({vouchertotaldisplay, invoiceitems, theme: {colors}}: any) => {
                     borderRadius: 7
                 }]}>
                     <View>
-                        <Text style={[styles.mb_2, styles.text_xs, {color: colors.surface}]}>{totalqnt} ITEMS</Text>
+                        <Text style={[styles.mb_2, styles.text_xs, {color: colors.surface}]}>{parseFloat(totalqnt.toFixed(3))} ITEMS</Text>
                         <Text style={[{color: colors.surface}, styles.text_md]}>{toCurrency(vouchertotaldisplay)} </Text>
                     </View>
                     <View style={[styles.grid, styles.middle, styles.center]}>

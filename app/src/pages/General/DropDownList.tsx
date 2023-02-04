@@ -100,7 +100,7 @@ const Index = (props: any) => {
                         selectItem(item);
                     }}>
                         <List.Item title={() => <View
-                            style={[styles.flexwidth, {backgroundColor: item.color, borderRadius: 3}]}><Paragraph
+                            style={[styles.flexwidth, {backgroundColor: item?.color || 'black', borderRadius: 3}]}><Paragraph
                             style={[styles.paragraph, {color: 'white'}]}>  {item.label}  </Paragraph></View>}
                                    titleStyle={{textTransform: 'capitalize'}}
                                    right={() => item.value === selected && <List.Icon icon="check"/>}

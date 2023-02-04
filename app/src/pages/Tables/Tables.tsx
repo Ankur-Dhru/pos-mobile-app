@@ -246,7 +246,7 @@ const Index = ({tableorders}: any) => {
             return (
                 <Card style={[styles.card,styles.m_1,styles.mb_2,  {
                     marginTop:0,
-                    maxWidth: '100%', minWidth:185,
+                    width:oriantation === 'portrait'?'49%':'24%',
                     backgroundColor: Boolean(item?.printcounter) ? styles.yellow.color : Boolean(item.clientname) ? styles.secondary.color : styles.light.color,
                     borderRadius: 5,
                 }, styles.flexGrow,]} key={item.tableid}>
@@ -307,8 +307,6 @@ const Index = ({tableorders}: any) => {
 
                 <View style={[styles.grid,styles.justifyContent,styles.middle]}>
 
-
-
                  {!Boolean(urls.localserver) ?  <Menu
                     visible={visible}
                     onDismiss={closeMenu}
@@ -347,7 +345,6 @@ const Index = ({tableorders}: any) => {
         const dim = Dimensions.get('screen');
         return (dim.height >= dim.width) ? 'portrait' : 'landscape';
     };
-
 
     const [oriantation,setOrientation] = useState(isPortrait())
     useEffect(()=>{

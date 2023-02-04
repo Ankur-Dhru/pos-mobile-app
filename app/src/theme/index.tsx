@@ -139,6 +139,7 @@ export const styles: any = StyleSheet.create({
     textRight: {textAlign: 'right'},
     head: {textTransform: 'capitalize', marginBottom: 3},
     headertitle: {maxWidth: windowWidth - 100, textAlign: 'center'},
+    imageWidth:{width: '100%',height: undefined,aspectRatio: 1},
 
     row: {flex: 1, flexDirection: 'row', width: '100%', marginBottom: hp('1.5%')},
     cell: {

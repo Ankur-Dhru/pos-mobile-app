@@ -39,7 +39,8 @@ const Index = (props: any) => {
     }
 
     if (!item.productqnt) {
-        return (<List.Icon icon="plus"/>)
+        return <></>
+        //return (<List.Icon icon="plus"/>)
     }
 
     const onPressNumberIN = () => {
@@ -59,7 +60,7 @@ const Index = (props: any) => {
                 width: '100%',
                 minWidth: 100,
                 borderRadius: 5,
-                backgroundColor: styles.accent.color
+                backgroundColor: styles.primary.color
             }]}>
                 {<TouchableOpacity style={[styles.py_3]} onPress={() => {
                     updateItem(item, 'remove').then(r => {
@@ -72,7 +73,7 @@ const Index = (props: any) => {
                     onPress={onPressNumberIN}>
                     <Paragraph
                         style={[{color: colors.secondary}]}
-                    >{parseFloat(item?.productqnt || 1)}</Paragraph>
+                    >{parseFloat(item?.productqnt.toFixed(3) || 1)}</Paragraph>
                 </TouchableOpacity>
                 {<TouchableOpacity style={[styles.py_3]} onPress={() => {
                     updateItem(item, 'add').then(r => {

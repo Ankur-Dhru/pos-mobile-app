@@ -90,34 +90,37 @@ const Index = ({
                         </View>*/}
 
                         <View style={[styles.w_auto]}>
-                            <Button disable={!Boolean(vouchertotaldisplay)}
-                                    onPress={() => generateKOT().then(() => {
-
+                            <Button
+                                    onPress={() => { Boolean(vouchertotaldisplay) && generateKOT().then(() => {
                                         saveTempLocalOrder().then((msg:any) => {
                                             dispatch(hideLoader())
                                         })
-                                    })}
+                                    })} }
                                     more={{backgroundColor: styles.yellow.color, color: 'black',height:50}}
                             >Print KOT </Button>
                         </View>
                         {ordertype !== 'qsr' && <View style={[styles.w_auto, styles.ml_1]}>
-                            <Button disable={!Boolean(vouchertotaldisplay)}
+                            <Button
                                     onPress={async () => {
+                                        if (Boolean(vouchertotaldisplay)) {
+                                            if (kotongenerateinvoice === 'Ask On Place') {
+                                                await Alert.alert(
+                                                    "Alert",
+                                                    'Want to print KOT?',
+                                                    [
+                                                        {
+                                                            text: "Cancel", onPress: () => {
+                                                                KOTActions(true)
+                                                            }, style: 'cancel'
+                                                        },
+                                                        {text: "Print", onPress: () => KOTActions(false)}
+                                                    ]
+                                                );
+                                            } else {
+                                                KOTActions(kotongenerateinvoice === 'Disable')
+                                            }
 
-                                        if(kotongenerateinvoice === 'Ask On Place'){
-                                            await Alert.alert(
-                                                "Alert",
-                                                'Want to print KOT?',
-                                                [
-                                                    {text: "Cancel",onPress: () => {KOTActions(true)},style:'cancel'},
-                                                    {text: "Print", onPress: () => KOTActions(false)}
-                                                ]
-                                            );
                                         }
-                                        else{
-                                            KOTActions(kotongenerateinvoice === 'Disable')
-                                        }
-
                                     }
                                  }
                                     more={{backgroundColor: styles.accent.color, color: 'white',height:50}}
@@ -133,7 +136,7 @@ const Index = ({
                             <Button
                                 secondbutton={Boolean(vouchertotaldisplay)}
                                 onPress={async () => {
-                                    await dispatch(setBottomSheet({
+                                    Boolean(vouchertotaldisplay) && await dispatch(setBottomSheet({
                                         visible: true,
                                         height: '50%',
                                         component: () => <HoldOrders/>
@@ -146,15 +149,19 @@ const Index = ({
                             <Button disable={!Boolean(vouchertotaldisplay)}
                                     secondbutton={!Boolean(vouchertotaldisplay)}
                                     onPress={() => {
-                                        dispatch(showLoader());
-                                        saveTempLocalOrder().then((msg:any) => {
 
-                                            dispatch(resetCart())
-                                            dispatch(hideLoader());
-                                            if (!device.tablet) {
-                                                navigation.goBack()
-                                            }
-                                        })
+                                        if (Boolean(vouchertotaldisplay)) {
+
+                                            dispatch(showLoader());
+                                            saveTempLocalOrder().then((msg: any) => {
+
+                                                dispatch(resetCart())
+                                                dispatch(hideLoader());
+                                                if (!device.tablet) {
+                                                    navigation.goBack()
+                                                }
+                                            })
+                                        }
                                     }
                                     }
                                     more={{backgroundColor: styles.yellow.color, color: 'black',height:50}}
@@ -164,7 +171,7 @@ const Index = ({
 
                     <View style={[styles.w_auto, styles.ml_1]}>
                         <Button
-                            disable={!Boolean(vouchertotaldisplay)}
+
                             secondbutton={!Boolean(vouchertotaldisplay)}
                             onPress={() => {
                                 if (Boolean(vouchertotaldisplay)) {

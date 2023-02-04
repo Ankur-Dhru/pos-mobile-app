@@ -65,7 +65,7 @@ const Index = (props: any) => {
                         <Card style={[styles.card, styles.w_auto, {minWidth: 60,marginLeft:5,marginRight:5,padding:0}]}>
                                 <TouchableOpacity
                                     onPress={() => navigation.navigate('SearchItem')}>
-                                    <Paragraph style={[styles.p_5,styles.bold]}>Search Item</Paragraph>
+                                    <Paragraph style={[styles.p_4,styles.px_5,styles.bold]}>Search Item</Paragraph>
                                 </TouchableOpacity>
 
                              {/*<TouchableOpacity style={[styles.px_6,{backgroundColor:'white',padding:11,borderRadius:5,marginLeft:5}]} onPress={()=>setNumpad(!numpad)}>
@@ -81,7 +81,7 @@ const Index = (props: any) => {
                         </View>
                     </View>
 
-                    <View style={[styles.h_100, styles.w_100, styles.flex,styles.bg_light,{paddingHorizontal:5,paddingBottom:5}]}>
+                    <View style={[styles.h_100, styles.w_100, styles.flex,styles.bg_light,{paddingHorizontal:5,paddingBottom:3}]}>
                         <View  style={[styles.grid, styles.justifyContent,   styles.h_100, styles.w_100, styles.flex]}>
 
 
@@ -89,7 +89,7 @@ const Index = (props: any) => {
                                 <Card style={[styles.card]}>
 
                                     <View style={[styles.grid,styles.justifyContent,styles.top]}>
-                                        <View style={[styles.borderRight,{width:100}]}>
+                                        <View style={[{width:100}]}>
                                             <GroupList navigation={navigation}/>
                                         </View>
 

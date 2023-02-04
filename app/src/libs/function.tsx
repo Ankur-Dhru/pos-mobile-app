@@ -48,7 +48,13 @@ import NetInfo from "@react-native-community/netinfo";
 import {insertAddons, insertClients, insertItems, insertOrder, insertTempOrder} from "./Sqlite/insertData";
 import {sendDataToPrinter} from "./Network";
 import {CommonActions} from "@react-navigation/native";
-import {getAddonByWhere, getClientsByWhere, getOrdersByWhere, getTempOrdersByWhere} from "./Sqlite/selectData";
+import {
+    getAddonByWhere,
+    getClientsByWhere,
+    getItemsByWhere,
+    getOrdersByWhere,
+    getTempOrdersByWhere
+} from "./Sqlite/selectData";
 import Contacts from "react-native-contacts";
 import {PERMISSIONS, requestMultiple} from "react-native-permissions";
 import {deleteTable} from "./Sqlite/deleteData";
@@ -62,6 +68,8 @@ import ImageSize from "react-native-image-size";
 import ImageEditor from "@react-native-community/image-editor";
 import ItemListCombo from "../pages/Items/ItemListCombo";
 import {createTables} from "./Sqlite";
+import {getCombos} from "../pages/Items/ItemListMobile";
+import {exp} from "@gorhom/bottom-sheet/lib/typescript/utilities/easingExp";
 
 
 let NumberFormat = require('react-number-format');
@@ -629,8 +637,7 @@ export const syncData = async (loader = true) => {
                                     });
 
                                     getClients().then()
-                                    getAddons().then()
-
+                                    getAddons().then();
 
                                 } catch (e) {
                                     appLog('retrieveData', e)
@@ -640,6 +647,9 @@ export const syncData = async (loader = true) => {
                         }
                     }
                     if (status === STATUS.ERROR || type === "finish") {
+                        if(device.tablet) {
+                            await syncImages().then()
+                        }
                         store.dispatch(setDialog({visible: false}))
                         loader && store.dispatch(setAlert({visible: true, message: 'Sync Successful'}))
                     }
@@ -2779,3 +2789,66 @@ export const getDefaultPayment = () => {
 
 
 export const sortByGroup = (a: any, b: any) => a.order < b.order ? -1 : a.order > b.order ? 1 : 0
+
+
+
+export const syncImages = async () => {
+
+    await getItemsByWhere({}).then(async (items: any) => {
+        for (let key in items) {
+
+           let imagepath = items[key]?.itemimage;
+
+            if(Boolean(imagepath)) {
+                    await toDataURL(`https://${imagepath}`, async function (dataUrl: any) {
+                     let filename = imagepath.split('/').pop()
+
+                    const base64result = dataUrl.split(',')[1];
+                    const path = 'file://' + RNFS.DocumentDirectoryPath + '/'+filename;
+
+                    await RNFS.writeFile(path, base64result, 'base64')
+                        .then((success) => {
+
+                        })
+                        .catch((err) => {
+                            appLog(err.message);
+                        });
+                })
+            }
+
+        }
+    });
+
+}
+
+
+function toDataURL(url:any, callback:any) {
+    let xhr = new XMLHttpRequest();
+    xhr.onload = function() {
+        let reader = new FileReader();
+        reader.onloadend = function() {
+            callback(reader.result);
+        }
+        reader.readAsDataURL(xhr.response);
+    };
+    xhr.open('GET', url);
+    xhr.responseType = 'blob';
+    xhr.send();
+}
+
+export const getItemImage = (item:any) => {
+    let imagepath = ''
+    if(Boolean(urls.localserver)){
+        if(Boolean(item?.itemimagelocal)) {
+            imagepath = `${urls.localserver}item/image/${item.itemimagelocal}`;
+        }
+    }
+    else{
+        if(Boolean(item?.itemimage)) {
+            let filename = item?.itemimage.split('/').pop()
+            imagepath = 'file://' + RNFS.DocumentDirectoryPath + '/'+filename;
+            //imagepath = `https://${item.itemimage}`;
+        }
+    }
+    return imagepath
+}

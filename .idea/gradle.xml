@@ -39,6 +39,7 @@
             <option value="$PROJECT_DIR$/app/node_modules/react-native-gradle-plugin" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-html-to-pdf/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-image-size/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/react-native-linear-gradient/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-pager-view/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-permissions/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-ping/android" />

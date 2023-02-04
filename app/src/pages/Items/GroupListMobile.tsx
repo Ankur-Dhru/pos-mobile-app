@@ -22,7 +22,7 @@ const Index = (props: any) => {
     const dispatch = useDispatch()
 
     let groups: any = Object.values(grouplist).sort(sortByGroup).map((group: any) => {
-        return {label: group.itemgroupname, value: group.itemgroupid}
+        return {label: group.itemgroupname, value: group.itemgroupid,color:group.itemgroupcolor}
     })
 
     return <View style={[{marginTop: -55}]}>
@@ -30,7 +30,7 @@ const Index = (props: any) => {
             removeSpace={true}
             label={'Category'}
             divider={true}
-            displaytype={'pagelist'}wwwwwww
+            displaytype={'pagelist'}
             inputtype={'dropdown'}
             render={() => <View style={[styles.grid, styles.center, styles.mb_3]}>
                 <View
@@ -47,7 +47,7 @@ const Index = (props: any) => {
 
             list={groups}
             search={false}
-            listtype={'other'}
+            listtype={'task_status'}
             modal={true}
             selectedValue={''}
             onChange={(value: any) => {

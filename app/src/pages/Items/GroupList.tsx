@@ -9,6 +9,7 @@ import {Divider, List} from "react-native-paper";
 
 import {setSelected} from "../../redux-store/reducer/selected-data";
 import {ItemDivider} from "../../libs/static";
+import {appLog, sortByGroup} from "../../libs/function";
 
 
 const GroupItem = (props: any) => {
@@ -22,12 +23,15 @@ const GroupItem = (props: any) => {
     }
 
     return <TouchableOpacity onPress={() => selectGroup(item)}
-                             style={[selected ? styles.bg_accent : '', {borderRadius: 5}]}>
+                             style={[styles.py_2, {marginBottom:2, borderRadius: 4,backgroundColor:`${selected?   'white' : item?.color}`, }]}>
         <List.Item
 
             title={item.label}
             titleNumberOfLines={2}
-            titleStyle={[styles.bold, styles.text_xs,{color: selected ? 'white' : 'black'}]}
+            /*left={()=>{
+                return <View style={[styles.absolute,{top:'50%',marginTop:-8,left:-16,width:16,height:16,borderRadius:16,backgroundColor: selected? styles.primary.color : item?.color || '#eee'}]}></View>
+            }}*/
+            titleStyle={[styles.bold, styles.text_xs,{color: selected?   styles.primary.color : 'white'}]}
         />
 
     </TouchableOpacity>
@@ -38,15 +42,15 @@ const Index = (props: any) => {
 
     const {selectedgroup, grouplist, navigation} = props;
 
-    let groups: any = Object.values(grouplist).map((group: any) => {
-        return {label: group.itemgroupname, value: group.itemgroupid}
+    let groups: any = Object.values(grouplist).sort(sortByGroup).map((group: any) => {
+        return {label: group.itemgroupname, value: group.itemgroupid,color:group.itemgroupcolor}
     })
 
     const renderItem = useCallback(({item, index}: any) => <GroupItem selected={selectedgroup === item.value}
                                                                       item={item}/>, [selectedgroup]);
 
 
-    return <View style={[styles.h_100]}>
+    return <View style={[styles.h_100,styles.p_3]}>
         <FlatList
             data={groups}
 
@@ -56,7 +60,7 @@ const Index = (props: any) => {
             getItemLayout={(data, index) => {
                 return {length: 50, offset: 50 * index, index};
             }}
-            ItemSeparatorComponent={ItemDivider}
+            /*ItemSeparatorComponent={ItemDivider}*/
             initialNumToRender={5}
             maxToRenderPerBatch={10}
             keyExtractor={item => item.itemgroupid}

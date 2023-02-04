@@ -45,6 +45,7 @@ export const getItemsByWhere = async ({itemgroupid,itemname,itemid,groupid,start
                 hidealert:true,
                 other: {url: urls.localserver},
             }).then((response: any) => {
+
                 if(Boolean(response?.data)) {
                     let items = Object.values(response?.data).map((item:any)=>{
                         return item

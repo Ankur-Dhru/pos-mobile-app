@@ -8,6 +8,7 @@ import Avatar from "../../components/Avatar";
 import {Card, Text} from "react-native-paper";
 import KeyboardScroll from "../../components/KeyboardScroll";
 import {localredux} from "../../libs/static";
+import {appLog} from "../../libs/function";
 
 
 const Index = (props: any) => {
@@ -16,8 +17,10 @@ const Index = (props: any) => {
 
     let {staff}: any = localredux?.initData;
 
+    const {location_id} =  localredux.licenseData?.data || {};
+
     staff = Boolean(staff) && Object.values(staff).filter((staf:any)=>{
-        return !staf.support
+        return (staf.adminid === 1 || staf.role === 'admin' || staf?.settings?.locations[location_id]) && !staf.support
     })
 
     const selectedStaff = (staff: any) => {

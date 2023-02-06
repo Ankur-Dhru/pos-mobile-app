@@ -22,11 +22,11 @@ const Index = (props: any) => {
 
     const dispatch = useDispatch();
     const navigation = useNavigation()
-    const {cancelkot}:any = localredux?.authData?.settings;
+    const {cancelkot, reprint}:any = localredux?.authData?.settings;
 
     let [kot, setKot]: any = useState(kt);
 
-    const reprint = async (kot: any) => {
+    const reprintKOT = async (kot: any) => {
         kot.print = kot.print + 1;
 
 
@@ -103,12 +103,12 @@ const Index = (props: any) => {
 
                     <View style={[styles.grid, styles.justifyContentSpaceBetween]}>
                         <View style={[styles.mt_1]}>
-                            <Button more={{color:'white',height:35}}  onPress={() => {
-                                reprint(kot)
-                            }}> Reprint {kot.print ? '(' + (kot.print) + ')' : ''}</Button>
+                            {reprint &&  <Button more={{color:'white',height:35}}  onPress={() => {
+                                reprintKOT(kot)
+                            }}> Reprint {kot.print ? '(' + (kot.print) + ')' : ''}</Button>}
                         </View>
                         <View  style={[styles.mt_1]}>
-                            {!Boolean(kot.cancelreason) && <Button onPress={() => {
+                            {!Boolean(kot.cancelreason) && cancelkot && <Button onPress={() => {
                                if(kot?.ticketitems?.length === 1) {
                                    cancelKOTDialog(kot).then()
                                }

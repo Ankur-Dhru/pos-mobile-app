@@ -24,7 +24,10 @@ const Index = ({clientdetail,clientid,clientname,commonkotnote,vouchernotes,vehi
                            titleStyle={[styles.bold]}
                            title={clientname || clientdetail?.displayname}
                            left={() => <View>
-                               <Avatar label={clientname || clientdetail?.displayname} thumbnailPath={clientdetail?.thumbnailPath} value={clientid || clientdetail?.clientid} fontsize={14} size={35}/>
+                               {+clientid !== 1 ?
+                                   <Avatar label={clientname || clientdetail?.displayname} thumbnailPath={clientdetail?.thumbnailPath} value={clientid || clientdetail?.clientid} fontsize={14} size={35}/> :
+                                   <ProIcon name={'user'} />
+                               }
                            </View>}
 
                 />

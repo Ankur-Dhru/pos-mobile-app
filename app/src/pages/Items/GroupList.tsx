@@ -33,7 +33,6 @@ const GroupItem = (props: any) => {
             }}*/
             titleStyle={[styles.bold, styles.text_xs,{color: selected?   styles.primary.color : 'white'}]}
         />
-
     </TouchableOpacity>
 }
 

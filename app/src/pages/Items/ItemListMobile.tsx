@@ -5,12 +5,12 @@ import {FlatList, Image, Text, TouchableOpacity, View} from "react-native";
 import {connect} from "react-redux";
 
 import {styles} from "../../theme";
-import {appLog, getItemImage, isRestaurant, objToArray, selectItem, toCurrency} from "../../libs/function";
+import {appLog, clone, getItemImage, isRestaurant, objToArray, selectItem, toCurrency} from "../../libs/function";
 import {Card, Divider, List, Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
 import AddButton from "./AddButton";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
-import {AddItem, ItemWithImage, ItemWithOutImage} from "./ItemListTablet";
+import {AddItem, ItemFlatList, ItemView, ItemWithImage, ItemWithOutImage} from "./ItemListTablet";
 import {useNavigation} from "@react-navigation/native";
 import GroupListMobile from "./GroupListMobile";
 import CartTotal from "../Cart/CartTotal";
@@ -19,55 +19,8 @@ import {ItemDivider, localredux, urls} from "../../libs/static";
 import GroupHeading from "./GroupHeading";
 
 
-export const ItemFlatList = memo(({item}: any) => {
+let itemslist:any = [];
 
-    const pricingtype = item?.pricing?.type;
-    const baseprice = item?.pricing?.price?.default[0][pricingtype]?.baseprice || 0;
-    const hasRestaurant = isRestaurant();
-    const hasKot = Boolean(item?.kotid);
-
-    return (
-        <List.Item
-            style={[styles.listitem,{paddingTop:5}]}
-            key={item.itemid || item.comboid}
-            title={item.itemname}
-            titleStyle={[styles.bold,{textTransform: 'capitalize'}]}
-            titleNumberOfLines={2}
-            description={()=>{
-                return <View style={[styles.grid, styles.middle]}>
-                    {hasRestaurant && !Boolean(item.comboid) && <View style={[styles.mr_1]}>
-                        <VegNonVeg type={item.veg}/>
-                    </View>}
-                    <Paragraph style={[styles.paragraph, styles.text_xs]}>
-                        {toCurrency(baseprice)}
-                    </Paragraph>
-                    {
-                        Boolean(item.comboid) && <Paragraph  style={[styles.paragraph, styles.text_xs]}>Group</Paragraph>
-                    }
-                </View>
-            }}
-            onPress={() => {
-                (!Boolean(item?.productqnt) && !hasKot) && selectItem(item).then()
-            }}
-            left={() => <View style={{marginTop:5}}><Avatar label={item.itemname} value={item.itemid || item.comboid} fontsize={14} size={40}/></View>}
-            right={() => {
-
-                if(item.comboid){
-                    return  <List.Icon icon="chevron-right" style={{height:35,width:35,margin:0}} />
-                }
-
-                if(Boolean(item?.productqnt) && !hasKot){
-                    return <View><AddButton item={item} page={'itemlist'}/></View>
-                }
-                return  <List.Icon icon="plus" style={{height:35,width:35,margin:0}} />
-            }}
-        />
-    )
-
-
-}, (r1, r2) => {
-    return ((r1.item.productqnt === r2.item.productqnt) && (r1.item.itemid === r2.item.itemid));
-})
 
 export const getCombos = (selectedgroup:any) => {
     let combogroup: any = [];
@@ -105,6 +58,8 @@ const Index = (props: any) => {
 
     const [gridView,setGridView] = useState(gridview || false)
 
+    const [hasImage, setHasImage]: any = useState(false);
+
 
     const updateItems = (items:any) => {
         return  items?.map((i: any) => {
@@ -118,37 +73,54 @@ const Index = (props: any) => {
         })
     }
 
-    /*useEffect(() => {
-       let newitems = updateItems(dataSource)
-        setDataSource([...newitems]);
-    }, [invoiceitems])*/
+    useEffect(() => {
+        setItems(itemslist);
+    }, [invoiceitems])
+
+
+    const setItems = (newitems:any) => {
+        const combogroup = getCombos(selectedgroup)
+        if (Boolean(newitems.length > 0)) {
+            let items = updateItems(newitems)
+            setDataSource([...items,...combogroup]);
+
+            let checkimage = items.filter((item:any)=>{
+                return Boolean(item?.itemimage)
+            })
+            setHasImage(Boolean(checkimage.length));
+        } else {
+            setDataSource([...combogroup]);
+        }
+        setLoading(true)
+    }
 
 
     useEffect(() => {
 
         getItemsByWhere({itemgroupid: selectedgroup}).then((newitems: any) => {
-            const combogroup = getCombos(selectedgroup)
-            if (Boolean(newitems.length > 0)) {
-                let items = updateItems(newitems)
-                setDataSource([...items,...combogroup]);
-            } else {
-                setDataSource([...combogroup]);
-            }
-            setLoading(true)
+            itemslist = clone(newitems)
+            setItems(newitems)
         });
-    }, [selectedgroup,invoiceitems])
+    }, [selectedgroup])
 
 
     const renderItem = useCallback(({item, index}: any) => {
+
         if(gridView) {
-            return <ItemWithImage item={item}   index={index}
-                                  key={item.productid || item.categoryid}/>
+            if(hasImage) {
+                return <ItemView displayType={'withimage'}  item={item} index={index}
+                                      key={item.productid || item.categoryid}/>
+            }
+            else{
+                return <ItemView displayType={'withoutimage'}  item={item} index={index}
+                                      key={item.productid || item.categoryid}/>
+            }
         }
         else{
-            return <ItemFlatList item={item}  index={index}
+            return <ItemView  displayType={'flatlist'}  item={item}  index={index}
                                      key={item.productid || item.categoryid}/>
         }
-    }, [selectedgroup,gridView]);
+    }, [selectedgroup,gridView,hasImage]);
 
 
     if (!loading) {

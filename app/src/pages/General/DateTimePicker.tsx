@@ -6,10 +6,6 @@ import {Divider, List, Paragraph, withTheme} from "react-native-paper";
 import {styles as theme, styles} from "../../theme";
 
 
-import Search from "../../components/SearchBox"
-import {device, ItemDivider} from "../../libs/static";
-import Avatar from "../../components/Avatar/PhoneAvatar";
-import ProIcon from "../../components/ProIcon";
 import Button from "../../components/Button";
 import Container from "../../components/Container";
 import KAccessoryView from '../../components/KAccessoryView';
@@ -28,24 +24,23 @@ const Index = (props: any) => {
         label,
     }: any = route?.params || {};
 
-    const [value,setValue]:any = useState()
+    const [value, setValue]: any = useState()
 
 
-
-    const onChange = (value:any) => {
+    const onChange = (value: any) => {
         setValue(value)
     }
 
     navigation.setOptions({
-        headerTitle:label
+        headerTitle: label
     })
 
 
     return (
 
-        <Container   style={styles.bg_white}>
+        <Container style={styles.bg_white}>
 
-            <View style={[styles.h_100,styles.flex]}>
+            <View style={[styles.h_100, styles.flex]}>
                 <DateTimePicker
                     label={label}
                     dueterm={dueterm}
@@ -56,12 +51,17 @@ const Index = (props: any) => {
             </View>
 
             <KAccessoryView>
-                <View style={[styles.grid,styles.justifyContent,styles.mb_5]}>
+                <View style={[styles.grid, styles.justifyContent, styles.mb_5]}>
                     <View style={[styles.w_auto]}>
-                        <Button more={{backgroundColor:styles.light.color,color:'black'}} onPress={() => {navigation.goBack(); }}> Cancel </Button>
+                        <Button more={{backgroundColor: styles.light.color, color: 'black'}} onPress={() => {
+                            navigation.goBack();
+                        }}> Cancel </Button>
                     </View>
-                    <View  style={[styles.w_auto,styles.ml_2]}>
-                        <Button onPress={() => { onSelect(value); navigation.goBack(); }}> OK </Button>
+                    <View style={[styles.w_auto, styles.ml_2]}>
+                        <Button onPress={() => {
+                            onSelect(value);
+                            navigation.goBack();
+                        }}> OK </Button>
                     </View>
                 </View>
             </KAccessoryView>

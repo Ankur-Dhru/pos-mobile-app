@@ -647,9 +647,7 @@ export const syncData = async (loader = true) => {
                         }
                     }
                     if (status === STATUS.ERROR || type === "finish") {
-                        if(device.tablet) {
-                            await syncImages().then()
-                        }
+                        await syncImages().then()
                         store.dispatch(setDialog({visible: false}))
                         loader && store.dispatch(setAlert({visible: true, message: 'Sync Successful'}))
                     }
@@ -2037,7 +2035,7 @@ export const printInvoice = async (order?: any) => {
 export const printKOT = async (kot?: any, cancelkotprint?: any) => {
 
     if (Boolean(urls.localserver)) {
-        await apiService({
+       await apiService({
             method: METHOD.POST,
             action: 'remote/cancelkot',
             body: [kot],
@@ -2110,6 +2108,8 @@ export const getPrintTemplate = (id?: any) => {
 export const cancelOrder = async (navigation: any) => {
 
     let cartData = store.getState().cartData;
+
+    const {cancelorder}:any = localredux?.authData?.settings;
 
 
     try {

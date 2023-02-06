@@ -1,21 +1,8 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {Image, View} from "react-native";
 import {styles} from "../../theme";
-import {
-    appLog, connectToLocalServer,
-    getDatabaseName,
-    getLocalSettings,
-    getStateAndTaxType,
-    intervalInvoice,
-    retrieveData
-} from "../../libs/function";
 import Container from "../../components/Container";
-import moment from "moment";
-import {useDispatch} from "react-redux";
-import {hideLoader} from "../../redux-store/reducer/component";
-import {db, device, localredux, urls,} from "../../libs/static";
-import {setSettings} from "../../redux-store/reducer/local-settings-data";
-import PageLoader from "../../components/PageLoader";
+import {device,} from "../../libs/static";
 
 
 const Index = (props: any) => {
@@ -23,11 +10,11 @@ const Index = (props: any) => {
     const {navigation} = props
     device.navigation = navigation;
 
-    useEffect(()=>{
-        setTimeout(()=>{
+    useEffect(() => {
+        setTimeout(() => {
             navigation.replace('GettingStarted')
-        },500)
-    },[])
+        }, 500)
+    }, [])
 
     return <Container style={{padding: 0}}><View style={[styles.center, styles.h_100, styles.middle]}>
         <Image

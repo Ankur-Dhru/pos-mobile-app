@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {FlatList, SafeAreaView, View} from "react-native";
 import {Card, List, withTheme} from "react-native-paper";
-import {useDispatch} from "react-redux";
+import {connect, useDispatch} from "react-redux";
 
 import InputBox from "../../components/InputBox";
 import {Field, Form} from "react-final-form";
@@ -54,12 +54,17 @@ const Index = (props: any) => {
 
             const declienedStatus = getTicketStatus(TICKET_STATUS.DECLINED);
 
-            kots.map((kot: any) => {
-                printKOT({...kot,
-                    ticketstatus: declienedStatus?.statusid,
-                    ticketstatusname: declienedStatus?.ticketstatusname,
-                    cancelreason: cancelreason, cancelled: true, adminid: adminid,});
-            });
+            const PRINTERS: any = store.getState().localSettings?.printers || [];
+
+                kots.map((kot: any) => {
+                    const printer = PRINTERS[kot?.departmentid];
+                    if(printer?.printoncancel) {
+                        printKOT({...kot,
+                            ticketstatus: declienedStatus?.statusid,
+                            ticketstatusname: declienedStatus?.ticketstatusname,
+                            cancelreason: cancelreason, cancelled: true, adminid: adminid,});
+                    }
+                });
 
            await store.dispatch(updateCartField({
                 invoiceitems: [],
@@ -168,8 +173,12 @@ const Index = (props: any) => {
             [index]: kot
         }
 
+        const PRINTERS: any = store.getState().localSettings?.printers || [];
+        const printer = PRINTERS[kot?.departmentid];
 
-        printKOT(kot).then();
+        if(printer?.printoncancel) {
+            printKOT(kot).then();
+        }
 
         setKot(kot);
 
@@ -287,8 +296,12 @@ const Index = (props: any) => {
 }
 
 
-export default withTheme(Index);
 
+const mapStateToProps = (state: any) => ({
+    disabledpax: state.localSettings?.disabledpax,
+})
+
+export default connect(mapStateToProps)(Index);
 
 
 

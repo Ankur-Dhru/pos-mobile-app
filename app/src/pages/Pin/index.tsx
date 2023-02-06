@@ -66,6 +66,7 @@ const Index = (props: any) => {
                 localredux.authData = {...params, ...authData};
                 localredux.localSettingsData = localSettingsData;
 
+
                 const {itemgroup}: any = localredux.initData;
                 if (Boolean(itemgroup)) {
                     await dispatch(setGroupList(itemgroup))

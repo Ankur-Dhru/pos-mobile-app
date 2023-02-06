@@ -35,7 +35,6 @@ const Index = (props: any) => {
         } else {
             await updateCartItem(values, action)
         }
-
     }
 
     if (!item.productqnt) {
@@ -44,8 +43,6 @@ const Index = (props: any) => {
     }
 
     const onPressNumberIN = () => {
-
-
         onPressNumber(item,'quantity', (productqnt: any,productprice:any) => {
             updateItem({...item,productrate:productprice,productratedisplay:productprice, productqnt: +productqnt}, "update").then(() => {
                 store.dispatch(setDialog({visible: false}))
@@ -153,7 +150,6 @@ export const onPressNumber = (item: any,defaultselected:any, onPressOK: any) => 
     let rate =  item?.productratedisplay || item?.pricing?.price?.default[0][item?.pricing?.type].baseprice
     let unittype = unit[item?.itemunit];
 
-    appLog('rate',item?.productratedisplay,rate)
 
     if (!isRes){
 

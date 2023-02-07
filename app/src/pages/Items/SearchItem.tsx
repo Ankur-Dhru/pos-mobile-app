@@ -28,6 +28,7 @@ const Index = ({navigation, invoiceitems}: any) => {
         if (Boolean(search)) {
             setSearch(search);
             await getItemsByWhere({itemname: search, start: 0}).then((items) => {
+                appLog('items',items)
                 mergeVoucherItem(items)
                 setLoading(true)
             });
@@ -40,14 +41,14 @@ const Index = ({navigation, invoiceitems}: any) => {
 
     const mergeVoucherItem = (items?: any) => {
         let newitems = items?.map((i: any) => {
-            const find = invoiceitems.filter((ii: any) => {
+            const find = invoiceitems?.filter((ii: any) => {
                 return ((+i.itemid === +ii.itemid) && Boolean(ii.added));
             })
             if (Boolean(find) && Boolean(find[0])) {
                 return find[0]
             }
             return {...i, productqnt: 0}
-        })
+        });
         setItems(newitems);
     }
 
@@ -58,6 +59,7 @@ const Index = ({navigation, invoiceitems}: any) => {
     const onRead = (value?: any) => {
         appLog('value', value)
     }
+
 
     const renderItem = useCallback(({item, index}: any) => {
         return <Item item={item} index={index} key={item.key || item.productid}/>
@@ -94,14 +96,11 @@ const Index = ({navigation, invoiceitems}: any) => {
                             ListEmptyComponent={Boolean(search.length > 0) ? <View>
                                 <View style={[styles.p_6]}>
                                     <Text
-                                        style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> No
-                                        result found</Text>
-                                     
+                                        style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> No result found</Text>
                                 </View>
                                 <AddItem navigation={navigation} search={search}/>
                             </View> : <View style={[styles.p_6]}>
-                                <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>Search
-                                    Item from here</Text>
+                                <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>Search Item from here</Text>
                             </View>}
                             keyExtractor={item => item.itemid}
                         />}

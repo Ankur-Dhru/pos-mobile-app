@@ -52,7 +52,6 @@ export const getItemsByWhere = async ({itemgroupid,itemname,itemid,groupid,start
                     })
                     resolve(items)
                 }
-                resolve([])
             })
         })
 

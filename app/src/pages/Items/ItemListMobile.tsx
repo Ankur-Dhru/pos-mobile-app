@@ -107,7 +107,7 @@ const Index = (props: any) => {
     const renderItem = useCallback(({item, index}: any) => {
 
         if(gridView) {
-            if(hasImage) {
+            if(true) {
                 return <ItemView displayType={'withimage'}  item={item} index={index}
                                       key={item.productid || item.categoryid}/>
             }

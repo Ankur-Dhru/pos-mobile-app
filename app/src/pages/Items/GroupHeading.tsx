@@ -21,7 +21,7 @@ const Index = (props: any) => {
             saveLocalSettings("gridview", view).then();
             setGridView(view)
         }}>
-            <ProIcon name={gridView?'grid':'list'}/>
+            <ProIcon name={!gridView?'grid':'list'}/>
         </TouchableOpacity>
 
     </View>

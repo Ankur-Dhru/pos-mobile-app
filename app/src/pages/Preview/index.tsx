@@ -97,16 +97,15 @@ const Index = ({navigation, route}: any) => {
     const snapShot = () => {
         const {printer}: any = params;
 
-        dispatch(showLoader())
+       // dispatch(showLoader())
 
         const isSunmi = (printer?.printertype === 'sunmi');
-        const isGeneric = (printer.printername === 'Other - Generic - ESC/POS')
+        const isGeneric = (printer?.printername === 'Other - Generic - ESC/POS')
 
         try {
             ref.current.capture().then(async (uri: any) => {
 
                 await captureImages(isGeneric ? 2000 : 1000, uri).then(async (images: any) => {
-
                     //setImages(images)
 
                     if (isSunmi) {
@@ -163,14 +162,16 @@ const Index = ({navigation, route}: any) => {
                     }
                 });
 
-                navigation.goBack()
                 dispatch(hideLoader())
+                navigation.goBack()
+
 
             });
         } catch (e) {
             dispatch(hideLoader())
-            appLog('e', e)
+            dispatch(setAlert({visible: true, message: e}))
         }
+
     }
 
 

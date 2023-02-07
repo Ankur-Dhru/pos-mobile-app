@@ -59,93 +59,10 @@ export const ItemView = memo(({item,displayType}:any)=>{
 
     let imagepath = getItemImage(item)
 
-    if(displayType === 'withoutimage') {
-        return <>
-            <TouchableOpacity onPress={() => selectItem(item)} style={[styles.flexGrow, styles.center, styles.middle,  {
-                width: 110,
-                padding: 10,
-                borderColor:'white',
-                margin:2,
-                marginBottom:1,
-                backgroundColor: styles.secondary.color,
-                borderRadius: 5
-            }]}>
-                <Paragraph  style={[styles.paragraph, styles.bold, styles.text_xs, {textAlign: 'center'}]}>
-                    {item.itemname}
-                </Paragraph>
-                {hasRestaurant  && !Boolean(item?.comboid) && <View style={[styles.absolute, {top: 3, right: 3}]}>
-                    <VegNonVeg type={veg}/>
-                </View>}
-                <Paragraph style={[styles.paragraph, styles.text_xs]}>
-                    {toCurrency(baseprice)}
-                </Paragraph>
-            </TouchableOpacity>
-        </>
-    }
-
-    else if(displayType === 'withimage') {
-        return <>
-            <View style={[styles.flexGrow, {width: 110,maxWidth:135,}]}>
-
-                <TouchableOpacity onPress={() => selectItem(item)} style={[{
-                    borderColor:'white',
-                    margin:2,
-                    marginBottom:1,
-                    backgroundColor: styles.secondary.color,
-                    borderRadius: 5
-                }]}>
-
-                    <>
-                        {Boolean(imagepath) ?  <Image
-                                style={[styles.imageWidth,{borderRadius:7}]}
-                                source={{uri:imagepath}}
-                            /> :
-                            <Image
-                                style={[styles.imageWidth,{borderRadius:7}]}
-                                source={require('../../assets/no-img.png')}
-                            />}
 
 
 
-
-                        <View style={[styles.mt_auto,styles.w_100,styles.absolute,{bottom:0} ]}>
-                            <LinearGradient
-                                colors={['#00000000','#00000030', '#000000' ]}
-                                style={{borderRadius:5,paddingTop:100}}
-                            >
-                                <View style={[styles.p_3, styles.w_100,styles.center, styles.middle, ]}>
-
-                                    <Paragraph  style={[styles.paragraph, styles.bold, styles.text_xs, {textAlign: 'center',color:'white'}]}>
-                                        {item.itemname}
-                                    </Paragraph>
-
-                                    <Paragraph style={[styles.paragraph, styles.text_xs,{color:'white'}]}>
-                                        {toCurrency(baseprice)}
-                                    </Paragraph>
-
-                                </View>
-                            </LinearGradient>
-
-
-
-                        </View>
-
-                        {hasRestaurant  && !Boolean(item?.comboid) && <View style={[styles.absolute, {bottom: 5, right: 5}]}>
-                            <VegNonVeg type={veg}/>
-                        </View>}
-                    </>
-
-                </TouchableOpacity>
-
-                {
-                    Boolean(item?.productqnt) && !hasKot  && <View style={[styles.w_100,styles.p_3,styles.absolute]}><AddButton item={item}  /></View>
-                }
-
-            </View>
-        </>
-    }
-
-    else if(displayType === 'flatlist') {
+    if(displayType === 'flatlist') {
         return <>
             <List.Item
                 style={[styles.listitem,{paddingTop:5}]}
@@ -189,6 +106,82 @@ export const ItemView = memo(({item,displayType}:any)=>{
             />
         </>
     }
+    else{
+
+            return <View  style={[styles.flexGrow,styles.relative,styles.h_100,   styles.middle,  {
+                width: 120,
+                maxWidth:130,
+                borderColor:'white',
+                margin:2,
+                marginBottom:2,
+                minHeight:100,
+                backgroundColor: styles.secondary.color,
+                borderRadius: 5,
+                paddingBottom:3,
+
+            }]}>
+                <TouchableOpacity onPress={() => selectItem(item)} style={[styles.w_100,styles.flex,styles.h_100]}>
+                {
+                    !Boolean(imagepath)  ? <View style={[styles.p_4,styles.middle]}>
+                        <Paragraph  style={[styles.paragraph, styles.bold, styles.text_xs, {textAlign: 'center'}]}>
+                            {item.itemname}
+                        </Paragraph>
+
+                    </View> : <>
+                        <View style={[styles.w_100, ]}>
+
+                            <View>
+                                <Image
+                                    style={[styles.imageWidth,{borderTopLeftRadius:7,borderTopRightRadius:7}]}
+                                    source={{uri:imagepath}}
+                                />
+                                {/*{Boolean(imagepath) ?  <Image
+                                        style={[styles.imageWidth]}
+                                        source={{uri:imagepath}}
+                                    /> :
+                                    <Image
+                                        style={[styles.imageWidth,{borderRadius:7}]}
+                                        source={require('../../assets/no-img.png')}
+                                    />}*/}
+                            </View>
+
+                            <LinearGradient
+                                colors={['#000000', '#00000005' ]}
+                                style={[styles.w_100,{borderRadius:5,position:'absolute'}]}
+                            >
+                                <View style={[styles.p_4,styles.flex, styles.w_100,styles.center, styles.middle,]}>
+
+                                    <Paragraph  style={[styles.paragraph, styles.bold, styles.text_xs, {textAlign: 'center',color:'white'}]}>
+                                        {item.itemname}
+                                    </Paragraph>
+
+                                </View>
+                            </LinearGradient>
+
+
+
+                        </View>
+                    </>
+                }
+
+                    <Paragraph style={[styles.paragraph,styles.bold, styles.text_xs,styles.p_3,styles.mt_auto,{textAlign:'center'}]}>
+                        {toCurrency(baseprice)}
+                    </Paragraph>
+
+                    {hasRestaurant  && !Boolean(item?.comboid) && <View style={[styles.absolute, {top: 3, right: 3}]}>
+                        <VegNonVeg type={veg}/>
+                    </View>}
+
+                </TouchableOpacity>
+
+
+
+
+                {
+                    Boolean(item?.productqnt) && !hasKot  && <View style={[styles.w_100,styles.absolute,{bottom:0}]}><AddButton item={item}  /></View>
+                }
+            </View>
+        }
 
 },(r1,r2)=>{
     return ((r1.item.productqnt === r2.item.productqnt) && (r1.item.itemid === r2.item.itemid));
@@ -256,7 +249,7 @@ const Index = (props: any) => {
 
 
     const renderItem = useCallback(({item, index}: any) => {
-        if(hasImage) {
+        if(true) {
             return <ItemView displayType={'withimage'}  item={item}   index={index}
                                   key={item.productid || item.categoryid}/>
         }

@@ -62,7 +62,7 @@ const Index = (props: any) => {
                         printKOT({...kot,
                             ticketstatus: declienedStatus?.statusid,
                             ticketstatusname: declienedStatus?.ticketstatusname,
-                            cancelreason: cancelreason, cancelled: true, adminid: adminid,});
+                            cancelreason: cancelreason, cancelled: true, adminid: adminid})
                     }
                 });
 
@@ -88,11 +88,6 @@ const Index = (props: any) => {
                     await deleteTempLocalOrder(tableorderid).then();
                 })
             }
-
-
-
-
-
 
             navigation.dispatch(
                 CommonActions.reset({

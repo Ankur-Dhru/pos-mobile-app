@@ -9,7 +9,7 @@ import {appLog, clone, printKOT} from "../../libs/function";
 import store from "../../redux-store/store";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
-import {ItemDivider, localredux} from "../../libs/static";
+import {device, ItemDivider, localredux} from "../../libs/static";
 import {setBottomSheet} from "../../redux-store/reducer/component";
 import KOTItemListforCancel from "./KOTItemListforCancel";
 
@@ -21,7 +21,7 @@ const Index = (props: any) => {
     const {departmentname, commonkotnote, staffname, kotid, tickettime, ticketitems,ticketnumberprefix}: any = kt;
 
     const dispatch = useDispatch();
-    const navigation = useNavigation()
+
     const {cancelkot, reprint}:any = localredux?.authData?.settings;
 
     let [kot, setKot]: any = useState(kt);
@@ -48,14 +48,14 @@ const Index = (props: any) => {
 
 
     const askPemission = () => {
-        navigation.navigate('AskPermission',{kot:kot,cancelKOTDialog:cancelKOTDialog})
+        device.navigation?.navigate('AskPermission',{kot:kot,cancelKOTDialog:cancelKOTDialog})
     }
 
 
 
     const cancelKOTDialog = async (kot: any,force?:any) => {
         if(cancelkot || force) {
-            navigation.navigate('CancelReason', {type: 'ticketcancelreason', kot: kot, setKot: setKot})
+            device.navigation?.navigate('CancelReason', {type: 'ticketcancelreason', kot: kot, setKot: setKot})
         }
         else{
             Alert.alert(
@@ -68,8 +68,6 @@ const Index = (props: any) => {
             );
         }
     }
-
-
 
     return (
         <View style={[{minWidth: '100%', marginBottom: 4}]}>

@@ -4,17 +4,18 @@ import component from "./reducer/component";
 import selectedData from "./reducer/selected-data";
 import localSettings from "./reducer/local-settings-data";
 import itemDetail from "./reducer/item-detail";
+import kotDetail from "./reducer/kot-detail";
 import tableOrdersData from "./reducer/table-orders-data";
 import syncDetail from "./reducer/sync-data";
 import ordersData from "./reducer/orders-data";
 import groupList from "./reducer/group-list";
 import itemList from "./reducer/item-list";
 
-
 export default configureStore({
     reducer: {
         cartData,
         itemDetail,
+        kotDetail,
         tableOrdersData,
         syncDetail,
         component,

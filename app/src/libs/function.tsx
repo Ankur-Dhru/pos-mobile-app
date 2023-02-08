@@ -972,6 +972,8 @@ export const saveTempLocalOrder = (order?: any, config?: any) => {
                 order.payment[0].paymentAmount = order.vouchertotaldisplay
             }*/
 
+            appLog('order',order.tablename)
+
             insertTempOrder(order).then((data: any) => {
                 if(Boolean(data)) {
                     store.dispatch(setCartData(data));

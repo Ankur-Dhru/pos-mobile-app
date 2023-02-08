@@ -8,12 +8,16 @@ import {setItemDetail} from "../../redux-store/reducer/item-detail";
 import {setBottomSheet} from "../../redux-store/reducer/component";
 import ItemDetail from "../Items/ItemDetail";
 import {connect, useDispatch} from "react-redux";
-import { localredux } from "../../libs/static";
+import {device, localredux} from "../../libs/static";
+import {ProIcon} from "../../components";
+import {setKOTDetail} from "../../redux-store/reducer/kot-detail";
+import store from "../../redux-store/store";
+import KOTDetail from "./KOTDetail";
 
 const Index = memo((props: any) => {
 
     const {item, index,  theme: {colors}, isRestaurant,hasLast,length} = props;
-    const{unit}:any = localredux.initData
+    const{unit}:any = localredux.initData;
 
     const editCartitem = async () => {
         if (!Boolean(item.kotid)) {
@@ -25,7 +29,21 @@ const Index = memo((props: any) => {
                 component: () => <ItemDetail edit={true}  index={index}/>
             }))
         }
+        else{
+
+            let {kots}: any = store.getState().cartData;
+
+            const  findkot = kots.filter(function (kot: any) {
+                return kot.kotid === item.kotid
+            });
+
+            device.navigation?.navigate('KOTDetail',{kotdetail:findkot[0]})
+
+        }
     }
+
+
+
 
     const dispatch = useDispatch()
 
@@ -51,10 +69,10 @@ const Index = memo((props: any) => {
                     <View>
 
                         <TouchableOpacity onPress={async () => {
-                            editCartitem()
+                            editCartitem().then()
                         }}>
 
-                            <View style={[styles.grid,]}>
+                            <View style={[styles.grid,styles.top]}>
 
                                 <View style={[styles.flexGrow,styles.w_auto,{paddingLeft: 0,paddingRight:10,minWidth:200}]}>
 
@@ -194,9 +212,20 @@ const Index = memo((props: any) => {
 
                                 </View>
 
-                                <View style={[styles.flexGrow,{paddingRight: 0,marginTop:5,minWidth:100}]}>
+                                <View style={[styles.flexGrow,{paddingRight: 0,minWidth:100}]}>
 
-                                   {!haskot && <AddButton item={item}/>}
+                                   {
+                                       haskot ? <>
+
+                                           <TouchableOpacity style={[styles.grid,styles.middle,styles.center]}>
+                                               <ProIcon name={'print'} size={15}/>
+                                               <Paragraph style={[styles.paragraph,styles.bold,styles.text_xs]}>
+                                                   KOT #{item?.kotid}
+                                               </Paragraph>
+                                           </TouchableOpacity>
+                                   </> :
+                                       <AddButton item={item}/>
+                                   }
 
                                 </View>
                             </View>

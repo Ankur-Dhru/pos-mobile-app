@@ -223,9 +223,10 @@ const Terminal = (props: any) => {
                                                 </View>
 
                                                 <View>
-                                                    <Field name="locationid">
+                                                    <Field name="locationid" validate={composeValidators(required)}>
                                                         {props => (
                                                             <InputField
+                                                                {...props}
                                                                 label={'Location'}
                                                                 mode={'flat'}
                                                                 list={locationList}

@@ -52,6 +52,7 @@ import Sample from "../sample";
 import CancelReason from "../Cart/CancelReason";
 import ClientList from "../Client/ClientList";
 import KotNote from "../Cart/KotNote";
+import KOTDetail from "../Cart/KOTDetail";
 import GeneralSettings from "../GeneralSettings";
 import DayEndReport from "../Report/dayendreport";
 import ScanItem from "../Items/ScanItem";
@@ -63,6 +64,7 @@ import Preview from "../Preview";
 
 import LocalServer from "../Setup/LocalServer";
 import GettingStarted from "../Splash/GettingStarted";
+
 
 const screenOptions = {...screenOptionStyle};
 
@@ -196,6 +198,8 @@ const ClientAreaStackNavigator = (props: any) => {
                           options={{headerTitle: 'Order Source'}}/>
 
             <Stack.Screen name={'KotNote'} component={KotNote} options={{headerTitle: 'Notes'}}/>
+
+            <Stack.Screen name={'KOTDetail'} component={KOTDetail} options={{headerTitle: 'KOT Detail'}}/>
 
             <Stack.Screen name={'Payment'} component={Payment} options={{headerTitle: 'Payment'}}/>
 

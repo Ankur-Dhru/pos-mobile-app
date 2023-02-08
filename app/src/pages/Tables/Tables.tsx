@@ -1,7 +1,7 @@
 import {current, db, device, localredux, METHOD, urls} from "../../libs/static";
 import React, {memo, useCallback, useEffect, useState} from "react";
 import {
-    appLog,
+    appLog, clone,
     dateFormat, getOrders,
     getTempOrders,
     isEmpty,
@@ -225,16 +225,20 @@ const Index = ({tableorders}: any) => {
             }
             const shiftTo = async (tabledetail: any) => {
                 dispatch(showLoader())
-                const {tableid, tablename}: any = tabledetail.item;
-                tableorders[shiftingFromtable] = {
-                    ...tableorders[shiftingFromtable],
-                    tableid,
-                    tablename
-                }
 
-                await saveTempLocalOrder(tableorders[shiftingFromtable]).then(() => {
-                    dispatch(hideLoader())
-                    resetTables()
+                const {tableid, tablename}: any = tabledetail.item;
+
+                let clone_tableorders = clone(tableorders)
+
+                clone_tableorders[shiftingFromtable] = clone({
+                    ...clone_tableorders[shiftingFromtable],
+                    tableid:tableid,
+                    tablename:tablename
+                })
+
+                await saveTempLocalOrder(clone_tableorders[shiftingFromtable]).then(async () => {
+                    await resetTables()
+                    await dispatch(hideLoader())
                 })
             }
 
@@ -322,7 +326,7 @@ const Index = ({tableorders}: any) => {
                         closeMenu()
                         setShifttable(false)
                     }} title="Disable Shift"/>}
-                    <Menu.Item onPress={onClickReserveTable} title="Reserve Tables"/>
+                    <Menu.Item onPress={onClickReserveTable} title="Reserved Tables"/>
 
                     {/*{!isRestaurant() && <Menu.Item onPress={async () => {
                         await dispatch(setBottomSheet({

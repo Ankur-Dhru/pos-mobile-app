@@ -87,19 +87,23 @@ export const ItemView = memo(({item,displayType}:any)=>{
                     (!Boolean(item?.productqnt) && !hasKot) && selectItem(item).then()
                 }}
                 /*left={() => <View style={{marginTop:5}}><Avatar label={item.itemname} value={item.itemid || item.comboid} fontsize={14} size={40}/></View>}*/
-                left={() => <>{Boolean(imagepath) ? <View style={{width:50}}><Image
-                        style={[styles.imageWidth,{borderRadius:50}]}
-                        source={{uri:imagepath}}
-                    /></View>  :
-                    <Avatar label={item.itemname} value={item.itemid || item.comboid} fontsize={18} size={50}/>}</>}
+
                 right={() => {
 
                     if(item.comboid){
                         return  <List.Icon icon="chevron-right" style={{height:35,width:35,margin:0}} />
                     }
 
+
+
                     if(Boolean(item?.productqnt) && !hasKot){
                         return <View><AddButton item={item}  /></View>
+                    }
+                    else if(Boolean(imagepath)){
+                        return <View style={{width:50}}><Image
+                            style={[styles.imageWidth,{borderRadius:5}]}
+                            source={{uri:imagepath}}
+                        /></View>
                     }
                     // return  <List.Icon icon="plus" style={{height:35,width:35,margin:0}} />
                 }}
@@ -108,19 +112,16 @@ export const ItemView = memo(({item,displayType}:any)=>{
     }
     else{
 
-            return <View  style={[styles.flexGrow,styles.relative,styles.h_100,   styles.middle,  {
-                width: 120,
-                maxWidth:130,
+            return <View  style={[styles.flexGrow,styles.relative,styles.h_100,   styles.middle, {
+                width: 115,
+                maxWidth:136,
                 borderColor:'white',
                 margin:2,
                 marginBottom:2,
                 minHeight:100,
-                backgroundColor: styles.secondary.color,
-                borderRadius: 5,
                 paddingBottom:3,
-
             }]}>
-                <TouchableOpacity onPress={() => selectItem(item)} style={[styles.w_100,styles.flex,styles.h_100]}>
+                <TouchableOpacity onPress={() => selectItem(item)} style={[styles.w_100,styles.flex,styles.h_100,{backgroundColor: styles.secondary.color,borderRadius: 5,}]}>
                 {
                     !Boolean(imagepath)  ? <View style={[styles.p_4,styles.middle]}>
                         <Paragraph  style={[styles.paragraph, styles.bold, styles.text_xs, {textAlign: 'center'}]}>
@@ -145,10 +146,7 @@ export const ItemView = memo(({item,displayType}:any)=>{
                                     />}*/}
                             </View>
 
-                            <LinearGradient
-                                colors={['#000000', '#00000005' ]}
-                                style={[styles.w_100,{borderRadius:5,position:'absolute'}]}
-                            >
+                            <LinearGradient colors={['#000000', '#00000005' ]} style={[styles.w_100,{borderRadius:5,position:'absolute'}]}>
                                 <View style={[styles.p_4,styles.flex, styles.w_100,styles.center, styles.middle,]}>
 
                                     <Paragraph  style={[styles.paragraph, styles.bold, styles.text_xs, {textAlign: 'center',color:'white'}]}>
@@ -157,8 +155,6 @@ export const ItemView = memo(({item,displayType}:any)=>{
 
                                 </View>
                             </LinearGradient>
-
-
 
                         </View>
                     </>

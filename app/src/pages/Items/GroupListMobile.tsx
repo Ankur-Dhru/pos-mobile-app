@@ -18,10 +18,12 @@ import {appLog, sortByGroup} from "../../libs/function";
 
 const Index = (props: any) => {
 
-    const {selectedgroup, grouplist} = props;
+    const {selectedgroup, grouplist,gridview} = props;
     const dispatch = useDispatch()
 
-    let groups: any = Object.values(grouplist).sort(sortByGroup).map((group: any) => {
+    let groups: any = Object.values(grouplist).sort(sortByGroup).filter((group:any)=>{
+        return group.itemgroupmid === '0'
+    }).map((group: any) => {
         return {label: group.itemgroupname, value: group.itemgroupid,color:group.itemgroupcolor}
     })
 
@@ -44,10 +46,10 @@ const Index = (props: any) => {
                     <Paragraph style={[styles.paragraph, styles.bold, {color: 'white'}]}> Categories</Paragraph>
                 </View>
             </View>}
-
+            gridview={gridview}
             list={groups}
             search={false}
-            listtype={'task_status'}
+            listtype={'item_category'}
             modal={true}
             selectedValue={''}
             onChange={(value: any) => {

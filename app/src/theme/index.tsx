@@ -425,7 +425,7 @@ export const styles: any = StyleSheet.create({
         backgroundColor: 'transparent',
     },
 
-    border: {borderColor: '#eee', borderStyle: 'solid', borderWidth: 1},
+    border: {borderColor: '#ddd', borderStyle: 'solid', borderWidth: 1},
     borderTop: {borderTopColor: '#eee', borderTopWidth: 1},
     borderBottom: {borderBottomColor: '#eee', borderBottomWidth: 1,borderStyle: 'solid',},
     borderLeft: {borderLeftColor: '#eee', borderLeftWidth: 1,borderStyle: 'solid',},

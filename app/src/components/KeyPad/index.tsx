@@ -3,7 +3,7 @@ import {FlatList, TouchableOpacity, View} from "react-native";
 import {Paragraph, RadioButton, Text, ToggleButton} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect} from "react-redux";
-import {appLog, getFloatValue, saveLocalSettings, updateComponent} from "../../libs/function";
+import {appLog, errorAlert, getFloatValue, saveLocalSettings, updateComponent} from "../../libs/function";
 import Button from "../Button";
 import ToggleButtons from "../ToggleButton";
 import ProIcon from "../ProIcon";
@@ -12,6 +12,20 @@ import CheckBox from "../CheckBox";
 
 
 let numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Clear", "0", "."]
+
+function checkIntNumber(x:any) {
+    if(typeof x == 'number' && !isNaN(x)){
+        if (Number.isInteger(x)) {
+            return true
+        }
+        else {
+            return false
+        }
+
+    } else {
+        return false
+    }
+}
 
 const index = (props: any) => {
 
@@ -23,7 +37,6 @@ const index = (props: any) => {
 
     const defaultPrice = getFloatValue(numPadValue/defaultValue,3);
     const defaultQnt = getFloatValue(numPadValue/rate,3);
-
 
     const onPressNumKey = (keyValue: string) => {
         if (numbers[9] == keyValue) {
@@ -45,7 +58,15 @@ const index = (props: any) => {
                 }
             }
 
-            onPressOK && onPressOK(newQnt,newPrice);
+            if((checkIntNumber(+newQnt) && !customNumber) || customNumber){
+                onPressOK && onPressOK(newQnt,newPrice);
+            }
+            else{
+                errorAlert('Please enter integer number')
+            }
+
+
+
         } else {
             setNumPadValue((prev: any) => {
                 prev = prev.toString();
@@ -95,11 +116,18 @@ const index = (props: any) => {
     };
 
 
-    const btns = [
-        {label:'Quick Quantity',value:'quantity'}
-    ]
 
-    if(canchangeamount){
+
+    const btns = []
+
+    if(defaultTab === 'amount'){
+        btns.push({label:'Quick Amount',value:'amount'})
+    }
+    else{
+        btns.push({label:'Quick Quantity',value:'quantity'})
+    }
+
+    if(canchangeamount && (defaultTab !== 'amount')){
         btns.push({label:'Quick Amount',value:'amount'})
     }
 
@@ -123,10 +151,11 @@ const index = (props: any) => {
         </View>
 
 
-        {selectedTab !=='num' && customNumber && <>
+        {selectedTab !=='num' &&  <>
 
-            <View style={[styles.bg_light,styles.p_5,{marginHorizontal:3,borderRadius:5}]}>
-                <Paragraph style={[styles.paragraph,styles.noWrap]}>Auto calculate according to amount</Paragraph>
+            <Paragraph style={[styles.paragraph,styles.noWrap,styles.text_xs]}>Auto calculate according to amount</Paragraph>
+
+            <View style={[styles.border,styles.p_5,{marginHorizontal:3,borderRadius:5}]}>
                 <RadioButton.Group onValueChange={newValue => setChangeitemPrice(newValue)} value={changeitemPrice}>
                     <View style={[styles.grid]}>
                         <View style={[styles.grid,styles.middle,styles.noWrap]}>
@@ -135,9 +164,9 @@ const index = (props: any) => {
                             <Text style={[styles.noWrap]}>Update Rate</Text>
                         </View>
                         <View style={[styles.grid,styles.middle,styles.noWrap]}>
-                            <RadioButton value="updateqnt" disabled={!customNumber} />
+                            <RadioButton value="updateqnt" disabled={!customNumber} ></RadioButton>
                             {/*<Text style={[styles.noWrap]}>{`${rate} Price * ${defaultQnt || defaultValue} Qnt  =  ${numPadValue || (defaultValue*rate)} Total`}</Text>*/}
-                            <Text style={[styles.noWrap]}>Update Quantity</Text>
+                            <Text style={[styles.noWrap,{opacity:customNumber?1:0.5}]}>Update Quantity</Text>
                         </View>
                     </View>
                 </RadioButton.Group>

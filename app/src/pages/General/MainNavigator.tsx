@@ -64,6 +64,7 @@ import Preview from "../Preview";
 
 import LocalServer from "../Setup/LocalServer";
 import GettingStarted from "../Splash/GettingStarted";
+import AddEditAccount from "../Expense/AddEditAccount";
 
 
 const screenOptions = {...screenOptionStyle};
@@ -188,6 +189,7 @@ const ClientAreaStackNavigator = (props: any) => {
 
             <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem} options={{headerTitle: 'Add Item'}}/>
             <Stack.Screen name={'AddEditCategory'} component={AddEditCategory} options={{headerTitle: 'Add Category'}}/>
+
             <Stack.Screen name={'AddEditClient'} component={AddEditClient} options={{headerTitle: 'Add Client'}}/>
             <Stack.Screen name={'AddTable'} component={AddTable} options={{headerTitle: 'Add Table'}}/>
 
@@ -245,6 +247,7 @@ const ProfileSettingsNavigator = (props: any) => {
 
             <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem} options={{headerTitle: 'Add Item'}}/>
             <Stack.Screen name={'AddEditCategory'} component={AddEditCategory} options={{headerTitle: 'Add Category'}}/>
+            <Stack.Screen name={'AddEditAccount'} component={AddEditAccount} options={{headerTitle: 'Add Account'}}/>
             <Stack.Screen name={'AddEditClient'} component={AddEditClient} options={{headerTitle: 'Add Client'}}/>
 
             <Stack.Screen name={'AddExpense'} component={AddExpense} options={{headerTitle: 'Add Expense'}}/>

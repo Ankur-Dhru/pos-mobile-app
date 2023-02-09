@@ -16,13 +16,7 @@ const Index = (props: any) => {
     return <View style={[styles.grid,styles.justifyContent,styles.middle,styles.bg_light,styles.p_4,styles.mb_2,{borderRadius:5}]}>
         <Caption style={[styles.caption]}>  {itemgroup[selectedgroup]?.itemgroupname}</Caption>
 
-        <TouchableOpacity onPress={()=> {
-            let view = !gridView;
-            saveLocalSettings("gridview", view).then();
-            setGridView(view)
-        }}>
-            <ProIcon name={!gridView?'grid':'list'}/>
-        </TouchableOpacity>
+
 
     </View>
 }

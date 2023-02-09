@@ -101,7 +101,7 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
                     <View><Paragraph
                         style={[styles.paragraph, styles.bold]}>Total  </Paragraph></View>
                     <View><Paragraph
-                        style={[styles.paragraph, styles.bold, styles.text_lg]}>{toCurrency(vouchertotaldisplay || '0')}</Paragraph></View>
+                        style={[styles.paragraph, styles.bold, styles.text_lg]}> <ProIcon name={'chevron-up'} size={15}/>  {toCurrency(vouchertotaldisplay || '0')}</Paragraph></View>
                 </View>
             </TouchableOpacity>
         </View></>)

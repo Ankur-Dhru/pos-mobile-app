@@ -4,7 +4,7 @@ import {
     cancelOrder,
     getLocalSettings,
     getTempOrders,
-    isRestaurant,
+    isRestaurant, saveLocalSettings,
     saveTempLocalOrder,
     voucherData
 } from "../../libs/function";
@@ -23,6 +23,8 @@ import {setBottomSheet, setDialog} from "../../redux-store/reducer/component";
 import Paxes from "../Tables/Paxes";
 import {setTableOrders} from "../../redux-store/reducer/table-orders-data";
 import HoldOrders from "./HoldOrders";
+import {ProIcon} from "../../components";
+import {TouchableOpacity} from "react-native";
 
 
 const Index = (props: any) => {
@@ -88,6 +90,10 @@ const Index = (props: any) => {
 
 
     const [loaded, setLoaded] = useState(false)
+    const [gridView,setGridView] = useState(true)
+
+
+
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             setTimeout(() => {
@@ -111,11 +117,19 @@ const Index = (props: any) => {
     }
 
 
-
-
     if (!device.tablet) {
         navigation.setOptions({
-            headerRight: () =><><Appbar.Action icon={'magnify'} onPress={() => {
+            headerRight: () =><>
+
+                <TouchableOpacity onPress={()=> {
+                    let view = !gridView;
+                    saveLocalSettings("gridview", view).then();
+                    setGridView(view)
+                }}>
+                    <ProIcon name={!gridView?'grid':'list'}/>
+                </TouchableOpacity>
+
+                <Appbar.Action icon={'magnify'} onPress={() => {
                 navigation.navigate('SearchItem')
             }}/>
 
@@ -141,7 +155,7 @@ const Index = (props: any) => {
         })
     }
 
-    return    <Cart tabledetails={tabledetails}/>
+    return    <Cart tabledetails={tabledetails} gridView={gridView}/>
 
 }
 

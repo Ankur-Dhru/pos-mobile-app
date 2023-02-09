@@ -242,11 +242,6 @@ const Index = (props: any) => {
                                                     <Card.Content style={[styles.cardContent]}>
                                                         <View>
 
-                                                            <Caption style={[styles.caption]}>
-                                                                Basic
-                                                            </Caption>
-
-
                                                             {!isRetailIndustry &&
                                                                 <View>
                                                                     <Field name="veg">
@@ -319,8 +314,7 @@ const Index = (props: any) => {
                                                             <View>
                                                                 <Field name="itemgroupid">
                                                                     {props => (
-                                                                        <><ItemCategoryList navigation={navigation}
-                                                                                            fieldprops={props}/></>
+                                                                        <><ItemCategoryList navigation={navigation}  fieldprops={props}/></>
                                                                     )}
                                                                 </Field>
                                                             </View>

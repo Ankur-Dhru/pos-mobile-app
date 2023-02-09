@@ -24,7 +24,7 @@ import ItemListTablet from "../Items/ItemListTablet";
 const Index = (props: any) => {
 
 
-    const {tabledetails} = props;
+    const {tabledetails,gridView} = props;
     const navigation = useNavigation()
 
     const [numpad, setNumpad] = useState(false)
@@ -130,7 +130,7 @@ const Index = (props: any) => {
 
                     <Container style={{padding:0}}>
                         <View style={[styles.h_100, styles.flex, {flexDirection: 'column'}]}>
-                            <ItemListMobile navigation={navigation}/>
+                            <ItemListMobile navigation={navigation} gridView={gridView}/>
                         </View>
                     </Container>
 

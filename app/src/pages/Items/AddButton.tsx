@@ -53,26 +53,27 @@ const Index = (props: any) => {
 
     return (
         <>
-            <View style={[styles.grid,  styles.middle, {
+            <View style={[styles.grid,styles.noWrap,   styles.middle,styles.justifyContent, {
                 width: '100%',
                 minWidth: 100,
+                maxWidth:160,
                 borderRadius: 5,
-                backgroundColor: styles.primary.color
+                backgroundColor: styles.primary.color,
             }]}>
-                {<TouchableOpacity style={[styles.py_3]} onPress={() => {
+                {<TouchableOpacity style={[styles.py_3,{width:35}]} onPress={() => {
                     updateItem(item, 'remove').then(r => {
                     })
                 }}>
                     <ProIcon name={'minus'} color={colors.secondary} size={15}/>
                 </TouchableOpacity>}
                 <TouchableOpacity
-                    style={[styles.paragraph, styles.caption, styles.flexGrow, styles.textCenter]}
+                    style={[styles.flexGrow, styles.center,styles.middle,{maxWidth:100,minWidth:30,textAlign:'center'}]}
                     onPress={onPressNumberIN}>
                     <Paragraph
                         style={[{color: colors.secondary}]}
                     >{parseFloat(item?.productqnt.toFixed(3) || 1)}</Paragraph>
                 </TouchableOpacity>
-                {<TouchableOpacity style={[styles.py_3]} onPress={() => {
+                {<TouchableOpacity style={[styles.py_3,{width:35}]} onPress={() => {
                     updateItem(item, 'add').then(r => {
                     })
                 }}>

@@ -24,7 +24,7 @@ const Index = (props: any) => {
         multiselect,
         listtype,
         onSelect,
-
+        gridview,
         label,
         addItem,
         displaytype,
@@ -42,6 +42,7 @@ const Index = (props: any) => {
     }
 
     let [filterlist, setFilterList]: any = useState(list)
+    let [grview, setGrView]: any = useState(gridview)
 
     const selectItem = (item: any) => {
 
@@ -105,6 +106,36 @@ const Index = (props: any) => {
                                    right={() => item.value === selected && <View style={[styles.mt_2]}><ProIcon name={'check'} /></View>}
                         />
                     </TouchableOpacity>}
+
+
+                    {listtype === 'item_category' && <TouchableOpacity onPress={() => {
+                        selectItem(item);
+                    }}>
+                        <>
+                            {!Boolean(grview) ? <List.Item title={() => <View style={[styles.flexwidth]}><Paragraph style={[styles.paragraph]}>  {item.label}  </Paragraph></View>}
+                                       titleStyle={{textTransform: 'capitalize'}}
+                                       left={() => <Avatar label={item.label} backgroundColor={item?.color || 'black'}  value={item.value} size={40}/>}
+                                       right={() => item.value === selected && <View style={[styles.mt_2]}><ProIcon name={'check'} /></View>}
+                            /> :  <>
+                                <View style={[styles.flexGrow,styles.center,  styles.middle, {
+                                    width: 115,
+                                    maxWidth:136,
+                                    borderColor:'white',
+                                    margin:2,
+                                    marginBottom:2,
+                                    minHeight:50,
+                                    paddingBottom:3,
+                                    borderRadius:5,
+                                    backgroundColor:item?.color || 'black'
+                                }]}>
+                                    <View>
+                                        <Paragraph style={[styles.paragraph,{color:'white'}]}>{item.label}</Paragraph>
+                                    </View>
+                                </View>
+                            </>
+                            }
+                        </>
+                     </TouchableOpacity> }
 
 
                     {listtype === 'priority' && <TouchableOpacity onPress={() => {
@@ -181,6 +212,11 @@ const Index = (props: any) => {
                               icon={{ source: 'arrow-left', direction: 'auto' }} placeholder={`Search ${label}...`}
                               handleSearch={handleSearch}/>
                     </View>
+                    {Boolean(gridview) && <TouchableOpacity onPress={()=>{
+                        setGrView(!grview)
+                    }}>
+                        <ProIcon name={grview?'list':'grid'}/>
+                    </TouchableOpacity>}
                     {Boolean(addItem) && <View>
                         {!Boolean(urls.localserver) && addItem}
                     </View>}
@@ -188,7 +224,7 @@ const Index = (props: any) => {
             </View>
 
 
-                <View>
+                <View key={grview?'grid':'list'} style={[styles.mt_2]}>
                     <FlatList
                         scrollIndicatorInsets={{right: 1}}
                         data={filterlist}
@@ -196,6 +232,7 @@ const Index = (props: any) => {
                         keyboardDismissMode={'on-drag'}
                         keyboardShouldPersistTaps={'always'}
                         renderItem={renderList}
+                        numColumns={grview?3:1}
                         ListFooterComponent={() => {
                             return <View style={{height: 150}}>
 

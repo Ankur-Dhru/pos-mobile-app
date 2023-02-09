@@ -15,6 +15,7 @@ import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/compon
 import { expenseCalculation } from "../../libs/item-calculation";
 import {getClientsByWhere} from "../../libs/Sqlite/selectData";
 import store from "../../redux-store/store";
+import ChartofAccountList from "./ChartofAccountList";
 
 
 const Index = ({navigation}:any) => {
@@ -26,8 +27,6 @@ const Index = ({navigation}:any) => {
         departmentid:2,
         ...voucherData(VOUCHER.EXPENSE,false),
     }
-
-    appLog('initdata',initdata)
 
     const {paymentgateway,chartofaccount,tax}: any = localredux.initData;
 
@@ -206,31 +205,17 @@ const Index = ({navigation}:any) => {
                                                         </View>
                                                     </View>
 
+
                                                     <View>
                                                         <Field name="accountid"  validate={required}>
                                                             {props => (
-                                                                <InputField
-                                                                    {...props}
-                                                                    label={'Expense Account'}
-                                                                    mode={'flat'}
-                                                                    list={chartofaccount?.filter((account:any)=>{
-                                                                        return account.accounttype === 'expense'
-                                                                    }).map((account:any)=>{
-                                                                        return {label:account.accountname,value:account.accountid,more:account}
-                                                                    })}
-                                                                    value={props.input.value}
-                                                                    selectedValue={props.input.value}
-                                                                    displaytype={'pagelist'}
-                                                                    inputtype={'dropdown'}
-                                                                    listtype={'other'}
-                                                                    onChange={(value: any) => {
-                                                                        props.input.onChange(value);
-                                                                    }}
-                                                                >
-                                                                </InputField>
+                                                                <><ChartofAccountList navigation={navigation}
+                                                                                    fieldprops={props}/></>
                                                             )}
                                                         </Field>
                                                     </View>
+
+
 
                                                     <View>
                                                         <View style={[styles.w_auto]}>

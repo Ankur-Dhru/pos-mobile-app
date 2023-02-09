@@ -11,6 +11,7 @@ import {connect, useDispatch} from "react-redux";
 import {Button} from "../../components";
 import {setBottomSheet} from "../../redux-store/reducer/component";
 import {appLog} from "../../libs/function";
+import {ItemView} from "./ItemListTablet";
 
 
 const Index = (props: any) => {
@@ -49,7 +50,9 @@ const Index = (props: any) => {
 
 
     const renderItem = useCallback(({item, index}: any) => {
-        return <Item item={{...item}} index={index} key={item.productid}/>
+        return <ItemView displayType={'flatlist'}  item={item} index={index}
+                         key={item.productid}/>
+
     }, [comboitem.comboid]);
 
 
@@ -62,7 +65,7 @@ const Index = (props: any) => {
             <Caption style={[styles.caption]}>{comboitem.itemname}</Caption>
             <View style={[styles.h_100, styles.w_100,styles.flex, styles.p_5]}>
                 <FlatList
-                    data={dataSource}
+                    data={dataSource || []}
                     keyboardDismissMode={'on-drag'}
                     keyboardShouldPersistTaps={'always'}
                     renderItem={renderItem}

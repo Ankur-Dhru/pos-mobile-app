@@ -24,7 +24,7 @@ class Index extends React.Component<any> {
                     style={[styles.input,{width:width,...extrastyle}]}
 
                     mode={'outlined'}
-                    outlineColor={'#eee'}
+                    outlineColor={'#ddd'}
                     underlineColor={underlineColor}
                     activeOutlineColor={styles.accent.color}
                     dense={false}

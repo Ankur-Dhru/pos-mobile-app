@@ -99,7 +99,7 @@ const Index = (props: any) => {
         await dispatch(hideLoader())
         localredux.loginuserData = params;
 
-        if (isRestaurant) {
+        if ((isRestaurant && Boolean(urls.localserver)) || !Boolean(urls.localserver)) {
             await navigation.replace('ClientAreaStackNavigator');
         } else {
             urls.localserver = '';

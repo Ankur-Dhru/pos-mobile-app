@@ -50,6 +50,7 @@ export enum ACTIONS {
     ITEM = "item",
     ITEMS = "items",
     CATEGORY = "category",
+    CHARTOFACCOUNT = "chartofaccount",
     LOGIN = "login",
     INIT = "init",
     TERMINAL = "terminal",

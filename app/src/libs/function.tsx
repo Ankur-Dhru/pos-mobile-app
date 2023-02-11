@@ -503,7 +503,7 @@ export const CheckConnectivity = () => {
     });
 };
 
-export const syncData = async (loader = true) => {
+export const syncData = async (loader = true,synctype  = '') => {
 
     Keyboard.dismiss()
 
@@ -590,6 +590,7 @@ export const syncData = async (loader = true) => {
                                 total: (Boolean(data?.extra) && Boolean(data?.extra?.total)) ? data.extra.total : 0
                             }))
                             setTimeout(async () => {
+
                                 await getData({type, start});
                             }, 300)
 
@@ -718,6 +719,24 @@ export const filterArray = (array: any, fields: any, searchText: any, multilevel
                 return JSON.stringify(searchin)?.toLowerCase().includes(searchText && searchText?.toLowerCase())
             })
         }
+    }
+}
+
+
+
+
+export const startWith = (array: any, fields: any, searchText: any) => {
+    let filter = [];
+    if (Boolean(array.length)) {
+        filter = array?.filter((item: any, key: any) => {
+            return  item[fields].toLowerCase().startsWith(searchText && searchText?.toLowerCase())
+        })
+    }
+    if(Boolean(filter.length)) {
+        return filter
+    }
+    else{
+        return filterArray(array, ['itemname'], searchText)
     }
 }
 

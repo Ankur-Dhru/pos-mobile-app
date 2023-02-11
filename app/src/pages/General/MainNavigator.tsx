@@ -38,9 +38,17 @@ import CurrencyPreferences from "../SetupWorkspace/CurrencyPreferences";
 
 
 import KOTPrinter from "../PrinterSettings/KOTPrinter";
+
+import ListClients from "../Client/List_clients";
+import ListItems from "../Items/List_items";
+import ListItemsCategories from "../Items/List_category";
+import ListExpenses from "../Expense/List_expenses";
+
 import AddEditClient from "../Client/AddEditClient";
 import AddEditItem from "../Items/AddEditItem";
 import AddEditCategory from "../Items/AddEditCategory";
+
+
 import DropDownList from "./DropDownList";
 import General from "./ProfileSettings";
 import ClientAndSource from "../Cart/ClientAndSource";
@@ -56,7 +64,7 @@ import KOTDetail from "../Cart/KOTDetail";
 import GeneralSettings from "../GeneralSettings";
 import DayEndReport from "../Report/dayendreport";
 import ScanItem from "../Items/ScanItem";
-import AddExpense from "../../pages/Expense"
+import AddEditExpense from "../../pages/Expense/AddEditExpense"
 import DateTimePicker from "./DateTimePicker";
 import AskPermission from "../Pin/AskPermission";
 import BlueToothList from "../PrinterSettings/BlueToothList";
@@ -65,6 +73,7 @@ import Preview from "../Preview";
 import LocalServer from "../Setup/LocalServer";
 import GettingStarted from "../Splash/GettingStarted";
 import AddEditAccount from "../Expense/AddEditAccount";
+import ContactUs from "../SetupWorkspace/ContactUs";
 
 
 const screenOptions = {...screenOptionStyle};
@@ -89,10 +98,6 @@ const MainStackNavigator = () => {
             <Stack.Screen name="SplashStackNavigator" component={SplashStackNavigator}/>
 
             <Stack.Screen name="SetupStackNavigator" component={SetupStackNavigator}/>
-
-
-
-
 
             <Stack.Screen name="PinStackNavigator" component={PinStackNavigator}/>
 
@@ -187,10 +192,19 @@ const ClientAreaStackNavigator = (props: any) => {
                           options={{headerShown: true, headerTitle: 'Scan Item'}}/>
             <Stack.Screen name={'DetailViewNavigator'} component={DetailView} options={{headerTitle: 'Detail view'}}/>
 
+
+            <Stack.Screen name={'ListItems'} component={ListItems} options={{headerTitle: 'Items'}}/>
+            <Stack.Screen name={'ListItemsCategories'} component={ListItemsCategories} options={{headerTitle: 'Categories'}}/>
+            <Stack.Screen name={'ListClients'} component={ListClients} options={{headerTitle: 'Clients'}}/>
+            <Stack.Screen name={'ListExpenses'} component={ListExpenses} options={{headerTitle: 'Expenses'}}/>
+
+
             <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem} options={{headerTitle: 'Add Item'}}/>
             <Stack.Screen name={'AddEditCategory'} component={AddEditCategory} options={{headerTitle: 'Add Category'}}/>
-
+            <Stack.Screen name={'AddEditExpense'} component={AddEditExpense} options={{headerTitle: 'Add Expense'}}/>
+            <Stack.Screen name={'AddEditAccount'} component={AddEditAccount} options={{headerTitle: 'Add Account'}}/>
             <Stack.Screen name={'AddEditClient'} component={AddEditClient} options={{headerTitle: 'Add Client'}}/>
+
             <Stack.Screen name={'AddTable'} component={AddTable} options={{headerTitle: 'Add Table'}}/>
 
             <Stack.Screen name={'ClientList'} component={ClientList}
@@ -244,13 +258,17 @@ const ProfileSettingsNavigator = (props: any) => {
             <Stack.Screen name={'DayEndReport'} component={DayEndReport} options={{headerTitle: 'Day End Report'}}/>
 
 
+            <Stack.Screen name={'ListItems'} component={ListItems} options={{headerTitle: 'Items'}}/>
+            <Stack.Screen name={'ListItemsCategories'} component={ListItemsCategories} options={{headerTitle: 'Categories'}}/>
+            <Stack.Screen name={'ListClients'} component={ListClients} options={{headerTitle: 'Clients'}}/>
+            <Stack.Screen name={'ListExpenses'} component={ListExpenses} options={{headerTitle: 'Expenses'}}/>
+
 
             <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem} options={{headerTitle: 'Add Item'}}/>
             <Stack.Screen name={'AddEditCategory'} component={AddEditCategory} options={{headerTitle: 'Add Category'}}/>
             <Stack.Screen name={'AddEditAccount'} component={AddEditAccount} options={{headerTitle: 'Add Account'}}/>
             <Stack.Screen name={'AddEditClient'} component={AddEditClient} options={{headerTitle: 'Add Client'}}/>
-
-            <Stack.Screen name={'AddExpense'} component={AddExpense} options={{headerTitle: 'Add Expense'}}/>
+            <Stack.Screen name={'AddEditExpense'} component={AddEditExpense} options={{headerTitle: 'Add Expense'}}/>
 
 
             <Stack.Screen name={'KOTPrinter'} component={KOTPrinter} options={{title: 'KOT Printer'}}/>
@@ -260,6 +278,7 @@ const ProfileSettingsNavigator = (props: any) => {
                           options={{title: 'Quick Quantity & Amount'}}/>
 
             <Stack.Screen name={'GeneralSettings'} component={GeneralSettings} options={{title: 'General Settings'}}/>
+            <Stack.Screen name={'ContactUs'} component={ContactUs} options={{title: 'Contact Us'}}/>
 
             <Stack.Screen name={'PrinterSettings'} component={PrinterSettings} options={{title: ''}}/>
 

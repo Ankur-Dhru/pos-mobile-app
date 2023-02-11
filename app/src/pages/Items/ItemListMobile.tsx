@@ -2,7 +2,7 @@ import React, {memo, useCallback, useEffect, useState} from "react";
 
 import {FlatList, Image, Text, TouchableOpacity, View} from "react-native";
 
-import {connect} from "react-redux";
+import {connect, useDispatch} from "react-redux";
 
 import {styles} from "../../theme";
 import {
@@ -58,15 +58,13 @@ export const getCombos = (selectedgroup:any) => {
 
 const Index = (props: any) => {
 
-    const {selectedgroup, invoiceitems,gridview,grouplist} = props;
+    const {selectedgroup, invoiceitems,gridview} = props;
 
     const navigation = useNavigation()
 
     const [loading, setLoading]: any = useState(false);
 
     const [dataSource, setDataSource]: any = useState([]);
-    const [subgroup, setSubGroup]: any = useState([]);
-    const [selectedsubgroup, setSelectedsubgroup]: any = useState([]);
 
 
     const [hasImage, setHasImage]: any = useState(false);
@@ -90,7 +88,11 @@ const Index = (props: any) => {
 
 
     const setItems = (newitems:any) => {
-        const combogroup = getCombos(selectedgroup)
+
+        const lastgroup = selectedgroup[selectedgroup.length - 1];
+
+        const combogroup = getCombos(lastgroup)
+
         if (Boolean(newitems.length > 0)) {
             let items = updateItems(newitems)
             setDataSource([...items,...combogroup]);
@@ -108,16 +110,13 @@ const Index = (props: any) => {
 
     useEffect(() => {
 
-        let groups: any = Object.values(grouplist).filter((group:any)=>{
-            return group.itemgroupmid === selectedgroup
-        })
-        setSubGroup(groups)
+        const lastgroup = selectedgroup[selectedgroup.length - 1];
 
-        getItemsByWhere({itemgroupid: selectedsubgroup || selectedgroup}).then((newitems: any) => {
+        getItemsByWhere({itemgroupid: lastgroup}).then((newitems: any) => {
             itemslist = clone(newitems)
             setItems(newitems)
         });
-    }, [selectedgroup,selectedsubgroup])
+    }, [selectedgroup])
 
 
     const renderItem = useCallback(({item, index}: any) => {
@@ -143,6 +142,7 @@ const Index = (props: any) => {
         return <></>
     }
 
+
     return (
         <>
             <Card style={[styles.card,styles.h_100, styles.flex,]}>
@@ -150,18 +150,6 @@ const Index = (props: any) => {
                 <Card.Content style={[styles.cardContent]}>
 
                 <GroupHeading  />
-
-                    <View>
-                        {
-                            subgroup.map((group:any)=>{
-                                return <TouchableOpacity onPress={()=>{
-                                    setSelectedsubgroup(group.itemgroupid)
-                                    // appLog('group',group)
-                                }}><Paragraph>{group.itemgroupname}</Paragraph></TouchableOpacity>
-                            })
-                        }
-                    </View>
-
 
                     <View style={[styles.h_100]} key={gridview}>
                     <FlatList
@@ -194,7 +182,7 @@ const Index = (props: any) => {
                     </View>
 
                 <View style={[styles.mt_auto]}>
-                    <GroupListMobile gridview={gridview}/>
+                    <GroupListMobile gridview={gridview}  />
                 </View>
 
                 </Card.Content>
@@ -211,7 +199,6 @@ const Index = (props: any) => {
 const mapStateToProps = (state: any) => ({
     invoiceitems: state.cartData.invoiceitems,
     selectedgroup: state.selectedData.group?.value,
-    grouplist: state.groupList,
     gridview: state.localSettings?.gridview,
 })
 

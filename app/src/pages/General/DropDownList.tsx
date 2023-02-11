@@ -25,6 +25,7 @@ const Index = (props: any) => {
         listtype,
         onSelect,
         gridview,
+        gridviewicon,
         label,
         addItem,
         displaytype,
@@ -81,6 +82,7 @@ const Index = (props: any) => {
 
     }
 
+
     const renderList = ({item}: any) => {
 
 
@@ -117,18 +119,19 @@ const Index = (props: any) => {
                                        left={() => <Avatar label={item.label} backgroundColor={item?.color || 'black'}  value={item.value} size={40}/>}
                                        right={() => item.value === selected && <View style={[styles.mt_2]}><ProIcon name={'check'} /></View>}
                             /> :  <>
-                                <View style={[styles.flexGrow,styles.center,  styles.middle, {
+                                <View style={[styles.flexGrow,styles.center, styles.p_3, styles.middle, {
                                     width: 115,
+
                                     maxWidth:136,
                                     borderColor:'white',
                                     margin:2,
                                     marginBottom:2,
-                                    minHeight:50,
+                                    minHeight:80,
                                     paddingBottom:3,
                                     borderRadius:5,
                                     backgroundColor:item?.color || 'black'
                                 }]}>
-                                    <View>
+                                    <View style={[styles.p_3]}>
                                         <Paragraph style={[styles.paragraph,{color:'white'}]}>{item.label}</Paragraph>
                                     </View>
                                 </View>
@@ -212,7 +215,7 @@ const Index = (props: any) => {
                               icon={{ source: 'arrow-left', direction: 'auto' }} placeholder={`Search ${label}...`}
                               handleSearch={handleSearch}/>
                     </View>
-                    {Boolean(gridview) && <TouchableOpacity onPress={()=>{
+                    {Boolean(gridviewicon) && <TouchableOpacity onPress={()=>{
                         setGrView(!grview)
                     }}>
                         <ProIcon name={grview?'list':'grid'}/>

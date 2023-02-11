@@ -64,7 +64,7 @@ const Index = (props: any) => {
 
             }
 
-        dispatch(setSelected({value: mainproductgroupid, field: 'group'}))
+        dispatch(setSelected({value: [mainproductgroupid], field: 'group'}))
 
     }, [])
 

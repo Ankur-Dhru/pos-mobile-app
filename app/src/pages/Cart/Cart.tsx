@@ -98,7 +98,7 @@ const Index = (props: any) => {
                                             backgroundColor:'#fff',
                                             padding:3,
                                             borderRadius:7,
-                                            minWidth:250
+                                            minWidth:250,
                                         }]}>
 
                                             {!numpad ?

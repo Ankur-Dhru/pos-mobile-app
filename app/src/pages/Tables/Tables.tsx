@@ -527,7 +527,7 @@ const Index = ({tableorders}: any) => {
     ]
 
     if(!Boolean(urls.localserver)){
-        routes.push({key: 'advanceorder', title: 'Advance Order'});
+        routes.push({key: 'advanceorder', title: 'Advance Order'},{key: 'expense', title: 'Expense'});
         actions.push({
             icon: 'table',
             label: 'Table Reservation',
@@ -542,6 +542,10 @@ const Index = ({tableorders}: any) => {
                 'label': 'Advance Order',
                 value: 'advanceorder'
             }),
+        },{
+            icon: 'currency-inr',
+            label: 'Expense',
+            onPress: () => navigation.navigate("AddEditExpense")
         })
     }
 

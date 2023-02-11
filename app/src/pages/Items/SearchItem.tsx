@@ -9,10 +9,8 @@ import {appLog} from "../../libs/function";
 import {connect} from "react-redux";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 
-import {AddItem} from "./ItemListTablet";
+import {AddItem, ItemView} from "./ItemListTablet";
 import CartTotal from "../Cart/CartTotal";
-import {Item} from "./ItemListMobile";
-import QRCodeScanner from "../../components/QRCodeScanner";
 
 
 const Index = ({navigation, invoiceitems}: any) => {
@@ -62,7 +60,8 @@ const Index = ({navigation, invoiceitems}: any) => {
 
 
     const renderItem = useCallback(({item, index}: any) => {
-        return <Item item={item} index={index} key={item.key || item.productid}/>
+        return <ItemView displayType={'flatlist'}  item={item}   index={index}
+                                key={item.productid}/>
     }, [search]);
 
     return (

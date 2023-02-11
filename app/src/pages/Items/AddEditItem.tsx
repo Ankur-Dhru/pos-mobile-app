@@ -7,7 +7,7 @@ import {useDispatch} from "react-redux";
 import {Caption, Card, Paragraph, TextInput as TI,} from "react-native-paper";
 import {
     appLog,
-    assignOption,
+    assignOption, errorAlert,
     findObject,
     getCurrencySign,
     isEmpty,
@@ -62,6 +62,7 @@ const Index = (props: any) => {
 
     const {item, pageKey} = props;
     const search = props?.route?.params?.search;
+    const editdata = props?.route?.params?.data;
 
     let isShow: any = false;
     const dispatch = useDispatch()
@@ -108,6 +109,7 @@ const Index = (props: any) => {
         identificationtype: 'auto',
         warrantyperiod: "day",
         warrantytoclient: false,
+        ...editdata
     }
 
 
@@ -168,6 +170,8 @@ const Index = (props: any) => {
         const {workspace}: any = localredux.initData;
         const {token}: any = localredux.authData;
 
+
+
         await apiService({
             method: Boolean(initdata.itemid) ? METHOD.PUT : METHOD.POST,
             action: ACTIONS.ITEM,
@@ -176,11 +180,13 @@ const Index = (props: any) => {
             token: token,
             other: {url: urls.posUrl},
         }).then(async (result) => {
+
             if (result.status === STATUS.SUCCESS) {
                 dispatch(showLoader())
                 const grouplist: any = store.getState()?.groupList || {}
                 try {
                     const item = {...values, ...result.data, groupname: grouplist[values?.itemgroupid].itemgroupname};
+
                     await insertItems([item], 'onebyone').then(async () => {
 
                         if (search) {
@@ -201,6 +207,9 @@ const Index = (props: any) => {
                     appLog('e', e)
                 }
             }
+            else{
+                errorAlert(result.message)
+            }
             device.search = ''
         });
     }
@@ -218,6 +227,10 @@ const Index = (props: any) => {
         return <PageLoader/>
     }
 
+
+    if(initdata.edit){
+        navigation.setOptions({headerTitle:`Edit ${initdata.itemname}`})
+    }
 
     let isRetailIndustry = !isRestaurant();
     return (
@@ -241,41 +254,6 @@ const Index = (props: any) => {
                                                 <Card style={[styles.card]}>
                                                     <Card.Content style={[styles.cardContent]}>
                                                         <View>
-
-                                                            {!isRetailIndustry &&
-                                                                <View>
-                                                                    <Field name="veg">
-                                                                        {props => (
-                                                                            <>
-                                                                                <InputField
-                                                                                    {...props}
-                                                                                    label={'Diet'}
-                                                                                    mode={'flat'}
-                                                                                    list={[{
-                                                                                        label: 'Veg',
-                                                                                        value: 'veg'
-                                                                                    }, {
-                                                                                        label: 'Non-Veg',
-                                                                                        value: 'nonveg'
-                                                                                    }, {
-                                                                                        label: 'Contain Egg',
-                                                                                        value: 'egg'
-                                                                                    }]}
-                                                                                    value={props.input.value}
-                                                                                    selectedValue={props.input.value}
-                                                                                    displaytype={'pagelist'}
-                                                                                    inputtype={'dropdown'}
-                                                                                    listtype={'other'}
-                                                                                    onChange={(value: any) => {
-                                                                                        props.input.onChange(value)
-                                                                                    }}>
-                                                                                </InputField>
-                                                                            </>
-                                                                        )}
-                                                                    </Field>
-
-                                                                </View>
-                                                            }
 
                                                             <View>
                                                                 <Field name="itemtype">
@@ -347,6 +325,8 @@ const Index = (props: any) => {
                                                             </View>
 
 
+
+
                                                             <View ref={otherlanguageRef} style={{display: 'none'}}>
                                                                 <Field name="otherlanguagename">
                                                                     {props => (
@@ -361,22 +341,6 @@ const Index = (props: any) => {
                                                                 </Field>
                                                             </View>
 
-                                                            <View>
-                                                                <Field name="uniqueproductcode">
-                                                                    {props => (
-                                                                        <InputField
-                                                                            value={props.input.value}
-                                                                            customRef={inputRef[1]}
-                                                                            onSubmitEditing={() => nextFocus(inputRef[2])}
-                                                                            returnKeyType={'next'}
-                                                                            autoCapitalize={"characters"}
-                                                                            label={'SKU or Item Code'}
-                                                                            inputtype={'textbox'}
-                                                                            onChange={props.input.onChange}
-                                                                        />
-                                                                    )}
-                                                                </Field>
-                                                            </View>
 
 
                                                             <View >
@@ -433,7 +397,6 @@ const Index = (props: any) => {
 
                                                             </View>
 
-
                                                             {onlyForIndia && onlyForRegistered &&
                                                                 <Field name="itemhsncode"
                                                                        validate={composeValidators(required, mustBeNumber)}>
@@ -451,6 +414,63 @@ const Index = (props: any) => {
                                                                     )}
                                                                 </Field>
                                                             }
+
+                                                            {!isRetailIndustry &&
+                                                                <View>
+                                                                    <Field name="veg">
+                                                                        {props => (
+                                                                            <>
+                                                                                <InputField
+                                                                                    {...props}
+                                                                                    label={'Diet'}
+                                                                                    mode={'flat'}
+                                                                                    list={[{
+                                                                                        label: 'Veg',
+                                                                                        value: 'veg'
+                                                                                    }, {
+                                                                                        label: 'Non-Veg',
+                                                                                        value: 'nonveg'
+                                                                                    }, {
+                                                                                        label: 'Contain Egg',
+                                                                                        value: 'egg'
+                                                                                    }]}
+                                                                                    value={props.input.value}
+                                                                                    selectedValue={props.input.value}
+                                                                                    displaytype={'pagelist'}
+                                                                                    inputtype={'dropdown'}
+                                                                                    listtype={'other'}
+                                                                                    onChange={(value: any) => {
+                                                                                        props.input.onChange(value)
+                                                                                    }}>
+                                                                                </InputField>
+                                                                            </>
+                                                                        )}
+                                                                    </Field>
+
+                                                                </View>
+                                                            }
+
+                                                            <View>
+                                                                <Field name="uniqueproductcode">
+                                                                    {props => (
+                                                                        <InputField
+                                                                            value={props.input.value}
+                                                                            customRef={inputRef[1]}
+                                                                            onSubmitEditing={() => nextFocus(inputRef[2])}
+                                                                            returnKeyType={'next'}
+                                                                            autoCapitalize={"characters"}
+                                                                            label={'SKU or Item Code'}
+                                                                            inputtype={'textbox'}
+                                                                            onChange={props.input.onChange}
+                                                                        />
+                                                                    )}
+                                                                </Field>
+                                                            </View>
+
+
+
+
+
 
                                                             {
                                                                 Array.isArray(itemTypeConfig) && itemTypeConfig.map((configObject: any, index: any) => {
@@ -930,7 +950,7 @@ const Index = (props: any) => {
                                             <Button more={{color: 'white'}} disable={more.invalid}
                                                     secondbutton={more.invalid} onPress={() => {
                                                 handleSubmit(values)
-                                            }}> Add </Button>
+                                            }}> {Boolean(initdata.edit)?'Edit':'Add'}   </Button>
                                         </View>
                                     </KAccessoryView>
 

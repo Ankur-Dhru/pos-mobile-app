@@ -11,9 +11,9 @@ import {
     View
 } from "react-native";
 
-import {connect} from "react-redux";
+import {connect, useDispatch} from "react-redux";
 import {styles} from "../../theme";
-import {appLog, getItemImage, isRestaurant, selectItem, toCurrency} from "../../libs/function";
+import {appLog, clone, getItemImage, isRestaurant, selectItem, toCurrency} from "../../libs/function";
 import {List, Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
@@ -23,6 +23,8 @@ import {getCombos} from "./ItemListMobile";
 import LinearGradient from 'react-native-linear-gradient'
 import AddButton from "./AddButton";
 import Avatar from "../../components/Avatar";
+import GroupHeading from "./GroupHeading";
+import {setSelected} from "../../redux-store/reducer/selected-data";
 
 
 
@@ -114,7 +116,7 @@ export const ItemView = memo(({item,displayType}:any)=>{
 
             return <View  style={[styles.flexGrow,styles.relative,styles.h_100,   styles.middle, {
                 width: 115,
-                maxWidth:136,
+                maxWidth:160,
                 borderColor:'white',
                 margin:2,
                 marginBottom:2,
@@ -200,6 +202,7 @@ const Index = (props: any) => {
     const [hasImage, setHasImage]: any = useState(false);
 
 
+
     const isPortrait = () => {
         const dim = Dimensions.get('screen');
         return (dim.height >= dim.width) ? 'portrait' : 'landscape';
@@ -219,10 +222,13 @@ const Index = (props: any) => {
 
         try {
 
-            const combogroup = getCombos(selectedgroup)
+            const lastgroup = selectedgroup[selectedgroup.length - 1];
 
-            if (Boolean(selectedgroup)) {
-                await getItemsByWhere({itemgroupid: selectedgroup}).then((newitems: any) => {
+
+            const combogroup = getCombos(lastgroup)
+
+            if (Boolean(lastgroup)) {
+                await getItemsByWhere({itemgroupid: lastgroup}).then((newitems: any) => {
                     const items = newitems.concat(combogroup);
                     let checkimage = items.filter((item:any)=>{
                         return Boolean(item?.itemimage)
@@ -263,7 +269,11 @@ const Index = (props: any) => {
 
 
     return (
-        <View key={oriantation}>
+        <View style={[styles.flex,styles.h_100]}>
+
+            <GroupHeading  />
+
+        <View key={oriantation}  style={[styles.flex,styles.h_100]}>
 
 
             <FlatList
@@ -297,12 +307,13 @@ const Index = (props: any) => {
             />
 
         </View>
+        </View>
     )
 }
 
 
 const mapStateToProps = (state: any) => ({
-    selectedgroup: state.selectedData.group?.value
+    selectedgroup: state.selectedData.group?.value,
 })
 
 export default connect(mapStateToProps)(memo(Index));

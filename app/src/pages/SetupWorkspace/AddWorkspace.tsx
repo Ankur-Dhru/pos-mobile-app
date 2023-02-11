@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Keyboard, ScrollView, View} from 'react-native';
+import {Keyboard, ScrollView, TextInput, View} from 'react-native';
 import {styles} from "../../theme";
 
 import {Card, Paragraph, Title, withTheme} from "react-native-paper";
@@ -89,7 +89,7 @@ class AddWorkspace extends Component<any> {
                                                         }}
                                                         returnKeyType={'go'}
                                                         */
-
+                                                        right={<TextInput.Affix text="dhru.com" />}
                                                         onChange={props.input.onChange}
                                                     />
                                                 )}

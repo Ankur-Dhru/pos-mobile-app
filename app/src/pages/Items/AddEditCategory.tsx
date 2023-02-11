@@ -4,7 +4,7 @@ import {styles} from "../../theme";
 
 import {Button, Container} from "../../components";
 import {useDispatch} from "react-redux";
-import {assignOption, syncData} from "../../libs/function";
+import {appLog, assignOption, errorAlert, syncData} from "../../libs/function";
 import {Field, Form} from "react-final-form";
 
 import {ACTIONS, device, localredux, METHOD, required, STATUS, urls} from "../../libs/static";
@@ -14,7 +14,6 @@ import {v4 as uuidv4} from "uuid";
 import KAccessoryView from '../../components/KAccessoryView';
 import apiService from "../../libs/api-service";
 import {setGroup} from "../../redux-store/reducer/group-list";
-import {setSelected} from "../../redux-store/reducer/selected-data";
 import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
 import {Card} from "react-native-paper";
@@ -23,6 +22,7 @@ import {Card} from "react-native-paper";
 const Index = (props: any) => {
 
     const callback = props?.route?.params?.callback;
+    const editdata = props?.route?.params?.data;
 
     const dispatch = useDispatch();
     const navigation = useNavigation()
@@ -33,6 +33,7 @@ const Index = (props: any) => {
         itemgroupmid: "0",
         itemgroupname: '',
         itemgroupstatus: "1",
+        ...editdata
     }
 
 
@@ -41,25 +42,31 @@ const Index = (props: any) => {
         const {workspace}: any = localredux.initData;
         const {token}: any = localredux.authData;
 
+        values.edit = false
+
         await apiService({
-            method: METHOD.POST,
+            method: initdata.edit ? METHOD.PUT : METHOD.POST,
             action: ACTIONS.CATEGORY,
             body: values,
             workspace: workspace,
             token: token,
             other: {url: urls.posUrl},
         }).then(async (result) => {
+
             if (result.status === STATUS.SUCCESS) {
                 dispatch(setGroup(values))
 
-                dispatch(setSelected({value: values.itemgroupid, field: 'group'}))
-                await syncData(false).then()
+               // dispatch(setSelected({value: [values.itemgroupid], field: 'group'}))
+                await syncData(false,'setting').then()
 
                 if (Boolean(callback)) {
                     await callback(values)
                     navigation.goBack()
                 }
                 navigation.goBack()
+            }
+            else{
+                errorAlert(result.message)
             }
             device.searchlist = ''
         });
@@ -84,8 +91,13 @@ const Index = (props: any) => {
         });
         return unsubscribe;
     }, []);
+
     if (!loaded) {
         return <PageLoader/>
+    }
+
+    if(initdata.edit){
+        navigation.setOptions({headerTitle:`Edit ${initdata.itemgroupname}`})
     }
 
 
@@ -150,7 +162,7 @@ const Index = (props: any) => {
                                         <Button more={{color: 'white'}} disable={more.invalid}
                                                 secondbutton={more.invalid} onPress={() => {
                                             handleSubmit(values)
-                                        }}> Add </Button>
+                                        }}> {Boolean(initdata.edit)?'Edit':'Add'}  </Button>
                                     </View>
 
                                 </KAccessoryView>

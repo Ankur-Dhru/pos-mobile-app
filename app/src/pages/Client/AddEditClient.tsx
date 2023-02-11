@@ -40,6 +40,7 @@ const Index = (props: any) => {
     const {token}: any = localredux.authData;
 
     const search = props?.route?.params?.search;
+    const editdata = props?.route?.params?.data;
 
     const {pricingtemplate, currency, paymentterms, general} = localredux.initData;
     const {taxtypelist, statelist} = localredux;
@@ -63,7 +64,8 @@ const Index = (props: any) => {
         country: general.country,
         currency: getDefaultCurrency(),
         displayname: search || '',
-        state: general.state
+        state: general.state,
+        ...editdata
     }
 
 
@@ -118,7 +120,7 @@ const Index = (props: any) => {
     const handleSubmit = async (values: any) => {
 
         await apiService({
-            method: METHOD.POST,
+            method: initdata.edit ? METHOD.PUT : METHOD.POST,
             action: ACTIONS.CLIENT,
             body: values,
             workspace: workspace,
@@ -130,7 +132,7 @@ const Index = (props: any) => {
                 try {
                     const client = {...values, ...result.data, label: values.displayname, value: result.data.clientid};
 
-                    await syncData(false).then()
+                    await syncData(false,'customer').then()
 
                     if (Boolean(search)) {
                         store.dispatch(updateCartField({clientid: client.clientid, clientname: client.displayname}));
@@ -158,6 +160,11 @@ const Index = (props: any) => {
     }, []);
     if (!loaded) {
         return <PageLoader/>
+    }
+
+
+    if(initdata.edit){
+        navigation.setOptions({headerTitle:`Edit ${initdata.displayname}`})
     }
 
 
@@ -626,7 +633,7 @@ const Index = (props: any) => {
                                         <Button more={{color: 'white'}} disable={more.invalid}
                                                 secondbutton={more.invalid} onPress={() => {
                                             handleSubmit(values)
-                                        }}> Add </Button>
+                                        }}> {Boolean(initdata.edit)?'Edit':'Add'} </Button>
                                     </View>
                                 </KAccessoryView>
 

@@ -112,6 +112,7 @@ class Index extends React.Component<any, any> {
             input,
             addItem,
             gridview,
+            gridviewicon,
             lines,
             defaultValue,
             settings,
@@ -165,6 +166,7 @@ class Index extends React.Component<any, any> {
                 displaytype={displaytype}
                 multiselect={multiselect}
                 gridview={gridview}
+                gridviewicon={gridviewicon}
                 addItem={addItem}
                 disabledCloseModal={disabledCloseModal}
                 {...input}
@@ -234,6 +236,7 @@ class Index extends React.Component<any, any> {
                                     label,
                                     addItem,
                                     gridview,
+                                    gridviewicon,
                                     displaytype,
                                 }
                                 if(Boolean(modal)){

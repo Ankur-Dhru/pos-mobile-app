@@ -18,7 +18,7 @@ import {appLog, sortByGroup} from "../../libs/function";
 
 const Index = (props: any) => {
 
-    const {selectedgroup, grouplist,gridview} = props;
+    const {grouplist,gridview} = props;
     const dispatch = useDispatch()
 
     let groups: any = Object.values(grouplist).sort(sortByGroup).filter((group:any)=>{
@@ -47,13 +47,14 @@ const Index = (props: any) => {
                 </View>
             </View>}
             gridview={gridview}
+            gridviewicon={true}
             list={groups}
             search={false}
             listtype={'item_category'}
             modal={true}
             selectedValue={''}
             onChange={(value: any) => {
-                dispatch(setSelected({value: value, field: 'group'}))
+                dispatch(setSelected({value: [value], field: 'group'}))
             }}
         />
     </View>

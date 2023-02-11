@@ -18,6 +18,7 @@ export const urls = {posUrl:'',adminUrl:'',localserver:''}
 export const db = {name:''}
 
 
+
 getLocalSettings('generalsettings').then((r:any) => {
     setAPIUrl(Boolean(r?.betamode))
 });

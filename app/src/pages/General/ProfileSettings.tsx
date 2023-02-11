@@ -1,7 +1,7 @@
 import React from "react";
 import {getDatabaseName, isEmpty, isRestaurant, saveLocalSettings, storeData, syncData} from "../../libs/function";
-import {Dimensions, Image, Platform, ScrollView, TouchableOpacity, View} from "react-native";
-import {Button as PButton, Caption, Card, List, Text, Title} from "react-native-paper";
+import {Dimensions, Image, Linking, Platform, ScrollView, TouchableOpacity, View} from "react-native";
+import {Button as PButton, Caption, Card, List, Paragraph, Text, Title} from "react-native-paper";
 import {styles} from "../../theme";
 import {CommonActions, useNavigation} from "@react-navigation/native";
 import {
@@ -36,6 +36,8 @@ const ProfileSettings = () => {
 
     const windowHeight = Dimensions.get('window').height;
     const navigation = useNavigation()
+
+    const {token}: any = localredux.authData;
 
     const hasLocalserver = Boolean(urls.localserver);
 
@@ -187,16 +189,18 @@ const ProfileSettings = () => {
 
                                 <Card style={[styles.card]}>
                                     <Card.Content style={[styles.cardContent]}>
-                                        <List.Subheader>Create a New</List.Subheader>
+                                        <List.Subheader>General</List.Subheader>
 
                                         <List.Item
                                             style={[styles.listitem]}
                                             title={'Expense'}
                                             onPress={async () => {
-                                                navigation.navigate("AddExpense");
+                                                navigation.navigate("ListExpenses");
                                             }}
                                             left={() => <List.Icon icon="currency-inr"/>}
-                                            right={() => <List.Icon icon="chevron-right"/>}
+                                            right={() => <TouchableOpacity onPress={async () => {
+                                                navigation.navigate("AddEditExpense");
+                                            }}><List.Icon icon="plus"/></TouchableOpacity>}
                                         />
 
                                         <ItemDivider/>
@@ -205,10 +209,12 @@ const ProfileSettings = () => {
                                             style={[styles.listitem]}
                                             title={'Item Category'}
                                             onPress={async () => {
-                                                navigation.navigate("AddEditCategory");
+                                                navigation.navigate("ListItemsCategories");
                                             }}
                                             left={() => <List.Icon icon="playlist-plus"/>}
-                                            right={() => <List.Icon icon="chevron-right"/>}
+                                            right={() => <TouchableOpacity onPress={async () => {
+                                                navigation.navigate("AddEditCategory");
+                                            }}><List.Icon icon="plus"/></TouchableOpacity>}
                                         />
 
                                         <ItemDivider/>
@@ -217,10 +223,12 @@ const ProfileSettings = () => {
                                             style={[styles.listitem]}
                                             title={'Item'}
                                             onPress={async () => {
-                                                navigation.navigate("AddEditItemNavigator");
+                                                navigation.navigate("ListItems");
                                             }}
                                             left={() => <List.Icon icon="card-plus-outline"/>}
-                                            right={() => <List.Icon icon="chevron-right"/>}
+                                            right={() => <TouchableOpacity onPress={async () => {
+                                                navigation.navigate("AddEditItemNavigator");
+                                            }}><List.Icon icon="plus"/></TouchableOpacity>}
                                         />
 
                                         <ItemDivider/>
@@ -229,10 +237,12 @@ const ProfileSettings = () => {
                                             style={[styles.listitem]}
                                             title={'Client'}
                                             onPress={async () => {
-                                                navigation.navigate("AddEditClient");
+                                                navigation.navigate("ListClients");
                                             }}
                                             left={() => <List.Icon icon="account-plus"/>}
-                                            right={() => <List.Icon icon="chevron-right"/>}
+                                            right={() => <TouchableOpacity onPress={async () => {
+                                                navigation.navigate("AddEditClient");
+                                            }}><List.Icon icon="plus"/></TouchableOpacity>}
                                         />
 
 
@@ -266,6 +276,19 @@ const ProfileSettings = () => {
                                             right={() => <List.Icon icon="chevron-right"/>}
                                         />
 
+                                       {/* <ItemDivider/>
+
+                                        <List.Item
+                                            style={[styles.listitem]}
+                                            title={'Advanced Reports (web)'}
+                                            onPress={() => {
+                                                const url = `https://${workspace}.dhru.com/reports/sales-summary`;
+                                                Linking.openURL(url)
+                                            }}
+                                            left={() => <List.Icon icon="receipt"/>}
+                                            right={() => <List.Icon icon="chevron-right"/>}
+                                        />
+*/}
                                     </Card.Content>
                                 </Card>
 
@@ -338,36 +361,79 @@ const ProfileSettings = () => {
                                             right={() => <List.Icon icon="chevron-right"/>}
                                         />
 
+                                        <ItemDivider/>
+
+                                        {/*<List.Item
+                                            style={[styles.listitem]}
+                                            title="Advance Settings (Web)"
+                                            onPress={() => {
+                                                const url = `https://${workspace}.dhru.com/settings/staff`;
+                                                Linking.openURL(url)
+                                            }}
+                                            left={() => <List.Icon icon="cellphone-link"/>}
+                                            right={() => <List.Icon icon="chevron-right"/>}
+                                        />
+
+                                        <ItemDivider/>*/}
+
+                                        <List.Item
+                                            style={[styles.listitem]}
+                                            title="Contact Us"
+                                            onPress={() => {
+                                                navigation.navigate("ContactUs");
+                                            }}
+                                            left={() => <List.Icon icon="help-circle-outline"/>}
+                                            right={() => <List.Icon icon="chevron-right"/>}
+                                        />
+
 
                                     </Card.Content>
                                 </Card>
 
 
-                                {role === 'admin' && <View>
+                                <Card style={[styles.card,styles.bg_light,styles.m_3]} onPress={()=>{
+                                    const url = `https://${workspace}.dhru.com`;
+                                    Linking.openURL(url)
+                                }}>
+                                    <Card.Content style={[styles.cardContent]}>
+                                        <View>
+                                            <Paragraph style={[styles.textCenter]}>
+                                                To Manage Users, Access Roles, Accounting, Multiple Locations, Analytics, Dashboards, Subscription and many more Advanced Settings and Features available at web.
+                                            </Paragraph>
+                                            <Paragraph style={[styles.bold,styles.textCenter]}>
+                                                <Text style={[styles.bold,styles.textCenter,{color:styles.primary.color,}]}> {`https://${workspace}.dhru.com`}</Text>
+                                            </Paragraph>
+                                        </View>
+                                    </Card.Content>
+                                </Card>
 
+
+
+
+                                {role === 'admin' && <View style={[styles.py_4]}>
                                     <Card style={[styles.card, {marginBottom: 0}]}>
                                         <Card.Content style={[styles.cardContent,]}>
 
-                                            <View style={[styles.mb_5]}>
+                                            <View style={[styles.p_5,{borderColor: styles.red.color,
+                                                borderWidth: 1,
+                                                width:'100%',
+                                                borderStyle: 'dashed',
+                                                borderRadius: 5}]}>
                                                 <DeleteButton
                                                     options={['Reset', 'Cancel']}
                                                     title={'Reset Terminal'}
                                                     buttonTitle={'Reset Terminal'}
+
                                                     message={`Are you sure want to reset Terminal? All data will be deleted...`}
                                                     render={() => {
                                                         return (
-                                                            <PButton
+                                                            <View style={[styles.p_3]}>
+                                                                <Paragraph  style={[styles.paragraph,{color:styles.red.color}]}>Reset Terminal</Paragraph>
+                                                                <Paragraph style={[styles.paragraph]}>
+                                                                    After reset terminal can resume in future or setup in new device as new terminal too.
+                                                                </Paragraph>
+                                                            </View>
 
-                                                                mode={'text'}
-                                                                contentStyle={{
-                                                                    borderColor: styles.red.color,
-                                                                    borderWidth: 1,
-                                                                    borderStyle: 'dashed',
-                                                                    borderRadius: 7,
-                                                                    color: styles.red.color
-                                                                }}
-                                                                labelStyle={[styles.capitalize, {color: styles.red.color}]}> Reset
-                                                                Terminal </PButton>
                                                         )
                                                     }}
                                                     onPress={(index: any) => {
@@ -378,19 +444,42 @@ const ProfileSettings = () => {
                                                 />
                                             </View>
 
-                                            <View>
+
+
+
+
+                                            <View style={[styles.p_5,styles.mt_5,{borderColor: styles.red.color,
+                                                borderWidth: 1,
+                                                width:'100%',
+                                                borderStyle: 'dashed',
+                                                borderRadius: 5}]}>
                                                 <DeleteButton
                                                     options={['Delete Account', 'Cancel']}
                                                     title={'Close & Delete Account'}
                                                     buttonTitle={'Close & Delete Account'}
+                                                    morestyle = {{borderWidth:0}}
                                                     message={`Are you sure want to delete "${email}" account?`}
                                                     onPress={(index: any) => {
                                                         if (index === 0) {
                                                             closeAccount().then()
                                                         }
                                                     }}
+                                                    render={() => {
+                                                        return (
+                                                            <View style={[styles.p_3]}>
+                                                                <Paragraph style={[styles.paragraph,{color:styles.red.color}]}>Close & Delete Account</Paragraph>
+                                                                <Paragraph style={[styles.paragraph]}>
+                                                                    Permanently delete DHRU account and remove workspace with all data and settings.
+                                                                </Paragraph>
+                                                            </View>
+
+                                                        )
+                                                    }}
+
                                                 />
                                             </View>
+
+
 
                                         </Card.Content>
                                     </Card>

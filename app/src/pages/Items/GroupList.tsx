@@ -19,7 +19,7 @@ const GroupItem = (props: any) => {
 
 
     const selectGroup = (group: any) => {
-        dispatch(setSelected({value: group.value, field: 'group'}))
+        dispatch(setSelected({value: [group.value], field: 'group'}))
     }
 
     return <TouchableOpacity onPress={() => selectGroup(item)}
@@ -41,7 +41,9 @@ const Index = (props: any) => {
 
     const {selectedgroup, grouplist, navigation} = props;
 
-    let groups: any = Object.values(grouplist).sort(sortByGroup).map((group: any) => {
+    let groups: any = Object.values(grouplist).sort(sortByGroup).filter((group:any)=>{
+        return group.itemgroupmid === '0'
+    }).map((group: any) => {
         return {label: group.itemgroupname, value: group.itemgroupid,color:group.itemgroupcolor}
     })
 
@@ -50,6 +52,9 @@ const Index = (props: any) => {
 
 
     return <View style={[styles.h_100,styles.p_3]}>
+
+
+
         <FlatList
             data={groups}
 

@@ -46,6 +46,8 @@ const Index = (props: any) => {
     const initdata: any = isDevelopment ? {
         //email: 'akash@dhrusoft.com',
         //password: 'Akash@123',
+        //email: 'obodogabriel29@gmail.com',
+        //password: 'Podoski@12',
         email: 'dhru360@yahoo.com',
         password: 'dhru@9090',
     } : {
@@ -86,9 +88,11 @@ const Index = (props: any) => {
             const {email_verified, mobile_verified, whatsapp_verified, phone_number_verified} = response.data;
 
             if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
+
                 localredux.licenseData = {...values, ...response.data}
-                localredux.authData = {...response.data, token: response.token}
+                localredux.authData = {...response.data, token: response.token,global_token: response.global_token}
                 device.token = response.token;
+                device.global_token = response.global_token;
                 urls.localserver = '';
                 saveLocalSettings('serverip',urls.localserver).then();
                 if (!email_verified) {
@@ -97,6 +101,7 @@ const Index = (props: any) => {
                     navigation.navigate('Workspaces');
                 }
             }
+
         })
     }
 

@@ -5,7 +5,15 @@ import {styles} from "../../theme";
 import {Button, Container} from "../../components";
 import {useDispatch} from "react-redux";
 import {Caption, Card, Paragraph,} from "react-native-paper";
-import {appLog, assignOption, getDefaultCurrency, nextFocus, syncData, updateComponent} from "../../libs/function";
+import {
+    appLog,
+    assignOption,
+    getDefaultCurrency,
+    nextFocus,
+    selectItem,
+    syncData,
+    updateComponent
+} from "../../libs/function";
 import {Field, Form} from "react-final-form";
 
 import {
@@ -30,6 +38,7 @@ import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
 import store from "../../redux-store/store";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
+import {insertClients, insertItems} from "../../libs/Sqlite/insertData";
 
 let moredetail: any = false
 const Index = (props: any) => {
@@ -41,6 +50,7 @@ const Index = (props: any) => {
 
     const search = props?.route?.params?.search;
     const editdata = props?.route?.params?.data;
+    const getList = props?.route?.params?.getList;
 
     const {pricingtemplate, currency, paymentterms, general} = localredux.initData;
     const {taxtypelist, statelist} = localredux;
@@ -132,15 +142,18 @@ const Index = (props: any) => {
                 try {
                     const client = {...values, ...result.data, label: values.displayname, value: result.data.clientid};
 
-                    await syncData(false,'customer').then()
+                    await insertClients([client], 'onebyone').then(async () => {
+                        if (Boolean(search)) {
+                            store.dispatch(updateCartField({clientid: client.clientid, clientname: client.displayname}));
+                            navigation.goBack()
+                        }
+                        Boolean(getList) && getList()
+                        setTimeout(async () => {
+                            dispatch(hideLoader());
+                            navigation?.goBack()
+                        }, 100)
+                    });
 
-                    if (Boolean(search)) {
-                        store.dispatch(updateCartField({clientid: client.clientid, clientname: client.displayname}));
-                        navigation.goBack()
-                    }
-
-                    navigation.goBack()
-                    dispatch(hideLoader());
                 } catch (e) {
                     dispatch(hideLoader());
                     appLog('e', e)

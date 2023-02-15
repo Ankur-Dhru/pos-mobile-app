@@ -28,7 +28,6 @@ const Index = (props: any) => {
         gridviewicon,
         label,
         addItem,
-        displaytype,
     }: any = route?.params || {};
 
 

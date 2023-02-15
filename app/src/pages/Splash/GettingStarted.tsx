@@ -15,8 +15,6 @@ import moment from "moment/moment";
 
 
 import PageLoader from "../../components/PageLoader";
-import {Paragraph} from "react-native-paper";
-
 
 
 

@@ -16,7 +16,7 @@ export let adminUrl: any = '';
 
 export const urls = {posUrl:'',adminUrl:'',localserver:''}
 export const db = {name:''}
-
+export const capture = {photo:''}
 
 
 getLocalSettings('generalsettings').then((r:any) => {
@@ -47,6 +47,8 @@ export enum METHOD {
 export enum ACTIONS {
     INVOICE = "invoice",
     EXPENSE = "expense",
+    RECEIPT = "receipt",
+    SEARCH = "search",
     VOUCHER = "voucher",
     ITEM = "item",
     ITEMS = "items",
@@ -86,7 +88,8 @@ export enum ACTIONS {
     DRAWER = "drawer",
     SAVE_TABLE_ORDER = "tableorder",
     REPORT_SALES = "reportsales",
-    DAY_END_REPORT = "dayendreport"
+    DAY_END_REPORT = "dayendreport",
+    REPORTCURRENTSTOCK = "reportcurrentstock",
 }
 
 
@@ -1845,199 +1848,6 @@ export  const  dayendReportTemplate = `
 {{{line}}}`
 
 
-export const testInvoiceData = {
-    "localorderid": 183,
-    "invoice_display_number": 100,
-    "globaltax": [
-        {
-            "taxid": "4e12a51f-ec51-4de4-b621-d3a259c37d0b",
-            "taxname": "No-Tax",
-            "taxtype": "Cess",
-            "taxprice": 0,
-            "taxgroupid": "9da54644-3581-45a3-ae2f-dbdc72a4af3a",
-            "taxablerate": 900,
-            "taxpercentage": 0,
-            "taxpricedisplay": 0,
-            "taxableratedisplay": 900
-        }
-    ],
-    "paymentby": "Cash",
-    "staffname": "DHRU SUPPORT",
-    "clientname": "Walkin",
-    "totalItems": 3,
-    "vouchertax": 0,
-    "referenceid": "",
-    "vouchertype": "outward",
-    "invoiceitems": [
-        {
-            "hsn": "545",
-            "key": "66167397-f388-4afe-b0fe-c6834a6ff679",
-            "mrp": 0,
-            "price": 900,
-            "change": false,
-            "taxobj": [
-                {
-                    "taxid": "4e12a51f-ec51-4de4-b621-d3a259c37d0b",
-                    "taxname": "No-Tax",
-                    "taxtype": "Cess",
-                    "taxprice": 0,
-                    "taxgroupid": "9da54644-3581-45a3-ae2f-dbdc72a4af3a",
-                    "taxablerate": 900,
-                    "taxpercentage": 0
-                }
-            ],
-            "newitem": false,
-            "clientid": "1",
-            "itemtype": "goods",
-            "pricenew": 900,
-            "accountid": 2,
-            "productid": "1",
-            "recurring": "onetime",
-            "productqnt": 3,
-            "pricingtype": "onetime",
-            "product_qnt": 3,
-            "productrate": "300",
-            "pricedisplay": 900,
-            "inventorytype": "fifo",
-            "productamount": 900,
-            "taxobjdisplay": [
-                {
-                    "taxid": "4e12a51f-ec51-4de4-b621-d3a259c37d0b",
-                    "taxname": "No-Tax",
-                    "taxtype": "Cess",
-                    "taxprice": 0,
-                    "taxgroupid": "9da54644-3581-45a3-ae2f-dbdc72a4af3a",
-                    "taxablerate": 900,
-                    "taxpercentage": 0
-                }
-            ],
-            "product_amount": 300,
-            "productamount1": 0,
-            "pricedisplaynew": 900,
-            "productdiscount1": 0,
-            "productqntunitid": "9c2ecc81-d201-4353-8fbc-7b9d61e0afb4",
-            "producttaxamount": 0,
-            "item_total_amount": 900,
-            "producttaxgroupid": "9da54644-3581-45a3-ae2f-dbdc72a4af3a",
-            "product_tax_amount": 0,
-            "product_tax_object": [
-                {
-                    "taxid": "4e12a51f-ec51-4de4-b621-d3a259c37d0b",
-                    "taxname": "No-Tax",
-                    "taxtype": "Cess",
-                    "taxprice": 0,
-                    "taxgroupid": "9da54644-3581-45a3-ae2f-dbdc72a4af3a",
-                    "taxablerate": 900,
-                    "taxpercentage": 0
-                }
-            ],
-            "productdisplayname": "Item Name",
-            "productratedisplay": 300,
-            "productratetaxable": 300,
-            "product_total_price": 900,
-            "productdiscounttype": "%",
-            "isDepartmentSelected": false,
-            "item_total_inclusive": 900,
-            "productamountdisplay": 900,
-            "producttaxableamount": 900,
-            "item_total_tax_amount": 0,
-            "productamountdisplay1": 0,
-            "producttaxabledisplay": 900,
-            "product_amount_display": 300,
-            "product_taxable_amount": 300,
-            "productdiscountamount1": 0,
-            "productdiscountamount2": 0,
-            "product_discount_amount": 0,
-            "producttaxamountdisplay": 0,
-            "item_amount_for_subtotal": 900,
-            "item_total_amount_display": 900,
-            "item_total_taxable_amount": 900,
-            "product_inclusive_taxable": 300,
-            "productratetaxabledisplay": 300,
-            "totalTaxPercentageDisplay": 0,
-            "item_total_global_discount": 0,
-            "item_total_inline_discount": 0,
-            "product_tax_amount_display": 0,
-            "product_tax_object_display": [
-                {
-                    "taxid": "4e12a51f-ec51-4de4-b621-d3a259c37d0b",
-                    "taxname": "No-Tax",
-                    "taxtype": "Cess",
-                    "taxprice": 0,
-                    "taxgroupid": "9da54644-3581-45a3-ae2f-dbdc72a4af3a",
-                    "taxablerate": 900,
-                    "taxpercentage": 0
-                }
-            ],
-            "product_total_price_display": 900,
-            "item_total_inclusive_display": 900,
-            "productdiscountamountdisplay": 0,
-            "item_total_tax_amount_display": 0,
-            "product_total_discount_amount": 0,
-            "productdiscountamountdisplay1": 0,
-            "productdiscountamountdisplay2": 0,
-            "product_global_discount_amount": 0,
-            "product_taxable_amount_display": 300,
-            "product_discount_amount_display": 0,
-            "item_amount_for_subtotal_display": 900,
-            "item_total_taxable_amount_display": 900,
-            "product_inclusive_taxable_display": 300,
-            "item_total_global_discount_display": 0,
-            "item_total_inline_discount_display": 0,
-            "product_total_discount_amount_display": 0,
-            "product_global_discount_amount_display": 0
-        }
-    ],
-    "tablename": "Table Name",
-    "tableorderid": "",
-    "vouchertotal": 900,
-    "paymentmethod": "c02fc4ca-8d89-4c91-bd66-2dd29bc34e43",
-    "placeofsupply": "IN-GJ",
-    "referencetype": "",
-    "selectedindex": 2,
-    "voucherprofit": "",
-    "vouchertypeid": "b152d626-b614-4736-8572-2ebd95e24173",
-    "discountaccunt": 20,
-    "voucherremarks": "",
-    "vouchertaxable": 900,
-    "vouchertaxtype": "inclusive",
-    "adjustmentlabel": "Adjustment",
-    "voucherdiscount": 0,
-    "voucherroundoff": 0,
-    "vouchersubtotal": 900,
-    "roundoffselected": "auto",
-    "selectedtemplate": 4,
-    "totalUniqueItems": 1,
-    "isPaymentReceived": false,
-    "vouchercreatetime": "05:44:02",
-    "vouchertaxdisplay": 0,
-    "inclusive_subtotal": 900,
-    "typeWiseTaxSummary": [
-        {
-            "taxtype": "Cess",
-            "taxprice": 0
-        }
-    ],
-    "currentDecimalPlace": 2,
-    "vouchercurrencyrate": "1",
-    "vouchertotaldisplay": 900,
-    "totalwithoutroundoff": 900,
-    "voucherdiscountplace": "askonplace",
-    "voucherglobaldiscount": 0,
-    "voucherinlinediscount": 0,
-    "vouchertaxabledisplay": 900,
-    "voucherdiscountdisplay": 0,
-    "voucherroundoffdisplay": 0,
-    "vouchersubtotaldisplay": 900,
-    "canchangediscoutnaccount": true,
-    "inclusive_subtotal_display": 900,
-    "vouchertotaldiscountamount": 0,
-    "totalwithoutroundoffdisplay": 900,
-    "vouchertransitionaldiscount": true,
-    "voucherglobaldiscountdisplay": 0,
-    "voucherinlinediscountdisplay": 0,
-    "vouchertotaldiscountamountdisplay": 0,
-};
 
 
 export const ItemDivider = () => {

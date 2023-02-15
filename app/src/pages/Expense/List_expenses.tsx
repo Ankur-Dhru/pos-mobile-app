@@ -1,4 +1,4 @@
-import {ACTIONS, device, ItemDivider, localredux, METHOD, urls} from "../../libs/static";
+import {ACTIONS, device, ItemDivider, localredux, METHOD, STATUS, urls} from "../../libs/static";
 import React, {memo, useCallback, useEffect, useState} from "react";
 import {FlatList, Text, TouchableOpacity, View} from "react-native";
 import {Appbar, Card, List, Paragraph} from "react-native-paper";
@@ -13,6 +13,8 @@ import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
 import apiService from "../../libs/api-service";
 import moment from "moment/moment";
+import store from "../../redux-store/store";
+import {hideLoader, setAlert} from "../../redux-store/reducer/component";
 
 
 let expenselist:any = []
@@ -43,8 +45,8 @@ const Index = (props: any) => {
         endtime: `23:59`
     });
 
-    useEffect(() => {
 
+    const getList = () => {
         apiService({
             method: METHOD.GET,
             action: ACTIONS.EXPENSE,
@@ -60,15 +62,22 @@ const Index = (props: any) => {
             hideLoader: true,
             hidealert: true,
             other: {url: urls.posUrl},
-        }).then((response: any) => {
-            const {info, data}: any = response;
-            expenselist = clone(Object.values(data))
-            setFilteExpenses(expenselist);
+        }).then((result: any) => {
+            const {info, data}: any = result;
+            if (result.status === STATUS.SUCCESS && Boolean(data)) {
+                expenselist = clone(Object.values(data))
+                setFilteExpenses(expenselist);
+            }
             setLoader(false);
-
         })
+    }
 
+    useEffect(() => {
+        getList()
     }, [])
+
+
+
 
     useEffect(()=>{
         setFilteExpenses(clone(filterArray(expenselist, ['client','voucherdisplayid'], search)))
@@ -78,7 +87,7 @@ const Index = (props: any) => {
     const renderItem = useCallback(({item, index}: any) => {
 
         return <TouchableOpacity onPress={()=>{
-            navigation.navigate('AddEditExpense',{data: {...item,edit:true}})
+            navigation.navigate('AddEditExpense',{data: {...item,edit:true},getList:getList})
         }}><View style={[styles.p_4]} key={index}>
             <View
                 style={[styles.grid, styles.noWrap, styles.middle, styles.justifyContentSpaceBetween]}>
@@ -113,7 +122,7 @@ const Index = (props: any) => {
     }
 
     navigation.setOptions({
-        headerRight: () =>  <Appbar.Action icon="plus" onPress={() => navigation.navigate('AddEditExpense')}/>
+        headerRight: () =>  <Appbar.Action icon="plus" onPress={() => navigation.navigate('AddEditExpense',{getList:getList})}/>
     })
 
 
@@ -135,13 +144,9 @@ const Index = (props: any) => {
                             keyboardShouldPersistTaps={'always'}
                             renderItem={renderItem}
                             ItemSeparatorComponent={ItemDivider}
-                            ListEmptyComponent={Boolean(filteExpenses?.length > 0) ? <View>
-                                <View style={[styles.p_6]}>
-                                    <Text
-                                        style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> No result found</Text>
-                                </View>
-                            </View> : <View style={[styles.p_6]}>
-                                <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>Search Expense from here</Text>
+                            ListEmptyComponent={<View style={[styles.p_6]}>
+                                <Text
+                                    style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> No result found</Text>
                             </View>}
                             keyExtractor={expense => expense.expenseid}
                         />}

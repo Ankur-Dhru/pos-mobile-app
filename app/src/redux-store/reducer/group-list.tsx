@@ -10,6 +10,7 @@ export const groupList = createSlice({
     },
     setGroup: (state: any, action) => {
       const data = action.payload;
+
       return {
         ...state,
          [data.itemgroupid]:data

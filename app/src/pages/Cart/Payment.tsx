@@ -32,7 +32,8 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate,cl
     }
 
     const {paymentgateway}: any = localredux.initData;
-    const {currentLocation: {defaultpaymentgateway}, taxInvoice}: any = localredux.localSettingsData;
+    const {defaultpaymentgateway}: any = localredux.localSettingsData.currentLocation || {};
+    const {taxInvoice} = localredux.localSettingsData;
 
     const getGatewayDetailByKey = (key: any, value: any) => {
         const gatewayname: any = Object.keys(paymentgateway[key]).filter((key) => key !== "settings");

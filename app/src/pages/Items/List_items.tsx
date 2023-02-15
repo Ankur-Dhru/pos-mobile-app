@@ -28,20 +28,25 @@ const Index = (props: any) => {
     }
 
     useEffect(() => {
+        getList()
+    }, [search])
 
+
+
+
+    const  getList = () => {
         getItemsByWhere({itemname: search}).then((items: any) => {
             setFilteItems(items);
             setLoader(false)
         });
-    }, [search])
+    }
 
 
     const renderItem = useCallback(({item, index}: any) => {
         return <List.Item title={item.itemname}
                           titleStyle={{textTransform: 'capitalize'}}
                           onPress={()=>{
-                              appLog('item',item)
-                              navigation.navigate('AddEditItemNavigator',{data: {...item,pricingtype:item?.pricing?.type,edit:true}})
+                              navigation.navigate('AddEditItemNavigator',{data: {...item,pricingtype:item?.pricing?.type,edit:true,},getList:getList})
                           }}
                           right={() => <View style={[styles.mt_2]}><ProIcon name={'chevron-right'} /></View> }
         />
@@ -54,7 +59,7 @@ const Index = (props: any) => {
 
 
     navigation.setOptions({
-        headerRight: () =>  <Appbar.Action icon="plus" onPress={() => navigation.navigate('AddEditItemNavigator')}/>
+        headerRight: () =>  <Appbar.Action icon="plus" onPress={() => navigation.navigate('AddEditItemNavigator',{getList:getList})}/>
     })
 
 

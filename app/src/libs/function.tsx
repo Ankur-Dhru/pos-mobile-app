@@ -581,7 +581,6 @@ export const syncData = async (loader = true,synctype  = '') => {
                             }
                         }
 
-
                         if (type !== "finish") {
                             await store.dispatch(setSyncDetail({
                                 type: result,
@@ -590,7 +589,6 @@ export const syncData = async (loader = true,synctype  = '') => {
                                 total: (Boolean(data?.extra) && Boolean(data?.extra?.total)) ? data.extra.total : 0
                             }))
                             setTimeout(async () => {
-
                                 await getData({type, start});
                             }, 300)
 
@@ -2247,7 +2245,9 @@ export const selectWorkspace = async (workspace: any, navigation: any) => {
         store.dispatch(hideLoader())
 
         if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
-            localredux.initData = {...response.data, deviceName: response?.deviceName, workspace: workspace.name}
+
+            localredux.initData = {...response.data, deviceName: response?.deviceName, workspace: workspace.name,license_token:response.license_token}
+
             if (Boolean(localredux.initData?.general?.legalname) && Boolean(localredux.initData?.location) && Boolean(localredux.initData?.currency)) {
                 navigation.replace('Terminal');
             } else {
@@ -2820,26 +2820,33 @@ export const syncImages = async () => {
 
            let imagepath = items[key]?.itemimage;
 
-            if(Boolean(imagepath)) {
-                    await toDataURL(`https://${imagepath}`, async function (dataUrl: any) {
-                     let filename = imagepath.split('/').pop()
-
-                    const base64result = dataUrl.split(',')[1];
-                    const path = 'file://' + RNFS.DocumentDirectoryPath + '/'+filename;
-
-                    await RNFS.writeFile(path, base64result, 'base64')
-                        .then((success) => {
-
-                        })
-                        .catch((err) => {
-                            appLog(err.message);
-                        });
-                })
-            }
+            saveImage(imagepath,false).then()
 
         }
     });
 
+}
+
+export const saveImage = async (imagepath:any,local:any) => {
+    if(Boolean(imagepath)) {
+        if(!local){
+            imagepath = `https://${imagepath}`
+        }
+        await toDataURL(imagepath, async function (dataUrl: any) {
+            let filename = imagepath.split('/').pop()
+
+            const base64result = dataUrl.split(',')[1];
+            const path = 'file://' + RNFS.DocumentDirectoryPath + '/'+filename;
+
+            await RNFS.writeFile(path, base64result, 'base64')
+                .then((success) => {
+
+                })
+                .catch((err) => {
+                    appLog(err.message);
+                });
+        })
+    }
 }
 
 
@@ -2873,3 +2880,47 @@ export const getItemImage = (item:any) => {
     }
     return imagepath
 }
+
+
+
+export const uploadFile = (file: any, callback: any) => {
+    if (file) {
+
+        apiService({
+            method: METHOD.GET,
+            action: 'getuploadurl',
+            queryString: {file_name: file.name, file_type: file.type,uri:file.uri},
+            other:{url: 'https://apigateway.dhru.com/v1/',token: localredux.authData.global_token,xhrRequest: true},
+            token: localredux.authData.global_token
+
+        }).then((responseUrl) => {
+
+            if (responseUrl.status === STATUS.SUCCESS) {
+                let requestOptions = {
+                    method: 'PUT',
+                    headers: {"Content-Type": file.type},
+                    body: file,
+                };
+
+                fetch(responseUrl.upload_url, requestOptions)
+                    .then(response => {
+                        if (response.status === 200) {
+                            callback({
+                                download_url: responseUrl.download_url,
+                                file_name: responseUrl.original_file_name,
+                            })
+                        }
+                    })
+                    .catch(error => {
+                        //console.log('error', error)
+                    });
+            }
+            else{
+                errorAlert(responseUrl.message)
+            }
+        });
+
+
+
+    }
+};

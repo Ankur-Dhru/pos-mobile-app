@@ -49,6 +49,7 @@ const Index = (props: any) => {
 
                 onChange={(value: any) => {
                     setSelected(value)
+                    appLog('value',value)
                     fieldprops.input.onChange(value);
                 }}>
             </InputField>

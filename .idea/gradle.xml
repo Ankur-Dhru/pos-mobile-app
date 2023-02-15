@@ -31,6 +31,7 @@
             <option value="$PROJECT_DIR$/app/node_modules/react-native-camera/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-contacts/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-device-info/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/react-native-document-picker/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-esc-pos-printer/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-extra-dimensions-android/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-fs/android" />
@@ -38,6 +39,8 @@
             <option value="$PROJECT_DIR$/app/node_modules/react-native-get-random-values/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-gradle-plugin" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-html-to-pdf/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/react-native-image-crop-picker/android" />
+            <option value="$PROJECT_DIR$/app/node_modules/react-native-image-resizer/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-image-size/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-linear-gradient/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-pager-view/android" />

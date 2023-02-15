@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {SafeAreaView, ScrollView, View} from 'react-native';
+import {SafeAreaView, ScrollView, TouchableOpacity, View} from 'react-native';
 import {styles} from "../../theme";
 
-import {Button, Container} from "../../components";
+import {Button, Container, ProIcon} from "../../components";
 import {useDispatch} from "react-redux";
-import {appLog, assignOption, errorAlert, syncData} from "../../libs/function";
+import {appLog, assignOption, errorAlert} from "../../libs/function";
 import {Field, Form} from "react-final-form";
 
 import {ACTIONS, device, localredux, METHOD, required, STATUS, urls} from "../../libs/static";
@@ -36,6 +36,14 @@ const Index = (props: any) => {
         ...editdata
     }
 
+    const colors = ['#cdb4db','#ffc8dd','#ffafcc','#bde0fe','#a2d2ff',
+        '#9b5de5','#f15bb5','#fee440','#00bbf9','#00f5d4',
+        '#ef476f','#ffd166','#06d6a0','#118ab2','#073b4c',
+        '#9381ff','#b8b8ff','#f8f7ff','#ffeedd','#ffd8be',
+        '#003049','#d62828','#f77f00','#fcbf49','#eae2b7',
+        '#8e9aaf','#cbc0d3','#efd3d7','#feeafa','#dee2ff',
+    ]
+
 
     const handleSubmit = async (values: any) => {
 
@@ -54,18 +62,15 @@ const Index = (props: any) => {
         }).then(async (result) => {
 
             if (result.status === STATUS.SUCCESS) {
-                dispatch(setGroup(values))
 
-               // dispatch(setSelected({value: [values.itemgroupid], field: 'group'}))
-                await syncData(false,'setting').then()
+                await dispatch(setGroup(values))
 
                 if (Boolean(callback)) {
                     await callback(values)
                     navigation.goBack()
                 }
                 navigation.goBack()
-            }
-            else{
+            } else {
                 errorAlert(result.message)
             }
             device.searchlist = ''
@@ -96,8 +101,8 @@ const Index = (props: any) => {
         return <PageLoader/>
     }
 
-    if(initdata.edit){
-        navigation.setOptions({headerTitle:`Edit ${initdata.itemgroupname}`})
+    if (initdata.edit) {
+        navigation.setOptions({headerTitle: `Edit ${initdata.itemgroupname}`})
     }
 
 
@@ -107,9 +112,9 @@ const Index = (props: any) => {
                 <Form
                     onSubmit={handleSubmit}
                     initialValues={{...initdata}}
-                    render={({handleSubmit, submitting, values, ...more}: any) => (
+                    render={({handleSubmit, submitting, values,form, ...more}: any) => (
                         <View style={[styles.middle]}>
-                            <View style={[styles.middleForm,{maxWidth:400}]}>
+                            <View style={[styles.middleForm, {maxWidth: 400}]}>
                                 <ScrollView>
                                     <Card style={[styles.card]}>
 
@@ -151,6 +156,21 @@ const Index = (props: any) => {
 
                                             </View>
 
+
+                                            <View style={[styles.grid,]}>
+                                                {
+                                                    colors.map((color:any)=>{
+                                                        return <>
+                                                            <TouchableOpacity style={[styles.flexGrow,styles.center,styles.middle,{minWidth:60,height:60,backgroundColor:color}]} onPress={()=>{
+                                                                form.change('itemgroupcolor',color)
+                                                            }}>
+                                                                {values.itemgroupcolor === color &&  <ProIcon name={'check'} color={'white'}/>}
+                                                            </TouchableOpacity>
+                                                        </>
+                                                    })
+                                                }
+                                            </View>
+
                                         </Card.Content>
 
                                     </Card>
@@ -162,7 +182,7 @@ const Index = (props: any) => {
                                         <Button more={{color: 'white'}} disable={more.invalid}
                                                 secondbutton={more.invalid} onPress={() => {
                                             handleSubmit(values)
-                                        }}> {Boolean(initdata.edit)?'Edit':'Add'}  </Button>
+                                        }}> {Boolean(initdata.edit) ? 'Edit' : 'Add'}  </Button>
                                     </View>
 
                                 </KAccessoryView>

@@ -66,6 +66,7 @@ const Index = (props: any) => {
                 localredux.authData = {...params, ...authData};
                 localredux.localSettingsData = localSettingsData;
 
+                device.global_token = initData.global_token
 
                 const {itemgroup}: any = localredux.initData;
                 if (Boolean(itemgroup)) {
@@ -137,6 +138,7 @@ const Index = (props: any) => {
                             other: {url: urls.localserver},
                         }).then((response: any) => {
                             let {data} = response;
+
                             if (Boolean(data)) {
 
                                 let initdata: any = {}
@@ -162,6 +164,7 @@ const Index = (props: any) => {
                                     terminalname: 'pending',
                                     isRestaurant: (locations[locationid]?.industrytype === "foodservices"),
                                 }
+
                                 setData({
                                     initData: initdata,
                                     licenseData: localredux.licenseData,

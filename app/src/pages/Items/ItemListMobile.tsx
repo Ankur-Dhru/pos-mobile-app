@@ -58,7 +58,7 @@ export const getCombos = (selectedgroup:any) => {
 
 const Index = (props: any) => {
 
-    const {selectedgroup, invoiceitems,gridview} = props;
+    const {selectedgroup, invoiceitems,gridView} = props;
 
     const navigation = useNavigation()
 
@@ -121,7 +121,7 @@ const Index = (props: any) => {
 
     const renderItem = useCallback(({item, index}: any) => {
 
-        if(gridview) {
+        if(gridView) {
             if(true) {
                 return <ItemView displayType={'withimage'}  item={item} index={index}
                                       key={item.productid || item.categoryid}/>
@@ -135,7 +135,7 @@ const Index = (props: any) => {
             return <ItemView  displayType={'flatlist'}  item={item}  index={index}
                                      key={item.productid || item.categoryid}/>
         }
-    }, [selectedgroup,gridview,hasImage]);
+    }, [selectedgroup,gridView,hasImage]);
 
 
     if (!loading) {
@@ -151,7 +151,7 @@ const Index = (props: any) => {
 
                 <GroupHeading  />
 
-                    <View style={[styles.h_100]} key={gridview}>
+                    <View style={[styles.h_100]} key={gridView}>
                     <FlatList
                         data={dataSource.filter((item:any)=>{
                             return !Boolean(item.groupid) && !item.isGrouped
@@ -162,7 +162,7 @@ const Index = (props: any) => {
                         getItemLayout={(data, index) => {
                             return {length: 100, offset: 100 * index, index};
                         }}
-                        numColumns={gridview?3:1}
+                        numColumns={gridView?3:1}
                         ItemSeparatorComponent={ItemDivider}
                         /*onMomentumScrollEnd={onEndReached}
                         onEndReachedThreshold={0.5}*/
@@ -182,7 +182,7 @@ const Index = (props: any) => {
                     </View>
 
                 <View style={[styles.mt_auto]}>
-                    <GroupListMobile gridview={gridview}  />
+                    <GroupListMobile gridview={gridView}  />
                 </View>
 
                 </Card.Content>
@@ -199,7 +199,7 @@ const Index = (props: any) => {
 const mapStateToProps = (state: any) => ({
     invoiceitems: state.cartData.invoiceitems,
     selectedgroup: state.selectedData.group?.value,
-    gridview: state.localSettings?.gridview,
+
 })
 
 export default connect(mapStateToProps)(Index);

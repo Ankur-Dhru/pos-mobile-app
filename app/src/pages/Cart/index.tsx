@@ -41,11 +41,16 @@ const Index = (props: any) => {
     const closeMenu = () => setVisible(false);
 
 
+
+
+
+    const [loaded, setLoaded] = useState(false)
+    const [gridView,setGridView] = useState(true)
+
+
     useEffect(() => {
         const voucherDataJson: any = voucherData(VOUCHER.INVOICE, false);
         dispatch(refreshCartData({...tabledetails, ...voucherDataJson}));
-
-
 
             if (tabledetails?.printcounter && !device.tablet) {
                 navigation.navigate('DetailViewNavigator')
@@ -64,6 +69,9 @@ const Index = (props: any) => {
 
             }
 
+        getLocalSettings(`gridview-${localredux.authData.adminid}`).then((data:any)=>{
+            setGridView(data)
+        })
         dispatch(setSelected({value: [mainproductgroupid], field: 'group'}))
 
     }, [])
@@ -89,8 +97,7 @@ const Index = (props: any) => {
     );
 
 
-    const [loaded, setLoaded] = useState(false)
-    const [gridView,setGridView] = useState(true)
+
 
 
 
@@ -123,7 +130,7 @@ const Index = (props: any) => {
 
                 <TouchableOpacity onPress={()=> {
                     let view = !gridView;
-                    saveLocalSettings("gridview", view).then();
+                    saveLocalSettings(`gridview-${localredux?.authData?.adminid}`, view).then();
                     setGridView(view)
                 }}>
                     <ProIcon name={!gridView?'grid':'list'}/>

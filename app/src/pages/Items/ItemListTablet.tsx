@@ -57,11 +57,7 @@ export const ItemView = memo(({item,displayType}:any)=>{
     const baseprice = item?.pricing?.price?.default[0][pricingtype]?.baseprice || 0;
     const hasRestaurant = isRestaurant();
     const hasKot = Boolean(item?.kotid);
-
-
     let imagepath = getItemImage(item)
-
-
 
 
     if(displayType === 'flatlist') {

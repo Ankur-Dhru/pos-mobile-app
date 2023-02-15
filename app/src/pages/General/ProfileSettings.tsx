@@ -205,6 +205,20 @@ const ProfileSettings = () => {
 
                                         <ItemDivider/>
 
+
+                                        <List.Item
+                                            style={[styles.listitem]}
+                                            title={'Payment Received'}
+                                            onPress={async () => {
+                                                navigation.navigate("AddEditPaymentReceived");
+                                            }}
+                                            left={() => <List.Icon icon="currency-inr"/>}
+                                            right={()=><List.Icon icon="plus"/>}
+                                        />
+
+                                        <ItemDivider/>
+
+
                                         <List.Item
                                             style={[styles.listitem]}
                                             title={'Item Category'}
@@ -273,6 +287,18 @@ const ProfileSettings = () => {
                                                 navigation.navigate("DayEndReport");
                                             }}
                                             left={() => <List.Icon icon="receipt"/>}
+                                            right={() => <List.Icon icon="chevron-right"/>}
+                                        />
+
+                                        <ItemDivider/>
+
+                                        <List.Item
+                                            style={[styles.listitem]}
+                                            title={'Current Stock'}
+                                            onPress={() => {
+                                                navigation.navigate("CurrentStock");
+                                            }}
+                                            left={() => <List.Icon icon="inbox-multiple"/>}
                                             right={() => <List.Icon icon="chevron-right"/>}
                                         />
 

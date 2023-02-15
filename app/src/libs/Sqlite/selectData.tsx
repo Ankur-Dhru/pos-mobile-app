@@ -81,7 +81,7 @@ export const getItemsByWhere = async ({itemgroupid,itemname,itemid,groupid,start
 
                 const query = `SELECT *
                                FROM ${TABLE.ITEM}
-                               where ${where}`; // limit ${start*20},20
+                               where ${where}  order by itemname`; // limit ${start*20},20
 
                 txn.executeSql(
                     query,
@@ -93,11 +93,12 @@ export const getItemsByWhere = async ({itemgroupid,itemname,itemid,groupid,start
                     }
                 );
             });
+
             return items
         } catch (e) {
             appLog('e', e)
         }
-        closeDB(db);
+        await closeDB(db);
 
     }
 
@@ -138,7 +139,7 @@ export const getAddonByWhere = async ({itemgroupid,itemname,start}:any) => {
 
                 const query = `SELECT *
                                FROM ${TABLE.ADDON}
-                               where ${where}`; // limit ${start*20},20
+                               where ${where}  order by itemname`; // limit ${start*20},20
 
                 txn.executeSql(
                     query,
@@ -156,7 +157,7 @@ export const getAddonByWhere = async ({itemgroupid,itemname,start}:any) => {
         } catch (e) {
             appLog('e', e)
         }
-        closeDB(db);
+        await closeDB(db);
     }
 }
 
@@ -219,7 +220,7 @@ export const getClientsByWhere = async ({displayname,phone,search,clienttype,sta
 
                 const query = `SELECT *
                                FROM ${TABLE.CLIENT}
-                               where ${where}`; // limit ${start*20},20
+                               where ${where} order by displayname`; // limit ${start*20},20
 
                 txn.executeSql(
                     query,
@@ -235,7 +236,7 @@ export const getClientsByWhere = async ({displayname,phone,search,clienttype,sta
         } catch (e) {
             appLog('get clients', e)
         }
-        closeDB(db);
+        await closeDB(db);
     }
 }
 
@@ -289,7 +290,7 @@ export const getTempOrdersByWhere = async () => {
                 appLog('get temp orders', e)
             }
 
-            closeDB(db);
+            await closeDB(db);
 
         }
 
@@ -327,7 +328,7 @@ export const getOrdersByWhere = async () => {
     } catch (e) {
         appLog('get orders', e)
     }
-    closeDB(db);
+    await closeDB(db);
 }
 
 
@@ -353,5 +354,5 @@ export const readTable = async (tablename:any,{start}:any) => {
     } catch (e) {
         appLog('e', e)
     }
-    closeDB(db);
+    await closeDB(db);
 }

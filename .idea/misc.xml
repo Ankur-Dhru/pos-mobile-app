@@ -21,6 +21,7 @@
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-camera/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-contacts/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-device-info/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-document-picker/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-esc-pos-printer/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-extra-dimensions-android/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-fs/android" />
@@ -29,6 +30,8 @@
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-gradle-plugin" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-haptic-feedback/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-html-to-pdf/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-image-crop-picker/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-image-resizer/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-image-size/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-linear-gradient/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-pager-view/android" />

@@ -1,15 +1,28 @@
 import {device, ItemDivider} from "../../libs/static";
 import React, {memo, useCallback, useEffect, useState} from "react";
-import {FlatList, Text, TouchableOpacity, View} from "react-native";
+import {FlatList, Image, Text, TouchableOpacity, View} from "react-native";
 import {Appbar, Card, List, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
 import {Container, ProIcon, SearchBox} from "../../components";
 
-import {appLog, clone, filterArray} from "../../libs/function";
-import {connect} from "react-redux";
+import {appLog, clone, filterArray, getItemImage, isRestaurant, selectItem, toCurrency} from "../../libs/function";
+import {connect, useDispatch} from "react-redux";
 
 import {useNavigation} from "@react-navigation/native";
 
+
+const Item = memo(({item, navigation}: any) => {
+
+    return <List.Item title={item.itemgroupname}
+                      titleStyle={{textTransform: 'capitalize'}}
+                      onPress={() => {
+                          navigation.navigate('AddEditCategory', {data: {...item, edit: true}})
+                      }}
+                      right={() => <View style={[styles.mt_2]}><ProIcon name={'chevron-right'}/></View>}
+    />
+}, (r1, r2) => {
+    return ((r1.item === r2.item));
+})
 
 const Index = ({grouplist}: any) => {
 
@@ -20,30 +33,25 @@ const Index = ({grouplist}: any) => {
 
     const handleSearch = async (search?: any) => {
         if (Boolean(search.length)) {
-            setCategory(clone(filterArray(grouplist, ['itemgroupname'], search)))
-        }
-        else{
-            setCategory(grouplist)
+            setCategory(filterArray(Object.values(grouplist), ['itemgroupname'], search))
+        } else {
+            setCategory(Object.values(grouplist))
         }
     }
 
-
     const renderItem = useCallback(({item, index}: any) => {
-        return <List.Item title={item.itemgroupname}
-                          titleStyle={{textTransform: 'capitalize'}}
-                          onPress={()=>{
-                              navigation.navigate('AddEditCategory',{data: {...item,edit:true}})
-                          }}
-                          right={() => <View style={[styles.mt_2]}><ProIcon name={'chevron-right'} /></View> }
-        />
-    }, [category]);
+        return <Item item={item} navigation={navigation}/>
+    }, [grouplist]);
+
+
+    useEffect(() => {
+        setCategory(Object.values(grouplist))
+    }, [grouplist])
 
 
     navigation.setOptions({
-        headerRight: () =>  <Appbar.Action icon="plus" onPress={() => navigation.navigate('AddEditCategory')}/>
+        headerRight: () => <Appbar.Action icon="plus" onPress={() => navigation.navigate('AddEditCategory')}/>
     })
-
-
 
 
     return (
@@ -52,7 +60,7 @@ const Index = ({grouplist}: any) => {
 
                 <View style={[styles.grid, styles.middle, styles.justifyContent, {padding: 10}]}>
                     <View style={[styles.w_auto]}>
-                        <SearchBox handleSearch={handleSearch}  autoFocus={false}    placeholder="Search Category..."/>
+                        <SearchBox handleSearch={handleSearch} autoFocus={false} placeholder="Search Category..."/>
                     </View>
 
                 </View>
@@ -62,18 +70,20 @@ const Index = ({grouplist}: any) => {
                     <Card.Content style={[styles.cardContent, {paddingVertical: 0}]}>
 
                         {<FlatList
-                            data={category}
+                            data={Object.values(category)}
                             keyboardDismissMode={'on-drag'}
                             keyboardShouldPersistTaps={'always'}
                             renderItem={renderItem}
                             ItemSeparatorComponent={ItemDivider}
-                            ListEmptyComponent={Boolean(category?.length > 0) ? <View>
+                            ListEmptyComponent={Boolean(Object.values(category)?.length > 0) ? <View>
                                 <View style={[styles.p_6]}>
                                     <Text
-                                        style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> No result found</Text>
+                                        style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> No
+                                        result found</Text>
                                 </View>
                             </View> : <View style={[styles.p_6]}>
-                                <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>Search Category from here</Text>
+                                <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>Search
+                                    Category from here</Text>
                             </View>}
                             keyExtractor={item => item.itemgroupid}
                         />}
@@ -89,7 +99,7 @@ const Index = ({grouplist}: any) => {
 }
 
 const mapStateToProps = (state: any) => ({
-    grouplist: Object.values(state.groupList)
+    grouplist: state.groupList
 })
 
 export default connect(mapStateToProps)(memo(Index));

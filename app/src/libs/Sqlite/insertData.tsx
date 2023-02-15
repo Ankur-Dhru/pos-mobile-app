@@ -29,7 +29,7 @@ export const insertInit = async (  initdata?: any) => {
 
 
     }
-    closeDB(db);
+    await closeDB(db);
 };
 
 
@@ -66,7 +66,12 @@ export const insertItems = async (  itemsdata?: any,type:any = 'all') => {
 
           try {
               const query = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert","groupid") values ${insertQuery.join(', ')}`;
-              const results = await db.executeSql(query);
+              try {
+                  const results = await db.executeSql(query);
+              }
+              catch (e) {
+                  appLog('ERROR',query)
+              }
           }
           catch (e) {
               appLog('insertItems e',e)
@@ -76,7 +81,7 @@ export const insertItems = async (  itemsdata?: any,type:any = 'all') => {
 
       }
   }
-    closeDB(db);
+    await closeDB(db);
 };
 
 
@@ -110,12 +115,16 @@ export const insertAddons = async (  itemsdata?: any,type:any = 'all') => {
 
         if(type === 'all'){
             const query = `INSERT OR REPLACE INTO tblAddon("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert") values ${insertQuery.join(', ')}`;
-            appLog('query',query)
-            const results = await db.executeSql(query);
+            try {
+                const results = await db.executeSql(query);
+            }
+            catch (e) {
+                appLog('ERROR',query)
+            }
 
         }
     }
-    closeDB(db);
+    await closeDB(db);
 };
 
 
@@ -146,12 +155,17 @@ export const insertClients = async (  clientsdata?: any,type:any = 'all') => {
 
         if(type === 'all'){
             const query = `INSERT OR REPLACE INTO tblClient("clientid","displayname","phone","taxregtype","data","clienttype","phonebook") values ${insertQuery.join(', ')}`;
-            appLog('query',query)
-            const results = await db.executeSql(query);
+            try {
+                const results = await db.executeSql(query);
+            }
+            catch (e) {
+                appLog('ERROR',query)
+            }
+
 
         }
     }
-    closeDB(db);
+    await closeDB(db);
 };
 
 
@@ -194,7 +208,7 @@ export const insertTempOrder =  (data?: any) => {
             } catch (e) {
                 appLog('ERROR', insertQuery)
             }
-            closeDB(db);
+            await closeDB(db);
 
         }
         resolve(order)
@@ -213,7 +227,7 @@ export const insertOrder =  (data?: any) => {
         catch (e) {
             appLog('ERROR',insertQuery)
         }
-        closeDB(db);
+        await closeDB(db);
         resolve('Inset Order')
     })
 

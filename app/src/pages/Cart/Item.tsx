@@ -217,12 +217,12 @@ const Index = memo((props: any) => {
                                    {
                                        haskot ? <>
 
-                                           <TouchableOpacity style={[styles.grid,styles.middle,styles.center]}>
+                                           <View style={[styles.grid,styles.middle,styles.center]}>
                                                <ProIcon name={'print'} size={15}/>
                                                <Paragraph style={[styles.paragraph,styles.bold,styles.text_xs]}>
                                                    KOT #{item?.kotid}
                                                </Paragraph>
-                                           </TouchableOpacity>
+                                           </View>
                                    </> :
                                        <AddButton item={item}/>
                                    }

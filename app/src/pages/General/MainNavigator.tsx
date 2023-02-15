@@ -63,8 +63,10 @@ import KotNote from "../Cart/KotNote";
 import KOTDetail from "../Cart/KOTDetail";
 import GeneralSettings from "../GeneralSettings";
 import DayEndReport from "../Report/dayendreport";
+import CurrentStock from "../Report/CurrentStock";
 import ScanItem from "../Items/ScanItem";
 import AddEditExpense from "../../pages/Expense/AddEditExpense"
+import AddEditPaymentReceived from "../../pages/PaymentReceived/AddEditPaymentReceived"
 import DateTimePicker from "./DateTimePicker";
 import AskPermission from "../Pin/AskPermission";
 import BlueToothList from "../PrinterSettings/BlueToothList";
@@ -202,6 +204,7 @@ const ClientAreaStackNavigator = (props: any) => {
             <Stack.Screen name={'AddEditItemNavigator'} component={AddEditItem} options={{headerTitle: 'Add Item'}}/>
             <Stack.Screen name={'AddEditCategory'} component={AddEditCategory} options={{headerTitle: 'Add Category'}}/>
             <Stack.Screen name={'AddEditExpense'} component={AddEditExpense} options={{headerTitle: 'Add Expense'}}/>
+            <Stack.Screen name={'AddEditPaymentReceived'} component={AddEditPaymentReceived} options={{headerTitle: 'Add Payment Received'}}/>
             <Stack.Screen name={'AddEditAccount'} component={AddEditAccount} options={{headerTitle: 'Add Account'}}/>
             <Stack.Screen name={'AddEditClient'} component={AddEditClient} options={{headerTitle: 'Add Client'}}/>
 
@@ -256,6 +259,7 @@ const ProfileSettingsNavigator = (props: any) => {
 
             <Stack.Screen name={'SalesReport'} component={SalesReport} options={{headerTitle: 'Sales Report'}}/>
             <Stack.Screen name={'DayEndReport'} component={DayEndReport} options={{headerTitle: 'Day End Report'}}/>
+            <Stack.Screen name={'CurrentStock'} component={CurrentStock} options={{headerTitle: 'Current Stock'}}/>
 
 
             <Stack.Screen name={'ListItems'} component={ListItems} options={{headerTitle: 'Items'}}/>
@@ -269,6 +273,7 @@ const ProfileSettingsNavigator = (props: any) => {
             <Stack.Screen name={'AddEditAccount'} component={AddEditAccount} options={{headerTitle: 'Add Account'}}/>
             <Stack.Screen name={'AddEditClient'} component={AddEditClient} options={{headerTitle: 'Add Client'}}/>
             <Stack.Screen name={'AddEditExpense'} component={AddEditExpense} options={{headerTitle: 'Add Expense'}}/>
+            <Stack.Screen name={'AddEditPaymentReceived'} component={AddEditPaymentReceived} options={{headerTitle: 'Add Payment Received'}}/>
 
 
             <Stack.Screen name={'KOTPrinter'} component={KOTPrinter} options={{title: 'KOT Printer'}}/>

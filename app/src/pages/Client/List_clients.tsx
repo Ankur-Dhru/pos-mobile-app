@@ -9,7 +9,7 @@ import {appLog, clone, filterArray, startWith} from "../../libs/function";
 import {connect} from "react-redux";
 
 import {useNavigation} from "@react-navigation/native";
-import {getClientsByWhere} from "../../libs/Sqlite/selectData";
+import {getClientsByWhere, getItemsByWhere} from "../../libs/Sqlite/selectData";
 import PageLoader from "../../components/PageLoader";
 
 
@@ -27,11 +27,16 @@ const Index = (props: any) => {
     }
 
     useEffect(() => {
+        getList()
+    }, [search])
+
+
+    const  getList = () => {
         getClientsByWhere({search: search}).then((clients: any) => {
             setFilteClients(clients);
             setLoader(false)
         });
-    }, [search])
+    }
 
 
     const renderItem = useCallback(({item, index}: any) => {
@@ -39,7 +44,7 @@ const Index = (props: any) => {
         return <List.Item title={item.displayname}
                           titleStyle={{textTransform: 'capitalize'}}
                           onPress={()=>{
-                              navigation.navigate('AddEditClient',{data: {...item,edit:true}})
+                              navigation.navigate('AddEditClient',{data: {...item,edit:true},getList:getList})
                           }}
                           right={() => <View style={[styles.mt_2]}><ProIcon name={'chevron-right'} /></View> }
         />
@@ -51,7 +56,7 @@ const Index = (props: any) => {
     }
 
     navigation.setOptions({
-        headerRight: () =>  <Appbar.Action icon="plus" onPress={() => navigation.navigate('AddEditClient')}/>
+        headerRight: () =>  <Appbar.Action icon="plus" onPress={() => navigation.navigate('AddEditClient',{getList:getList})}/>
     })
 
 

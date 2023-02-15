@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {SafeAreaView, TouchableOpacity, View,} from 'react-native';
+import {Image, SafeAreaView, TouchableOpacity, View,} from 'react-native';
 import {styles} from "../../theme";
 
 import {Button, Container, ProIcon} from "../../components";
@@ -9,7 +9,7 @@ import {
     appLog,
     assignOption, errorAlert,
     findObject,
-    getCurrencySign,
+    getCurrencySign, getItemImage,
     isEmpty,
     isRestaurant,
     nextFocus,
@@ -20,7 +20,7 @@ import {
 import {Field, Form} from "react-final-form";
 
 import {
-    ACTIONS,
+    ACTIONS, capture,
     composeValidators,
     device,
     inventoryOption,
@@ -54,6 +54,7 @@ import ItemCategoryList from "./ItemCategoryList";
 import {setSelected} from "../../redux-store/reducer/selected-data";
 import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
+import Attachment from "../Attachment";
 
 
 let otherlanguage = false
@@ -63,6 +64,7 @@ const Index = (props: any) => {
     const {item, pageKey} = props;
     const search = props?.route?.params?.search;
     const editdata = props?.route?.params?.data;
+    const getList = props?.route?.params?.getList;
 
     let isShow: any = false;
     const dispatch = useDispatch()
@@ -110,6 +112,12 @@ const Index = (props: any) => {
         warrantyperiod: "day",
         warrantytoclient: false,
         ...editdata
+    }
+
+    if(initdata.edit){
+        if(initdata?.itemimage) {
+            capture.photo = initdata.itemimage
+        }
     }
 
 
@@ -170,6 +178,9 @@ const Index = (props: any) => {
         const {workspace}: any = localredux.initData;
         const {token}: any = localredux.authData;
 
+        if(Boolean(capture?.photo)){
+            values.itemimage = capture.photo;
+        }
 
 
         await apiService({
@@ -185,21 +196,23 @@ const Index = (props: any) => {
                 dispatch(showLoader())
                 const grouplist: any = store.getState()?.groupList || {}
                 try {
-                    const item = {...values, ...result.data, groupname: grouplist[values?.itemgroupid].itemgroupname};
+                    const item = {...values, ...result.data,itemimage:values.itemimage, groupname: grouplist[values?.itemgroupid].itemgroupname};
 
                     await insertItems([item], 'onebyone').then(async () => {
-
-                        if (search) {
-                            await selectItem(item);
-                            navigation?.goBack()
+                        try {
+                            if (search) {
+                                await selectItem(item);
+                                navigation?.goBack()
+                            }
+                            Boolean(getList) && getList()
+                            setTimeout(async () => {
+                                dispatch(hideLoader());
+                                navigation?.goBack()
+                            }, 100)
                         }
-                        const selectedGroup = store.getState().selectedData.group?.value;
-                        await dispatch(setSelected({value: '', field: 'group'}))
-                        setTimeout(async () => {
-                            await dispatch(setSelected({value: selectedGroup, field: 'group'}))
-                            dispatch(hideLoader());
-                            navigation?.goBack()
-                        }, 100)
+                        catch (e){
+                            appLog('e',e)
+                        }
 
 
                     });
@@ -232,6 +245,7 @@ const Index = (props: any) => {
         navigation.setOptions({headerTitle:`Edit ${initdata.itemname}`})
     }
 
+
     let isRetailIndustry = !isRestaurant();
     return (
 
@@ -248,6 +262,10 @@ const Index = (props: any) => {
 
                                     <KeyboardScroll>
 
+
+                                        <View style={[styles.center,styles.middle]}>
+                                            <Attachment editmode={true} item={initdata}  navigation={navigation}    />
+                                        </View>
 
                                         <View>
                                             <View>
@@ -304,7 +322,7 @@ const Index = (props: any) => {
                                                                             <InputField
                                                                                 {...props}
                                                                                 value={props.input.value}
-                                                                                autoFocus={true}
+
                                                                                 onSubmitEditing={() => nextFocus(inputRef[1])}
                                                                                 returnKeyType={'next'}
                                                                                 label={'Name'}

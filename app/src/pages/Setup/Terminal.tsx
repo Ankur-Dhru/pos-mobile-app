@@ -21,6 +21,7 @@ import Button from "../../components/Button";
 import {useDispatch} from "react-redux";
 import apiService from "../../libs/api-service";
 import {
+    appLog,
     createDatabaseName,
     findObject,
     getStateAndTaxType,
@@ -48,6 +49,8 @@ const Terminal = (props: any) => {
 
     const {navigation, theme}: any = props;
     const {initData, authData}: any = localredux;
+
+    appLog('authData',authData.global_token)
 
 
     const handleSubmit = async (values: any) => {

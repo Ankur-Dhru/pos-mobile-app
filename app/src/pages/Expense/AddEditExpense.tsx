@@ -1,18 +1,18 @@
 import React, {useEffect, useRef, useState} from "react";
 import {SafeAreaView, View} from "react-native";
-import {Card, Paragraph} from "react-native-paper";
+import {Card} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {Field, Form} from "react-final-form";
 import KeyboardScroll from "../../components/KeyboardScroll";
 import InputField from "../../components/InputField";
-import {appLog, clone, isEmpty, nextFocus, printInvoice, voucherData} from "../../libs/function";
+import {appLog, clone, isEmpty, nextFocus, voucherData} from "../../libs/function";
 import {ACTIONS, localredux, METHOD, required, STATUS, urls, VOUCHER} from "../../libs/static";
 import {Button, Container} from "../../components";
 import KAccessoryView from "../../components/KAccessoryView";
 import apiService from "../../libs/api-service";
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
-import { expenseCalculation } from "../../libs/item-calculation";
+import {expenseCalculation} from "../../libs/item-calculation";
 import {getClientsByWhere} from "../../libs/Sqlite/selectData";
 import store from "../../redux-store/store";
 import ChartofAccountList from "./ChartofAccountList";
@@ -20,23 +20,23 @@ import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
 
 
-const AddEditExpense = (props:any) => {
+const AddEditExpense = (props: any) => {
 
     const editdata = props?.route?.params?.data;
+    const getList = props?.route?.params?.getList;
 
-    let init:any = {
-        productqnt:1,
-        clientid:'',
+    let init: any = {
+        productqnt: 1,
+        clientid: '',
         companyid: 1,
-        departmentid:2,
-        ...voucherData(VOUCHER.EXPENSE,false),
+        departmentid: 2,
+        ...voucherData(VOUCHER.EXPENSE, false),
     }
 
-    const {paymentgateway,tax}: any = localredux.initData;
-    const [loader,setLoader] = useState(true);
+    const {paymentgateway, tax}: any = localredux.initData;
+    const [loader, setLoader] = useState(true);
 
-    let [initdata,setInitdata]:any = useState(init);
-
+    let [initdata, setInitdata]: any = useState(init);
 
 
     const getOrderDetail = async (invoice: any) => {
@@ -50,35 +50,42 @@ const AddEditExpense = (props:any) => {
             queryString: {voucherdisplayid: invoice.voucherdisplayid, vouchertypeid: VOUCHER.EXPENSE},
             workspace: workspace,
             token: token,
+            hideLoader:true,
+            hidealert:true,
             other: {url: urls.posUrl},
         }).then(async (result) => {
 
+
             if (result.status === STATUS.SUCCESS) {
-                let data:any = result.data?.result;
+
+                let data: any = result.data?.result;
+
+                const voucheritems = Object.values(data?.voucheritems);
+
+                const {productratedisplay,referenceid,accountid,clientid,producttaxgroupid}:any = voucheritems[0]
 
                 initdata = clone({
                     ...initdata,
-                    price:data.vouchertotal,
-                    ...data
+                    price: productratedisplay+'',
+                    producttaxgroupid: producttaxgroupid+'',
+                    referenceid:referenceid+'',
+                    clientid:clientid+'',
+                    ...data,
+                    accountid: accountid,
                 })
-
                 setInitdata(initdata)
-
                 setLoader(false)
-
             }
         });
     }
 
-    useEffect(()=>{
-       if(editdata?.edit){
-           getOrderDetail(editdata).then();
-       }
-       else{
-           setLoader(false)
-       }
-    },[])
-
+    useEffect(() => {
+        if (editdata?.edit) {
+            getOrderDetail(editdata).then();
+        } else {
+            setLoader(false)
+        }
+    }, [])
 
 
     const getGatewayDetailByKey = (key: any, value: any) => {
@@ -93,32 +100,38 @@ const AddEditExpense = (props:any) => {
         return item
     })));
 
-    const [clients,setClients]:any = useState();
+    const [clients, setClients]: any = useState();
 
-    useEffect(()=>{
+    useEffect(() => {
         getClientsByWhere({clienttype: 1, start: 0}).then((clients) => {
             setClients(clients);
         });
-    },[])
+    }, [])
 
     const dispatch = useDispatch();
     const navigation = useNavigation()
 
-    const handleSubmit = async (values:any) => {
+    const handleSubmit = async (values: any) => {
         const {workspace}: any = localredux.initData;
         const {token}: any = localredux.authData;
 
 
         dispatch(showLoader())
 
-        const ExpenseJSON =  expenseCalculation({
+        const ExpenseJSON = expenseCalculation({
                 ...values,
-                roundoffselected:false,
-                date:values.localdatetime,
+                roundoffselected: false,
+                date: values.localdatetime,
                 "referencetype": values.referencetype,
                 "payment": paymentgateway[values.referencetype].settings.paymentmethod,
                 "accountid": paymentgateway[values.referencetype].settings.paymentaccount,
-                invoiceitems:[{productrate:values.price,productratedisplay:values.price,productqnt:1,accountid:values.accountid,producttaxgroupid:values.producttaxgroupid}]
+                invoiceitems: [{
+                    productrate: values.price,
+                    productratedisplay: values.price,
+                    productqnt: 1,
+                    accountid: values.accountid,
+                    producttaxgroupid: values.producttaxgroupid
+                }]
             },
             null,
             null,
@@ -131,7 +144,7 @@ const AddEditExpense = (props:any) => {
 
 
         await apiService({
-            method: METHOD.POST,
+            method: editdata?.edit ? METHOD.PUT : METHOD.POST,
             action: ACTIONS.EXPENSE,
             body: ExpenseJSON,
             workspace: workspace,
@@ -140,19 +153,20 @@ const AddEditExpense = (props:any) => {
         }).then(async (result) => {
             if (result.status === STATUS.SUCCESS) {
                 store.dispatch(setAlert({visible: true, message: result.message}))
+                Boolean(getList) && getList()
                 dispatch(hideLoader());
                 navigation.goBack()
             }
         });
     }
 
-    const inputRef = [useRef(),useRef(),useRef(),useRef(),useRef(),useRef(),useRef(),useRef()]
+    const inputRef = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef(), useRef(), useRef()]
 
-    if(initdata.edit){
-        navigation.setOptions({headerTitle:`Edit Expense`})
+    if (editdata?.edit) {
+        navigation.setOptions({headerTitle: `Edit Expense`})
     }
 
-    if(loader){
+    if (loader) {
         return <PageLoader/>
     }
 
@@ -166,7 +180,7 @@ const AddEditExpense = (props:any) => {
                     <>
 
                         <View style={[styles.middle,]}>
-                            <View style={[styles.middleForm,{maxWidth:400}]}>
+                            <View style={[styles.middleForm, {maxWidth: 400}]}>
 
                                 <KeyboardScroll>
 
@@ -205,7 +219,7 @@ const AddEditExpense = (props:any) => {
                                                                     <InputField
                                                                         {...props}
                                                                         value={props.input.value}
-                                                                        autoFocus={true}
+
                                                                         onSubmitEditing={() => nextFocus(inputRef[1])}
                                                                         returnKeyType={'next'}
                                                                         keyboardType='numeric'
@@ -219,9 +233,8 @@ const AddEditExpense = (props:any) => {
                                                     </View>
 
 
-
                                                     <View>
-                                                        <Field name="referencetype"  validate={required}>
+                                                        <Field name="referencetype" validate={required}>
                                                             {props => (
                                                                 <InputField
                                                                     {...props}
@@ -264,19 +277,20 @@ const AddEditExpense = (props:any) => {
 
 
                                                     <View>
-                                                        <Field name="accountid"  validate={required}>
+
+                                                        <Field name="accountid" validate={required}>
                                                             {props => (
-                                                                <><ChartofAccountList navigation={navigation}
-                                                                                    fieldprops={props}/></>
+                                                                <><ChartofAccountList key={values.accountid} navigation={navigation}
+                                                                                      fieldprops={props}/></>
                                                             )}
                                                         </Field>
                                                     </View>
 
 
-
                                                     <View>
                                                         <View style={[styles.w_auto]}>
-                                                            <Field name="productremark">
+
+                                                            <Field name="voucherremarks">
                                                                 {props => (
                                                                     <InputField
                                                                         {...props}
@@ -295,14 +309,18 @@ const AddEditExpense = (props:any) => {
 
 
                                                     <View>
+
                                                         <Field name="producttaxgroupid">
                                                             {props => (
                                                                 <InputField
                                                                     {...props}
                                                                     label={'Tax'}
                                                                     mode={'flat'}
-                                                                    list={Object.values(tax).map((tax:any)=>{
-                                                                        return {label:tax.taxgroupname,value:tax.taxgroupid}
+                                                                    list={Object.values(tax).map((tax: any) => {
+                                                                        return {
+                                                                            label: tax.taxgroupname,
+                                                                            value: tax.taxgroupid
+                                                                        }
                                                                     })}
                                                                     value={props.input.value}
                                                                     selectedValue={props.input.value}
@@ -319,15 +337,19 @@ const AddEditExpense = (props:any) => {
                                                     </View>
 
 
-                                                    {Boolean(values.producttaxgroupid) &&  <View>
+                                                    {Boolean(values.producttaxgroupid) && <View>
+
                                                         <Field name="clientid" validate={required}>
                                                             {props => (
                                                                 <InputField
                                                                     {...props}
                                                                     label={'Client'}
                                                                     mode={'flat'}
-                                                                    list={clients?.map((client:any)=>{
-                                                                        return {label:client.displayname,value:client.clientid}
+                                                                    list={clients?.map((client: any) => {
+                                                                        return {
+                                                                            label: client.displayname,
+                                                                            value: client.clientid
+                                                                        }
                                                                     })}
                                                                     value={props.input.value}
                                                                     selectedValue={props.input.value}
@@ -357,7 +379,7 @@ const AddEditExpense = (props:any) => {
                                         <Button more={{color: 'white'}} disable={more.invalid}
                                                 secondbutton={more.invalid} onPress={() => {
                                             handleSubmit(values)
-                                        }}> {Boolean(initdata.edit)?'Edit':'Add'} </Button>
+                                        }}> {Boolean(editdata?.edit) ? 'Edit' : 'Add'} </Button>
                                     </View>
                                 </KAccessoryView>
 

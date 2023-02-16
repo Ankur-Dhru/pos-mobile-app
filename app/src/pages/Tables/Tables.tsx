@@ -1,35 +1,32 @@
-import {current, db, device, localredux, METHOD, urls} from "../../libs/static";
+import {current, localredux, METHOD, urls} from "../../libs/static";
 import React, {memo, useCallback, useEffect, useState} from "react";
 import {
-    appLog, clone,
-    dateFormat, getOrders,
+    clone,
+    dateFormat,
+    errorAlert,
     getTempOrders,
     isEmpty,
-    isRestaurant,
-    saveTempLocalOrder, syncInvoice,
+    saveTempLocalOrder,
     toCurrency
 } from "../../libs/function";
 import {Dimensions, FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
-import {Appbar, Card, FAB, Menu, Paragraph, Title, withTheme} from "react-native-paper";
+import {Appbar, Card, FAB, Menu, Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 
 import {connect, useDispatch} from "react-redux";
 import ProIcon from "../../components/ProIcon";
 import {refreshCartData} from "../../redux-store/reducer/cart-data";
 import {useIsFocused, useNavigation} from "@react-navigation/native";
-import {hideLoader, setAlert, setBottomSheet, setDialog, showLoader} from "../../redux-store/reducer/component";
+import {hideLoader, setAlert, setBottomSheet, showLoader} from "../../redux-store/reducer/component";
 import ClientAndSource from "../Cart/ClientAndSource";
 import moment from "moment";
 import {setSelected} from "../../redux-store/reducer/selected-data";
 import Button from "../../components/Button";
 import ReserveList from "./ReserveList";
-import Tabs from "../../components/TabView";
-import HoldOrders from "../Cart/HoldOrders";
 import {TabBar, TabView} from "react-native-tab-view";
 import apiService from "../../libs/api-service";
-import {Container} from "../../components";
 
-let interval:any = ''
+let interval: any = ''
 const Index = ({tableorders}: any) => {
 
 
@@ -43,7 +40,6 @@ const Index = ({tableorders}: any) => {
     const [shifttable, setShifttable] = useState(false);
     const [shiftingFromtable, setShiftingFromtable] = useState<any>();
     const [shiftingTotable, setShiftingTotable] = useState<any>();
-
 
 
     const getOriginalTablesData = () => {
@@ -61,25 +57,26 @@ const Index = ({tableorders}: any) => {
     const isFocused = useIsFocused();
 
 
-
     useEffect(() => {
-        if(isFocused){
+        if (isFocused) {
             if (!interval) {
                 interval = setInterval(() => {
-                    getOrder().then(()=>{})
+                    getOrder().then(() => {
+                    })
                 }, 15000);
             }
-            getOrder().then(()=>{})
+            getOrder().then(() => {
+            })
             return () => {
                 clearInterval(interval);
                 interval = null;
             };
         }
-    }, [tableorders,currentLocation.tables,isFocused])
+    }, [tableorders, currentLocation.tables, isFocused])
 
     const resetTables = () => {
         shiftStart(false);
-        getOrder().then(()=>{
+        getOrder().then(() => {
 
         })
     }
@@ -93,7 +90,7 @@ const Index = ({tableorders}: any) => {
 
 
     const [visible, setVisible] = React.useState(false);
-    const [index,setIndex]:any = useState(0)
+    const [index, setIndex]: any = useState(0)
     const openMenu = () => setVisible(true);
     const closeMenu = () => setVisible(false);
 
@@ -107,20 +104,19 @@ const Index = ({tableorders}: any) => {
     }
 
 
-
     const onClickAddTable = () => {
         navigation.navigate('AddTable', {getOrder: getOrder})
         closeMenu();
     }
 
 
-    const getOrder =  () => {
+    const getOrder = () => {
 
-        return new Promise(async (resolve)=>{
+        return new Promise(async (resolve) => {
             let newtables = getOriginalTablesData();
             let newothertables: any = [];
 
-            await getTempOrders().then(async (tableorders:any)=>{
+            await getTempOrders().then(async (tableorders: any) => {
 
                 Object.values(tableorders).map((table: any) => {
                     let findTableIndex = tables?.findIndex((t: any) => t.tableid == table.tableid);
@@ -190,24 +186,28 @@ const Index = ({tableorders}: any) => {
 
     const setTableOrderDetail = async (tabledetails: any) => {
 
+        const {settings, role, adminid}: any = localredux.loginuserData
+        const accessMultipleDevice = settings?.cant_access_order_multiple_device;
+        const sameStaff = ((Boolean(tabledetails?.staffid) && (tabledetails?.staffid === adminid)) || (!Boolean(tabledetails?.staffid)))
 
-
-        if(Boolean(urls.localserver) && Boolean(tabledetails.tableorderid)) {
-
-           await  apiService({
-                method: METHOD.GET,
-                action: 'tableorder',
-                queryString:{key:'tableid',value:tabledetails.tableid},
-                other: {url: urls.localserver},
-            }).then((response: any) => {
-               tabledetails = {
-                   ...tabledetails,
-                   ...response?.data
-               }
-            })
+        if ((accessMultipleDevice && sameStaff) || !accessMultipleDevice || role === 'admin') {
+            if (Boolean(urls.localserver) && Boolean(tabledetails.tableorderid)) {
+                await apiService({
+                    method: METHOD.GET,
+                    action: 'tableorder',
+                    queryString: {key: 'tableid', value: tabledetails.tableid},
+                    other: {url: urls.localserver},
+                }).then((response: any) => {
+                    tabledetails = {
+                        ...tabledetails,
+                        ...response?.data
+                    }
+                })
+            }
+            navigation.navigate('CartStackNavigator', tabledetails)
+        } else {
+            errorAlert(`Table only access by ${tabledetails.staffname}`)
         }
-
-        navigation.navigate('CartStackNavigator', tabledetails)
     }
 
     const Item = memo(
@@ -232,8 +232,8 @@ const Index = ({tableorders}: any) => {
 
                 clone_tableorders[shiftingFromtable] = clone({
                     ...clone_tableorders[shiftingFromtable],
-                    tableid:tableid,
-                    tablename:tablename
+                    tableid: tableid,
+                    tablename: tablename
                 })
 
                 await saveTempLocalOrder(clone_tableorders[shiftingFromtable]).then(async () => {
@@ -248,9 +248,9 @@ const Index = ({tableorders}: any) => {
 
 
             return (
-                <Card style={[styles.card,styles.m_1,styles.mb_2,  {
-                    marginTop:0,
-                    width:oriantation === 'portrait'?'49%':'24%',
+                <Card style={[styles.card, styles.m_1, styles.mb_2, {
+                    marginTop: 0,
+                    width: oriantation === 'portrait' ? '49%' : '24%',
                     backgroundColor: Boolean(item?.printcounter) ? styles.yellow.color : Boolean(item.clientname) ? styles.secondary.color : styles.light.color,
                     borderRadius: 5,
                 }, styles.flexGrow,]} key={item.tableid}>
@@ -279,7 +279,7 @@ const Index = ({tableorders}: any) => {
 
                                 <View style={[styles.mt_3]}>
                                     <Paragraph
-                                        style={[styles.paragraph,  styles.bold,styles.text_lg, {color: 'black'}]}>{toCurrency(item.vouchertotaldisplay)}</Paragraph>
+                                        style={[styles.paragraph, styles.bold, styles.text_lg, {color: 'black'}]}>{toCurrency(item.vouchertotaldisplay)}</Paragraph>
                                 </View>
 
                             </>}
@@ -290,6 +290,9 @@ const Index = ({tableorders}: any) => {
                                                                                                      type={'solid'}
                                                                                                      action_type={'text'}/></Text></View>}
 
+
+                            {Boolean(item?.staffname) &&
+                                <Paragraph style={[styles.paragraph, styles.text_xs]}>{item.staffname}</Paragraph>}
 
                         </View>}
 
@@ -304,40 +307,40 @@ const Index = ({tableorders}: any) => {
     );
 
     navigation.setOptions({
-        headerTitle:currentLocation?.locationname,
-        headerLeft: () =>  <Appbar.Action icon="menu" onPress={() => navigation.navigate('ProfileSettingsNavigator')}/> ,
+        headerTitle: currentLocation?.locationname,
+        headerLeft: () => <Appbar.Action icon="menu" onPress={() => navigation.navigate('ProfileSettingsNavigator')}/>,
         headerRight: () => {
             return <>
 
-                <View style={[styles.grid,styles.justifyContent,styles.middle]}>
+                <View style={[styles.grid, styles.justifyContent, styles.middle]}>
 
-                 {!Boolean(urls.localserver) ?  <Menu
-                    visible={visible}
-                    onDismiss={closeMenu}
-                    anchor={<Appbar.Action icon={'dots-vertical'} onPress={() => {
-                        openMenu()
-                    }}/>  }>
-                    {/*<Menu.Item onPress={onClickAddTable} title="Add Table"/>*/}
-                    {!shifttable && <Menu.Item onPress={() => {
-                        closeMenu()
-                        setShifttable(true)
-                    }} title="Shift Table"/>}
-                    {shifttable && <Menu.Item onPress={() => {
-                        closeMenu()
-                        setShifttable(false)
-                    }} title="Disable Shift"/>}
-                    <Menu.Item onPress={onClickReserveTable} title="Reserved Tables"/>
+                    {!Boolean(urls.localserver) ? <Menu
+                        visible={visible}
+                        onDismiss={closeMenu}
+                        anchor={<Appbar.Action icon={'dots-vertical'} onPress={() => {
+                            openMenu()
+                        }}/>}>
+                        {/*<Menu.Item onPress={onClickAddTable} title="Add Table"/>*/}
+                        {!shifttable && <Menu.Item onPress={() => {
+                            closeMenu()
+                            setShifttable(true)
+                        }} title="Shift Table"/>}
+                        {shifttable && <Menu.Item onPress={() => {
+                            closeMenu()
+                            setShifttable(false)
+                        }} title="Disable Shift"/>}
+                        <Menu.Item onPress={onClickReserveTable} title="Reserved Tables"/>
 
-                    {/*{!isRestaurant() && <Menu.Item onPress={async () => {
+                        {/*{!isRestaurant() && <Menu.Item onPress={async () => {
                         await dispatch(setBottomSheet({
                             visible: true,
                             height: '50%',
                             component: () => <HoldOrders/>
                         }))
                     }} title="Holding Orders"/>}*/}
-                </Menu> : <Appbar.Action icon={'refresh'} onPress={() => {
-                     getOrder().then()
-                 }}/> }
+                    </Menu> : <Appbar.Action icon={'refresh'} onPress={() => {
+                        getOrder().then()
+                    }}/>}
 
                 </View>
 
@@ -350,12 +353,12 @@ const Index = ({tableorders}: any) => {
         return (dim.height >= dim.width) ? 'portrait' : 'landscape';
     };
 
-    const [oriantation,setOrientation] = useState(isPortrait())
-    useEffect(()=>{
+    const [oriantation, setOrientation] = useState(isPortrait())
+    useEffect(() => {
         Dimensions.addEventListener('change', () => {
             setOrientation(isPortrait())
         });
-    },[])
+    }, [])
 
 
     const renderItem = useCallback(({item, index}: any) => <Item shifttable={shifttable}
@@ -401,7 +404,7 @@ const Index = ({tableorders}: any) => {
 
     const TableFlatlist = memo(({type}: any) => {
         return (
-            <View style={[styles.px_2]}  key={oriantation}>
+            <View style={[styles.px_2]} key={oriantation}>
                 <FlatList
                     data={tables?.filter((table: any) => {
                         if (type === 'all') {
@@ -419,7 +422,7 @@ const Index = ({tableorders}: any) => {
                             onRefresh={() => getOrder()}
                         />
                     }
-                    numColumns={oriantation === 'landscape'?4:2}
+                    numColumns={oriantation === 'landscape' ? 4 : 2}
                     getItemLayout={(data, index) => {
                         return {length: 100, offset: 100 * index, index};
                     }}
@@ -472,34 +475,37 @@ const Index = ({tableorders}: any) => {
     })
 
 
-    const renderScene = ({ route, jumpTo }:any) => {
+    const renderScene = ({route, jumpTo}: any) => {
 
         switch (route.key) {
             case 'all':
-                return <AllTable  />;
+                return <AllTable/>;
             case 'tableorder':
-                return <OnlyTable   />;
+                return <OnlyTable/>;
             case 'homedelivery':
-                return <HomeDelivery   />;
+                return <HomeDelivery/>;
             case 'takeaway':
-                return <TakeAway   />;
+                return <TakeAway/>;
             case 'advanceorder':
-                return <AdvanceOrder   />;
+                return <AdvanceOrder/>;
         }
     };
 
-    const renderTabBar = (props:any) => (
+    const renderTabBar = (props: any) => (
         <TabBar
             {...props}
-            style={[styles.noshadow,styles.mb_3,{ backgroundColor: 'white',}]}
-            labelStyle={[styles.bold,{color:'black',textTransform:'capitalize'}]}
-            indicatorStyle={{backgroundColor:styles.accent.color}}
+            style={[styles.noshadow, styles.mb_3, {backgroundColor: 'white',}]}
+            labelStyle={[styles.bold, {color: 'black', textTransform: 'capitalize'}]}
+            indicatorStyle={{backgroundColor: styles.accent.color}}
             scrollEnabled={true}
-            tabStyle={{minWidth:80,width:'auto'}}
+            tabStyle={{minWidth: 80, width: 'auto'}}
         />
     );
 
-    let routes = [{key: 'all', title: 'All'},{key: 'tableorder', title: 'Tables'},{key: 'homedelivery', title: 'Homedelivery'},{key: 'takeaway', title: 'Takeaway'}]
+    let routes = [{key: 'all', title: 'All'}, {key: 'tableorder', title: 'Tables'}, {
+        key: 'homedelivery',
+        title: 'Homedelivery'
+    }, {key: 'takeaway', title: 'Takeaway'}]
 
     let actions = [
         {
@@ -526,8 +532,8 @@ const Index = ({tableorders}: any) => {
 
     ]
 
-    if(!Boolean(urls.localserver)){
-        routes.push({key: 'advanceorder', title: 'Advance Order'},{key: 'expense', title: 'Expense'});
+    if (!Boolean(urls.localserver)) {
+        routes.push({key: 'advanceorder', title: 'Advance Order'}, {key: 'expense', title: 'Expense'});
         actions.push({
             icon: 'table',
             label: 'Table Reservation',
@@ -535,14 +541,14 @@ const Index = ({tableorders}: any) => {
                 'label': 'Table Reservation',
                 value: 'tableorder'
             }),
-        },{
+        }, {
             icon: 'sack',
             label: 'Advance Order',
             onPress: () => setOrderSetting("Advanced Order", {
                 'label': 'Advance Order',
                 value: 'advanceorder'
             }),
-        },{
+        }, {
             icon: 'currency-inr',
             label: 'Expense',
             onPress: () => navigation.navigate("AddEditExpense")
@@ -554,7 +560,7 @@ const Index = ({tableorders}: any) => {
         <>
 
             <TabView
-                navigationState={{ index, routes }}
+                navigationState={{index, routes}}
                 onIndexChange={setIndex}
                 renderScene={renderScene}
                 renderTabBar={renderTabBar}
@@ -605,7 +611,7 @@ const Index = ({tableorders}: any) => {
 
 const mapStateToProps = (state: any) => ({
     ordertype: state.selectedData.ordertype,
-    tableorders:state.tableOrdersData
+    tableorders: state.tableOrdersData
 })
 
 export default connect(mapStateToProps)(withTheme(Index));

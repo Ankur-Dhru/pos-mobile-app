@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {FlatList, Text, TouchableOpacity, View} from "react-native";
+import {FlatList, ScrollView, Text, TouchableOpacity, View} from "react-native";
 import {Caption, Card, Paragraph} from "react-native-paper"
 import {
     appLog,
@@ -43,18 +43,20 @@ const CurrentStock = ({navigation}: any) => {
 
 
     const getStock = (itemid:any) => {
-        apiService({
-            method: METHOD.GET,
-            action: ACTIONS.SEARCH,
-            workspace: workspace,
-            token: token,
-            queryString: {productid: itemid},
-            other: {url: urls.posUrl},
-        }).then((response: any) => {
-            setData({...response.data})
-        }).catch((e)=>{
-            appLog('e',e)
-        })
+        if(Boolean(itemid)) {
+            apiService({
+                method: METHOD.GET,
+                action: ACTIONS.SEARCH,
+                workspace: workspace,
+                token: token,
+                queryString: {productid: itemid},
+                other: {url: urls.posUrl},
+            }).then((response: any) => {
+                setData({...response.data})
+            }).catch((e) => {
+                appLog('e', e)
+            })
+        }
     }
 
     useEffect(()=>{
@@ -85,6 +87,9 @@ const CurrentStock = ({navigation}: any) => {
     const summary = tabledata?.summary;
 
     return <Container  style={styles.bg_white}>
+
+        <ScrollView>
+
         <Card style={[styles.card]}>
             <Card.Content style={[styles.cardContent]}>
 
@@ -108,8 +113,8 @@ const CurrentStock = ({navigation}: any) => {
 
                 {Boolean(info) && <>
                 <View>
-                    <Paragraph style={[styles.paragraph,styles.bold]}>{title}</Paragraph>
-                    <Paragraph style={[styles.mb_3]}>{info}</Paragraph>
+                    {/*<Paragraph style={[styles.paragraph,styles.bold]}>{title}</Paragraph>*/}
+                    <Paragraph style={[styles.paragraph,styles.mb_3,styles.muted]}>{info}</Paragraph>
                 </View>
                 {
                     stocks.map((stock:any)=>{
@@ -141,6 +146,7 @@ const CurrentStock = ({navigation}: any) => {
                     })
                 }
 
+
                     <View  style={[styles.mb_5,styles.border,styles.p_5,{borderRadius:5}]}>
                         <Caption style={[styles.caption]}>{summary.location}</Caption>
                         <View style={[styles.grid,styles.justifyContent]}>
@@ -171,6 +177,9 @@ const CurrentStock = ({navigation}: any) => {
 
             </Card.Content>
         </Card>
+
+        </ScrollView>
+
     </Container>
 
 }

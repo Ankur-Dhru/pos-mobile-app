@@ -90,7 +90,7 @@ export default function LocalServer(props: any) {
                                             </View>
 
                                             <View style={[styles.ml_2]}>
-                                                <Button more={{color: 'white',height:43,marginTop:5}} disable={more.invalid}
+                                                <Button more={{color: 'white',height:58,marginTop:5}} disable={more.invalid}
                                                         secondbutton={more.invalid} onPress={() => {
                                                     handleSubmit(values)
                                                 }}>Connect</Button>

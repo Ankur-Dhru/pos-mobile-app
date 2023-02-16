@@ -249,13 +249,13 @@ class Index extends React.Component<any, any> {
 
                             }}><View>
                             {Boolean(render) ?
-                                <Render/> : <View style={[styles.border,styles.px_5,styles.py_4,styles.grid,styles.justifyContent,{borderRadius:5,paddingBottom: 10}]}>
+                                <Render/> : <View style={[styles.border,styles.px_5,styles.py_4,styles.grid,styles.justifyContent,styles.noWrap,{borderRadius:5,paddingBottom: 10}]}>
                                     <View>
                                         <Paragraph style={[styles.paragraph,labelstyle,!Boolean(selectedLabel) && {fontSize:15,paddingVertical:7}]}>{label}</Paragraph>
-                                        {selectedLabel && <View style={[styles.grid,styles.middle, styles.justifyContent, styles.noWrap,]}>
-                                            {!multiselect && <Text>{selectedLabel}</Text>}
+                                        {selectedLabel && <View style={[styles.grid,styles.middle, styles.justifyContent,]}>
+                                            {!multiselect && <Paragraph>{selectedLabel}</Paragraph>}
                                             {(multiselect && getType(selectedValue) === 'array') &&
-                                                <Text>{selectedValue?.join(", ")}</Text>}
+                                                <Paragraph>{selectedValue?.join(", ")}</Paragraph>}
                                         </View>}
                                     </View>
                                     <View>

@@ -98,6 +98,11 @@ class Attachment extends Component<any> {
             .catch((e) => alert(e));
     }
 
+    deleteImage(){
+        this.setState({imagepath:''})
+        capture.photo = '';
+    }
+
 
 
 
@@ -109,20 +114,29 @@ class Attachment extends Component<any> {
         const {imagepath}:any = this.state;
         const colors = this.props.theme;
 
+        let actions = ['Take a new photo', 'Photo Library'];
+        if(Boolean(imagepath)){
+            actions.push('Remove Image')
+        }
+        actions.push('Cancel')
+
         return (
             <View>
 
 
                 <ActionSheet
-                    options={['Take a new photo', 'Photo Library','Cancel']}
-                    cancelButtonIndex={2}
-                    destructiveButtonIndex={5}
+                    options={actions}
+                    cancelButtonIndex={actions.length - 1}
+                    destructiveButtonIndex={actions.length - 1}
                     onPress={(index:any) => {
                         if(index===0){
                             this.pickSingleWithCamera(true)
                         }
-                        if(index===1){
+                        else if(index===1){
                             this.pickSingleWithLibrary(true)
+                        }
+                        else if(index===2 && actions.length === 4){
+                            this.deleteImage()
                         }
                     }}
                 >
@@ -134,8 +148,9 @@ class Attachment extends Component<any> {
                                     source={{uri:imagepath}}
                                 />
                             </View> : <>
-                                <Avatar fontsize={40} label={item.itemname} size={100} value={1}/>
+                                <Avatar fontsize={40} label={item.itemname} size={100} value={1} more={{borderRadius:7}}/>
                             </>}
+                            <View style={[styles.absolute,styles.p_3,{bottom:0,right:0,backgroundColor:'#00000080',borderBottomRightRadius:7,borderTopLeftRadius:15}]}><ProIcon name={'pencil'} color={'white'}/></View>
                         </>
                     </View>
 

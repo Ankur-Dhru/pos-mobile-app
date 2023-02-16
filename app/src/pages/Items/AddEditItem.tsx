@@ -178,10 +178,7 @@ const Index = (props: any) => {
         const {workspace}: any = localredux.initData;
         const {token}: any = localredux.authData;
 
-        if(Boolean(capture?.photo)){
-            values.itemimage = capture.photo;
-        }
-
+        values.itemimage = capture.photo;
 
         await apiService({
             method: Boolean(initdata.itemid) ? METHOD.PUT : METHOD.POST,
@@ -213,8 +210,6 @@ const Index = (props: any) => {
                         catch (e){
                             appLog('e',e)
                         }
-
-
                     });
                 } catch (e) {
                     appLog('e', e)

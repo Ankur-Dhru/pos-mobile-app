@@ -191,19 +191,6 @@ const ProfileSettings = () => {
                                     <Card.Content style={[styles.cardContent]}>
                                         <List.Subheader>General</List.Subheader>
 
-                                        <List.Item
-                                            style={[styles.listitem]}
-                                            title={'Expense'}
-                                            onPress={async () => {
-                                                navigation.navigate("ListExpenses");
-                                            }}
-                                            left={() => <List.Icon icon="currency-inr"/>}
-                                            right={() => <TouchableOpacity onPress={async () => {
-                                                navigation.navigate("AddEditExpense");
-                                            }}><List.Icon icon="plus"/></TouchableOpacity>}
-                                        />
-
-                                        <ItemDivider/>
 
 
                                         <List.Item
@@ -218,10 +205,24 @@ const ProfileSettings = () => {
 
                                         <ItemDivider/>
 
+                                        <List.Item
+                                            style={[styles.listitem]}
+                                            title={'Expenses'}
+                                            onPress={async () => {
+                                                navigation.navigate("ListExpenses");
+                                            }}
+                                            left={() => <List.Icon icon="currency-inr"/>}
+                                            right={() => <TouchableOpacity onPress={async () => {
+                                                navigation.navigate("AddEditExpense");
+                                            }}><List.Icon icon="plus"/></TouchableOpacity>}
+                                        />
+
+                                        <ItemDivider/>
+
 
                                         <List.Item
                                             style={[styles.listitem]}
-                                            title={'Item Category'}
+                                            title={'Item Categories'}
                                             onPress={async () => {
                                                 navigation.navigate("ListItemsCategories");
                                             }}
@@ -235,7 +236,7 @@ const ProfileSettings = () => {
 
                                         <List.Item
                                             style={[styles.listitem]}
-                                            title={'Item'}
+                                            title={'Items'}
                                             onPress={async () => {
                                                 navigation.navigate("ListItems");
                                             }}
@@ -249,7 +250,7 @@ const ProfileSettings = () => {
 
                                         <List.Item
                                             style={[styles.listitem]}
-                                            title={'Client'}
+                                            title={'Clients'}
                                             onPress={async () => {
                                                 navigation.navigate("ListClients");
                                             }}
@@ -294,7 +295,7 @@ const ProfileSettings = () => {
 
                                         <List.Item
                                             style={[styles.listitem]}
-                                            title={'Current Stock'}
+                                            title={'Current Stocks'}
                                             onPress={() => {
                                                 navigation.navigate("CurrentStock");
                                             }}

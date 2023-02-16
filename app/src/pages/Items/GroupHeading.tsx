@@ -8,7 +8,7 @@ import {localredux} from "../../libs/static";
 import {ProIcon} from "../../components";
 import {appLog, clone, saveLocalSettings} from "../../libs/function";
 import {setSelected} from "../../redux-store/reducer/selected-data";
-import {getItemsByWhere} from "../../libs/Sqlite/selectData";
+
 
 const Index = (props: any) => {
 

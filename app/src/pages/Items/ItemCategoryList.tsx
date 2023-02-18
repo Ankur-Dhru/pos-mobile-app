@@ -1,4 +1,4 @@
-import React, {memo, useState} from "react";
+import React, {memo, useEffect, useState} from "react";
 import {TouchableOpacity} from "react-native";
 import {Paragraph} from "react-native-paper";
 import {ProIcon} from "../../components";
@@ -11,15 +11,20 @@ import {styles} from "../../theme";
 
 const Index = (props: any) => {
 
-    const {grouplist, fieldprops, navigation}: any = props;
-    const [selected,setSelected] = useState(fieldprops.input.value)
+    const {grouplist, fieldprops, navigation,values}: any = props;
+    const [selected,setSelected] = useState(fieldprops.input.value);
+    const [groups,setGroups]:any = useState([]);
 
-    let groups: any = Object.values(grouplist).sort(sortByGroup).map((group: any) => {
-        return {label: group.itemgroupname, value: group.itemgroupid}
-    })
+    useEffect(()=>{
+        let groups = Object.values(grouplist).sort(sortByGroup).map((group: any) => {
+            return {label: group.itemgroupname, value: group.itemgroupid}
+        })
+        setGroups(groups)
+    },[grouplist])
 
     const callBack = (value:any) => {
-        fieldprops.input.value = value.itemgroupid
+        fieldprops.input.value = value.itemgroupid;
+        values.itemgroupid = value.itemgroupid;
         setSelected(value.itemgroupid)
     }
 

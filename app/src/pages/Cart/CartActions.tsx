@@ -97,7 +97,7 @@ const Index = ({
                                         })
                                     })} }
                                     more={{backgroundColor: styles.yellow.color, color: 'black',height:50}}
-                            >Print KOT </Button>
+                            >Send to Kitchen </Button>
                         </View>
                         {ordertype !== 'qsr' && <View style={[styles.w_auto, styles.ml_1]}>
                             <Button

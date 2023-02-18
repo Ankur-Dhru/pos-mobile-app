@@ -53,7 +53,7 @@ const AddEditPaymentReceived = (props: any) => {
     const [clients, setClients]: any = useState();
 
     useEffect(() => {
-        getClientsByWhere({clienttype: 1, start: 0}).then((clients) => {
+        getClientsByWhere({clienttype: 0, start: 0}).then((clients) => {
             setClients(clients);
             setLoader(false)
         });

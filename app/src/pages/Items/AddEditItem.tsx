@@ -305,7 +305,7 @@ const Index = (props: any) => {
                                                             <View>
                                                                 <Field name="itemgroupid">
                                                                     {props => (
-                                                                        <><ItemCategoryList navigation={navigation}  fieldprops={props}/></>
+                                                                        <><ItemCategoryList navigation={navigation}  values={values} fieldprops={props}/></>
                                                                     )}
                                                                 </Field>
                                                             </View>

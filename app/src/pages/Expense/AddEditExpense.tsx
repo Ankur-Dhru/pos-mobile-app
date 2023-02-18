@@ -103,7 +103,7 @@ const AddEditExpense = (props: any) => {
     const [clients, setClients]: any = useState();
 
     useEffect(() => {
-        getClientsByWhere({clienttype: 1, start: 0}).then((clients) => {
+        getClientsByWhere({clienttype: 0, start: 0}).then((clients) => {
             setClients(clients);
         });
     }, [])
@@ -280,7 +280,7 @@ const AddEditExpense = (props: any) => {
 
                                                         <Field name="accountid" validate={required}>
                                                             {props => (
-                                                                <><ChartofAccountList key={values.accountid} navigation={navigation}
+                                                                <><ChartofAccountList key={values.accountid} values={values} navigation={navigation}
                                                                                       fieldprops={props}/></>
                                                             )}
                                                         </Field>

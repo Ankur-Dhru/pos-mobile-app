@@ -12,7 +12,7 @@ import {localredux} from "../../libs/static";
 
 const Index = (props: any) => {
 
-    const {fieldprops, navigation}: any = props;
+    const {fieldprops, navigation,values}: any = props;
     const [selected,setSelected] = useState(fieldprops.input.value)
 
     const {chartofaccount}: any = localredux.initData;
@@ -22,6 +22,7 @@ const Index = (props: any) => {
     const callBack = (value:any) => {
         fieldprops.input.value = value.accountid;
         chartofaccount.push(value);
+        values.accountid = value;
         setSelected(value.accountid)
     }
 

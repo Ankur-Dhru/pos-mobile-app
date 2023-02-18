@@ -208,13 +208,13 @@ export const getClientsByWhere = async ({displayname,phone,search,clienttype,sta
                 if (Boolean(phone)) {
                     where += ` and (phone LIKE '%${phone}%') `;
                 }
-                if (Boolean(displayname)) {
+                else if (Boolean(displayname)) {
                     where += ` and (displayname LIKE '%${displayname}%') `;
                 }
-                if (Boolean(search)) {
+                else if (Boolean(search)) {
                     where += ` and ((displayname LIKE '%${search}%') or (phone LIKE '%${search}') or (clientid LIKE '%${search}'))`;
                 }
-                if (Boolean(clienttype)) {
+                else if (Boolean(clienttype)) {
                     where += ` and ((clienttype = '${clienttype}'))`;
                 }
 

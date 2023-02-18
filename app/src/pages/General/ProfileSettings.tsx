@@ -418,26 +418,27 @@ const ProfileSettings = () => {
                                 </Card>
 
 
-                                <Card style={[styles.card,styles.bg_light,styles.m_3]} onPress={()=>{
+                                <Card style={[styles.card,styles.bg_light,styles.m_4]} onPress={()=>{
                                     const url = `https://${workspace}.dhru.com`;
                                     Linking.openURL(url)
                                 }}>
                                     <Card.Content style={[styles.cardContent]}>
-                                        <View>
-                                            <Paragraph style={[styles.textCenter]}>
+                                        <View style={[styles.p_4,]}>
+                                            <Paragraph  style={[styles.paragraph,{color:styles.primary.color}]}>Back List</Paragraph>
+                                            <Paragraph>
                                                 To Manage Users, Access Roles, Accounting, Multiple Locations, Analytics, Dashboards, Subscription and many more Advanced Settings and Features available at web.
                                             </Paragraph>
-                                            <Paragraph style={[styles.bold,styles.textCenter]}>
-                                                <Text style={[styles.bold,styles.textCenter,{color:styles.primary.color,}]}> {`https://${workspace}.dhru.com`}</Text>
+                                            <Paragraph style={[styles.bold]}>
+                                                <Text style={[styles.bold,{color:styles.primary.color,}]}>{`https://${workspace}.dhru.com`}</Text>
                                             </Paragraph>
                                         </View>
                                     </Card.Content>
                                 </Card>
 
 
+                                <View>
 
-
-                                {role === 'admin' && <View style={[styles.py_4]}>
+                                {role === 'admin' && <View  style={[styles.py_4]}>
                                     <Card style={[styles.card, {marginBottom: 0}]}>
                                         <Card.Content style={[styles.cardContent,]}>
 
@@ -513,13 +514,15 @@ const ProfileSettings = () => {
 
                                 </View>}
 
-
+                                </View>
                                 <View style={{marginTop: 'auto'}}>
 
 
                                 </View>
                             </View>
                         </View>}
+
+
 
                     </View>
 

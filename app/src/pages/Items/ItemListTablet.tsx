@@ -296,7 +296,7 @@ const Index = (props: any) => {
                             building your item library.</Text>
 
                     </View>
-                    <AddItem navigation={navigation}/>
+                    <AddItem navigation={navigation} search={true}/>
                 </View>}
                 keyExtractor={item => item.itemid}
 

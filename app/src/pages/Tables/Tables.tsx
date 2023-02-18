@@ -1,15 +1,16 @@
 import {current, localredux, METHOD, urls} from "../../libs/static";
 import React, {memo, useCallback, useEffect, useState} from "react";
 import {
+    appLog,
     clone,
     dateFormat,
     errorAlert,
-    getTempOrders,
+    getTempOrders, groupBy,
     isEmpty,
     saveTempLocalOrder,
     toCurrency
 } from "../../libs/function";
-import {Dimensions, FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-native";
+import {Dimensions, FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View} from "react-native";
 import {Appbar, Card, FAB, Menu, Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 
@@ -42,6 +43,7 @@ const Index = ({tableorders}: any) => {
     const [shiftingTotable, setShiftingTotable] = useState<any>();
 
 
+
     const getOriginalTablesData = () => {
         const {currentLocation} = localredux.localSettingsData;
         let tables;
@@ -53,6 +55,10 @@ const Index = ({tableorders}: any) => {
     }
 
     const [tables, setTables] = useState((isEmpty(currentLocation?.tables) ? [] : getOriginalTablesData()) || []);
+
+    const areas = Object.keys(groupBy(tables,'area'))
+
+    const [floor,setFloor] = useState(areas[0]);
 
     const isFocused = useIsFocused();
 
@@ -379,7 +385,22 @@ const Index = ({tableorders}: any) => {
 
     const OnlyTable = memo(() => (
         <View style={[styles.flex]}>
-            <TableFlatlist type={'tableorder'}/>
+
+            {areas.length > 0 && <View style={[styles.grid,styles.p_3,styles.mb_3,styles.bg_light]}>
+
+                    {
+                        areas.map((area:any)=>{
+                            return <TouchableOpacity onPress={()=>{
+                                setFloor(area);
+                            }}  style={[styles.flexGrow,styles.m_1,styles.p_4,{borderRadius:5,backgroundColor: area === floor ? styles.secondary.color : 'white'}]}>
+                                <Paragraph style={[styles.textCenter]}>{area}</Paragraph>
+                            </TouchableOpacity>
+                        })
+                    }
+
+            </View>}
+
+            <TableFlatlist type={'tableorder'} area={floor}/>
         </View>
     ));
 
@@ -402,7 +423,8 @@ const Index = ({tableorders}: any) => {
     ));
 
 
-    const TableFlatlist = memo(({type}: any) => {
+    const TableFlatlist = memo(({type,area}: any) => {
+
         return (
             <View style={[styles.px_2]} key={oriantation}>
                 <FlatList
@@ -410,6 +432,9 @@ const Index = ({tableorders}: any) => {
                         if (type === 'all') {
                             return true
                         } else {
+                            if(type === 'tableorder'){
+                                return table.ordertype === type && table.area === area
+                            }
                             return table.ordertype === type
                         }
                     })}
@@ -552,6 +577,10 @@ const Index = ({tableorders}: any) => {
             icon: 'currency-inr',
             label: 'Expense',
             onPress: () => navigation.navigate("AddEditExpense")
+        }, {
+            icon: 'currency-inr',
+            label: 'Payment Received',
+            onPress: () => navigation.navigate("AddEditPaymentReceived")
         })
     }
 

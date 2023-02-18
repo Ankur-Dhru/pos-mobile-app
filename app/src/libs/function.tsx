@@ -377,7 +377,6 @@ export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = t
         paymentmethod: payment[0]?.paymentmethod,
         payment: payment,
         edit: true,
-        area: 'Default',
         paxes: 1,
         deviceid:device.uniqueid,
         "placeofsupply": state,
@@ -1504,6 +1503,7 @@ export const generateKOT = async (cancelkotprint?: any) => {
 
                     if (isEmpty(departments)) {
                         errorAlert(`No Kitchen Department`);
+                        resolve('')
                     } else {
 
                         let {

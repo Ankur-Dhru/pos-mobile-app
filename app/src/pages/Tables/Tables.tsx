@@ -1,4 +1,4 @@
-import {current, localredux, METHOD, urls} from "../../libs/static";
+import {current, ItemDivider, localredux, METHOD, urls} from "../../libs/static";
 import React, {memo, useCallback, useEffect, useState} from "react";
 import {
     appLog,
@@ -10,8 +10,17 @@ import {
     saveTempLocalOrder,
     toCurrency
 } from "../../libs/function";
-import {Dimensions, FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View} from "react-native";
-import {Appbar, Card, FAB, Menu, Paragraph, withTheme} from "react-native-paper";
+import {
+    Dimensions,
+    FlatList,
+    RefreshControl,
+    ScrollView,
+    SectionList,
+    Text,
+    TouchableOpacity,
+    View
+} from "react-native";
+import {Appbar, Caption, Card, FAB, List, Menu, Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 
 import {connect, useDispatch} from "react-redux";
@@ -56,7 +65,7 @@ const Index = ({tableorders}: any) => {
 
     const [tables, setTables] = useState((isEmpty(currentLocation?.tables) ? [] : getOriginalTablesData()) || []);
 
-    const areas = Object.keys(groupBy(tables,'area'))
+    const areas = Object.keys(groupBy(tables.filter((table:any)=> Boolean(table.area)),'area'))
 
     const [floor,setFloor] = useState(areas[0]);
 
@@ -232,20 +241,22 @@ const Index = ({tableorders}: any) => {
             const shiftTo = async (tabledetail: any) => {
                 dispatch(showLoader())
 
-                const {tableid, tablename}: any = tabledetail.item;
+                const {tableid, tablename,area}: any = tabledetail.item;
 
                 let clone_tableorders = clone(tableorders)
 
                 clone_tableorders[shiftingFromtable] = clone({
                     ...clone_tableorders[shiftingFromtable],
                     tableid: tableid,
-                    tablename: tablename
+                    tablename: tablename,
+                    area : area
                 })
 
                 await saveTempLocalOrder(clone_tableorders[shiftingFromtable]).then(async () => {
                     await resetTables()
                     await dispatch(hideLoader())
                 })
+
             }
 
 
@@ -256,7 +267,7 @@ const Index = ({tableorders}: any) => {
             return (
                 <Card style={[styles.card, styles.m_1, styles.mb_2, {
                     marginTop: 0,
-                    width: oriantation === 'portrait' ? '49%' : '24%',
+                    width: oriantation === 'portrait' ? '45%' : '24%',
                     backgroundColor: Boolean(item?.printcounter) ? styles.yellow.color : Boolean(item.clientname) ? styles.secondary.color : styles.light.color,
                     borderRadius: 5,
                 }, styles.flexGrow,]} key={item.tableid}>
@@ -366,6 +377,25 @@ const Index = ({tableorders}: any) => {
         });
     }, [])
 
+    const Floors = () => {
+        return <View style={[styles.w_100]}>
+            {
+                areas.map((area:any)=>{
+                   return(<List.Item
+                        style={[styles.listitem]}
+                        title={area}
+                        onPress={() => {
+                            setFloor(area);
+                            dispatch(setBottomSheet({visible:false}))
+                        }}
+                        left={() => <List.Icon icon="layers"/>}
+                        right={() => <List.Icon icon="chevron-right"/>}
+                    />)
+                })
+            }
+        </View>
+    }
+
 
     const renderItem = useCallback(({item, index}: any) => <Item shifttable={shifttable}
                                                                  shiftingFromtable={shiftingFromtable}
@@ -379,28 +409,41 @@ const Index = ({tableorders}: any) => {
 
     const AllTable = memo(() => (
         <View style={[styles.flex]}>
-            <TableFlatlist type={'all'}/>
+            <ScrollView>
+                <TableSectionlist type={'all'}/>
+            </ScrollView>
         </View>
     ));
 
     const OnlyTable = memo(() => (
         <View style={[styles.flex]}>
+            <TableFlatlist type={'tableorder'} area={floor}/>
+            {areas.length > 1 && <View style={[styles.mt_auto]}>
 
-            {areas.length > 1 && <View style={[styles.grid,styles.p_3,styles.mb_3,styles.bg_light]}>
+                <TouchableOpacity onPress={()=>{
+                    dispatch(setBottomSheet({
+                        visible: true,
+                        height: '80%',
+                        component: () => <Floors/>
+                    }))
+                }}  style={[styles.p_3,styles.mb_3,styles.grid,styles.center,styles.middle]}>
 
-                    {
-                        areas.map((area:any)=>{
-                            return <TouchableOpacity onPress={()=>{
-                                setFloor(area);
-                            }}  style={[styles.flexGrow,styles.m_1,styles.p_4,{borderRadius:5,backgroundColor: area === floor ? styles.secondary.color : 'white'}]}>
-                                <Paragraph style={[styles.textCenter]}>{area}</Paragraph>
-                            </TouchableOpacity>
-                        })
-                    }
+                    <View style={[styles.grid, styles.center, styles.mb_3]}>
+                        <View
+                            style={[styles.badge, styles.px_5, styles.py_5, styles.grid, styles.noWrap, styles.middle, {
+                                backgroundColor: '#000',
+                                borderRadius: 30,
+                                paddingLeft: 20,
+                                paddingRight: 20
+                            }]}>
+                            <Paragraph><ProIcon name={'layer-group'} type={"solid"} color={'white'} size={'18'}  action_type={'text'}/> </Paragraph>
+                            <Paragraph style={[styles.paragraph, styles.bold, {color: 'white'}]}> {floor}</Paragraph>
+                        </View>
+                    </View>
+
+                </TouchableOpacity>
 
             </View>}
-
-            <TableFlatlist type={'tableorder'} area={floor}/>
         </View>
     ));
 
@@ -422,6 +465,114 @@ const Index = ({tableorders}: any) => {
         </View>
     ));
 
+    const EmptyCompoennt = ({type}:any) => {
+        return (
+            <View>
+                <View style={[styles.p_6]}>
+
+                </View>
+                <View style={[]}>
+
+                    <View style={[styles.grid, styles.center]}>
+                        <Button
+                            more={{color: 'white'}}
+                            secondbutton={true}
+                            onPress={async () => {
+                                if (type === 'qsr') {
+                                    setOrderSetting("+ QSR / Quick Bill", {
+                                        'label': '+ QSR / Quick Bill',
+                                        value: 'qsr'
+                                    })
+                                } else if (type === 'takeaway') {
+                                    setOrderSetting("Takeaway", {'label': 'Takeaway', value: 'takeaway'})
+                                } else if (type === 'advanceorder') {
+                                    setOrderSetting("Advanced Order", {
+                                        'label': 'Advance Order',
+                                        value: 'advanceorder'
+                                    })
+                                } else if (type === 'homedelivery') {
+                                    setOrderSetting("Home Delivery", {
+                                        'label': 'Home Delivery',
+                                        value: 'homedelivery'
+                                    })
+                                } else if (type === 'tableorder') {
+                                    setOrderSetting("Table Reservation", {
+                                        'label': 'Table Reservation',
+                                        value: 'tableorder'
+                                    })
+                                }
+                            }}> + Take New Order
+                        </Button>
+                    </View>
+                </View>
+            </View>
+        )
+    }
+
+    const TableSectionlist = memo(({type}: any) => {
+        let floors = groupBy(tables.filter((table:any)=> true),'area');
+        let data:any = []
+        Object.keys(floors).map((key:any)=>{
+            data.push({title:key,data:floors[key]})
+        })
+
+        return (
+            <View style={[styles.px_2,styles.flex,styles.h_100]}>
+                <>
+                    {
+                        data.map((floor:any)=>{
+                            return <>
+                                {Boolean(data.length > 1) && (Boolean(floor?.title !== 'undefined') ?   <Paragraph style={[styles.bold]}> {floor?.title}</Paragraph> : <View style={{height:20}}></View>)}
+                                <View style={[styles.grid]}>
+                                    {
+                                        floor.data.map((item:any)=>{
+                                            return <Item shifttable={shifttable}
+                                                         shiftingFromtable={shiftingFromtable}
+                                                         setShiftingFromtable={setShiftingFromtable}
+                                                         shiftingTotable={shiftingTotable}
+                                                         setShiftingTotable={setShiftingTotable}
+                                                         getOrder={getOrder}
+                                                         resetTables={resetTables} item={item}
+                                                         key={index}/>
+                                        })
+                                    }
+                                </View>
+                            </>
+                        })
+                    }
+                </>
+
+
+              {/*  <SectionList
+                    sections={data}
+                    keyExtractor={(item, index) => item + index}
+                    renderSectionHeader={({section: {title}}) => (
+                        <Paragraph style={styles.bold}> {title}</Paragraph>
+                    )}
+                    renderItem={renderItem}
+                    keyboardDismissMode={'on-drag'}
+                    keyboardShouldPersistTaps={'always'}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={() => getOrder()}
+                        />
+                    }
+                    numColumns={oriantation === 'landscape' ? 4 : 2}
+                    getItemLayout={(data, index) => {
+                        return {length: 100, offset: 100 * index, index};
+                    }}
+                    ListFooterComponent={() => {
+                        return <View style={{height: 80}}></View>
+                    }}
+
+                    ListEmptyComponent={<EmptyCompoennt type={type}/>}
+                />*/}
+
+
+            </View>
+        )
+    })
 
     const TableFlatlist = memo(({type,area}: any) => {
 
@@ -429,14 +580,10 @@ const Index = ({tableorders}: any) => {
             <View style={[styles.px_2]} key={oriantation}>
                 <FlatList
                     data={tables?.filter((table: any) => {
-                        if (type === 'all') {
-                            return true
-                        } else {
-                            if(type === 'tableorder'){
-                                return table.ordertype === type && table.area === area
-                            }
-                            return table.ordertype === type
+                        if(type === 'tableorder'){
+                            return table.ordertype === type && table.area === area
                         }
+                        return table.ordertype === type
                     })}
                     renderItem={renderItem}
                     keyboardDismissMode={'on-drag'}
@@ -455,45 +602,7 @@ const Index = ({tableorders}: any) => {
                         return <View style={{height: 80}}></View>
                     }}
 
-                    ListEmptyComponent={<View>
-                        <View style={[styles.p_6]}>
-
-                        </View>
-                        <View style={[]}>
-
-                            <View style={[styles.grid, styles.center]}>
-                                <Button
-                                    more={{color: 'white'}}
-                                    secondbutton={true}
-                                    onPress={async () => {
-                                        if (type === 'qsr') {
-                                            setOrderSetting("+ QSR / Quick Bill", {
-                                                'label': '+ QSR / Quick Bill',
-                                                value: 'qsr'
-                                            })
-                                        } else if (type === 'takeaway') {
-                                            setOrderSetting("Takeaway", {'label': 'Takeaway', value: 'takeaway'})
-                                        } else if (type === 'advanceorder') {
-                                            setOrderSetting("Advanced Order", {
-                                                'label': 'Advance Order',
-                                                value: 'advanceorder'
-                                            })
-                                        } else if (type === 'homedelivery') {
-                                            setOrderSetting("Home Delivery", {
-                                                'label': 'Home Delivery',
-                                                value: 'homedelivery'
-                                            })
-                                        } else if (type === 'tableorder') {
-                                            setOrderSetting("Table Reservation", {
-                                                'label': 'Table Reservation',
-                                                value: 'tableorder'
-                                            })
-                                        }
-                                    }}> + Take New Order
-                                </Button>
-                            </View>
-                        </View>
-                    </View>}
+                    ListEmptyComponent={<EmptyCompoennt type={type}/>}
                 />
             </View>
         )

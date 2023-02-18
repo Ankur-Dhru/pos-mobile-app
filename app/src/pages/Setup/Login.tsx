@@ -48,8 +48,8 @@ const Index = (props: any) => {
         //password: 'Akash@123',
         //email: 'obodogabriel29@gmail.com',
         //password: 'Podoski@12',
-        email: 'dhru360@yahoo.com',
-        password: 'dhru@9090',
+        email: 'ankur@dhrusoft.com',
+        password: 'Dhrunet1@',
     } : {
         email: '',
         password: ''

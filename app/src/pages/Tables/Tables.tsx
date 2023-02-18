@@ -386,7 +386,7 @@ const Index = ({tableorders}: any) => {
     const OnlyTable = memo(() => (
         <View style={[styles.flex]}>
 
-            {areas.length > 0 && <View style={[styles.grid,styles.p_3,styles.mb_3,styles.bg_light]}>
+            {areas.length > 1 && <View style={[styles.grid,styles.p_3,styles.mb_3,styles.bg_light]}>
 
                     {
                         areas.map((area:any)=>{

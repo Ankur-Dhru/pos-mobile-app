@@ -3,10 +3,10 @@ import React from "react";
 
 import {FlatList, TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
-import {Card, Divider, Paragraph} from "react-native-paper";
+import {Appbar, Card, Divider, Paragraph} from "react-native-paper";
 import {ItemDivider, localredux} from "../../libs/static";
 import Container from "../../components/Container";
-import {chevronRight, selectWorkspace} from "../../libs/function";
+import {appLog, chevronRight, selectWorkspace} from "../../libs/function";
 import AddWorkspace from "../SetupWorkspace/AddWorkspace";
 
 
@@ -34,6 +34,13 @@ const Workspaces = (props: any) => {
 
     if (workspaces?.length === 0) {
         return <AddWorkspace/>
+    }
+
+    if(localredux.authData.staff) {
+        navigation.setOptions({
+            headerRight: () => <Appbar.Action icon="plus"
+                                              onPress={() => navigation.navigate('AddWorkspace', {staffaccess: true})}/>
+        })
     }
 
     return <Container>

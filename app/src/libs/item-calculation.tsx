@@ -221,7 +221,7 @@ export const getProductData = (product: any,
         }
 
 
-        qntranges.forEach(({start, end}: any, index: any) => {
+        qntranges?.forEach(({start, end}: any, index: any) => {
             if (quantity >= parseFloat(start) && quantity < parseFloat(end)) {
                 qntRangeIndex = index;
             }

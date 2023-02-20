@@ -65,8 +65,10 @@ const Index = ({tableorders}: any) => {
 
     const [tables, setTables] = useState((isEmpty(currentLocation?.tables) ? [] : getOriginalTablesData()) || []);
 
-    const areas = Object.keys(groupBy(tables.filter((table:any)=> Boolean(table.area)),'area'))
-
+    let areas = Object.keys(groupBy(tables.filter((table:any)=> {
+        return Boolean(table.area) && table.ordertype === 'tableorder'
+    }),'area'))
+    areas.push('All');
     const [floor,setFloor] = useState(areas[0]);
 
     const isFocused = useIsFocused();
@@ -156,7 +158,7 @@ const Index = ({tableorders}: any) => {
 
     const setOrderSetting = (title: any, ordertype: any) => {
 
-        current.table = {'tablename': ordertype.label, ordertype: ordertype.value, invoiceitems: [], kots: []};
+        current.table = {'tablename': ordertype.label,area:ordertype.label, ordertype: ordertype.value, invoiceitems: [], kots: []};
 
 
         const placeOrder = async (config: any) => {
@@ -379,6 +381,9 @@ const Index = ({tableorders}: any) => {
 
     const Floors = () => {
         return <View style={[styles.w_100]}>
+            <View>
+                <Caption style={[styles.caption,styles.px_6]}>Areas</Caption>
+            </View>
             {
                 areas.map((area:any)=>{
                    return(<List.Item
@@ -396,7 +401,6 @@ const Index = ({tableorders}: any) => {
         </View>
     }
 
-
     const renderItem = useCallback(({item, index}: any) => <Item shifttable={shifttable}
                                                                  shiftingFromtable={shiftingFromtable}
                                                                  setShiftingFromtable={setShiftingFromtable}
@@ -406,18 +410,19 @@ const Index = ({tableorders}: any) => {
                                                                  resetTables={resetTables} item={item}
                                                                  key={index}/>, [shifttable, shiftingFromtable, shiftingTotable]);
 
-
     const AllTable = memo(() => (
         <View style={[styles.flex]}>
             <ScrollView>
-                <TableSectionlist type={'all'}/>
+                <TableSectionlist type={'all'} area={'All'}/>
             </ScrollView>
         </View>
     ));
 
     const OnlyTable = memo(() => (
         <View style={[styles.flex]}>
-            <TableFlatlist type={'tableorder'} area={floor}/>
+            <ScrollView>
+                <TableSectionlist type={'tableorder'} area={floor}/>
+            </ScrollView>
             {areas.length > 1 && <View style={[styles.mt_auto]}>
 
                 <TouchableOpacity onPress={()=>{
@@ -444,6 +449,7 @@ const Index = ({tableorders}: any) => {
                 </TouchableOpacity>
 
             </View>}
+
         </View>
     ));
 
@@ -509,8 +515,14 @@ const Index = ({tableorders}: any) => {
         )
     }
 
-    const TableSectionlist = memo(({type}: any) => {
-        let floors = groupBy(tables.filter((table:any)=> true),'area');
+    const TableSectionlist = memo(({type,area}: any) => {
+
+        let floors = groupBy(tables.filter((table:any)=> {
+            if(type === 'tableorder'){
+                return table.ordertype === type
+            }
+            return true
+        }),'area');
         let data:any = []
         Object.keys(floors).map((key:any)=>{
             data.push({title:key,data:floors[key]})
@@ -520,7 +532,12 @@ const Index = ({tableorders}: any) => {
             <View style={[styles.px_2,styles.flex,styles.h_100]}>
                 <>
                     {
-                        data.map((floor:any)=>{
+                        data.filter((floor:any)=>{
+                            if(area !== 'All'){
+                                return  floor.title === area
+                            }
+                            return true
+                        }).map((floor:any)=>{
                             return <>
                                 {Boolean(data.length > 1) && (Boolean(floor?.title !== 'undefined') ?   <Paragraph style={[styles.bold]}> {floor?.title}</Paragraph> : <View style={{height:20}}></View>)}
                                 <View style={[styles.grid]}>
@@ -667,7 +684,7 @@ const Index = ({tableorders}: any) => {
     ]
 
     if (!Boolean(urls.localserver)) {
-        routes.push({key: 'advanceorder', title: 'Advance Order'}, {key: 'expense', title: 'Expense'});
+        routes.push({key: 'advanceorder', title: 'Advance Order'});
         actions.push({
             icon: 'table',
             label: 'Table Reservation',

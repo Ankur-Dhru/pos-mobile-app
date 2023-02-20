@@ -68,6 +68,7 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate,cl
         return item
     })));
 
+
     useEffect(() => {
 
         const sum = paymentMethods.reduce((accumulator: any, object: any) => {
@@ -374,19 +375,23 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate,cl
 
                     <View style={[styles.w_auto]}>
                         <TouchableOpacity onPress={() => {
+
                             if(+clientid !== 1) {
-                                let newDA = paymentMethods.map((pm: any) => ({...pm, paymentAmount: 0}))
-                                setPaymentMethods(newDA);
-                                dispatch(setCartData({
-                                    payment: [{
-                                        paymentby: "Pay Later",
-                                        paymentAmount: vouchertotaldisplay
-                                    }]
-                                }));
+                                if(!Boolean(remainingAmount)) {
+                                    let newDA = paymentMethods.map((pm: any) => ({...pm, paymentAmount: 0}))
+                                    setPaymentMethods(newDA);
+                                    dispatch(setCartData({
+                                        payment: [{
+                                            paymentby: "Pay Later",
+                                            paymentAmount: vouchertotaldisplay
+                                        }]
+                                    }));
+                                }
                             }
                             else{
                                 errorAlert('Please select client')
                             }
+
                         }} style={[styles.px_5]}>
                             <View style={[styles.grid, styles.justifyContent,{paddingVertical:20}]}>
                                 <View><Paragraph style={[styles.paragraph, styles.bold,{color:Boolean(activePayLater)?styles.green.color:'black'}]}>Pay later</Paragraph></View>

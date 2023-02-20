@@ -92,8 +92,6 @@ export const ItemView = memo(({item,displayType}:any)=>{
                         return  <List.Icon icon="chevron-right" style={{height:35,width:35,margin:0}} />
                     }
 
-
-
                     if(Boolean(item?.productqnt) && !hasKot){
                         return <View><AddButton item={item}  /></View>
                     }

@@ -225,7 +225,7 @@ const AddEditPaymentReceived = (props: any) => {
                                         <Button more={{color: 'white'}} disable={more.invalid}
                                                 secondbutton={more.invalid} onPress={() => {
                                             handleSubmit(values)
-                                        }}> Add </Button>
+                                        }}> Save </Button>
                                     </View>
                                 </KAccessoryView>
 

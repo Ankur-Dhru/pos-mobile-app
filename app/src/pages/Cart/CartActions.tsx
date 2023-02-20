@@ -8,8 +8,8 @@ import {
     retrieveData,
     saveTempLocalOrder, storeData
 } from "../../libs/function";
-import {Alert, View} from "react-native";
-import {Card, withTheme} from "react-native-paper";
+import {Alert, TouchableOpacity, View} from "react-native";
+import {Card, Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {useNavigation} from "@react-navigation/native";
@@ -19,6 +19,7 @@ import {hideLoader, setAlert, setBottomSheet, showLoader} from "../../redux-stor
 import HoldOrders from "./HoldOrders";
 import {db, device, localredux, PRINTER} from "../../libs/static";
 import store from "../../redux-store/store";
+import {ProIcon} from "../../components";
 
 
 
@@ -90,17 +91,23 @@ const Index = ({
                         </View>*/}
 
                         <View style={[styles.w_auto]}>
-                            <Button
+                            <TouchableOpacity
                                     onPress={() => { Boolean(vouchertotaldisplay) && generateKOT().then(() => {
                                         saveTempLocalOrder().then((msg:any) => {
                                             dispatch(hideLoader())
                                         })
-                                    })} }
-                                    more={{backgroundColor: styles.yellow.color, color: 'black',height:50}}
-                            >Send to Kitchen </Button>
+                                    })}}
+                                    style={{backgroundColor: styles.yellow.color, borderRadius: 7,height:50}}>
+                                <View style={[styles.grid,styles.noWrap,styles.middle,styles.center,styles.w_100,styles.h_100]}>
+                                    <ProIcon name={'print'} size={15} />
+                                    <View>
+                                        <Paragraph style={[styles.paragraph,styles.bold,{width:80}]}>Send To Kitchen</Paragraph>
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
                         </View>
                         {ordertype !== 'qsr' && <View style={[styles.w_auto, styles.ml_1]}>
-                            <Button
+                            <TouchableOpacity
                                     onPress={async () => {
                                         if (Boolean(vouchertotaldisplay)) {
                                             if (kotongenerateinvoice === 'Ask On Place') {
@@ -123,8 +130,13 @@ const Index = ({
                                         }
                                     }
                                  }
-                                    more={{backgroundColor: styles.accent.color, color: 'white',height:50}}
-                            >Print Bill {`${printcounter ? '(' + printcounter + ')' : ''}`}</Button>
+                                    style={{backgroundColor: styles.accent.color, height:50,borderRadius:7}}
+                            >
+                               <View style={[styles.grid,styles.noWrap,styles.middle,styles.center,styles.w_100,styles.h_100]}>
+                                   <ProIcon name={'print'} color={'white'} size={15}/>
+                                   <Paragraph  style={[styles.paragraph,styles.bold,{color:'white'}]}> Print Bill {`${printcounter ? '(' + printcounter + ')' : ''}`}</Paragraph>
+                               </View>
+                            </TouchableOpacity>
                         </View>}
                     </>}
                     {/*<View style={[styles.w_auto, styles.ml_1, styles.mr_1]}>
@@ -136,7 +148,7 @@ const Index = ({
                             <Button
                                 secondbutton={Boolean(vouchertotaldisplay)}
                                 onPress={async () => {
-                                    Boolean(vouchertotaldisplay) && await dispatch(setBottomSheet({
+                                      await dispatch(setBottomSheet({
                                         visible: true,
                                         height: '50%',
                                         component: () => <HoldOrders/>

@@ -18,7 +18,7 @@ class Index extends React.Component<any> {
         }
         return (
             <TouchableOpacity  {...this.props}>
-                <View style={[styles.center,{borderRadius:7,  height:45,backgroundColor:!Boolean(mode) ? colors.accent : 'transparent',...more}]} ><Paragraph style={[styles.px_6,styles.bold,{textAlign:'center',color:more?.color?more?.color:'white'}]}>{children}</Paragraph></View>
+                <View style={[styles.center,styles.w_100,{borderRadius:7,  height:45,backgroundColor:!Boolean(mode) ? colors.accent : 'transparent',...more}]} ><Paragraph style={[styles.px_6,styles.bold,styles.w_100,{textAlign:'center',color:more?.color?more?.color:'white'}]}>{children}</Paragraph></View>
             </TouchableOpacity>
             /*<Button
                  mode={'contained'}

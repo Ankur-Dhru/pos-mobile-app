@@ -327,7 +327,7 @@ const ProfileSettings = () => {
 
                                         <List.Item
                                             style={[styles.listitem]}
-                                            title="Invoice Printer"
+                                            title="Invoice / Receipt Printer"
                                             onPress={() => {
                                                 navigation.navigate('PrinterSettings', {
                                                     type: {
@@ -344,7 +344,7 @@ const ProfileSettings = () => {
 
                                         {isRestaurant() && <List.Item
                                             style={[styles.listitem]}
-                                            title="KOT Printer"
+                                            title="Kitchen / KOT Printer"
                                             onPress={() => {
                                                 navigation.navigate("KOTPrinter");
                                             }}
@@ -424,9 +424,9 @@ const ProfileSettings = () => {
                                 }}>
                                     <Card.Content style={[styles.cardContent]}>
                                         <View style={[styles.p_4,]}>
-                                            <Paragraph  style={[styles.paragraph,{color:styles.primary.color}]}>Back List</Paragraph>
+                                            <Paragraph  style={[styles.paragraph,{color:styles.primary.color}]}>More settings available on back office</Paragraph>
                                             <Paragraph>
-                                                To Manage Users, Access Roles, Accounting, Multiple Locations, Analytics, Dashboards, Subscription and many more Advanced Settings and Features available at web.
+                                                To Manage Users, Access Roles, Accounting, Multiple Locations, Analytics, Dashboards, Subscription and many more Advanced Settings and Features available at web based back office.
                                             </Paragraph>
                                             <Paragraph style={[styles.bold]}>
                                                 <Text style={[styles.bold,{color:styles.primary.color,}]}>{`https://${workspace}.dhru.com`}</Text>

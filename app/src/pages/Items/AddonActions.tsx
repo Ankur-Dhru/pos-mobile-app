@@ -1,21 +1,18 @@
 import React from "react";
 import {styles} from "../../theme";
-import {connect, useDispatch} from "react-redux";
+import {useDispatch} from "react-redux";
 import {View} from "react-native";
 import Button from "../../components/Button";
 import {Text} from "react-native-paper";
-import {addItem} from "../../libs/item-calculation";
 import {setBottomSheet} from "../../redux-store/reducer/component";
 import {setItemDetail} from "../../redux-store/reducer/item-detail";
 import ItemDetail from "./ItemDetail";
-import {appLog, setItemRowData} from "../../libs/function";
-import {setCartItems} from "../../redux-store/reducer/cart-data";
 import {updateCartItem} from "./AddButton";
 
 
 const {v4: uuid} = require('uuid')
 
-const Index = ({product }: any) => {
+const Index = ({product}: any) => {
 
     const dispatch = useDispatch()
 
@@ -31,12 +28,12 @@ const Index = ({product }: any) => {
 
                 <View style={[styles.grid, styles.middle, styles.justifyContent]}>
 
-                    <View style={{width:'50%'}}>
+                    <View style={{width: '50%'}}>
                         <View>
                             <Button
                                 onPress={async () => {
 
-                                    updateCartItem(product,'add')
+                                    updateCartItem(product, 'add')
 
 
                                     await dispatch(setBottomSheet({visible: false}))
@@ -45,28 +42,27 @@ const Index = ({product }: any) => {
                         </View>
                     </View>
 
-                    <View style={{width:'45%'}}>
+                    <View style={{width: '45%'}}>
                         <View>
                             <Button
-                                more={{color:'white'}}
+                                more={{color: 'white'}}
                                 secondbutton={true}
                                 onPress={async () => {
 
-                                    product={
+                                    product = {
                                         ...product,
                                         key: uuid(),
-                                        productqnt:0,
-                                        itemaddon:[],
-                                        itemtags:undefined
+                                        productqnt: 0,
+                                        itemaddon: [],
+                                        itemtags: undefined
                                     }
-
 
 
                                     await dispatch(setItemDetail(product));
                                     await dispatch(setBottomSheet({
                                         visible: true,
                                         height: '80%',
-                                        component: () => <ItemDetail  />
+                                        component: () => <ItemDetail/>
                                     }))
 
                                 }}> + Add New
@@ -82,7 +78,6 @@ const Index = ({product }: any) => {
 
     )
 }
-
 
 
 export default Index;

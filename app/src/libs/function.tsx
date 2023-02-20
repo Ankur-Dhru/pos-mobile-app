@@ -21,7 +21,7 @@ import {
     isDevelopment,
     localredux,
     METHOD,
-    port,
+    port, pricing,
     PRINTER,
     STATUS,
     taxTypes,
@@ -1311,9 +1311,12 @@ export const selectItem = async (item: any) => {
         })
     } else if (!Boolean(baseprice)) {
 
+        store.dispatch(setBottomSheet({visible: false}))
+
         onPressNumber(item, 'amount', (price: any) => {
-            const pricingtype = item?.pricing?.type;
-            item.pricing.price.default[0] = {[pricingtype]: {baseprice: price}};
+            const pricingtype = item?.pricing?.type || 'onetime';
+            item.pricing = {...pricing,type:pricingtype,price:{default:[{[pricingtype]: {baseprice: price}}]}};
+
             selectItem(item).then(() => {
                 store.dispatch(setDialog({visible: false}))
             });
@@ -2187,8 +2190,6 @@ export const refreshToken = () => {
     const {workspace}: any = localredux.initData;
     const {token}: any = localredux.authData;
 
-    appLog('old token', token)
-
     return apiService({
         method: METHOD.GET,
         action: ACTIONS.REFRESH,
@@ -2198,8 +2199,6 @@ export const refreshToken = () => {
         other: {url: urls.posUrl},
     }).then((response: any) => {
         const {newtoken}: any = response?.data
-
-        appLog('newtoken', newtoken)
 
         if (Boolean(newtoken)) {
             updateToken(newtoken).then()
@@ -2895,28 +2894,34 @@ export const uploadFile = (file: any, callback: any) => {
 
         }).then((responseUrl) => {
 
-            if (responseUrl.status === STATUS.SUCCESS) {
-                let requestOptions = {
-                    method: 'PUT',
-                    headers: {"Content-Type": file.type},
-                    body: file,
-                };
 
-                fetch(responseUrl.upload_url, requestOptions)
-                    .then(response => {
-                        if (response.status === 200) {
-                            callback({
-                                download_url: responseUrl.download_url,
-                                file_name: responseUrl.original_file_name,
-                            })
-                        }
-                    })
-                    .catch(error => {
-                        //console.log('error', error)
-                    });
+            if(Boolean(responseUrl.message)) {
+                if (responseUrl.status === STATUS.SUCCESS) {
+                    let requestOptions = {
+                        method: 'PUT',
+                        headers: {"Content-Type": file.type},
+                        body: file,
+                    };
+
+                    fetch(responseUrl.upload_url, requestOptions)
+                        .then(response => {
+                            if (response.status === 200) {
+                                callback({
+                                    download_url: responseUrl.download_url,
+                                    file_name: responseUrl.original_file_name,
+                                })
+                            }
+                        })
+                        .catch(error => {
+                            //console.log('error', error)
+                        });
+                } else {
+                    errorAlert(responseUrl.message)
+                }
             }
             else{
-                errorAlert(responseUrl.message)
+                appLog('get new token')
+
             }
         });
 

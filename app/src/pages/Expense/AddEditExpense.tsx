@@ -379,7 +379,7 @@ const AddEditExpense = (props: any) => {
                                         <Button more={{color: 'white'}} disable={more.invalid}
                                                 secondbutton={more.invalid} onPress={() => {
                                             handleSubmit(values)
-                                        }}> {Boolean(editdata?.edit) ? 'Edit' : 'Add'} </Button>
+                                        }}> {Boolean(editdata?.edit) ? 'Update' : 'Save'} </Button>
                                     </View>
                                 </KAccessoryView>
 

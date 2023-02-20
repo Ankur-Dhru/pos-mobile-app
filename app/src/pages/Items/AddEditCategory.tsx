@@ -182,7 +182,7 @@ const Index = (props: any) => {
                                         <Button more={{color: 'white'}} disable={more.invalid}
                                                 secondbutton={more.invalid} onPress={() => {
                                             handleSubmit(values)
-                                        }}> {Boolean(initdata.edit) ? 'Edit' : 'Add'}  </Button>
+                                        }}> {Boolean(initdata.edit) ? 'Update' : 'Save'}  </Button>
                                     </View>
 
                                 </KAccessoryView>

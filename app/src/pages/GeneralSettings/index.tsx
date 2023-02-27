@@ -1,15 +1,17 @@
 import React, {useEffect, useState} from "react";
-import {View} from "react-native";
-import {Card} from "react-native-paper"
+import {ScrollView, View} from "react-native";
+import {Card, RadioButton, ToggleButton} from "react-native-paper"
 import Container from "../../components/Container";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import CheckBox from "../../components/CheckBox";
 import {Field, Form} from "react-final-form";
 
-import {getLocalSettings, retrieveData, saveLocalSettings, setAPIUrl} from "../../libs/function";
+import {getLocalSettings, nextFocus, retrieveData, saveLocalSettings, setAPIUrl} from "../../libs/function";
 import {setSettings} from "../../redux-store/reducer/local-settings-data";
 import InputField from "../../components/InputField";
+import {Button} from "../../components";
+import KAccessoryView from "../../components/KAccessoryView";
 
 
 const Index = () => {
@@ -42,11 +44,11 @@ const Index = () => {
             onSubmit={handleSubmit}
             render={({handleSubmit, submitting, values, ...more}: any) => (
                 <View style={[styles.middle]}>
-                    <View style={[styles.middleForm]}>
+                    <View style={[styles.middleForm,{maxWidth:400}]}>
+
+                        <ScrollView>
 
 
-                        <Card style={[styles.card]}>
-                            <Card.Content style={[styles.cardContent]}>
 
                                 <Field name="disabledDefaultSourceHomeDelivery">
                                     {props => (
@@ -101,7 +103,25 @@ const Index = () => {
                                 </Field>
 
 
-                                <View>
+                                <Field name="betamode">
+                                    {props => (
+                                        <><CheckBox
+                                            value={props.input.value}
+                                            label={'Enable Beta Mode'}
+                                            onChange={(value: any) => {
+                                                initdata = {
+                                                    ...initdata,
+                                                    betamode: value
+                                                }
+                                                setAPIUrl(value)
+                                                dispatch(setSettings(initdata));
+                                                saveLocalSettings("betamode", value).then();
+                                            }}
+                                        /></>
+                                    )}
+                                </Field>
+
+                                <View style={[styles.mt_5]}>
                                     <Field name="kotongenerateinvoice">
                                         {props => {
                                             return (<>
@@ -133,33 +153,33 @@ const Index = () => {
                                 </View>
 
 
-                            </Card.Content>
-                        </Card>
+                                <View>
+                                    <Field name="terminalname">
+                                        {props => {
+                                            return (<>
+                                                <InputField
+                                                    value={props.input.value}
+                                                    label={'Terminal name'}
+                                                    inputtype={'textbox'}
+                                                    onChange={(value: any) => {
+                                                        props.input.onChange(value);
+                                                    }}
+                                                />
+                                            </>)
+                                        }}
+                                    </Field>
+                                </View>
 
+                        </ScrollView>
 
-                        <Card style={[styles.card]}>
-                            <Card.Content style={[styles.cardContent]}>
-
-                                <Field name="betamode">
-                                    {props => (
-                                        <><CheckBox
-                                            value={props.input.value}
-                                            label={'Enable Beta Mode'}
-                                            onChange={(value: any) => {
-                                                initdata = {
-                                                    ...initdata,
-                                                    betamode: value
-                                                }
-                                                setAPIUrl(value)
-                                                dispatch(setSettings(initdata));
-                                                saveLocalSettings("betamode", value).then();
-                                            }}
-                                        /></>
-                                    )}
-                                </Field>
-
-                            </Card.Content>
-                        </Card>
+                        <KAccessoryView>
+                            <View style={[styles.submitbutton]}>
+                                <Button more={{color: 'white'}} disable={more.invalid}
+                                        secondbutton={more.invalid} onPress={() => {
+                                    handleSubmit(values)
+                                }}> Save </Button>
+                            </View>
+                        </KAccessoryView>
 
                     </View>
 

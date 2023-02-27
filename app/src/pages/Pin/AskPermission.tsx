@@ -6,10 +6,18 @@ import ReactNativePinView from "react-native-pin-view"
 import {useDispatch} from "react-redux";
 
 import {setAlert} from "../../redux-store/reducer/component";
-import {Caption, Card, List} from "react-native-paper";
+import {Caption, Card, List, Paragraph, Text} from "react-native-paper";
 import {styles} from "../../theme";
 import InputField from "../../components/InputField";
 import {localredux} from "../../libs/static";
+import {
+    CodeField, Cursor,
+    isLastFilledCell,
+    MaskSymbol,
+    useBlurOnFulfill,
+    useClearByFocusCell
+} from "react-native-confirmation-code-field";
+import Avatar from "../../components/Avatar";
 
 
 const md5 = require('md5');
@@ -22,6 +30,10 @@ const Index = (props: any) => {
     const kot = route?.params?.kot;
     const cancelKOTDialog = route?.params?.cancelKOTDialog;
     const cancelOrder = route?.params?.cancelOrder;
+    const reprintKOT = route?.params?.reprintKOT;
+
+
+    const action = route?.params?.action;
 
 
     let stafflist = localredux?.initData?.staff;
@@ -47,15 +59,22 @@ const Index = (props: any) => {
         staffRef.current?.props?.onPress()
     }, [])
 
+    const [value, setValue]:any = useState("")
+    const ref = useBlurOnFulfill({value, cellCount: 5});
+    const [props1, getCellOnLayoutHandler] = useClearByFocusCell({
+        value,
+        setValue,
+    });
 
     useEffect(() => {
 
         setTimeout(async () => {
-            if (enteredPin.length === 5) {
-                if (md5(enteredPin) === selectedstaff?.loginpin) {
+            if (value.length === 5) {
+                if (md5(value) === selectedstaff?.loginpin) {
                     navigation.goBack()
-                    Boolean(cancelKOTDialog) && cancelKOTDialog(kot, true).then();
-                    Boolean(cancelOrder) && cancelOrder(navigation).then();
+                    action === 'cancelkot' && Boolean(cancelKOTDialog) && cancelKOTDialog(kot, true).then();
+                    action === 'cancelorder' && Boolean(cancelOrder) && cancelOrder(navigation).then();
+                    action === 'reprintkot' && Boolean(reprintKOT) && reprintKOT(kot).then();
 
                 } else {
                     dispatch(setAlert({visible: true, message: 'Wrong Pin'}));
@@ -63,14 +82,45 @@ const Index = (props: any) => {
                 pinView.current.clearAll()
             }
         }, 200)
-    }, [enteredPin])
+    }, [value])
+
+
+    const renderCell = ({index, symbol, isFocused}:any) => {
+        let textChild = null;
+
+        if (symbol) {
+            textChild = (
+                <MaskSymbol
+                    maskSymbol="*️"
+                    isLastFilledCell={isLastFilledCell({index, value})}>
+                    {symbol}
+                </MaskSymbol>
+            );
+        } else if (isFocused) {
+            textChild = <Cursor />;
+        }
+
+        return (
+            <Text
+                key={index}
+                style={[styles.cellBox, isFocused && styles.focusCell]}
+                onLayout={getCellOnLayoutHandler(index)}>
+                {textChild}
+            </Text>
+        );
+    };
+
+
+
 
 
     return <Container style={{padding: 0}}>
 
-        <Card style={[styles.card, {paddingBottom: 100}]}>
+        <Card style={[styles.card]}>
 
-            <View>
+
+
+            <View style={{display:'none'}}>
                 <InputField
                     label={'Staff'}
                     customRef={staffRef}
@@ -97,47 +147,39 @@ const Index = (props: any) => {
                 />
             </View>
 
-            <View style={[styles.center, styles.h_100, styles.middle]}>
+            <View style={[styles.h_100, styles.middle,{marginTop:50}]}>
 
                 <View style={{width: 300}}>
 
 
                     {Boolean(selectedstaff) && <>
 
-                        <Caption style={[styles.caption, {textAlign: 'center'}]}>Enter PIN
-                            of {selectedstaff?.username}</Caption>
+                        <View style={[styles.middle]}>
 
-                        <ReactNativePinView
-                            inputSize={12}
-                            ref={pinView}
-                            pinLength={5}
-                            onValueChange={value => value.length === 5 && setEnteredPin(value)}
-                            inputViewEmptyStyle={{
-                                backgroundColor: "transparent",
-                                borderWidth: 1,
-                                borderColor: "#ccc",
-                            }}
-                            inputViewFilledStyle={{
-                                backgroundColor: "#222",
-                            }}
-                            buttonViewStyle={{
-                                borderWidth: 0,
-                                backgroundColor: styles.secondary.color,
-                                borderColor: styles.secondary.color,
-                                width: 60,
-                                height: 60,
-                                borderRadius: 50
-                            }}
-                            buttonTextStyle={{
-                                color: "#222",
-                                fontSize: 18,
-                            }}
-                            inputViewStyle={{
-                                marginBottom: 0
-                            }}
+                            {<View  style={[styles.middle]}>
+                                <Avatar label={selectedstaff.firstname+' '+selectedstaff.lastname} value={1}  fontsize={30} size={60}/>
+                                <Paragraph style={[styles.paragraph,styles.bold,{textTransform:'capitalize'}]}>{selectedstaff.firstname} {selectedstaff.lastname}</Paragraph>
+                            </View>}
 
+                        </View>
 
-                        /></>}
+                        <View>
+                            <CodeField
+                                ref={ref}
+                                {...props1}
+                                // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
+                                value={value}
+                                onChangeText={setValue}
+                                cellCount={5}
+                                autoFocus={true}
+                                rootStyle={styles.codeFieldRoot}
+                                keyboardType="number-pad"
+                                textContentType="oneTimeCode"
+                                renderCell={renderCell}
+                            />
+                        </View>
+
+                         </>}
                 </View>
 
             </View>

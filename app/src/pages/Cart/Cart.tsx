@@ -8,7 +8,7 @@ import {Card, List, Paragraph} from "react-native-paper";
 import Button from "../../components/Button";
 
 
-import {device} from "../../libs/static";
+import {device, localredux} from "../../libs/static";
 
 import CartActions from "./CartActions";
 import {Container, ProIcon} from "../../components";
@@ -19,6 +19,9 @@ import {appLog, cancelOrder, isRestaurant, saveTempLocalOrder} from "../../libs/
 import NumPad from "../Items/NumPad";
 import ItemListMobile from "../Items/ItemListMobile";
 import ItemListTablet from "../Items/ItemListTablet";
+import {setBottomSheet} from "../../redux-store/reducer/component";
+import HoldOrders from "./HoldOrders";
+import Discount from "./Discount";
 
 
 const Index = (props: any) => {
@@ -32,6 +35,8 @@ const Index = (props: any) => {
     const hasrestaurant = isRestaurant();
 
     const dispatch = useDispatch();
+
+    const {canapplydiscount}:any = localredux?.authData?.settings;
 
 
     return <>
@@ -80,6 +85,18 @@ const Index = (props: any) => {
                                 more={{backgroundColor: styles.red.color, color: 'white', height: 45}}
                             > Cancel </Button>
                         </View>
+
+                        {canapplydiscount &&  <View style={[{marginLeft: 5}]}>
+                            <Button
+                                onPress={() =>  dispatch(setBottomSheet({
+                                    visible: true,
+                                    height: '80%',
+                                    component: () => <Discount/>
+                                })) }
+                                more={{backgroundColor: styles.secondary.color, color: 'black', height: 45}}
+                            > Discount </Button>
+                        </View>}
+
                     </View>
 
                     <View style={[styles.h_100, styles.w_100, styles.flex,styles.bg_light,{paddingHorizontal:5,paddingBottom:3}]}>

@@ -76,6 +76,8 @@ import LocalServer from "../Setup/LocalServer";
 import GettingStarted from "../Splash/GettingStarted";
 import AddEditAccount from "../Expense/AddEditAccount";
 import ContactUs from "../SetupWorkspace/ContactUs";
+import TerminalSettings from "../TerminalSettings";
+import ChangePin from "../Pin/ChangePin";
 
 
 const screenOptions = {...screenOptionStyle};
@@ -282,7 +284,12 @@ const ProfileSettingsNavigator = (props: any) => {
             <Stack.Screen name={'DefaultInputValues'} component={DefaultInputValues}
                           options={{title: 'Quick Quantity & Amount'}}/>
 
-            <Stack.Screen name={'GeneralSettings'} component={GeneralSettings} options={{title: 'General Settings'}}/>
+            <Stack.Screen name={'GeneralSettings'} component={GeneralSettings} options={{title: 'General'}}/>
+
+            <Stack.Screen name={'TerminalSettings'} component={TerminalSettings} options={{title: 'Terminal'}}/>
+
+            <Stack.Screen name={'ChangePin'} component={ChangePin} options={{title: 'Change Pin'}}/>
+
             <Stack.Screen name={'ContactUs'} component={ContactUs} options={{title: 'Contact Us'}}/>
 
             <Stack.Screen name={'PrinterSettings'} component={PrinterSettings} options={{title: ''}}/>

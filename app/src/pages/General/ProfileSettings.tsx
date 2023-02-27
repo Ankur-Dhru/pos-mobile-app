@@ -1,6 +1,14 @@
 import React from "react";
-import {getDatabaseName, isEmpty, isRestaurant, saveLocalSettings, storeData, syncData} from "../../libs/function";
-import {Dimensions, Image, Linking, Platform, ScrollView, TouchableOpacity, View} from "react-native";
+import {
+    appLog,
+    getDatabaseName,
+    isEmpty,
+    isRestaurant,
+    saveLocalSettings,
+    storeData,
+    syncData
+} from "../../libs/function";
+import {Dimensions, Image, Linking, Platform, SafeAreaView, ScrollView, TouchableOpacity, View} from "react-native";
 import {Button as PButton, Caption, Card, List, Paragraph, Text, Title} from "react-native-paper";
 import {styles} from "../../theme";
 import {CommonActions, useNavigation} from "@react-navigation/native";
@@ -23,6 +31,7 @@ import {Container} from "../../components";
 import {createTables, deleteDB} from "../../libs/Sqlite";
 import {Icon} from "react-native-paper/lib/typescript/components/List/List";
 import ProIcon from "../../components/ProIcon";
+import Avatar from "../../components/Avatar";
 
 
 const ProfileSettings = () => {
@@ -32,6 +41,11 @@ const ProfileSettings = () => {
 
     const {role}: any = localredux.authData
 
+    const {
+        currentLocation: {
+            locationname,
+        }
+    }: any = localredux.localSettingsData;
     const {workspace} = localredux.initData
 
     const windowHeight = Dimensions.get('window').height;
@@ -137,19 +151,24 @@ const ProfileSettings = () => {
 
                             <View>
 
-                                <View style={[{justifyContent: 'center', alignItems: 'center',}]}>
-                                    <Image
-                                        style={[{width: 70, height: 70}]}
-                                        source={require('../../assets/dhru-logo-22.png')}
-                                    />
-                                    <View>
 
-                                        <Title
-                                            style={[styles.text_md, styles.textCenter]}>{firstname + ' ' + lastname} </Title>
-                                        <Text
-                                            style={[styles.paragraph, styles.textCenter, styles.mb_2]}>{aemail}</Text>
-                                        <Caption
-                                            style={[styles.paragraph, styles.textCenter, styles.mb_10]}>{workspace} ({terminal_name})</Caption>
+
+                                <View style={[styles.py_6,{justifyContent: 'center', alignItems: 'center',paddingTop: 25}]}>
+
+                                    {<View  style={[styles.middle]}>
+                                        <Avatar label={firstname+' '+lastname} value={1}  fontsize={30} size={60}/>
+                                        <Paragraph style={[styles.paragraph,styles.bold,{textTransform:'capitalize'}]}>{firstname} {lastname}</Paragraph>
+                                    </View>}
+
+                                    <View>
+                                        {/*<Text
+                                            style={[styles.paragraph, styles.textCenter, styles.mb_2]}>{aemail}</Text>*/}
+
+                                        <Paragraph style={[styles.paragraph,styles.text_xs]}>{workspace} - {locationname} - {terminal_name}</Paragraph>
+
+                                        <TouchableOpacity onPress={()=>{
+                                            navigation.navigate('ChangePin')
+                                        }}><Paragraph style={[styles.textCenter,{color:styles.primary.color}]}>Change PIN</Paragraph></TouchableOpacity>
 
                                     </View>
                                 </View>
@@ -182,10 +201,6 @@ const ProfileSettings = () => {
 
                         {!hasLocalserver && <View>
                             <View>
-
-
-
-
 
                                 <Card style={[styles.card]}>
                                     <Card.Content style={[styles.cardContent]}>
@@ -327,6 +342,18 @@ const ProfileSettings = () => {
 
                                         <List.Item
                                             style={[styles.listitem]}
+                                            title="General"
+                                            onPress={() => {
+                                                navigation.navigate("GeneralSettings");
+                                            }}
+                                            left={() => <List.Icon icon="cog-outline"/>}
+                                            right={() => <List.Icon icon="chevron-right"/>}
+                                        />
+
+                                        <ItemDivider/>
+
+                                        <List.Item
+                                            style={[styles.listitem]}
                                             title="Invoice / Receipt Printer"
                                             onPress={() => {
                                                 navigation.navigate('PrinterSettings', {
@@ -354,17 +381,7 @@ const ProfileSettings = () => {
 
                                         <ItemDivider/>
 
-                                        <List.Item
-                                            style={[styles.listitem]}
-                                            title="General Settings"
-                                            onPress={() => {
-                                                navigation.navigate("GeneralSettings");
-                                            }}
-                                            left={() => <List.Icon icon="cog-outline"/>}
-                                            right={() => <List.Icon icon="chevron-right"/>}
-                                        />
 
-                                        <ItemDivider/>
 
                                         <List.Item
                                             style={[styles.listitem]}
@@ -389,6 +406,7 @@ const ProfileSettings = () => {
                                         />
 
                                         <ItemDivider/>
+
 
                                         {/*<List.Item
                                             style={[styles.listitem]}
@@ -418,27 +436,62 @@ const ProfileSettings = () => {
                                 </Card>
 
 
-                                <Card style={[styles.card,styles.bg_light,styles.m_4]} onPress={()=>{
-                                    const url = `https://${workspace}.dhru.com`;
-                                    Linking.openURL(url)
+                                <TouchableOpacity  onPress={()=>{
+                                    let url = `https://play.google.com/store/apps/details?id=com.dhru.account&hl=en_IN&gl=US`;
+                                    if(Platform.OS === 'ios'){
+                                        url = `https://apps.apple.com/in/app/dhru/id1535749812`;
+                                    }
+                                    Linking.canOpenURL(url).then(
+                                        (supported) => {
+                                            supported && Linking.openURL(url);
+                                        },
+                                        (err) => console.log(err)
+                                    );
+                                    //  Linking.openURL(url)
                                 }}>
+                                <Card style={[styles.card,styles.bg_light,styles.m_4]}>
                                     <Card.Content style={[styles.cardContent]}>
-                                        <View style={[styles.p_4,]}>
-                                            <Paragraph  style={[styles.paragraph,{color:styles.primary.color}]}>More settings available on back office</Paragraph>
-                                            <Paragraph>
-                                                To Manage Users, Access Roles, Accounting, Multiple Locations, Analytics, Dashboards, Subscription and many more Advanced Settings and Features available at web based back office.
-                                            </Paragraph>
-                                            <Paragraph style={[styles.bold]}>
-                                                <Text style={[styles.bold,{color:styles.primary.color,}]}>{`https://${workspace}.dhru.com`}</Text>
-                                            </Paragraph>
+                                        <View style={[styles.p_3,styles.grid,styles.center,styles.middle]}>
+                                            <View>
+                                                <Image
+                                                    style={[{width: 60, height: 60}]}
+                                                    source={require('../../assets/dhru-logo-22.png')}
+                                                />
+                                            </View>
+                                            <View  style={[styles.w_auto,styles.ml_2]}>
+                                                <Paragraph style={[styles.paragraph]}>
+                                                    Download DHRU App for analytics, support and back office management
+                                                </Paragraph>
+                                            </View>
+
                                         </View>
                                     </Card.Content>
                                 </Card>
+                                </TouchableOpacity>
 
 
-                                <View>
 
-                                {role === 'admin' && <View  style={[styles.py_4]}>
+
+                                {role === 'admin' &&  <View>
+
+                                    <Card style={[styles.card,styles.bg_light,styles.m_4]} onPress={()=>{
+                                        const url = `https://${workspace}.dhru.com`;
+                                        Linking.openURL(url)
+                                    }}>
+                                        <Card.Content style={[styles.cardContent]}>
+                                            <View style={[styles.p_4,]}>
+                                                <Paragraph  style={[styles.paragraph,{color:styles.primary.color}]}>More settings available on back office</Paragraph>
+                                                <Paragraph>
+                                                    To Manage Users, Access Roles, Accounting, Multiple Locations, Analytics, Dashboards, Subscription and many more Advanced Settings and Features available at web based back office.
+                                                </Paragraph>
+                                                <Paragraph style={[styles.bold]}>
+                                                    <Text style={[styles.bold,{color:styles.primary.color,}]}>{`https://${workspace}.dhru.com`}</Text>
+                                                </Paragraph>
+                                            </View>
+                                        </Card.Content>
+                                    </Card>
+
+                                <View  style={[styles.py_4]}>
                                     <Card style={[styles.card, {marginBottom: 0}]}>
                                         <Card.Content style={[styles.cardContent,]}>
 
@@ -512,9 +565,10 @@ const ProfileSettings = () => {
                                         </Card.Content>
                                     </Card>
 
+                                </View>
+
                                 </View>}
 
-                                </View>
                                 <View style={{marginTop: 'auto'}}>
 
 

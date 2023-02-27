@@ -1,14 +1,31 @@
 import React, {Component, useState} from 'react';
-import {TouchableOpacity, View,} from 'react-native';
+import {ScrollView, TouchableOpacity, View,} from 'react-native';
 import {styles} from "../../../src/theme";
 
 import {Button, InputBox, ProIcon} from "../../../src/components";
 import {connect, useDispatch} from "react-redux";
-import {Paragraph, TextInput, TextInput as TI, Title, Divider, withTheme} from "react-native-paper";
+import {Paragraph, TextInput, TextInput as TI, Title, Divider, withTheme, Caption, Card} from "react-native-paper";
 
-import {clone, getCurrencySign, toCurrency} from "../../../src/libs/function";
-import {setDialog} from "../../redux-store/reducer/component";
+import {
+    appLog,
+    assignOption,
+    clone,
+    generateKOT,
+    getCurrencySign,
+    nextFocus,
+    saveTempLocalOrder,
+    toCurrency, updateComponent
+} from "../../../src/libs/function";
+import {hideLoader, setBottomSheet, setDialog} from "../../redux-store/reducer/component";
 import CancelReason from "./CancelReason";
+import {setCartData, setUpdateCart, updateCartField} from "../../redux-store/reducer/cart-data";
+import {Field, Form} from "react-final-form";
+import InputField from "../../components/InputField";
+import {isEmail, minLength, required} from "../../libs/static";
+import KAccessoryView from "../../components/KAccessoryView";
+import ToggleButtons from "../../components/ToggleButton";
+import {itemTotalCalculation} from "../../libs/item-calculation";
+import store from "../../redux-store/store";
 
 
 
@@ -18,95 +35,114 @@ const Index = ({cartData}: any) => {
 
     const dispatch = useDispatch()
 
-    const [discount,setDiscount]:any = useState(Boolean(cartData?.voucherglobaldiscountdisplay));
-    const [discountamount,setDiscountamount]:any = useState(0);
-    const [adjustmentamount,setAdjustmentamount]:any = useState(0);
-    const [discounttype,setDiscounttype]:any = useState(cartData.discounttype);
-    const [globaldiscountvalue,setGlobaldiscountvalue]:any = useState(cartData.globaldiscountvalue);
+    const [discounttype,setDiscounttype]:any = useState(cartData?.discounttype || '%');
+    const initdata = {discount:cartData?.voucherglobaldiscountdisplay?cartData?.voucherglobaldiscountdisplay+'':''}
+    const isInclusive =  Boolean(cartData.vouchertaxtype === 'inclusive') ;
 
-
-    const DiscountForm = () => {
-        return (
-            <View >
-
-                <View>
-
-                    <View style={[styles.grid,styles.middle]}>
-
-                        <View>
-
-                            <TextInput
-                                style={[styles.input]}
-                                mode={'flat'}
-                                value={globaldiscountvalue}
-                                defaultValue={globaldiscountvalue}
-                                left={<TI.Affix text={cartData.discounttype === '%' ? '' : getCurrencySign()}/>}
-                                outlineColor="transparent"
-                                dense={true}
-                                keyboardType={'numeric'}
-                                autoFocus={false}
-
-                                onChangeText={(value:any) => {
-                                    setDiscounttype(value)
-                                }}
-
-                            />
-
-
-                        </View>
-
-                        <View>
-
-                            <TouchableOpacity onPress={() => {
-                                setDiscounttype(discounttype === '%' ? getCurrencySign() : '%')
-                            }}>
-                                <View style={[styles.grid,styles.middle]}>
-                                    <Paragraph  style={[styles.paragraph,styles.text_sm]}>
-                                        {cartData.discounttype === '%' ? '%' : getCurrencySign()}
-                                    </Paragraph>
-                                </View>
-                            </TouchableOpacity>
-
-                        </View>
+    const handleSubmit = async (values:any) => {
 
 
 
-                    </View>
+       // cartData = await itemTotalCalculation(clone(cartData), undefined, undefined, undefined, undefined, 2, 2, false, false);
 
-                    <View><Paragraph  style={[styles.textRight, styles.head]}>{toCurrency(cartData.voucherglobaldiscountdisplay || '0')}</Paragraph></View>
+        const {discount}:any = values;
 
-                </View>
+        cartData = {
+            ...cartData,
+            globaldiscountvalue: isInclusive ? 0 : discount,
+            discounttype: discounttype,
+            updatecart: true,
+            invoiceitems: cartData.invoiceitems.map((item: any) => {
+                if (isInclusive) {
+                    item = {...item, productdiscountvalue: discount, productdiscounttype: discounttype}
+                }
+                return {...item, change: true}
+            })
+        }
 
-            </View>
-        )
+        let data = await itemTotalCalculation(clone(cartData), undefined, undefined, undefined, undefined, 2, 2, false, false);
+
+        await dispatch(setCartData(clone(data)));
+        await dispatch(setUpdateCart());
+
+        dispatch(setBottomSheet({visible:false}))
+
     }
 
-    const openDiscountDialog = () => {
-        dispatch(setDialog({title:'Discount',visible:true,hidecancel:true,component: ()=><DiscountForm  />}))
-    }
+    const onButtonToggle = (value:any) => {
+        setDiscounttype(value)
+    };
 
         return (
-            <View>
-                {(cartData.vouchertransitionaldiscount) ? <View style={[]}>
-                    {!discount && <View><TouchableOpacity  style={[styles.fieldspace]}  onPress={()=>  openDiscountDialog() }>
-                        <Title  style={[styles.textRight,styles.text_sm,styles.uppercase,styles.green]} >
-                            + Discount
-                        </Title>
-                    </TouchableOpacity></View> }
+            <View style={[styles.w_100,styles.p_6]}>
 
 
+                <Form
+                    onSubmit={handleSubmit}
+                    initialValues={initdata}
+                    render={({handleSubmit, submitting, values, ...more}: any) => (
+                        <View style={[styles.middle]}>
+                            <View style={[styles.middleForm,{maxWidth:400}]}>
 
-                </View> : <View style={[]}>
-                    {Boolean(cartData.voucherglobaldiscountdisplay) && <View><View style={[styles.grid,styles.middle,styles.fieldspace,{marginTop:12}]}>
-                        <View style={[styles.cell,styles.w_auto]}>
-                            <Paragraph  style={[styles.paragraph,styles.text_sm,styles.uppercase]} >
-                                 Discount
-                            </Paragraph>
+                                <ScrollView>
+
+                                    {!isInclusive &&  <ToggleButtons
+                                        width={'50%'}
+                                        default={cartData.discounttype}
+                                        btns={[{label:'Percentage',value:'%'},{label:'Amount',value:'amount'}]}
+                                        onValueChange={onButtonToggle}
+                                    /> }
+
+                                    <View style={[styles.mt_5]}>
+                                        <Field name="discount" validate={required}>
+                                            {props => (
+                                                <InputField
+                                                    {...props}
+                                                    value={props.input.value}
+                                                    label={'Discount'}
+                                                    autoFocus={true}
+                                                    onSubmitEditing={() => handleSubmit(values)}
+                                                    right={<TI.Affix text={discounttype === '%' ? '%' : getCurrencySign()}/>}
+                                                    inputtype={'textbox'}
+                                                    keyboardType={'numeric'}
+                                                    onChange={(value: any) => {
+                                                        props.input.onChange(value);
+                                                    }}
+                                                />
+                                            )}
+                                        </Field>
+                                    </View>
+
+                                </ScrollView>
+
+
+                                <KAccessoryView>
+                                    <View style={[styles.submitbutton]}>
+                                        <View>
+
+                                            <TouchableOpacity
+                                                onPress={() =>  {
+                                                    handleSubmit(values)
+                                                }}
+                                                style={[{backgroundColor: styles.secondary.color, borderRadius: 7,height:50,marginTop:20}]}>
+                                                <View style={[styles.grid,styles.noWrap,styles.middle,styles.center,styles.w_100,styles.h_100]}>
+                                                    <View>
+                                                        <Paragraph style={[styles.paragraph,styles.bold]}>Apply</Paragraph>
+                                                    </View>
+                                                </View>
+                                            </TouchableOpacity>
+
+                                        </View>
+                                    </View>
+                                </KAccessoryView>
+
+                            </View>
+
                         </View>
-                        <View style={[styles.cell,{paddingRight:0}]}><Paragraph
-                            style={[styles.textRight, styles.head]}>{toCurrency(cartData.voucherglobaldiscountdisplay || '0')}</Paragraph></View>
-                    </View></View>}
-                </View> }
+                    )}
+                >
+
+                </Form>
 
             </View>
         )

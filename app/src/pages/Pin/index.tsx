@@ -63,7 +63,7 @@ const Index = (props: any) => {
                 localredux.initData = {...localredux.initData, ...initData};
 
                 localredux.licenseData = licenseData;
-                localredux.authData = {...params, ...authData};
+                localredux.authData = {...authData,...params};
                 localredux.localSettingsData = localSettingsData;
 
                 device.global_token = initData.global_token
@@ -229,11 +229,8 @@ const Index = (props: any) => {
                     <View style={[styles.middle]}>
 
                         {<View  style={[styles.middle]}>
-                            <Avatar label={params.username} value={1}  fontsize={30} size={60}/>
-
-                            <Paragraph style={[styles.paragraph,styles.bold,{textTransform:'capitalize'}]}>{params.username}</Paragraph>
-
-
+                            <Avatar label={params.firstname+' '+params.lastname} value={1}  fontsize={30} size={60}/>
+                            <Paragraph style={[styles.paragraph,styles.bold,{textTransform:'capitalize'}]}>{params.firstname} {params.lastname}</Paragraph>
                         </View>}
 
                     </View>

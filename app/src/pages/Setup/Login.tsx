@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 
 
-import {Image, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import {Image, Keyboard, ScrollView, Text, TouchableOpacity, View} from "react-native";
 import {Paragraph, TextInput as TI, Title,} from "react-native-paper";
 import {styles} from "../../theme";
 import Container from "../../components/Container";
@@ -71,7 +71,7 @@ const Index = (props: any) => {
 
 
     const handleSubmit = async (values: any) => {
-
+        Keyboard.dismiss();
         values = {
             ...values,
             deviceid: 'asdfadsf',

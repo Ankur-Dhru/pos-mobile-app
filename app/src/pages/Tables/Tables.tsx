@@ -45,7 +45,12 @@ const Index = ({tableorders}: any) => {
     const {currentLocation} = localredux.localSettingsData;
 
     const dispatch = useDispatch();
-    const [refreshing, setRefreshing]: any = useState(false);
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+    }, []);
+
     const [floating, setFloating] = useState(false);
     const [shifttable, setShifttable] = useState(false);
     const [shiftingFromtable, setShiftingFromtable] = useState<any>();
@@ -89,7 +94,7 @@ const Index = ({tableorders}: any) => {
                 interval = null;
             };
         }
-    }, [tableorders, currentLocation.tables, isFocused])
+    }, [tableorders, currentLocation.tables, isFocused,refreshing])
 
     const resetTables = () => {
         shiftStart(false);
@@ -146,6 +151,8 @@ const Index = ({tableorders}: any) => {
                 newtables = newtables.concat(newothertables);
 
                 await setTables(newtables);
+
+                setRefreshing(false);
 
                 resolve(newtables)
 
@@ -412,7 +419,9 @@ const Index = ({tableorders}: any) => {
 
     const AllTable = memo(() => (
         <View style={[styles.flex]}>
-            <ScrollView>
+            <ScrollView refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }>
                 <TableSectionlist type={'all'} area={'All'}/>
             </ScrollView>
         </View>
@@ -420,7 +429,9 @@ const Index = ({tableorders}: any) => {
 
     const OnlyTable = memo(() => (
         <View style={[styles.flex]}>
-            <ScrollView>
+            <ScrollView refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }>
                 <TableSectionlist type={'tableorder'} area={floor}/>
             </ScrollView>
             {areas.length > 1 && <View style={[styles.mt_auto]}>
@@ -478,7 +489,6 @@ const Index = ({tableorders}: any) => {
 
                 </View>
                 <View style={[]}>
-
                     <View style={[styles.grid, styles.center]}>
                         <Button
                             more={{color: 'white'}}
@@ -537,10 +547,10 @@ const Index = ({tableorders}: any) => {
                                 return  floor.title === area
                             }
                             return true
-                        }).map((floor:any)=>{
+                        }).map((floor:any,index:any)=>{
                             return <>
                                 {Boolean(data.length > 1) && (Boolean(floor?.title !== 'undefined') ?   <Paragraph style={[styles.bold]}> {floor?.title}</Paragraph> : <View style={{height:20}}></View>)}
-                                <View style={[styles.grid]}>
+                                <View style={[styles.grid]} key={index}>
                                     {
                                         floor.data.map((item:any)=>{
                                             return <Item shifttable={shifttable}

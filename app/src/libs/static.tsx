@@ -1848,6 +1848,58 @@ export  const  dayendReportTemplate = `
 {{{line}}}`
 
 
+export  const  dayendReportTemplateHtml = `
+<div   class="image-print">
+
+    <style>
+        body .image-print,.image-print td,.image-print th{
+            font-family: Arial;
+            font-size: 16px;
+        }
+    </style>
+<div style="text-align: center">
+<div>
+<div style="font-size: 20px">{{{legalname}}}
+</div>
+<div>{{{locationname}}}
+
+</div>
+</div>
+<div>Terminal : {{terminalname}}
+</div>
+<div>{{invoicetype}}
+</div>
+</div>
+ 
+<div>Date : {{{date}}}
+</div>
+<div>--------------------------------------------------</div>
+<div>{{{head}}}
+</div>
+<div>--------------------------------------------------</div>
+{{#isItems}}
+{{#items}}
+<div>{{{.}}}
+</div>
+{{/items}}
+<div>--------------------------------------------------</div>
+{{/isItems}}
+{{#isSummary}}
+<div><div style="font-weight: bold">Total amount by payment mode 
+</div></div>
+{{#gateways}}
+<div>{{{.}}}
+</div>
+{{/gateways}}
+<div>--------------------------------------------------</div>
+{{/isSummary}}
+ 
+ 
+<div>{{{finaltotal}}}
+</div>
+<div>--------------------------------------------------</div>
+</div>`
+
 
 
 export const ItemDivider = () => {

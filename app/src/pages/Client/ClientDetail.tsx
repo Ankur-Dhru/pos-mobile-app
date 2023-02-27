@@ -15,7 +15,7 @@ const Index = ({clientdetail,clientid,clientname,commonkotnote,vouchernotes,vehi
 
     const navigation = useNavigation()
 
-    return <Card style={[styles.card,  {minWidth:310,padding:5,paddingHorizontal:device.tablet?7:15}]} onPress={() => {
+    return <Card style={[styles.card,  {minWidth:210,padding:5,paddingHorizontal:device.tablet?7:15}]} onPress={() => {
         navigation.navigate('ClientList');
     }}>
         <View style={[styles.grid,styles.middle]}>

@@ -307,6 +307,8 @@ const ClientInformation = memo(({tabledetails}:any) => {
         globalTable.selectedClient = selectedClient;
     },[selectedClient])
 
+    appLog('selectedClient',selectedClient)
+
     return <View   style={[styles.flex,styles.px_3]}><ScrollView>
         <Card style={[styles.card]}>
             <Card.Content style={[styles.cardContent]}>
@@ -331,73 +333,88 @@ const ClientInformation = memo(({tabledetails}:any) => {
                                 }}
                             />
                         </View>
-                        <View style={[]}>
+                        <View>
                             <Button onPress={onClientSearch} more={{
                                 backgroundColor: styles.secondary.color,
                                 color: 'black',
-                                height:40
+                                height:50
                             }}>Search</Button>
                         </View>
                     </View>
-                    <View style={[styles.grid, styles.justifyContent]}>
-                        <View style={[styles.flexGrow, {marginRight: 12}]}>
-                            <InputField
-                                value={selectedClient?.displayname}
-                                label={'Display Name'}
-                                customRef={inputRef[1]}
-                                onSubmitEditing={()=> nextFocus(inputRef[2])}
-                                returnKeyType={'next'}
-                                inputtype={'textbox'}
-                                onChange={(value: any) => {
-                                    setClientData("displayname", value);
-                                }}
-                            />
-                        </View>
-                    </View>
-                    <View style={[styles.grid, styles.justifyContent]}>
-                        <View style={[styles.flexGrow, {width: 200, marginRight: 12}]}>
-                            <InputField
-                                value={selectedClient?.address1}
-                                label={'Address1'}
-                                customRef={inputRef[2]}
-                                onSubmitEditing={()=> nextFocus(inputRef[3])}
-                                returnKeyType={'next'}
-                                inputtype={'textbox'}
-                                onChange={(value: any) => {
-                                    setClientData("address1", value);
-                                }}
-                            />
-                        </View>
-                    </View>
-                    <View style={[styles.grid, styles.justifyContent]}>
-                        <View style={[styles.flexGrow, {width: 200, marginRight: 12}]}>
-                            <InputField
-                                value={selectedClient?.address2}
-                                label={'Address2'}
-                                customRef={inputRef[3]}
-                                onSubmitEditing={()=> nextFocus(inputRef[4])}
-                                returnKeyType={'next'}
-                                inputtype={'textbox'}
-                                onChange={(value: any) => {
-                                    setClientData("address2", value);
-                                }}
-                            />
-                        </View>
-                    </View>
-                    <View style={[styles.grid, styles.justifyContent]}>
-                        <View style={[styles.flexGrow, {marginRight: 12}]}>
-                            <InputField
-                                value={selectedClient?.city}
-                                customRef={inputRef[4]}
 
-                                label={'City'}
-                                inputtype={'textbox'}
-                                onChange={(value: any) => {
-                                    setClientData("city", value);
-                                }}
-                            />
+
+                    {selectedClient?.clientid === '0' ? <>
+
+                        <View style={[styles.grid, styles.justifyContent]}>
+                            <View style={[styles.flexGrow, {marginRight: 12}]}>
+                                <InputField
+                                    value={selectedClient?.displayname}
+                                    label={'Display Name'}
+                                    customRef={inputRef[1]}
+                                    onSubmitEditing={()=> nextFocus(inputRef[2])}
+                                    returnKeyType={'next'}
+                                    inputtype={'textbox'}
+                                    onChange={(value: any) => {
+                                        setClientData("displayname", value);
+                                    }}
+                                />
+                            </View>
                         </View>
-                    </View>
+                        <View style={[styles.grid, styles.justifyContent]}>
+                            <View style={[styles.flexGrow, {width: 200, marginRight: 12}]}>
+                                <InputField
+                                    value={selectedClient?.address1}
+                                    label={'Address1'}
+                                    customRef={inputRef[2]}
+                                    onSubmitEditing={()=> nextFocus(inputRef[3])}
+                                    returnKeyType={'next'}
+                                    inputtype={'textbox'}
+                                    onChange={(value: any) => {
+                                        setClientData("address1", value);
+                                    }}
+                                />
+                            </View>
+                        </View>
+                        <View style={[styles.grid, styles.justifyContent]}>
+                            <View style={[styles.flexGrow, {width: 200, marginRight: 12}]}>
+                                <InputField
+                                    value={selectedClient?.address2}
+                                    label={'Address2'}
+                                    customRef={inputRef[3]}
+                                    onSubmitEditing={()=> nextFocus(inputRef[4])}
+                                    returnKeyType={'next'}
+                                    inputtype={'textbox'}
+                                    onChange={(value: any) => {
+                                        setClientData("address2", value);
+                                    }}
+                                />
+                            </View>
+                        </View>
+                        <View style={[styles.grid, styles.justifyContent]}>
+                            <View style={[styles.flexGrow, {marginRight: 12}]}>
+                                <InputField
+                                    value={selectedClient?.city}
+                                    customRef={inputRef[4]}
+
+                                    label={'City'}
+                                    inputtype={'textbox'}
+                                    onChange={(value: any) => {
+                                        setClientData("city", value);
+                                    }}
+                                />
+                            </View>
+                        </View>
+
+                    </> : <>
+                        <View>
+                            <Caption style={[styles.caption]}>{selectedClient.displayname}</Caption>
+                            <Paragraph style={[styles.paragraph]}>{selectedClient.address1}</Paragraph>
+                            <Paragraph style={[styles.paragraph]}>{selectedClient.address2}</Paragraph>
+                            <Paragraph style={[styles.paragraph]}>{selectedClient.city}</Paragraph>
+                        </View>
+                    </>}
+
+
                 </>}
             </Card.Content>
         </Card>

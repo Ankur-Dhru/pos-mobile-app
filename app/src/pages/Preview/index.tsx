@@ -3,7 +3,7 @@ import {Alert, ScrollView, View,ActivityIndicator} from 'react-native';
 import {styles} from "../../theme";
 
 
-import {appLog, base64Decode, captureImages,} from "../../libs/function";
+import {appLog, base64Decode, captureImages, errorAlert,} from "../../libs/function";
 import ViewShot from "react-native-view-shot";
 import PageLoader from "../../components/PageLoader";
 import SunmiPrinter from "@heasy/react-native-sunmi-printer";
@@ -105,7 +105,7 @@ const Index = ({navigation, route}: any) => {
         try {
             ref.current.capture().then(async (uri: any) => {
 
-                await captureImages(isGeneric ? 2000 : 1000, uri).then(async (images: any) => {
+                await captureImages(isGeneric ? 2000 :1000, uri).then(async (images: any) => {
                     //setImages(images)
 
                     if (isSunmi) {
@@ -218,7 +218,6 @@ const Index = ({navigation, route}: any) => {
         setHeight(Number(event.nativeEvent.data))
     }
 
-
     const {webviewwidth} = printer
 
 
@@ -226,7 +225,6 @@ const Index = ({navigation, route}: any) => {
         return <View style={[styles.h_100,   styles.middle,{backgroundColor:styles.light.color}]}>
 
             <View style={[styles.h_100, {width: webviewwidth}]}>
-
 
                 <WebView
                     source={{html: data}}
@@ -238,7 +236,6 @@ const Index = ({navigation, route}: any) => {
                     injectedJavaScript={webViewScript}
                 />
 
-
                 <View  style={[styles.loader,styles.bg_light]}>
                     {<View  style={[styles.screenCenter,styles.h_100,styles.transparent]}>
                         <View style={{borderRadius:50}}>
@@ -249,15 +246,15 @@ const Index = ({navigation, route}: any) => {
 
 
             </View>
+
         </View>
     }
 
 
     return (
         <View style={[styles.h_100, styles.flex,styles.w_100,  styles.middle,{backgroundColor:styles.light.color}]}>
-
             <ScrollView>
-                <View style={[styles.h_100,styles.flex,styles.border,  {width: webviewwidth, marginVertical:20,backgroundColor:'white'}]}>
+                <View style={[styles.h_100,styles.flex,   {width: webviewwidth, marginVertical:20,backgroundColor:'white'}]}>
                     <ZigZag></ZigZag>
                     <View style={[styles.p_5]}>
                         <ViewShot ref={ref}   options={{result: "data-uri", format: "jpg", quality: 1}}>

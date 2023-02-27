@@ -144,6 +144,7 @@ export const insertClients = async (  clientsdata?: any,type:any = 'all') => {
             }
             else{
                 insertQuery = `INSERT OR REPLACE INTO tblClient("clientid","displayname","phone","taxregtype","data","clienttype","phonebook") values ${values}`;
+                appLog('insertQuery',insertQuery)
                 try {
                     await db.executeSql(insertQuery);
                 }

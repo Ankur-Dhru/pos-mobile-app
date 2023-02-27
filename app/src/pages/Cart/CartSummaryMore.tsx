@@ -1,15 +1,30 @@
 import React, {memo} from "react";
 import {toCurrency} from "../../libs/function";
-import {ActivityIndicator, View} from "react-native";
+import {ActivityIndicator, TouchableOpacity, View} from "react-native";
 import {Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
+import {setBottomSheet} from "../../redux-store/reducer/component";
+import HoldOrders from "./HoldOrders";
+import Discount from "./Discount";
 
 
-const Index = ({vouchersubtotaldisplay, globaltax, voucherroundoffdisplay, loading}: any) => {
+const Index = ({vouchersubtotaldisplay, globaltax, voucherroundoffdisplay,voucherglobaldiscountdisplay, loading}: any) => {
+
+
+
 
 
     const dispatch = useDispatch()
+
+    /*const setDiscount = () => {
+        dispatch(setBottomSheet({
+            visible: true,
+            height: '50%',
+            component: () => <Discount/>
+        }))
+    }*/
+
     /*
         const [globaldiscount, setGlobalDiscount] = useState(globaldiscountvalue);
         const [adjustment, setAdjustment] = useState(adjustmentamount);
@@ -119,6 +134,16 @@ const Index = ({vouchersubtotaldisplay, globaltax, voucherroundoffdisplay, loadi
             {/*    <Discount/>*/}
             {/*</View>*/}
 
+
+            <View style={[styles.grid, styles.justifyContent]}>
+                <View><Paragraph style={[styles.paragraph]}>Discount</Paragraph></View>
+                <View>
+                    <Paragraph
+                        style={[styles.paragraph, styles.bold]}>{toCurrency(voucherglobaldiscountdisplay || '0')}</Paragraph>
+                </View>
+            </View>
+
+
             {
                 globaltax?.map((tax: any, key: any) => {
                     if (!Boolean(tax.taxpercentage)) {
@@ -149,6 +174,7 @@ const mapStateToProps = (state: any) => ({
     vouchersubtotaldisplay: state.cartData.vouchersubtotaldisplay,
     globaltax: state.cartData.globaltax,
     voucherroundoffdisplay: state.cartData.voucherroundoffdisplay,
+    voucherglobaldiscountdisplay:state.cartData.voucherglobaldiscountdisplay,
     loading: state.component.loading
 })
 

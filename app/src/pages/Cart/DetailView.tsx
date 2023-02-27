@@ -11,13 +11,12 @@ import {useNavigation} from "@react-navigation/native";
 import {Appbar, Card, Menu, Paragraph} from "react-native-paper";
 import {Alert, TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
-import ProIcon from "../../components/ProIcon";
 import {cancelOrder, isRestaurant} from "../../libs/function";
-import Button from "../../components/Button";
 import DeleteButton from "../../components/Button/DeleteButton";
 import {setBottomSheet} from "../../redux-store/reducer/component";
 import {useDispatch} from "react-redux";
 import HoldOrders from "./HoldOrders";
+import Discount from "./Discount";
 
 const Index = (props: any) => {
 
@@ -26,10 +25,10 @@ const Index = (props: any) => {
     const openMenu = () => setVisible(true);
     const closeMenu = () => setVisible(false);
     const dispatch = useDispatch()
-    const {cancelorder}:any = localredux?.authData?.settings;
+    const {cancelorder,canapplydiscount}:any = localredux?.authData?.settings;
 
-    const askPermission = () => {
-        navigation.navigate('AskPermission',{cancelOrder:cancelOrder})
+    const askPermission = (action:any) => {
+        navigation.navigate('AskPermission',{cancelOrder:cancelOrder,action:action})
     }
 
     navigation.setOptions({
@@ -65,7 +64,7 @@ const Index = (props: any) => {
                                         'You do not have cancel Order permission',
                                         [
                                             {text: "Cancel",onPress: () => {},style:'cancel'},
-                                            {text: "Ask Permission", onPress: () => askPermission()}
+                                            {text: "Ask Permission", onPress: () => askPermission('cancelorder')}
                                         ]
                                     );
                                 }
@@ -81,6 +80,17 @@ const Index = (props: any) => {
                             component: () => <HoldOrders/>
                         }))
                     }} title="Holding Orders"/>}
+
+
+                    {canapplydiscount && <Menu.Item onPress={async () => {
+                        closeMenu();
+                        await dispatch(setBottomSheet({
+                            visible: true,
+                            height: '50%',
+                            component: () => <Discount/>
+                        }))
+                    }} title="Discount"/>}
+
                 </Menu>
             </View>
         }

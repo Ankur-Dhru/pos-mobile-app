@@ -5,7 +5,7 @@ import {styles} from "../../theme";
 import {Button} from "../../components";
 import {connect, useDispatch} from "react-redux";
 import CancelReason from "./CancelReason";
-import {appLog, clone, printKOT} from "../../libs/function";
+import {appLog, cancelOrder, clone, printKOT} from "../../libs/function";
 import store from "../../redux-store/store";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
@@ -27,8 +27,8 @@ const Index = (props: any) => {
     let [kot, setKot]: any = useState(kt);
 
     const reprintKOT = async (kot: any) => {
-        kot.print = kot.print + 1;
 
+        kot.print = kot.print + 1;
 
         let {kots}: any = store.getState().cartData;
         const index = kots.findIndex(function (item: any) {
@@ -47,8 +47,8 @@ const Index = (props: any) => {
     }
 
 
-    const askPemission = () => {
-        device.navigation?.navigate('AskPermission',{kot:kot,cancelKOTDialog:cancelKOTDialog})
+    const askPemission = (action:any) => {
+        device.navigation?.navigate('AskPermission',{kot:kot,action:action,cancelKOTDialog:cancelKOTDialog,reprintKOT:reprintKOT})
     }
 
 
@@ -63,7 +63,7 @@ const Index = (props: any) => {
                 'You do not have cancel KOT permission',
                 [
                     {text: "Cancel",onPress: () => {},style:'cancel'},
-                    {text: "Ask Permission", onPress: () => askPemission()}
+                    {text: "Ask Permission", onPress: () => askPemission('cancelkot')}
                 ]
             );
         }
@@ -86,7 +86,7 @@ const Index = (props: any) => {
 
                     <View>
                         {
-                           Boolean(ticketitems.length) && ticketitems?.map((item: any, index: any) => {
+                           Boolean(ticketitems?.length) && ticketitems?.map((item: any, index: any) => {
                                 return <View key={index}>
                                     <Paragraph style={[{textTransform:'capitalize'},Boolean(item.cancelled) && {color:styles.red.color}]}>{item.productqnt} x {item.productdisplayname} {Boolean(item.cancelled) && `(Cancelled - ${item.reasonname})`}</Paragraph>
                                 </View>
@@ -101,22 +101,39 @@ const Index = (props: any) => {
 
                     <View style={[styles.grid, styles.justifyContentSpaceBetween]}>
                         <View style={[styles.mt_1]}>
-                            {reprint &&  <Button more={{color:'white',height:35}}  onPress={() => {
-                                reprintKOT(kot)
+                            {<Button more={{color:'white',height:35}}  onPress={() => {
+
+                                if(reprint) {
+                                    reprintKOT(kot)
+                                }
+                                else{
+                                    Alert.alert(
+                                        "Alert",
+                                        'You do not have reprint kot permission',
+                                        [
+                                            {text: "Cancel",onPress: () => {},style:'cancel'},
+                                            {text: "Ask Permission", onPress: () => askPemission('reprintkot')}
+                                        ]
+                                    );
+                                }
+
+
                             }}> Reprint {kot.print ? '(' + (kot.print) + ')' : ''}</Button>}
                         </View>
                         <View  style={[styles.mt_1]}>
-                            {!Boolean(kot.cancelreason) && cancelkot && <Button onPress={() => {
-                               if(kot?.ticketitems?.length === 1) {
-                                   cancelKOTDialog(kot).then()
-                               }
-                               else {
-                                   dispatch(setBottomSheet({
-                                       visible: true,
-                                       height: '70%',
-                                       component: () => <KOTItemListforCancel kot={kot} cancelKOTDialog={cancelKOTDialog}/>
-                                   }))
-                               }
+                            {!Boolean(kot.cancelreason) && <Button onPress={() => {
+
+                                if(kot?.ticketitems?.length === 1) {
+                                    cancelKOTDialog(kot).then()
+                                }
+                                else {
+                                    dispatch(setBottomSheet({
+                                        visible: true,
+                                        height: '70%',
+                                        component: () => <KOTItemListforCancel kot={kot} cancelKOTDialog={cancelKOTDialog}/>
+                                    }))
+                                }
+
                             }} more={{backgroundColor: styles.bg_red.backgroundColor,color:'white',height:35}}>Cancel KOT</Button>}
                         </View>
                     </View>

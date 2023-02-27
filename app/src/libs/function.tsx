@@ -16,7 +16,7 @@ import {hideLoader, setAlert, setBottomSheet, setDialog, showLoader} from "../re
 import apiService from "./api-service";
 import {
     ACTIONS,
-    dayendReportTemplate,
+    dayendReportTemplate, dayendReportTemplateHtml,
     db, device,
     isDevelopment,
     localredux,
@@ -411,6 +411,8 @@ export const options_itc: any = [
 
 
 export const shortName = (str: any) => {
+
+    appLog('str',str)
 
     if (Boolean(str)) {
         const firstLetters = str
@@ -1085,7 +1087,7 @@ export const saveLocalOrder = (order?: any) => {
                 await insertOrder(order).then(() => {
                     resolve(order)
                 });
-                syncInvoice(order)
+                await syncInvoice(order).then()
             })
         }
 
@@ -1454,7 +1456,7 @@ export const generateKOT = async (cancelkotprint?: any) => {
     return new Promise(async (resolve, reject) => {
 
         let kotid: any = '';
-        store.dispatch(showLoader())
+       // store.dispatch(showLoader())
         let cartData = store.getState().cartData;
 
         if (Boolean(urls.localserver)) {
@@ -2442,19 +2444,24 @@ export const syncInvoice = async (invoiceData: any) => {
             other: {url: urls.posUrl},
         }).then(async (response: any) => {
 
-
             await saveLocalSettings({sync_in_process: false})
 
-            if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
+            const clientdetails = response?.data?.client;
 
+            if(Boolean(clientdetails)) {
+                await insertClients([clientdetails], 'onebyone').then(() => {
+                });
+            }
+
+            if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
                 deleteTable(TABLE.ORDER, `orderid = '${invoiceData?.orderid}'`).then(async () => {
                     store.dispatch(setOrder({...invoiceData, synced: true}))
                     resolve('synced')
                 });
-
             } else {
                 resolve({status: "ERROR"})
             }
+
         }).catch(async () => {
             await saveLocalSettings({sync_in_process: false})
             resolve({status: "TRY CATCH ERROR"})
@@ -2615,12 +2622,13 @@ export const printDayEndReport = ({date: date, data: data}: any) => {
         const PRINTERS: any = store.getState().localSettings?.printers || [];
         let printer = PRINTERS[PRINTER.INVOICE];
 
+
         PAGE_WIDTH = printer?.printsize || 48;
 
 
         return new Promise(async (resolve) => {
             if (Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip)) {
-                sendDataToPrinter(printJson, dayendReportTemplate, {...printer, templatetype: ''}).then((msg) => {
+                sendDataToPrinter(printJson, printer.printertype === 'sunmi'? dayendReportTemplateHtml : dayendReportTemplate, {...printer, templatetype: printer.printertype === 'sunmi' ? 'ThermalHtml' : ''}).then((msg) => {
                     resolve(msg)
                 });
             } else {

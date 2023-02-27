@@ -51,7 +51,6 @@ import {hideLoader, showLoader} from "../../redux-store/reducer/component";
 import store from "../../redux-store/store";
 
 import ItemCategoryList from "./ItemCategoryList";
-import {setSelected} from "../../redux-store/reducer/selected-data";
 import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
 import Attachment from "../Attachment";
@@ -86,7 +85,7 @@ const Index = (props: any) => {
         itemdepartmentid: PRODUCTCATEGORY.DEPARTMENT,
         itemgroupid: PRODUCTCATEGORY.DEFAULT, // store.getState()?.selectedData?.group?.value
         itemhsncode: '',
-        itemname: search ? search : '',
+        itemname: (typeof search === 'string' || search instanceof String) ? search : '',
         itemstatus: "active",
         itemtaxgroupid: PRODUCTCATEGORY.TAXGROUPID,
         itemtype: "product",

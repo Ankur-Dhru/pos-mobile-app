@@ -148,7 +148,7 @@ class Attachment extends Component<any> {
                                     source={{uri:imagepath}}
                                 />
                             </View> : <>
-                                <Avatar fontsize={40} label={item.itemname} size={100} value={1} more={{borderRadius:7}}/>
+                                <Avatar fontsize={40} label={item?.itemname || ''} size={100} value={1} more={{borderRadius:7}}/>
                             </>}
                             <View style={[styles.absolute,styles.p_3,{bottom:0,right:0,backgroundColor:'#00000080',borderBottomRightRadius:7,borderTopLeftRadius:15}]}><ProIcon name={'pencil'} color={'white'}/></View>
                         </>

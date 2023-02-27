@@ -52,12 +52,8 @@ const Index = (props: any) => {
 
 
     return <View style={[styles.h_100,styles.p_3]}>
-
-
-
         <FlatList
             data={groups}
-
             renderItem={renderItem}
             keyboardDismissMode={'on-drag'}
             keyboardShouldPersistTaps={'always'}
@@ -69,7 +65,6 @@ const Index = (props: any) => {
             maxToRenderPerBatch={10}
             keyExtractor={item => item.itemgroupid}
         />
-
         {/*<View>
             <TouchableOpacity onPress={async () => {
                 navigation.navigate('AddEditCategory');
@@ -84,7 +79,6 @@ const Index = (props: any) => {
                     Group</Paragraph>
             </TouchableOpacity>
         </View>*/}
-
     </View>
 }
 

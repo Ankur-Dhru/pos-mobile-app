@@ -2,21 +2,21 @@ import * as React from 'react';
 import {Paragraph, ToggleButton} from 'react-native-paper';
 import {useEffect} from "react";
 import {styles} from "../../theme";
+import {appLog} from "../../libs/function";
 
 
 const ToggleButtons = (props:any) => {
-    const [value, setValue] = React.useState(props.default);
+    const [selectedValue, setSelectedValue] = React.useState(props.default);
 
     useEffect(() => {
-        Boolean(value) && props.onValueChange(value)
-    }, [value]);
-
+        Boolean(selectedValue) && props.onValueChange(selectedValue)
+    }, [selectedValue]);
 
     return (
-        <ToggleButton.Row  onValueChange={value => setValue(value)} value={value}>
+        <ToggleButton.Row  onValueChange={value => value && setSelectedValue(value)} value={selectedValue}>
             {
                 props?.btns?.map(({label,value}:any)=>{
-                    return <ToggleButton   style={{height:40,width:props.width,borderColor:'#ddd'}}  icon={()=> <Paragraph>{label}</Paragraph>} value={value} />
+                    return <ToggleButton   style={{height:40,width:props.width,borderColor:'#ddd',backgroundColor:selectedValue === value?'#eee':'transparent'}}  icon={()=> <Paragraph style={{fontWeight:selectedValue === value?'bold':'normal'}}>{label}</Paragraph>} value={value} />
                 })
             }
         </ToggleButton.Row>

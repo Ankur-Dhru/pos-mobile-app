@@ -7,17 +7,23 @@ import {connect, useDispatch} from "react-redux";
 import CheckBox from "../../components/CheckBox";
 import {Field, Form} from "react-final-form";
 
-import {getLocalSettings, nextFocus, retrieveData, saveLocalSettings, setAPIUrl} from "../../libs/function";
+import {appLog, getLocalSettings, nextFocus, retrieveData, saveLocalSettings, setAPIUrl} from "../../libs/function";
 import {setSettings} from "../../redux-store/reducer/local-settings-data";
 import InputField from "../../components/InputField";
 import {Button} from "../../components";
 import KAccessoryView from "../../components/KAccessoryView";
+import {localredux, required} from "../../libs/static";
 
 
 const Index = () => {
 
     const dispatch = useDispatch();
-    let [initdata, setInitdata]: any = useState({disabledDefaultSourceHomeDelivery: false, disabledDefaultSourceTakeAway: false, betamode: false,disabledpax:false,kotongenerateinvoice:'Enable'})
+
+
+    const {terminal_name}: any = localredux.licenseData.data;
+
+
+    let [initdata, setInitdata]: any = useState({disabledDefaultSourceHomeDelivery: false, disabledDefaultSourceTakeAway: false, betamode: false,disabledpax:false,kotongenerateinvoice:'Enable',terminalname:terminal_name})
 
     const [loading, setLoading]: any = useState(false)
 
@@ -44,7 +50,7 @@ const Index = () => {
             onSubmit={handleSubmit}
             render={({handleSubmit, submitting, values, ...more}: any) => (
                 <View style={[styles.middle]}>
-                    <View style={[styles.middleForm,{maxWidth:400}]}>
+                    <View style={[styles.middleForm,styles.px_5,{maxWidth:400}]}>
 
                         <ScrollView>
 
@@ -153,11 +159,12 @@ const Index = () => {
                                 </View>
 
 
-                                <View>
-                                    <Field name="terminalname">
+                                {/*<View>
+                                    <Field name="terminalname" validate={required}>
                                         {props => {
                                             return (<>
                                                 <InputField
+                                                    {...props}
                                                     value={props.input.value}
                                                     label={'Terminal name'}
                                                     inputtype={'textbox'}
@@ -168,18 +175,18 @@ const Index = () => {
                                             </>)
                                         }}
                                     </Field>
-                                </View>
+                                </View>*/}
 
                         </ScrollView>
 
-                        <KAccessoryView>
+                        {/*<KAccessoryView>
                             <View style={[styles.submitbutton]}>
                                 <Button more={{color: 'white'}} disable={more.invalid}
                                         secondbutton={more.invalid} onPress={() => {
                                     handleSubmit(values)
                                 }}> Save </Button>
                             </View>
-                        </KAccessoryView>
+                        </KAccessoryView>*/}
 
                     </View>
 

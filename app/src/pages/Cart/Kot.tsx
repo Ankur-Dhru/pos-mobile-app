@@ -21,6 +21,7 @@ const Index = (props: any) => {
     const {departmentname, commonkotnote, staffname, kotid, tickettime, ticketitems,ticketnumberprefix}: any = kt;
 
     const dispatch = useDispatch();
+    const navigation = useNavigation()
 
     const {cancelkot, reprint}:any = localredux?.authData?.settings;
 
@@ -54,6 +55,7 @@ const Index = (props: any) => {
 
 
     const cancelKOTDialog = async (kot: any,force?:any) => {
+
         if(cancelkot || force) {
             device.navigation?.navigate('CancelReason', {type: 'ticketcancelreason', kot: kot, setKot: setKot})
         }

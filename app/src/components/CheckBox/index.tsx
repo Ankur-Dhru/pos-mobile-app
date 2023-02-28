@@ -8,7 +8,6 @@ const CheckBox = (props:any) => {
     const {editmode=true, description,disabled}:any = props;
     const [checked, setChecked] = React.useState(props.value);
 
-
     return (
         <View style={{marginLeft:-20}}>
             <TouchableOpacity onPress={() => {

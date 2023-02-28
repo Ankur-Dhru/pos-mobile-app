@@ -7,20 +7,19 @@ import CheckBox from "../../components/CheckBox";
 import {Field, Form} from "react-final-form";
 import Button from "../../components/Button";
 import {setBottomSheet} from "../../redux-store/reducer/component";
+import {appLog, clone} from "../../libs/function";
 
 
 const Index = memo((props: any) => {
 
     let {kot, cancelKOTDialog}: any = props;
-    const {ticketitems}: any = kot;
+    const {ticketitems}: any = clone(kot);
 
     const dispatch = useDispatch()
 
     const handleSubmit = (values: any) => {
-
         dispatch(setBottomSheet({visible: false}))
-        kot.ticketitems = values.ticketitems
-        cancelKOTDialog(kot);
+        cancelKOTDialog({...kot,...values});
     }
 
     return (
@@ -37,7 +36,7 @@ const Index = memo((props: any) => {
 
                         <ScrollView>
 
-                            <View style={[styles.mt_2]}>
+                            <View style={[styles.mt_2,styles.px_5]}>
                                 {
                                     values?.ticketitems?.filter((item: any) => {
                                         return true

@@ -12,8 +12,7 @@ import {contentLoader} from "../../redux-store/reducer/component";
 import store from "../../redux-store/store";
 import moment from "moment";
 import ClientAndSource from "./ClientAndSource";
-import InputBox from "../../components/InputBox";
-import {device} from "../../libs/static";
+
 
 
 const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: any) => {
@@ -36,10 +35,17 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
         if (summary) {
             dispatch(contentLoader(true))
             setTimeout(async () => {
-                let data = await itemTotalCalculation(clone(store.getState().cartData), undefined, undefined, undefined, undefined, 2, 2, false, false);
-                await dispatch(setCartData(clone(data)));
-                await dispatch(setUpdateCart());
-                dispatch(contentLoader(false))
+                const cartdata:any = clone(store.getState().cartData);
+                if(cartdata.updatecart) {
+                    let data = await itemTotalCalculation(cartdata, undefined, undefined, undefined, undefined, 2, 2, false, false);
+                    await dispatch(setCartData(clone(data)));
+                }
+                else {
+                    await dispatch(setCartData(cartdata));
+                }
+                   await dispatch(setUpdateCart());
+                   dispatch(contentLoader(false))
+
             })
         }
     }

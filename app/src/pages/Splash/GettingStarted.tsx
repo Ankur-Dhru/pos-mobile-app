@@ -61,6 +61,9 @@ const Index = (props: any) => {
                     const today = moment().format('YYYY-MM-DD');
                     if (expired_on >= today && status === 'Active') {
                         localredux.initData = initData;
+
+                        appLog('localSettingsData',JSON.stringify(localSettingsData))
+
                         localredux.localSettingsData = localSettingsData;
                         screen = 'PinStackNavigator';
                         /*await retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {

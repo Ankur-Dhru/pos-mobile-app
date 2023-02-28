@@ -36,7 +36,11 @@ const Index = ({cartData}: any) => {
     const dispatch = useDispatch()
 
     const [discounttype,setDiscounttype]:any = useState(cartData?.discounttype || '%');
-    const initdata = {discount:cartData?.voucherglobaldiscountdisplay?cartData?.voucherglobaldiscountdisplay+'':''}
+
+    let discount = '0';
+
+
+    const initdata = {discount:discount}
     const isInclusive =  Boolean(cartData.vouchertaxtype === 'inclusive') ;
 
     const handleSubmit = async (values:any) => {
@@ -69,13 +73,18 @@ const Index = ({cartData}: any) => {
 
     }
 
+    let discountType = [{label:'Percentage',value:'%'}];
+    if(!isInclusive){
+        discountType.push({label:'Amount',value:'amount'})
+    }
+
+
     const onButtonToggle = (value:any) => {
         setDiscounttype(value)
     };
 
         return (
             <View style={[styles.w_100,styles.p_6]}>
-
 
                 <Form
                     onSubmit={handleSubmit}
@@ -84,12 +93,14 @@ const Index = ({cartData}: any) => {
                         <View style={[styles.middle]}>
                             <View style={[styles.middleForm,{maxWidth:400}]}>
 
+                                <Caption style={[styles.caption]}>Discount</Caption>
+
                                 <ScrollView>
 
-                                    {!isInclusive &&  <ToggleButtons
+                                    {!isInclusive && <ToggleButtons
                                         width={'50%'}
                                         default={cartData.discounttype}
-                                        btns={[{label:'Percentage',value:'%'},{label:'Amount',value:'amount'}]}
+                                        btns={discountType}
                                         onValueChange={onButtonToggle}
                                     /> }
 

@@ -22,7 +22,6 @@ class Index extends React.Component<any> {
                     ref={customRef}
                     defaultValue={defaultValue}
                     style={[styles.input,{width:width,...extrastyle}]}
-
                     mode={'outlined'}
                     outlineColor={'#ddd'}
                     underlineColor={underlineColor}

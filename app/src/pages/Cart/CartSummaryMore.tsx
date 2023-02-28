@@ -9,79 +9,8 @@ import HoldOrders from "./HoldOrders";
 import Discount from "./Discount";
 
 
-const Index = ({vouchersubtotaldisplay, globaltax, voucherroundoffdisplay,voucherglobaldiscountdisplay, loading}: any) => {
+const Index = ({vouchersubtotaldisplay, globaltax, voucherroundoffdisplay,vouchertotaldiscountamountdisplay,voucherinlinediscountdisplay, loading}: any) => {
 
-
-
-
-
-    const dispatch = useDispatch()
-
-    /*const setDiscount = () => {
-        dispatch(setBottomSheet({
-            visible: true,
-            height: '50%',
-            component: () => <Discount/>
-        }))
-    }*/
-
-    /*
-        const [globaldiscount, setGlobalDiscount] = useState(globaldiscountvalue);
-        const [adjustment, setAdjustment] = useState(adjustmentamount);
-        const [discountType, setDiscountType] = useState(discounttype);
-
-
-
-        useEffect(() => {
-            if (!Boolean(globaldiscountvalue)) {
-                setGlobalDiscount("")
-            }
-        }, [globaldiscountvalue])
-
-        useEffect(() => {
-            if (!Boolean(adjustment) && Boolean(adjustmentamount)) {
-                setAdjustment(adjustmentamount)
-            }
-            if (!Boolean(adjustmentamount)) {
-                setAdjustment("")
-            }
-        }, [adjustmentamount])
-
-
-        useEffect(() => onBlurHandler(), [discountType])*/
-
-
-    /*    const onBlurHandler = () => {
-            dispatch(setCartData({
-                adjustmentamount: adjustment,
-                updatecart: true
-            }));
-        }*/
-
-
-    /*    const onBlurDiscount = () => {
-
-            dispatch(setCartData({
-                globaldiscountvalue: vouchertaxtype === "inclusive" ? 0 : globaldiscount,
-                adjustmentamount: adjustment,
-                discounttype: discountType,
-                updatecart: true,
-                invoiceitems: invoiceitems.map((item: any) => {
-                    if (vouchertaxtype === "inclusive") {
-                        item = {...item, productdiscountvalue: globaldiscount, productdiscounttype: discountType}
-                    }
-                    return {...item, change: true}
-                })
-            }));
-        }*/
-
-    /*const toggleSwitch = (value:any) => {
-        saveLocalSettings('realtimetotalcalculation',value).then()
-    }*/
-
-    /*  if(loader){
-          return <View style={{height:200}}><ActivityIndicator  color={'#016EFE'} size='large' animating={true}   /></View>
-      }*/
 
 
     if (loading) {
@@ -126,7 +55,7 @@ const Index = ({vouchersubtotaldisplay, globaltax, voucherroundoffdisplay,vouche
                 <View><Paragraph style={[styles.paragraph]}>Subtotal</Paragraph></View>
                 <View>
                     <Paragraph
-                        style={[styles.paragraph, styles.bold]}>{toCurrency(!loading ? vouchersubtotaldisplay : '0')}</Paragraph>
+                        style={[styles.paragraph, styles.bold]}>{toCurrency(!loading ? vouchersubtotaldisplay - voucherinlinediscountdisplay : '0')}</Paragraph>
                 </View>
             </View>
 
@@ -139,7 +68,7 @@ const Index = ({vouchersubtotaldisplay, globaltax, voucherroundoffdisplay,vouche
                 <View><Paragraph style={[styles.paragraph]}>Discount</Paragraph></View>
                 <View>
                     <Paragraph
-                        style={[styles.paragraph, styles.bold]}>{toCurrency(voucherglobaldiscountdisplay || '0')}</Paragraph>
+                        style={[styles.paragraph, styles.bold]}>{toCurrency(vouchertotaldiscountamountdisplay || '0')}</Paragraph>
                 </View>
             </View>
 
@@ -175,6 +104,8 @@ const mapStateToProps = (state: any) => ({
     globaltax: state.cartData.globaltax,
     voucherroundoffdisplay: state.cartData.voucherroundoffdisplay,
     voucherglobaldiscountdisplay:state.cartData.voucherglobaldiscountdisplay,
+    voucherinlinediscountdisplay:state.cartData.voucherinlinediscountdisplay,
+    vouchertotaldiscountamountdisplay:state.cartData.vouchertotaldiscountamountdisplay,
     loading: state.component.loading
 })
 

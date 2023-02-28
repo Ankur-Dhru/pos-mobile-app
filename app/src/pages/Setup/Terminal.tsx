@@ -50,8 +50,6 @@ const Terminal = (props: any) => {
     const {navigation, theme}: any = props;
     const {initData, authData}: any = localredux;
 
-    appLog('authData',authData.global_token)
-
 
     const handleSubmit = async (values: any) => {
 

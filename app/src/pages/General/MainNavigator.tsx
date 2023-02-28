@@ -225,7 +225,7 @@ const ClientAreaStackNavigator = (props: any) => {
             <Stack.Screen name={'Payment'} component={Payment} options={{headerTitle: 'Payment'}}/>
 
             <Stack.Screen name={'CancelReason'} component={CancelReason}
-                          options={{presentation: 'modal', headerTitle: 'Cancel Reason'}}/>
+                          options={{  headerTitle: 'Cancel Reason'}}/>
 
 
             <Stack.Screen name={'Preview'} component={Preview} options={({route}: any) => ({

@@ -33,8 +33,6 @@ export const sendDataToPrinter = async (input?: any, template?: string, printer?
 
                 if(!Boolean(buffer)) {
 
-                    appLog('printer',printer)
-
                     if (printer?.printertype !== 'broadcast') {
 
                         /*if(printer.qrcode){

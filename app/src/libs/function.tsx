@@ -2590,7 +2590,9 @@ export const printDayEndReport = ({date: date, data: data}: any) => {
                 locationname,
             }
         }: any = localredux.localSettingsData;
-        const {general: {legalname}}: any = localredux.initData;
+        const {general: {legalname},printingtemplate}: any = localredux.initData;
+
+
         const {terminal_name}: any = localredux.licenseData.data;
         const decimalPlace = 2;
         let total: any = 0;
@@ -2628,10 +2630,11 @@ export const printDayEndReport = ({date: date, data: data}: any) => {
 
         return new Promise(async (resolve) => {
             if (Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip)) {
-                sendDataToPrinter(printJson, printer.printertype === 'sunmi'? dayendReportTemplateHtml : dayendReportTemplate, {...printer, templatetype: printer.printertype === 'sunmi' ? 'ThermalHtml' : ''}).then((msg) => {
+                sendDataToPrinter(printJson, printer.printertype === 'sunmi'? getPrintTemplate(26) || dayendReportTemplateHtml : getPrintTemplate(29) || dayendReportTemplate, {...printer, templatetype: printer.printertype === 'sunmi' ? 'ThermalHtml' : ''}).then((msg) => {
                     resolve(msg)
                 });
             } else {
+                errorAlert('Printer Not set')
                 store.dispatch(setAlert({visible: true, message: 'Invoice Printer not set'}))
                 resolve('No printer set')
             }
@@ -2902,8 +2905,6 @@ export const uploadFile = (file: any, callback: any) => {
 
         }).then((responseUrl) => {
 
-
-            if(Boolean(responseUrl.message)) {
                 if (responseUrl.status === STATUS.SUCCESS) {
                     let requestOptions = {
                         method: 'PUT',
@@ -2924,13 +2925,18 @@ export const uploadFile = (file: any, callback: any) => {
                             //console.log('error', error)
                         });
                 } else {
-                    errorAlert(responseUrl.message)
+                    errorAlert('Please Relogin again');
+                    device.navigation.dispatch(
+                        CommonActions.reset({
+                            index: 0,
+                            routes: [
+                                {name: 'SetupStackNavigator'},
+                            ],
+                        })
+                    );
                 }
-            }
-            else{
-                appLog('get new token')
 
-            }
+
         });
 
 

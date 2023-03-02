@@ -86,7 +86,7 @@ const Index = (props: any) => {
                         closeMenu();
                         await dispatch(setBottomSheet({
                             visible: true,
-                            height: '50%',
+                            height: '80%',
                             component: () => <Discount/>
                         }))
                     }} title="Discount"/>}

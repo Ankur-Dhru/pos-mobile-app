@@ -49,6 +49,7 @@ class Attachment extends Component<any> {
         let filename = data.path.split('/').pop()
 
         uploadFile({uri: data.path, name: filename, type: data.mime}, function (response: any) {
+            appLog('response',response)
             capture.photo = response.download_url.replace('http://', '').replace('https://', '');
             saveImage(capture.photo,false).then(()=>{})
         });

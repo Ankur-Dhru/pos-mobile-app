@@ -17,9 +17,9 @@ import apiService from "./api-service";
 import {
     ACTIONS,
     dayendReportTemplate, dayendReportTemplateHtml,
-    db, device,
+    db, device, grecaptcharesponse,
     isDevelopment,
-    localredux,
+    localredux, loginUrl,
     METHOD,
     port, pricing,
     PRINTER,
@@ -2893,53 +2893,74 @@ export const getItemImage = (item:any) => {
 
 
 
-export const uploadFile = (file: any, callback: any) => {
+export const uploadFile = async (file: any, callback: any) => {
     if (file) {
-
-        apiService({
+       await apiService({
             method: METHOD.GET,
             action: 'getuploadurl',
             queryString: {file_name: file.name, file_type: file.type,uri:file.uri},
             other:{url: 'https://apigateway.dhru.com/v1/',token: localredux.authData.global_token,xhrRequest: true},
             token: localredux.authData.global_token
+        }).then(async (responseUrl) => {
+            if (responseUrl.status === STATUS.SUCCESS) {
+                let requestOptions = {
+                    method: 'PUT',
+                    headers: {"Content-Type": file.type},
+                    body: file,
+                };
+                fetch(responseUrl.upload_url, requestOptions)
+                    .then(response => {
+                        if (response.status === 200) {
+                            callback({
+                                download_url: responseUrl.download_url,
+                                file_name: responseUrl.original_file_name,
+                            })
+                        }
+                    })
+                    .catch(error => {
 
-        }).then((responseUrl) => {
-
-                if (responseUrl.status === STATUS.SUCCESS) {
-                    let requestOptions = {
-                        method: 'PUT',
-                        headers: {"Content-Type": file.type},
-                        body: file,
-                    };
-
-                    fetch(responseUrl.upload_url, requestOptions)
-                        .then(response => {
-                            if (response.status === 200) {
-                                callback({
-                                    download_url: responseUrl.download_url,
-                                    file_name: responseUrl.original_file_name,
-                                })
-                            }
-                        })
-                        .catch(error => {
-                            //console.log('error', error)
-                        });
-                } else {
-                    errorAlert('Please Relogin again');
-                    device.navigation.dispatch(
-                        CommonActions.reset({
-                            index: 0,
-                            routes: [
-                                {name: 'SetupStackNavigator'},
-                            ],
-                        })
-                    );
-                }
-
-
+                    });
+            } else {
+                appLog('relogin')
+                await autoLogin().then();
+                await uploadFile(file,callback).then()
+            }
         });
-
-
-
     }
 };
+
+const autoLogin = async () => {
+
+    const {email,password} = localredux.licenseData
+
+    const values = {
+        email:email,
+        password:password,
+        deviceid: 'asdfadsf',
+        "g-recaptcha-response": grecaptcharesponse
+    }
+    await apiService({
+        method: METHOD.POST,
+        action: ACTIONS.LOGIN,
+        other: {url: loginUrl},
+        body: values
+    }).then(async (response: any) => {
+
+        if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
+            localredux.authData = {...localredux.authData,...response.data,  global_token: response.global_token}
+            device.global_token = response.global_token;
+            await retrieveData(db.name).then(async (data: any) => {
+                try {
+                    data = {
+                        ...data,
+                        authData:localredux.authData,
+                    }
+                    await storeData(db.name, data).then(async () => {});
+                } catch (e) {
+                    appLog('retrieveData', e)
+                }
+            })
+
+        }
+    })
+}

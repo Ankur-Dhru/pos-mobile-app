@@ -90,6 +90,7 @@ const Index = (props: any) => {
             if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
 
                 localredux.licenseData = {...values, ...response.data}
+
                 localredux.authData = {...response.data, token: response.token,global_token: response.global_token}
                 device.token = response.token;
                 device.global_token = response.global_token;

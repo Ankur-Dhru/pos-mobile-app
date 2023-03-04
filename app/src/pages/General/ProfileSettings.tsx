@@ -436,58 +436,50 @@ const ProfileSettings = () => {
                                 </Card>
 
 
-                                <TouchableOpacity  onPress={()=>{
-                                    let url = `https://play.google.com/store/apps/details?id=com.dhru.account&hl=en_IN&gl=US`;
-                                    if(Platform.OS === 'ios'){
-                                        url = `https://apps.apple.com/in/app/dhru/id1535749812`;
-                                    }
-                                    Linking.canOpenURL(url).then(
-                                        (supported) => {
-                                            supported && Linking.openURL(url);
-                                        },
-                                        (err) => console.log(err)
-                                    );
-                                    //  Linking.openURL(url)
-                                }}>
-                                <Card style={[styles.card,styles.bg_light,styles.m_4]}>
-                                    <Card.Content style={[styles.cardContent]}>
-                                        <View style={[styles.p_3,styles.grid,styles.center,styles.middle]}>
-                                            <View>
-                                                <Image
-                                                    style={[{width: 60, height: 60}]}
-                                                    source={require('../../assets/dhru-logo-22.png')}
-                                                />
-                                            </View>
-                                            <View  style={[styles.w_auto,styles.ml_2]}>
-                                                <Paragraph style={[styles.paragraph]}>
-                                                    Download DHRU App for analytics, support and back office management
-                                                </Paragraph>
-                                            </View>
-
-                                        </View>
-                                    </Card.Content>
-                                </Card>
-                                </TouchableOpacity>
-
-
-
 
                                 {role === 'admin' &&  <View>
 
-                                    <Card style={[styles.card,styles.bg_light,styles.m_4]} onPress={()=>{
-                                        const url = `https://${workspace}.dhru.com`;
-                                        Linking.openURL(url)
-                                    }}>
+                                    <Card style={[styles.card,styles.bg_light,styles.m_4]}>
                                         <Card.Content style={[styles.cardContent]}>
                                             <View style={[styles.p_4,]}>
                                                 <Paragraph  style={[styles.paragraph,{color:styles.primary.color}]}>More settings available on back office</Paragraph>
                                                 <Paragraph>
                                                     To Manage Users, Access Roles, Accounting, Multiple Locations, Analytics, Dashboards, Subscription and many more Advanced Settings and Features available at web based back office.
                                                 </Paragraph>
-                                                <Paragraph style={[styles.bold]}>
-                                                    <Text style={[styles.bold,{color:styles.primary.color,}]}>{`https://${workspace}.dhru.com`}</Text>
-                                                </Paragraph>
                                             </View>
+
+                                            <View style={[styles.grid,styles.justifyContent,styles.middle]}>
+                                                <View style={[styles.p_4,styles.bg_white,{borderRadius:5}]}>
+                                                    <TouchableOpacity  onPress={()=>{
+                                                        const url = `https://${workspace}.dhru.com`;
+                                                        Linking.openURL(url)
+                                                    }}>
+                                                        <View style={[styles.grid,styles.center]}><ProIcon name={'computer'} size={30}/></View>
+                                                        <Paragraph style={[]}>{`https://${workspace}.dhru.com`}</Paragraph>
+                                                    </TouchableOpacity>
+                                                </View>
+                                                <View style={[styles.p_4,styles.bg_white,styles.w_auto,{borderRadius:5,marginLeft:10}]}>
+                                                    <TouchableOpacity  onPress={()=>{
+                                                        let url = `https://play.google.com/store/apps/details?id=com.dhru.account&hl=en_IN&gl=US`;
+                                                        if(Platform.OS === 'ios'){
+                                                            url = `https://apps.apple.com/in/app/dhru/id1535749812`;
+                                                        }
+                                                        Linking.canOpenURL(url).then(
+                                                            (supported) => {
+                                                                supported && Linking.openURL(url);
+                                                            },
+                                                            (err) => console.log(err)
+                                                        );
+                                                        //  Linking.openURL(url)
+                                                    }}  style={[styles.center]}>
+                                                        <View style={[styles.grid,styles.center]}>
+                                                            <ProIcon name={'mobile'}  size={30}/>
+                                                        </View>
+                                                        <Paragraph style={[styles.textCenter,]}> Download App</Paragraph>
+                                                    </TouchableOpacity>
+                                                </View>
+                                            </View>
+
                                         </Card.Content>
                                     </Card>
 

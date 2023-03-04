@@ -78,6 +78,9 @@ const Index = ({tableorders}: any) => {
 
     const isFocused = useIsFocused();
 
+    const {settings, role, adminid}: any = localredux.loginuserData
+    const accessMultipleDevice = settings?.cant_access_order_multiple_device;
+
 
     useEffect(() => {
         if (isFocused) {
@@ -210,11 +213,9 @@ const Index = ({tableorders}: any) => {
 
     const setTableOrderDetail = async (tabledetails: any) => {
 
-        const {settings, role, adminid}: any = localredux.loginuserData
-        const accessMultipleDevice = settings?.cant_access_order_multiple_device;
         const sameStaff = ((Boolean(tabledetails?.staffid) && (tabledetails?.staffid === adminid)) || (!Boolean(tabledetails?.staffid)))
 
-        if ((accessMultipleDevice && sameStaff) || !accessMultipleDevice || role === 'admin') {
+        if ((accessMultipleDevice && sameStaff) || !accessMultipleDevice) {
             if (Boolean(urls.localserver) && Boolean(tabledetails.tableorderid)) {
                 await apiService({
                     method: METHOD.GET,
@@ -273,6 +274,10 @@ const Index = ({tableorders}: any) => {
             let shifting = Boolean((shifttable && !Boolean(item.tableorderid))) && Boolean(shiftingFromtable);
 
 
+
+            const sameStaff = ((Boolean(item?.staffid) && (item?.staffid === adminid)) || (!Boolean(item?.staffid)))
+
+
             return (
                 <Card style={[styles.card, styles.m_1, styles.mb_2, {
                     marginTop: 0,
@@ -303,10 +308,10 @@ const Index = ({tableorders}: any) => {
                                 </>}
 
 
-                                <View style={[styles.mt_3]}>
+                                {((accessMultipleDevice && sameStaff) || !accessMultipleDevice) &&   <View style={[styles.mt_3]}>
                                     <Paragraph
                                         style={[styles.paragraph, styles.bold, styles.text_lg, {color: 'black'}]}>{toCurrency(item.vouchertotaldisplay)}</Paragraph>
-                                </View>
+                                </View>}
 
                             </>}
 

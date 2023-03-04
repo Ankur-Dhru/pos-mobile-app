@@ -78,7 +78,7 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    enableHermes: true,  // clean and rebuild if changing
+        enableHermes: true,  // clean and rebuild if changing
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -148,10 +148,10 @@ android {
             externalNativeBuild {
                 cmake {
                     arguments "-DPROJECT_BUILD_DIR=$buildDir",
-                        "-DREACT_ANDROID_DIR=$rootDir/../node_modules/react-native/ReactAndroid",
-                        "-DREACT_ANDROID_BUILD_DIR=$rootDir/../node_modules/react-native/ReactAndroid/build",
-                        "-DNODE_MODULES_DIR=$rootDir/../node_modules",
-                        "-DANDROID_STL=c++_shared"
+                            "-DREACT_ANDROID_DIR=$rootDir/../node_modules/react-native/ReactAndroid",
+                            "-DREACT_ANDROID_BUILD_DIR=$rootDir/../node_modules/react-native/ReactAndroid/build",
+                            "-DNODE_MODULES_DIR=$rootDir/../node_modules",
+                            "-DANDROID_STL=c++_shared"
                 }
             }
             if (!enableSeparateBuildPerCPUArchitecture) {

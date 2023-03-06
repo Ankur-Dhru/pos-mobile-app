@@ -1,7 +1,7 @@
 import React from "react";
 import {
-    appLog,
-    getDatabaseName,
+    appLog, errorAlert,
+    getDatabaseName, getRoleAccess,
     isEmpty,
     isRestaurant,
     saveLocalSettings,
@@ -41,15 +41,25 @@ const ProfileSettings = () => {
 
     const {role}: any = localredux.authData
 
+    const clientaccess = getRoleAccess('Clients')
+    const itemaccess = getRoleAccess('Items')
+    const itemcategoryaccess = getRoleAccess('Item Category')
+    const expenseaccess = getRoleAccess('Expenses')
+    const paymentreceive = getRoleAccess('Receive Payment')
+
+
     const {
         currentLocation: {
             locationname,
         }
     }: any = localredux.localSettingsData;
-    const {workspace} = localredux.initData
+    const {workspace} = localredux.initData;
+
 
     const windowHeight = Dimensions.get('window').height;
     const navigation = useNavigation()
+
+
 
     const {token}: any = localredux.authData;
 
@@ -125,6 +135,8 @@ const ProfileSettings = () => {
 
 
     }
+
+
 
 
     return <Container>
@@ -208,7 +220,7 @@ const ProfileSettings = () => {
 
 
 
-                                        <List.Item
+                                        {paymentreceive?.add && <><List.Item
                                             style={[styles.listitem]}
                                             title={'Payment Received'}
                                             onPress={async () => {
@@ -219,8 +231,9 @@ const ProfileSettings = () => {
                                         />
 
                                         <ItemDivider/>
+                                        </>}
 
-                                        <List.Item
+                                        {expenseaccess?.add && <><List.Item
                                             style={[styles.listitem]}
                                             title={'Expenses'}
                                             onPress={async () => {
@@ -231,8 +244,8 @@ const ProfileSettings = () => {
                                                 navigation.navigate("AddEditExpense");
                                             }}><List.Icon icon="plus"/></TouchableOpacity>}
                                         />
-
                                         <ItemDivider/>
+                                        </>}
 
 
                                         <List.Item
@@ -242,7 +255,7 @@ const ProfileSettings = () => {
                                                 navigation.navigate("ListItemsCategories");
                                             }}
                                             left={() => <List.Icon icon="playlist-plus"/>}
-                                            right={() => <TouchableOpacity onPress={async () => {
+                                            right={() => itemcategoryaccess?.add &&  <TouchableOpacity onPress={async () => {
                                                 navigation.navigate("AddEditCategory");
                                             }}><List.Icon icon="plus"/></TouchableOpacity>}
                                         />
@@ -256,7 +269,7 @@ const ProfileSettings = () => {
                                                 navigation.navigate("ListItems");
                                             }}
                                             left={() => <List.Icon icon="card-plus-outline"/>}
-                                            right={() => <TouchableOpacity onPress={async () => {
+                                            right={() => itemaccess?.add &&  <TouchableOpacity onPress={async () => {
                                                 navigation.navigate("AddEditItemNavigator");
                                             }}><List.Icon icon="plus"/></TouchableOpacity>}
                                         />
@@ -270,7 +283,7 @@ const ProfileSettings = () => {
                                                 navigation.navigate("ListClients");
                                             }}
                                             left={() => <List.Icon icon="account-plus"/>}
-                                            right={() => <TouchableOpacity onPress={async () => {
+                                            right={() => clientaccess?.add && <TouchableOpacity onPress={async () => {
                                                 navigation.navigate("AddEditClient");
                                             }}><List.Icon icon="plus"/></TouchableOpacity>}
                                         />

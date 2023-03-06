@@ -5,7 +5,7 @@ import {Appbar, Card, List, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
 import {Container, ProIcon, SearchBox} from "../../components";
 
-import {appLog, clone, filterArray, startWith} from "../../libs/function";
+import {appLog, clone, filterArray, getRoleAccess, startWith} from "../../libs/function";
 import {connect} from "react-redux";
 
 import {useNavigation} from "@react-navigation/native";
@@ -55,9 +55,13 @@ const Index = (props: any) => {
         return <PageLoader/>
     }
 
-    navigation.setOptions({
-        headerRight: () =>  <Appbar.Action icon="plus" onPress={() => navigation.navigate('AddEditClient',{getList:getList})}/>
-    })
+    const access = getRoleAccess('Clients')
+
+    if(access.add) {
+        navigation.setOptions({
+            headerRight: () =>  <Appbar.Action icon="plus" onPress={() => navigation.navigate('AddEditClient',{getList:getList})}/>
+        })
+    }
 
 
     return (

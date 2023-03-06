@@ -5,7 +5,16 @@ import {Appbar, Card, List, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
 import {Container, ProIcon, SearchBox} from "../../components";
 
-import {appLog, clone, filterArray, getItemImage, isRestaurant, selectItem, toCurrency} from "../../libs/function";
+import {
+    appLog,
+    clone,
+    filterArray,
+    getItemImage,
+    getRoleAccess,
+    isRestaurant,
+    selectItem,
+    toCurrency
+} from "../../libs/function";
 import {connect, useDispatch} from "react-redux";
 
 import {useNavigation} from "@react-navigation/native";
@@ -49,9 +58,13 @@ const Index = ({grouplist}: any) => {
     }, [grouplist])
 
 
-    navigation.setOptions({
-        headerRight: () => <Appbar.Action icon="plus" onPress={() => navigation.navigate('AddEditCategory')}/>
-    })
+    const access = getRoleAccess('Item Category')
+
+    if(access.add) {
+        navigation.setOptions({
+            headerRight: () => <Appbar.Action icon="plus" onPress={() => navigation.navigate('AddEditCategory')}/>
+        })
+    }
 
 
     return (

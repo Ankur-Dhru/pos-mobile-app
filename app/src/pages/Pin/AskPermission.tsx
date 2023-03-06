@@ -18,6 +18,7 @@ import {
     useClearByFocusCell
 } from "react-native-confirmation-code-field";
 import Avatar from "../../components/Avatar";
+import {appLog} from "../../libs/function";
 
 
 const md5 = require('md5');
@@ -44,6 +45,8 @@ const Index = (props: any) => {
         } else {
             return staff.settings.cancelorder
         }
+    }).filter((staff:any)=>{
+        return !staff.support
     }).map((staff: any) => {
         return {label: staff.username, value: staff.adminid, more: staff}
     })

@@ -4,7 +4,7 @@ import {styles} from "../../theme";
 
 import {Button, Container, ProIcon} from "../../components";
 import {useDispatch} from "react-redux";
-import {appLog, assignOption, errorAlert} from "../../libs/function";
+import {appLog, assignOption, errorAlert, getRoleAccess} from "../../libs/function";
 import {Field, Form} from "react-final-form";
 
 import {ACTIONS, device, localredux, METHOD, required, STATUS, urls} from "../../libs/static";
@@ -27,6 +27,9 @@ const Index = (props: any) => {
     const dispatch = useDispatch();
     const navigation = useNavigation()
 
+    const access = getRoleAccess('Item Category')
+
+
     const initdata: any = {
         itemgroupcolor: "#000000",
         itemgroupid: uuidv4(),
@@ -47,34 +50,39 @@ const Index = (props: any) => {
 
     const handleSubmit = async (values: any) => {
 
-        const {workspace}: any = localredux.initData;
-        const {token}: any = localredux.authData;
+        if((access.add && !initdata.edit) || (access.update && initdata.edit)) {
+            const {workspace}: any = localredux.initData;
+            const {token}: any = localredux.authData;
 
-        values.edit = false
+            values.edit = false
 
-        await apiService({
-            method: initdata.edit ? METHOD.PUT : METHOD.POST,
-            action: ACTIONS.CATEGORY,
-            body: values,
-            workspace: workspace,
-            token: token,
-            other: {url: urls.posUrl},
-        }).then(async (result) => {
+            await apiService({
+                method: initdata.edit ? METHOD.PUT : METHOD.POST,
+                action: ACTIONS.CATEGORY,
+                body: values,
+                workspace: workspace,
+                token: token,
+                other: {url: urls.posUrl},
+            }).then(async (result) => {
 
-            if (result.status === STATUS.SUCCESS) {
+                if (result.status === STATUS.SUCCESS) {
 
-                await dispatch(setGroup(values))
+                    await dispatch(setGroup(values))
 
-                if (Boolean(callback)) {
-                    await callback(values)
+                    if (Boolean(callback)) {
+                        await callback(values)
+                        navigation.goBack()
+                    }
                     navigation.goBack()
+                } else {
+                    errorAlert(result.message)
                 }
-                navigation.goBack()
-            } else {
-                errorAlert(result.message)
-            }
-            device.searchlist = ''
-        });
+                device.searchlist = ''
+            });
+        }
+        else{
+            errorAlert('You do not have an Access')
+        }
     }
 
 

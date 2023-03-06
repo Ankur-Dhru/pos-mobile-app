@@ -129,6 +129,8 @@ const Index = (props: any) => {
             "canceladminid": adminid,
         }
 
+        appLog('totalseleted',totalseleted)
+
         if(totalseleted === kot?.ticketitems?.length) {
             kot = {
                 ...kot,

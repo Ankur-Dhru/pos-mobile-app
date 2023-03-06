@@ -9,7 +9,7 @@ import {
     appLog,
     assignOption, errorAlert,
     findObject,
-    getCurrencySign, getItemImage,
+    getCurrencySign, getItemImage, getRoleAccess,
     isEmpty,
     isRestaurant,
     nextFocus,
@@ -65,10 +65,18 @@ const Index = (props: any) => {
     const editdata = props?.route?.params?.data;
     const getList = props?.route?.params?.getList;
 
+
+
     let isShow: any = false;
     const dispatch = useDispatch()
-    const navigation = useNavigation()
+    const navigation = useNavigation();
+
+    const access = getRoleAccess('Items')
+
+
+
     const otherlanguageRef = React.useRef<View>(null);
+
 
     let inputRef = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef(), useRef(), useRef(), useRef(), useRef(), useRef()];
 
@@ -173,52 +181,59 @@ const Index = (props: any) => {
 
     const handleSubmit = async (values: any) => {
 
-        values.trackinventory = Boolean(values.trackinventory) ? 1 : 0
-        const {workspace}: any = localredux.initData;
-        const {token}: any = localredux.authData;
+        if((access.add && !initdata.edit) || (access.update && initdata.edit)) {
+            values.trackinventory = Boolean(values.trackinventory) ? 1 : 0
+            const {workspace}: any = localredux.initData;
+            const {token}: any = localredux.authData;
 
-        values.itemimage = capture.photo;
+            values.itemimage = capture.photo;
 
-        await apiService({
-            method: Boolean(initdata.itemid) ? METHOD.PUT : METHOD.POST,
-            action: ACTIONS.ITEM,
-            body: values,
-            workspace: workspace,
-            token: token,
-            other: {url: urls.posUrl},
-        }).then(async (result) => {
+            await apiService({
+                method: Boolean(initdata.itemid) ? METHOD.PUT : METHOD.POST,
+                action: ACTIONS.ITEM,
+                body: values,
+                workspace: workspace,
+                token: token,
+                other: {url: urls.posUrl},
+            }).then(async (result) => {
 
-            if (result.status === STATUS.SUCCESS) {
-                dispatch(showLoader())
-                const grouplist: any = store.getState()?.groupList || {}
-                try {
-                    const item = {...values, ...result.data,itemimage:values.itemimage, groupname: grouplist[values?.itemgroupid].itemgroupname};
+                if (result.status === STATUS.SUCCESS) {
+                    dispatch(showLoader())
+                    const grouplist: any = store.getState()?.groupList || {}
+                    try {
+                        const item = {
+                            ...values, ...result.data,
+                            itemimage: values.itemimage,
+                            groupname: grouplist[values?.itemgroupid].itemgroupname
+                        };
 
-                    await insertItems([item], 'onebyone').then(async () => {
-                        try {
-                            if (search) {
-                                await selectItem(item);
-                                navigation?.goBack()
+                        await insertItems([item], 'onebyone').then(async () => {
+                            try {
+                                if (search) {
+                                    await selectItem(item);
+                                    navigation?.goBack()
+                                }
+                                Boolean(getList) && getList()
+                                setTimeout(async () => {
+                                    dispatch(hideLoader());
+                                    navigation?.goBack()
+                                }, 100)
+                            } catch (e) {
+                                appLog('e', e)
                             }
-                            Boolean(getList) && getList()
-                            setTimeout(async () => {
-                                dispatch(hideLoader());
-                                navigation?.goBack()
-                            }, 100)
-                        }
-                        catch (e){
-                            appLog('e',e)
-                        }
-                    });
-                } catch (e) {
-                    appLog('e', e)
+                        });
+                    } catch (e) {
+                        appLog('e', e)
+                    }
+                } else {
+                    errorAlert(result.message)
                 }
-            }
-            else{
-                errorAlert(result.message)
-            }
-            device.search = ''
-        });
+                device.search = ''
+            });
+        }
+        else{
+            errorAlert('You do not have an Access')
+        }
     }
 
     const [loaded, setLoaded] = useState(false)

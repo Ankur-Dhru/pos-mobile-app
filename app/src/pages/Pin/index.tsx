@@ -4,7 +4,16 @@ import {Image, Keyboard, TouchableOpacity, View} from "react-native";
 import Container from "../../components/Container";
 import ReactNativePinView from "react-native-pin-view"
 import {connect, useDispatch} from "react-redux";
-import {appLog, errorAlert, getAddons, getClients, getTempOrders, retrieveData, syncData} from "../../libs/function";
+import {
+    appLog,
+    errorAlert,
+    getAddons,
+    getClients,
+    getTempOrders,
+    retrieveData,
+    storeData,
+    syncData
+} from "../../libs/function";
 
 import {hideLoader, setAlert, setBottomSheet, showLoader} from "../../redux-store/reducer/component";
 import {Card, Paragraph, Text, withTheme} from "react-native-paper";
@@ -170,9 +179,6 @@ const Index = (props: any) => {
                                     licenseData: localredux.licenseData,
                                     localSettingsData: localSettingsData
                                 })
-
-
-
                             }
                         })
                     } else {

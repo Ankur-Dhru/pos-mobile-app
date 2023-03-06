@@ -2964,3 +2964,10 @@ const autoLogin = async () => {
         }
     })
 }
+
+
+export const getRoleAccess = (key:any) => {
+    const {role}: any = localredux.loginuserData;
+    appLog('localredux.initData.role[role]?.access',localredux.initData.role[role]?.access)
+     return localredux.initData.role[role]?.access[key]
+}

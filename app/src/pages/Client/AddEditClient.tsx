@@ -7,8 +7,8 @@ import {useDispatch} from "react-redux";
 import {Caption, Card, Paragraph,} from "react-native-paper";
 import {
     appLog,
-    assignOption,
-    getDefaultCurrency,
+    assignOption, errorAlert,
+    getDefaultCurrency, getRoleAccess,
     nextFocus,
     selectItem,
     syncData,
@@ -47,6 +47,10 @@ const Index = (props: any) => {
     const navigation = useNavigation()
     const {workspace}: any = localredux.initData;
     const {token}: any = localredux.authData;
+
+    const access = getRoleAccess('Clients')
+
+
 
     const search = props?.route?.params?.search;
     const editdata = props?.route?.params?.data;
@@ -128,38 +132,49 @@ const Index = (props: any) => {
 
 
     const handleSubmit = async (values: any) => {
+        if((access.add && !initdata.edit) || (access.update && initdata.edit)) {
+            await apiService({
+                method: initdata.edit ? METHOD.PUT : METHOD.POST,
+                action: ACTIONS.CLIENT,
+                body: values,
+                workspace: workspace,
+                token: token,
+                other: {url: urls.posUrl},
+            }).then(async (result) => {
+                if (result.status === STATUS.SUCCESS) {
+                    dispatch(showLoader());
+                    try {
+                        const client = {
+                            ...values, ...result.data,
+                            label: values.displayname,
+                            value: result.data.clientid
+                        };
 
-        await apiService({
-            method: initdata.edit ? METHOD.PUT : METHOD.POST,
-            action: ACTIONS.CLIENT,
-            body: values,
-            workspace: workspace,
-            token: token,
-            other: {url: urls.posUrl},
-        }).then(async (result) => {
-            if (result.status === STATUS.SUCCESS) {
-                dispatch(showLoader());
-                try {
-                    const client = {...values, ...result.data, label: values.displayname, value: result.data.clientid};
+                        await insertClients([client], 'onebyone').then(async () => {
+                            if (Boolean(search)) {
+                                store.dispatch(updateCartField({
+                                    clientid: client.clientid,
+                                    clientname: client.displayname
+                                }));
+                                navigation.goBack()
+                            }
+                            Boolean(getList) && getList()
+                            setTimeout(async () => {
+                                dispatch(hideLoader());
+                                navigation?.goBack()
+                            }, 100)
+                        });
 
-                    await insertClients([client], 'onebyone').then(async () => {
-                        if (Boolean(search)) {
-                            store.dispatch(updateCartField({clientid: client.clientid, clientname: client.displayname}));
-                            navigation.goBack()
-                        }
-                        Boolean(getList) && getList()
-                        setTimeout(async () => {
-                            dispatch(hideLoader());
-                            navigation?.goBack()
-                        }, 100)
-                    });
-
-                } catch (e) {
-                    dispatch(hideLoader());
-                    appLog('e', e)
+                    } catch (e) {
+                        dispatch(hideLoader());
+                        appLog('e', e)
+                    }
                 }
-            }
-        });
+            });
+        }
+        else{
+            errorAlert('You do not have an Access')
+        }
     }
 
 

@@ -23,6 +23,8 @@ const Index = (props: any) => {
         return (staf.adminid === 1 || staf.role === 'admin' || staf?.settings?.locations[location_id]) && !staf.support
     })
 
+
+
     const selectedStaff = (staff: any) => {
         navigation.navigate('Pin', staff);
     }

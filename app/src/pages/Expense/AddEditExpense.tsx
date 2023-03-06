@@ -6,7 +6,7 @@ import {connect, useDispatch} from "react-redux";
 import {Field, Form} from "react-final-form";
 import KeyboardScroll from "../../components/KeyboardScroll";
 import InputField from "../../components/InputField";
-import {appLog, clone, isEmpty, nextFocus, voucherData} from "../../libs/function";
+import {appLog, clone, errorAlert, getRoleAccess, isEmpty, nextFocus, voucherData} from "../../libs/function";
 import {ACTIONS, localredux, METHOD, required, STATUS, urls, VOUCHER} from "../../libs/static";
 import {Button, Container} from "../../components";
 import KAccessoryView from "../../components/KAccessoryView";
@@ -32,6 +32,9 @@ const AddEditExpense = (props: any) => {
         departmentid: 2,
         ...voucherData(VOUCHER.EXPENSE, false),
     }
+
+    const navigation = useNavigation()
+
 
     const {paymentgateway, tax}: any = localredux.initData;
     const [loader, setLoader] = useState(true);
@@ -109,7 +112,6 @@ const AddEditExpense = (props: any) => {
     }, [])
 
     const dispatch = useDispatch();
-    const navigation = useNavigation()
 
     const handleSubmit = async (values: any) => {
         const {workspace}: any = localredux.initData;

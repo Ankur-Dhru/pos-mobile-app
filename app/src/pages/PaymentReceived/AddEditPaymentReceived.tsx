@@ -6,7 +6,16 @@ import {connect, useDispatch} from "react-redux";
 import {Field, Form} from "react-final-form";
 import KeyboardScroll from "../../components/KeyboardScroll";
 import InputField from "../../components/InputField";
-import {appLog, clone, errorAlert, getDefaultCurrency, isEmpty, nextFocus, voucherData} from "../../libs/function";
+import {
+    appLog,
+    clone,
+    errorAlert,
+    getDefaultCurrency,
+    getRoleAccess,
+    isEmpty,
+    nextFocus,
+    voucherData
+} from "../../libs/function";
 import {ACTIONS, localredux, METHOD, required, STATUS, urls, VOUCHER} from "../../libs/static";
 import {Button, Container} from "../../components";
 import KAccessoryView from "../../components/KAccessoryView";
@@ -22,6 +31,8 @@ import moment from "moment";
 
 
 const AddEditPaymentReceived = (props: any) => {
+
+    const navigation = useNavigation()
 
 
     let initdata: any = {
@@ -59,7 +70,6 @@ const AddEditPaymentReceived = (props: any) => {
         });
     }, [])
 
-    const navigation = useNavigation()
 
     const handleSubmit = async (values: any) => {
         const {workspace}: any = localredux.initData;

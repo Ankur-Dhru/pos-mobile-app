@@ -48,7 +48,7 @@ const Index = (props: any) => {
     }
 
 
-    const askPemission = (action:any) => {
+    const askPemission = (action:any,kot?:any) => {
         device.navigation?.navigate('AskPermission',{kot:kot,action:action,cancelKOTDialog:cancelKOTDialog,reprintKOT:reprintKOT})
     }
 
@@ -65,7 +65,7 @@ const Index = (props: any) => {
                 'You do not have cancel KOT permission',
                 [
                     {text: "Cancel",onPress: () => {},style:'cancel'},
-                    {text: "Ask Permission", onPress: () => askPemission('cancelkot')}
+                    {text: "Ask Permission", onPress: () => askPemission('cancelkot',kot)}
                 ]
             );
         }
@@ -114,7 +114,7 @@ const Index = (props: any) => {
                                         'You do not have reprint kot permission',
                                         [
                                             {text: "Cancel",onPress: () => {},style:'cancel'},
-                                            {text: "Ask Permission", onPress: () => askPemission('reprintkot')}
+                                            {text: "Ask Permission", onPress: () => askPemission('reprintkot',kot)}
                                         ]
                                     );
                                 }

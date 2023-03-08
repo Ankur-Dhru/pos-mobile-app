@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {
     appLog,
-    cancelOrder,
+    cancelOrder, errorAlert,
     getLocalSettings,
     getTempOrders,
     isRestaurant, saveLocalSettings,
@@ -50,7 +50,15 @@ const Index = (props: any) => {
 
     useEffect(() => {
         const voucherDataJson: any = voucherData(VOUCHER.INVOICE, false);
-        dispatch(refreshCartData({...tabledetails, ...voucherDataJson}));
+
+        const {kots,numOfKOt}:any = tabledetails
+        if(kots.length > 0 || numOfKOt > 0){
+            let {staffid,staffname,...others}:any = voucherDataJson
+            dispatch(refreshCartData({...tabledetails, ...others}));
+        }
+        else{
+            dispatch(refreshCartData({...tabledetails, ...voucherDataJson}));
+        }
 
             if (tabledetails?.printcounter && !device.tablet) {
                 navigation.navigate('DetailViewNavigator')

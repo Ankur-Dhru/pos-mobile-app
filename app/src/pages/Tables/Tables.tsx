@@ -35,6 +35,7 @@ import Button from "../../components/Button";
 import ReserveList from "./ReserveList";
 import {TabBar, TabView} from "react-native-tab-view";
 import apiService from "../../libs/api-service";
+import {uuid} from "uuidv4";
 
 let interval: any = ''
 const Index = ({tableorders}: any) => {
@@ -223,10 +224,23 @@ const Index = ({tableorders}: any) => {
                     queryString: {key: 'tableid', value: tabledetails.tableid},
                     other: {url: urls.localserver},
                 }).then((response: any) => {
-                    tabledetails = {
-                        ...tabledetails,
-                        ...response?.data
+
+                    const {kots,numOfKOt}:any = tabledetails
+
+                    if(kots.length > 0 || numOfKOt > 0){
+                        let {staffid,staffname,...others}:any = response.data;
+                        tabledetails = {
+                            ...tabledetails,
+                            ...others,
+                        }
                     }
+                    else{
+                        tabledetails = {
+                            ...tabledetails,
+                            ...response.data,
+                        }
+                    }
+
                 })
             }
             navigation.navigate('CartStackNavigator', tabledetails)
@@ -397,7 +411,7 @@ const Index = ({tableorders}: any) => {
                 <Caption style={[styles.caption,styles.px_6]}>Areas</Caption>
             </View>
             {
-                areas.map((area:any)=>{
+                areas.map((area:any,index:any)=>{
                    return(<List.Item
                         style={[styles.listitem]}
                         title={area}
@@ -405,6 +419,7 @@ const Index = ({tableorders}: any) => {
                             setFloor(area);
                             dispatch(setBottomSheet({visible:false}))
                         }}
+                        key={index}
                         left={() => <List.Icon icon="layers"/>}
                         right={() => <List.Icon icon="chevron-right"/>}
                     />)
@@ -543,6 +558,7 @@ const Index = ({tableorders}: any) => {
             data.push({title:key,data:floors[key]})
         })
 
+
         return (
             <View style={[styles.px_2,styles.flex,styles.h_100]}>
                 <>
@@ -553,11 +569,11 @@ const Index = ({tableorders}: any) => {
                             }
                             return true
                         }).map((floor:any,index:any)=>{
-                            return <>
+                            return <View  key={index}>
                                 {Boolean(data.length > 1) && (Boolean(floor?.title !== 'undefined') ?   <Paragraph style={[styles.bold]}> {floor?.title}</Paragraph> : <View style={{height:20}}></View>)}
-                                <View style={[styles.grid]} key={index}>
+                                <View style={[styles.grid]}>
                                     {
-                                        floor.data.map((item:any)=>{
+                                        floor.data.map((item:any,index:any)=>{
                                             return <Item shifttable={shifttable}
                                                          shiftingFromtable={shiftingFromtable}
                                                          setShiftingFromtable={setShiftingFromtable}
@@ -569,7 +585,7 @@ const Index = ({tableorders}: any) => {
                                         })
                                     }
                                 </View>
-                            </>
+                            </View>
                         })
                     }
                 </>

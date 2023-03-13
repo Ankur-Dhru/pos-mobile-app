@@ -1,4 +1,4 @@
-import {appLog, refreshToken, wait} from "../function";
+import {appLog, refreshToken, saveLocalSettings, wait} from "../function";
 import {ACTIONS, device, METHOD, STATUS} from "../static";
 import store from "../../redux-store/store";
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
@@ -121,6 +121,7 @@ const apiService = async (config: configData) => {
         .catch(error => {
 
             store.dispatch(hideLoader());
+            saveLocalSettings('serverip', '').then();
             store.dispatch(setAlert({visible: true, message: 'Something went wrong'}))
             //appLog("API_CATCH_ERROR", error,navigator.onLine);
 

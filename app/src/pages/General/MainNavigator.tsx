@@ -78,6 +78,8 @@ import AddEditAccount from "../Expense/AddEditAccount";
 import ContactUs from "../SetupWorkspace/ContactUs";
 import TerminalSettings from "../TerminalSettings";
 import ChangePin from "../Pin/ChangePin";
+import QRWebsite from "../QRWebsite";
+import PrintQR from "../QRWebsite/PrintQR";
 
 
 const screenOptions = {...screenOptionStyle};
@@ -297,6 +299,10 @@ const ProfileSettingsNavigator = (props: any) => {
             <Stack.Screen name={'BlueToothList'} component={BlueToothList} options={{title: 'Bluetooth Devices'}}/>
 
             <Stack.Screen name={'Preview'} component={Preview} options={({route}: any) => ({title: 'Preview'})} />
+
+            <Stack.Screen name={'QRWebsite'} component={QRWebsite} options={({route}: any) => ({title: 'Website & Digital Menu'})} />
+
+            <Stack.Screen name={'PrintQR'} component={PrintQR} options={({route}: any) => ({title: 'QR Preview'})} />
 
             <Stack.Screen name={'DropDownList'} component={DropDownList}
                           options={{headerShown: false, headerTitle: 'Select'}}/>

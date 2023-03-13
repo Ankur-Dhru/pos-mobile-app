@@ -59,7 +59,7 @@ const Index = (props: any) => {
 
     const access = getRoleAccess('Items')
 
-    if(access?.add) {
+    if(!access || access?.add) {
         navigation.setOptions({
             headerRight: () => <Appbar.Action icon="plus"
                                               onPress={() => navigation.navigate('AddEditItemNavigator', {getList: getList})}/>

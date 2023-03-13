@@ -58,6 +58,7 @@ const Index = (props: any) => {
 
     useEffect(()=>{
         getLocalSettings('serverip').then(async (serverip: any) => {
+
             if (Boolean(serverip)) {
                 await connectToLocalServer(serverip, navigation).then();
             }
@@ -165,6 +166,7 @@ const Index = (props: any) => {
 
                                                         <InputField
                                                             {...props}
+                                                            ref={passwordRef}
                                                             value={props.input.value}
                                                             label={'Password'}
                                                             inputtype={'textbox'}

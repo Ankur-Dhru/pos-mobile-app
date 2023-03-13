@@ -7,7 +7,7 @@ import {useDispatch} from "react-redux";
 import {appLog, assignOption, errorAlert, getRoleAccess} from "../../libs/function";
 import {Field, Form} from "react-final-form";
 
-import {ACTIONS, device, localredux, METHOD, required, STATUS, urls} from "../../libs/static";
+import {ACTIONS, capture, device, localredux, METHOD, required, STATUS, urls} from "../../libs/static";
 
 import InputField from '../../components/InputField';
 import {v4 as uuidv4} from "uuid";
@@ -17,12 +17,14 @@ import {setGroup} from "../../redux-store/reducer/group-list";
 import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
 import {Card} from "react-native-paper";
+import Attachment from "../Attachment";
 
 
 const Index = (props: any) => {
 
     const callback = props?.route?.params?.callback;
     const editdata = props?.route?.params?.data;
+
 
     const dispatch = useDispatch();
     const navigation = useNavigation()
@@ -36,7 +38,14 @@ const Index = (props: any) => {
         itemgroupmid: "0",
         itemgroupname: '',
         itemgroupstatus: "1",
+        itemgroupimage:'',
         ...editdata
+    }
+
+    if(initdata.edit){
+        if(initdata?.itemgroupimage) {
+            capture.photo = initdata.itemgroupimage
+        }
     }
 
     const colors = ['#cdb4db','#ffc8dd','#ffafcc','#bde0fe','#a2d2ff',
@@ -50,10 +59,11 @@ const Index = (props: any) => {
 
     const handleSubmit = async (values: any) => {
 
-        if((access?.add && !initdata.edit) || (access?.update && initdata.edit)) {
+        if(!Boolean(access) || (access?.add && !initdata.edit) || (access?.update && initdata.edit)) {
             const {workspace}: any = localredux.initData;
             const {token}: any = localredux.authData;
 
+            values.itemgroupimage = capture.photo;
             values.edit = false
 
             await apiService({
@@ -129,12 +139,17 @@ const Index = (props: any) => {
                                         <Card.Content style={[styles.cardContent]}>
                                             <View>
 
+                                                <View style={[styles.center,styles.middle]}>
+                                                    <Attachment editmode={true} item={initdata}  navigation={navigation}    />
+                                                </View>
+
+
                                                 <Field name="itemgroupname" validate={required}>
                                                     {props => (
                                                         <InputField
                                                             {...props}
                                                             value={props.input.value}
-                                                            autoFocus={true}
+
                                                             label={'Category Name'}
                                                             inputtype={'textbox'}
                                                             onChange={props.input.onChange}
@@ -167,14 +182,14 @@ const Index = (props: any) => {
 
                                             <View style={[styles.grid,]}>
                                                 {
-                                                    colors.map((color:any)=>{
-                                                        return <>
+                                                    colors.map((color:any,index:any)=>{
+                                                        return <View key={index}>
                                                             <TouchableOpacity style={[styles.flexGrow,styles.center,styles.middle,{minWidth:60,height:60,backgroundColor:color}]} onPress={()=>{
                                                                 form.change('itemgroupcolor',color)
                                                             }}>
                                                                 {values.itemgroupcolor === color &&  <ProIcon name={'check'} color={'white'}/>}
                                                             </TouchableOpacity>
-                                                        </>
+                                                        </View>
                                                     })
                                                 }
                                             </View>

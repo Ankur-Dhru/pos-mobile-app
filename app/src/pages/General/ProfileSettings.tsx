@@ -47,6 +47,8 @@ const ProfileSettings = () => {
     const expenseaccess = getRoleAccess('Expenses')
     const paymentreceive = getRoleAccess('Receive Payment')
 
+    console.log('clientaccess',clientaccess)
+
 
     const {
         currentLocation: {
@@ -220,7 +222,7 @@ const ProfileSettings = () => {
 
 
 
-                                        {paymentreceive?.add && <><List.Item
+                                        {(!Boolean(paymentreceive) || paymentreceive?.add) && <><List.Item
                                             style={[styles.listitem]}
                                             title={'Payment Received'}
                                             onPress={async () => {
@@ -233,7 +235,7 @@ const ProfileSettings = () => {
                                         <ItemDivider/>
                                         </>}
 
-                                        {expenseaccess?.add && <><List.Item
+                                        {(!Boolean(expenseaccess) || expenseaccess?.add) && <><List.Item
                                             style={[styles.listitem]}
                                             title={'Expenses'}
                                             onPress={async () => {
@@ -255,7 +257,7 @@ const ProfileSettings = () => {
                                                 navigation.navigate("ListItemsCategories");
                                             }}
                                             left={() => <List.Icon icon="playlist-plus"/>}
-                                            right={() => itemcategoryaccess?.add &&  <TouchableOpacity onPress={async () => {
+                                            right={() => (!Boolean(itemcategoryaccess) || itemcategoryaccess?.add) &&  <TouchableOpacity onPress={async () => {
                                                 navigation.navigate("AddEditCategory");
                                             }}><List.Icon icon="plus"/></TouchableOpacity>}
                                         />
@@ -269,7 +271,7 @@ const ProfileSettings = () => {
                                                 navigation.navigate("ListItems");
                                             }}
                                             left={() => <List.Icon icon="card-plus-outline"/>}
-                                            right={() => itemaccess?.add &&  <TouchableOpacity onPress={async () => {
+                                            right={() => (!Boolean(itemaccess) || itemaccess?.add) &&  <TouchableOpacity onPress={async () => {
                                                 navigation.navigate("AddEditItemNavigator");
                                             }}><List.Icon icon="plus"/></TouchableOpacity>}
                                         />
@@ -283,7 +285,7 @@ const ProfileSettings = () => {
                                                 navigation.navigate("ListClients");
                                             }}
                                             left={() => <List.Icon icon="account-plus"/>}
-                                            right={() => clientaccess?.add && <TouchableOpacity onPress={async () => {
+                                            right={() => (!Boolean(clientaccess) ||  clientaccess?.add) && <TouchableOpacity onPress={async () => {
                                                 navigation.navigate("AddEditClient");
                                             }}><List.Icon icon="plus"/></TouchableOpacity>}
                                         />
@@ -451,6 +453,27 @@ const ProfileSettings = () => {
 
 
                                 {role === 'admin' &&  <View>
+
+
+                                    <Card style={[styles.card,styles.bg_light,styles.m_4]} onPress={() => {
+                                        navigation.navigate("QRWebsite");
+                                    }}>
+                                        <Card.Content style={[styles.cardContent]}>
+                                            <View style={[styles.grid,styles.justifyContent]}>
+                                                <View style={[styles.p_4,]}>
+                                                    <Paragraph  style={[styles.paragraph,{color:styles.primary.color}]}>QR Digital menu & website</Paragraph>
+                                                    <Paragraph>
+                                                        Enrich Your Customer Dine-in Experience With Stunning Digital Menu, QR Stickers for Tables. Show Your Digital Menu With Beautiful Photos & Descriptions.
+                                                    </Paragraph>
+                                                </View>
+                                                <View>
+
+                                                </View>
+                                            </View>
+
+                                        </Card.Content>
+                                    </Card>
+
 
                                     <Card style={[styles.card,styles.bg_light,styles.m_4]}>
                                         <Card.Content style={[styles.cardContent]}>

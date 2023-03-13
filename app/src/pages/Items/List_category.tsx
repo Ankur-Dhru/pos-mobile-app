@@ -60,7 +60,7 @@ const Index = ({grouplist}: any) => {
 
     const access = getRoleAccess('Item Category')
 
-    if(access?.add) {
+    if(!access || access?.add) {
         navigation.setOptions({
             headerRight: () => <Appbar.Action icon="plus" onPress={() => navigation.navigate('AddEditCategory')}/>
         })

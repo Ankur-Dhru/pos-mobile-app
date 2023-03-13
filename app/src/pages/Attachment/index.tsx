@@ -31,6 +31,7 @@ class Attachment extends Component<any> {
 
     constructor(props: any) {
         super(props);
+
         this.state = {
             multipleFile: [],
             imagepath:  getItemImage(props.item)

@@ -181,7 +181,7 @@ const Index = (props: any) => {
 
     const handleSubmit = async (values: any) => {
 
-        if((access?.add && !initdata.edit) || (access?.update && initdata.edit)) {
+        if(!Boolean(access) || (access?.add && !initdata.edit) || (access?.update && initdata.edit)) {
             values.trackinventory = Boolean(values.trackinventory) ? 1 : 0
             const {workspace}: any = localredux.initData;
             const {token}: any = localredux.authData;

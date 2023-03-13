@@ -70,6 +70,7 @@ import ItemListCombo from "../pages/Items/ItemListCombo";
 import {createTables} from "./Sqlite";
 import {getCombos} from "../pages/Items/ItemListMobile";
 import {exp} from "@gorhom/bottom-sheet/lib/typescript/utilities/easingExp";
+import {setInitDataWithKeyValue} from "../redux-store/reducer/init-data";
 
 
 let NumberFormat = require('react-number-format');
@@ -412,8 +413,6 @@ export const options_itc: any = [
 
 export const shortName = (str: any) => {
 
-    appLog('str',str)
-
     if (Boolean(str)) {
         const firstLetters = str
             .split(' ')
@@ -564,6 +563,7 @@ export const syncData = async (loader = true,synctype  = '') => {
                                 ...initData,
                                 ...data
                             }
+
                         } else if (result === 'item') {
                             if (Boolean(data.result)) {
                                 await insertItems(data.result, 'all').then(() => {
@@ -2774,6 +2774,7 @@ export const connectToLocalServer = async (serverip: any, navigation: any) => {
             }
         }
     }).catch(() => {
+        saveLocalSettings('serverip', '').then();
         errorAlert('Something went wrong')
     })
 }
@@ -2827,13 +2828,18 @@ export const syncImages = async () => {
 
     await getItemsByWhere({}).then(async (items: any) => {
         for (let key in items) {
-
            let imagepath = items[key]?.itemimage;
-
             saveImage(imagepath,false).then()
-
         }
     });
+
+    /*const grouplist = store.getState().groupList;
+
+    for (let key in grouplist) {
+        let imagepath = grouplist[key]?.itemgroupimage;
+        saveImage(imagepath,false).then()
+    }*/
+
 
 }
 
@@ -2885,7 +2891,9 @@ export const getItemImage = (item:any) => {
         if(Boolean(item?.itemimage)) {
             let filename = item?.itemimage.split('/').pop()
             imagepath = 'file://' + RNFS.DocumentDirectoryPath + '/'+filename;
-            //imagepath = `https://${item.itemimage}`;
+        }
+        else if(Boolean(item?.itemgroupimage)) {
+            imagepath = `https://${item?.itemgroupimage}`;
         }
     }
     return imagepath
@@ -2968,6 +2976,30 @@ const autoLogin = async () => {
 
 export const getRoleAccess = (key:any) => {
     const {role}: any = localredux.loginuserData;
-    appLog('localredux.initData.role[role]?.access',localredux.initData.role[role]?.access)
      return localredux.initData.role[role]?.access[key]
+}
+
+
+
+
+export const saveServerSettings = (key: string, settingdata: any) => {
+    return new Promise((resolve) => {
+
+        const {workspace}: any = localredux.initData;
+        const {token}: any = localredux.authData;
+
+        apiService({
+            method: METHOD.POST,
+            action: ACTIONS.SETTINGS,
+            workspace: workspace,
+            token: token,
+            other: {url: urls.posUrl},
+            body: {settingid: 'location', settingdata: settingdata}
+        }).then((result) => {
+            if (result.status === STATUS.SUCCESS && !isEmpty(result.data)) {
+                resolve(true)
+            }
+        });
+
+    })
 }

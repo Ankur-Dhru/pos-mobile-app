@@ -11,6 +11,7 @@
       <module name="app.ReactAndroid" target="17" />
       <module name="app.ReactAndroid.hermes-engine" target="17" />
       <module name="app.rn-fetch-blob" target="17" />
+      <module name="app.rn-qr-generator" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>

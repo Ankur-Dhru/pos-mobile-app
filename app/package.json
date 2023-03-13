@@ -84,6 +84,7 @@
     "react-native-pin-view": "^3.0.2",
     "react-native-ping": "^1.2.7",
     "react-native-print": "^0.10.0",
+    "react-native-qrcode-generator": "^1.2.2",
     "react-native-qrcode-scanner": "^1.5.5",
     "react-native-qrcode-svg": "^6.1.2",
     "react-native-reanimated": "^2.9.1",

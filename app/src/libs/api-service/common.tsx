@@ -8,7 +8,7 @@ export const saveSettings = (settingKey: string, body: any) => {
   return new Promise((resolve) => {
     apiService({
       method: METHOD.PUT,
-      action: ACTIONS.SETTING + settingKey,
+      action: ACTIONS.SETTING,
       body
     }).then((response: any) => {
       if (response.status === STATUS.SUCCESS && !isEmpty(response?.data)) {

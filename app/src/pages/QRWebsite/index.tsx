@@ -18,8 +18,8 @@ export default function App() {
 
     const {workspace}: any = localredux.initData;
     const {currentLocation} = localredux.localSettingsData;
+    const {locationname} = currentLocation
     const initdata = currentLocation?.order || {}
-
 
     const handleSubmit = (values: any) => {
         currentLocation.order = values
@@ -79,7 +79,7 @@ export default function App() {
                                                                     style={[styles.listitem]}
                                                                     title={`Print Digital Menu QR`}
                                                                     onPress={() => {
-                                                                        navigation.navigate("PrintQR")
+                                                                        navigation.navigate("PrintQR",{table:{locationname:locationname}})
                                                                     }}
                                                                     left={() => <List.Icon icon="qrcode"/>}
                                                                     right={() => <List.Icon icon="chevron-right"/>}
@@ -129,7 +129,7 @@ export default function App() {
                                                                                         title={`${table.tablename}`}
 
                                                                                         onPress={() => {
-                                                                                            navigation.navigate("PrintQR", {table: {...table,index}})
+                                                                                            navigation.navigate("PrintQR", {table: {...table,locationname,index}})
                                                                                         }}
                                                                                         left={() => <List.Icon
                                                                                             icon="qrcode"/>}

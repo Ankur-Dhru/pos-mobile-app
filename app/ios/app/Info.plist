@@ -48,11 +48,11 @@
 	<key>NSContactsUsageDescription</key>
     	<string>Contact Permission</string>
     <key>NSCameraUsageDescription</key>
-        <string>Camera Permission</string>
+        <string>Our app uses camera to capture, item and item category photos</string>
         <key>NSPhotoLibraryAddUsageDescription</key>
         	<string>Photo Permission</string>
         	<key>NSPhotoLibraryUsageDescription</key>
-        	<string>Photo Permission</string>
+        	<string>Our app uses Photos to select item and item category image</string>
 	<key>UIAppFonts</key>
 
 	<array>

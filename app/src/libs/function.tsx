@@ -2430,42 +2430,44 @@ export const syncInvoice = async (invoiceData: any) => {
             appLog('sync in progress')
             resolve('sync in progress')
         }
+        else {
 
-        saveLocalSettings({sync_in_process: true})
+            saveLocalSettings({sync_in_process: true})
 
-        apiService({
-            method: METHOD.POST,
-            action: ACTIONS.INVOICE,
-            body: invoiceData,
-            workspace: workspace,
-            token: token,
-            hideLoader: true,
-            hidealert: true,
-            other: {url: urls.posUrl},
-        }).then(async (response: any) => {
+            apiService({
+                method: METHOD.POST,
+                action: ACTIONS.INVOICE,
+                body: invoiceData,
+                workspace: workspace,
+                token: token,
+                hideLoader: true,
+                hidealert: true,
+                other: {url: urls.posUrl},
+            }).then(async (response: any) => {
 
-            await saveLocalSettings({sync_in_process: false})
+                await saveLocalSettings({sync_in_process: false})
 
-            const clientdetails = response?.data?.client;
+                const clientdetails = response?.data?.client;
 
-            if(Boolean(clientdetails)) {
-                await insertClients([clientdetails], 'onebyone').then(() => {
-                });
-            }
+                if (Boolean(clientdetails)) {
+                    await insertClients([clientdetails], 'onebyone').then(() => {
+                    });
+                }
 
-            if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
-                deleteTable(TABLE.ORDER, `orderid = '${invoiceData?.orderid}'`).then(async () => {
-                    store.dispatch(setOrder({...invoiceData, synced: true}))
-                    resolve('synced')
-                });
-            } else {
-                resolve({status: "ERROR"})
-            }
+                if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
+                    deleteTable(TABLE.ORDER, `orderid = '${invoiceData?.orderid}'`).then(async () => {
+                        store.dispatch(setOrder({...invoiceData, synced: true}))
+                        resolve('synced')
+                    });
+                } else {
+                    resolve({status: "ERROR"})
+                }
 
-        }).catch(async () => {
-            await saveLocalSettings({sync_in_process: false})
-            resolve({status: "TRY CATCH ERROR"})
-        })
+            }).catch(async () => {
+                await saveLocalSettings({sync_in_process: false})
+                resolve({status: "TRY CATCH ERROR"})
+            })
+        }
 
 
     })

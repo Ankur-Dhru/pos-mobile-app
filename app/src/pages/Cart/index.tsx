@@ -51,8 +51,8 @@ const Index = (props: any) => {
     useEffect(() => {
         const voucherDataJson: any = voucherData(VOUCHER.INVOICE, false);
 
-        const {kots,numOfKOt}:any = tabledetails
-        if(kots.length > 0 || numOfKOt > 0){
+        const {kots,numOfKOt}:any = tabledetails || {}
+        if(kots?.length > 0 || numOfKOt > 0){
             let {staffid,staffname,...others}:any = voucherDataJson
             dispatch(refreshCartData({...tabledetails, ...others}));
         }

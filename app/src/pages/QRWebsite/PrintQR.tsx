@@ -75,7 +75,8 @@ const Index = (props: any) => {
                         <h3>Scan for menu</h3>                    
                         <img src="${base64}" />
                          <h4>${tablename}</h4> 
-                            <div>${url}</div>                                       
+                         <div>${url}</div>   
+                                                             
                      </div>
                   </body>
                 </html>`;

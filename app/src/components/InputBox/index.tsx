@@ -12,7 +12,7 @@ class Index extends React.Component<any> {
     };
 
     render(){
-        const {label,value,defaultValue,onChange,width,extrastyle,customRef,editmode=true,underlineColor='transparent',labelstyle}:any = this.props;
+        const {label,value,defaultValue,onChange,width,extrastyle,customRef,affix,editmode=true,underlineColor='transparent',labelstyle}:any = this.props;
         const {colors} = this.props.theme;
 
         return (
@@ -29,6 +29,7 @@ class Index extends React.Component<any> {
                     dense={false}
                     disabled={!editmode}
                     onChangeText={(e:any) => { onChange(e) }}
+                    right={<TextInput.Affix text={affix} />}
                     {...this.props}
                     label={<Paragraph style={{backgroundColor:'white',...labelstyle}}> {label} </Paragraph>}
                 />

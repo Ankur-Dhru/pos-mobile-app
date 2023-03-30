@@ -21,15 +21,8 @@ export default function App() {
     const {locationname} = currentLocation
     const initdata = currentLocation?.order || {}
 
-    const colors = [
-        '#ef476f','#ffd166','#06d6a0','#118ab2','#073b4c',
-        '#9381ff','#ffd8be',
-        '#003049','#d62828','#f77f00','#fcbf49','#eae2b7',
-        '#8e9aaf','#860a70','#3a438c',
-    ]
 
     const handleSubmit = (values: any) => {
- 
         currentLocation.order = values
         saveServerSettings('location', [{"key": currentLocation.locationid, "value": currentLocation}]).then()
     }
@@ -78,6 +71,18 @@ export default function App() {
                                                                         Linking.openURL(url)
                                                                     }}
                                                                     left={() => <List.Icon icon="web"/>}
+                                                                    right={() => <List.Icon icon="chevron-right"/>}
+                                                                />
+
+                                                                <ItemDivider/>
+
+                                                                <List.Item
+                                                                    style={[styles.listitem]}
+                                                                    title={`Website Theme`}
+                                                                    onPress={() => {
+                                                                        navigation.navigate("OtherSettings")
+                                                                    }}
+                                                                    left={() => <List.Icon icon="format-color-fill"/>}
                                                                     right={() => <List.Icon icon="chevron-right"/>}
                                                                 />
 
@@ -152,23 +157,6 @@ export default function App() {
                                                                 </>}
 
 
-                                                                <Caption style={[styles.caption,styles.mt_5]}>Website Theme Color</Caption>
-                                                                <View style={[styles.grid,]}>
-                                                                    {
-                                                                        colors.map((color:any,index:any)=>{
-                                                                            return <View key={index}>
-                                                                                <TouchableOpacity style={[styles.flexGrow,styles.center,styles.middle,{minWidth:60,height:60,backgroundColor:color}]} onPress={()=>{
-
-                                                                                    form.change('themecolor',color)
-                                                                                     handleSubmit(values)
-
-                                                                                }}>
-                                                                                    {values.themecolor === color &&  <ProIcon name={'check'} color={'white'}/>}
-                                                                                </TouchableOpacity>
-                                                                            </View>
-                                                                        })
-                                                                    }
-                                                                </View>
 
 
                                                             </>}

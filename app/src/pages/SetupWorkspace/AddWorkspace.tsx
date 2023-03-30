@@ -116,7 +116,7 @@ class AddWorkspace extends Component<any> {
                                                         }}
                                                         returnKeyType={'go'}
                                                         */
-                                                        right={<TextInput.Affix text="dhru.com" />}
+                                                        affix={'.dhru.com'}
                                                         onChange={props.input.onChange}
                                                     />
                                                 )}

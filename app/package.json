@@ -2,7 +2,7 @@
   "name": "app",
   "private": true,
   "scripts": {
-    "android": "yarn  react-native run-android --active-arch-only   ",
+    "android": "yarn  react-native run-android ",
     "iosdefault": "yarn  react-native run-ios",
     "ios": "yarn  react-native run-ios   --simulator='iPhone 11 Pro'  ",
     "iosIpadSimulator": "yarn  react-native run-ios --simulator='iPad Pro (12.9-inch)' ",
@@ -57,7 +57,7 @@
     "react-final-form": "^6.5.9",
     "react-native": "0.70.1",
     "react-native-actionsheet": "^2.4.2",
-    "react-native-ble-manager": "^8.4.4",
+    "react-native-ble-manager": "^9.0.0",
     "react-native-camera": "^4.2.1",
     "react-native-confirmation-code-field": "^7.3.1",
     "react-native-contacts": "^7.0.5",

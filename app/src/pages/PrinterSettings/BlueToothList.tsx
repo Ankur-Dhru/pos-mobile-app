@@ -12,17 +12,19 @@ import {
 
 import BleManager from 'react-native-ble-manager';
 import {ItemDivider} from "../../libs/static";
-import {appLog} from "../../libs/function";
+import {appLog, nextFocus} from "../../libs/function";
 import {List, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
 import Button from "../../components/Button";
 import PageLoader from "../../components/PageLoader";
 import {useDispatch} from "react-redux";
 import {setBottomSheet} from "../../redux-store/reducer/component";
+import InputField from "../../components/InputField";
 
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 
+let customDevice = ''
 const Index = ({setMacId}: any) => {
 
     const [isScanning, setIsScanning] = useState(false);
@@ -41,6 +43,7 @@ const Index = ({setMacId}: any) => {
                     appLog('isScanning', isScanning)
                     BleManager.scan([], 5, true).then((results) => {
                         setIsScanning(true);
+
                     }).catch(err => {
                         appLog(err);
                     });
@@ -78,8 +81,6 @@ const Index = ({setMacId}: any) => {
     const retrieveConnected = () => {
         BleManager.getConnectedPeripherals([]).then((results) => {
 
-            appLog('results',results)
-
             if (results.length == 0) {
                 console.log('No connected peripherals')
             }
@@ -89,8 +90,6 @@ const Index = ({setMacId}: any) => {
                 peripheral.connected = true;
                 list[peripheral.id] = {label: peripheral.name, value: peripheral.id, more: peripheral};
             }
-
-            appLog('list',list)
 
             setList(list)
         });
@@ -103,6 +102,7 @@ const Index = ({setMacId}: any) => {
         }
         list[peripheral.id] = {label: peripheral.name, value: peripheral.id, more: peripheral};
         setList(list)
+        retrieveConnected()
     }
 
 
@@ -132,17 +132,15 @@ const Index = ({setMacId}: any) => {
 
         return (() => {
             console.log('unmount');
-            bleManagerEmitter.removeListener('BleManagerDiscoverPeripheral', handleDiscoverPeripheral);
-            bleManagerEmitter.removeListener('BleManagerStopScan', handleStopScan);
-            bleManagerEmitter.removeListener('BleManagerDisconnectPeripheral', handleDisconnectedPeripheral );
-            bleManagerEmitter.removeListener('BleManagerDidUpdateValueForCharacteristic', handleUpdateValueForCharacteristic );
+            bleManagerEmitter?.removeListener('BleManagerDiscoverPeripheral', handleDiscoverPeripheral);
+            bleManagerEmitter?.removeListener('BleManagerStopScan', handleStopScan);
+            bleManagerEmitter?.removeListener('BleManagerDisconnectPeripheral', handleDisconnectedPeripheral );
+            bleManagerEmitter?.removeListener('BleManagerDidUpdateValueForCharacteristic', handleUpdateValueForCharacteristic );
         })
     }, []);
 
     const setDevice = () => {
-
-
-
+        appLog('selected',selected)
         setMacId({
             bluetoothdevice:selected,
         })
@@ -171,6 +169,29 @@ const Index = ({setMacId}: any) => {
 
 
         <View style={[styles.w_100,styles.h_100,styles.flex]}>
+
+            {/*<View>
+                <View style={[styles.px_5,styles.grid,styles.justifyContent]}>
+                    <View style={[styles.w_auto]}>
+                        <InputField
+
+                            defaultValue={'0F:02:17:31:07:7'}
+                            label={'Bluetooth name'}
+
+                            autoFocus={true}
+
+                            inputtype={'textbox'}
+                            onChange={(value: any) => {
+                                customDevice = value;
+                                setSelected({label:customDevice,value:customDevice,more:{id:customDevice,name:customDevice}});
+                            }}
+                        />
+                    </View>
+
+
+                </View>
+
+            </View>*/}
 
             <View style={[styles.px_5,styles.grid,styles.justifyContent]}>
                 {/*<View>
@@ -213,11 +234,15 @@ const Index = ({setMacId}: any) => {
                 </View>}
                 keyExtractor={item => item.value}
             />
+
+
+
+
+
         </View>
 
         <View style={[styles.submitbutton,styles.w_100]}>
             <View style={[styles.p_5]}>
-
                 <Button
                         onPress={() => {
                             Boolean(selected) && setDevice()

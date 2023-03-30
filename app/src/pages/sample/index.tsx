@@ -1,77 +1,449 @@
-import * as React from 'react';
 
-import { StyleSheet, View, Button, SafeAreaView } from 'react-native';
-import EscPosPrinter, {
-    getPrinterSeriesByName,
-} from 'react-native-esc-pos-printer';
-import { Modal } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+    SafeAreaView,
+    StyleSheet,
+    View,
+    Text,
+    StatusBar,
+    NativeModules,
+    NativeEventEmitter,
+    Platform,
+    PermissionsAndroid,
+    FlatList,
+    TouchableHighlight,
+    Pressable,
+} from 'react-native';
 
-export const base64Image =
-    'data:image/png;base64,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';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 
-export default function App() {
-    const [init, setInit] = React.useState(false);
+const SECONDS_TO_SCAN_FOR = 7;
+const SERVICE_UUIDS: string[] = [];
+const ALLOW_DUPLICATES = true;
 
-    return (
-        <SafeAreaView style={styles.container}>
+import BleManager, {
+    BleDisconnectPeripheralEvent,
+    BleManagerDidUpdateValueForCharacteristicEvent,
+    BleScanCallbackType,
+    BleScanMatchMode,
+    BleScanMode,
+    Peripheral,
+} from 'react-native-ble-manager';
+import { appLog } from '../../libs/function';
+import {Paragraph} from "react-native-paper";
+const BleManagerModule = NativeModules.BleManager;
+const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 
-            <View>
-
-
-                <Button
-                    title="Test print chaining"
-
-                    onPress={async () => {
-                        try {
-
-                                if (!init) {
-                                    await EscPosPrinter.init({
-                                        target: `TCP:10.1.1.200`,
-                                        seriesName: getPrinterSeriesByName('TM-T82'),
-                                        language: 'EPOS2_LANG_EN',
-                                    })
-                                    setInit(true);
-                                }
-
-                                const printing = new EscPosPrinter.printing();
-
-                                const status = await printing
-                                    .initialize()
-                                    .align('center')
-                                    .image({ uri: base64Image }, { width: 175 })
-                                    .image(
-                                        {
-                                            uri:
-                                                'https://raw.githubusercontent.com/tr3v3r/react-native-esc-pos-printer/main/ios/store.png',
-                                        },
-                                        { width: 275 }
-                                    )
-
-                                    .cut()
-                                    .send();
-
-                                console.log('printing', status);
-
-                        } catch (error) {
-                            console.log('error', error);
-                        }
-                    }}
-                />
-            </View>
-
-        </SafeAreaView>
-    );
+declare module 'react-native-ble-manager' {
+    // enrich local contract with custom state properties needed by App.tsx
+    interface Peripheral {
+        connected?: boolean;
+        connecting?: boolean;
+    }
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'space-between',
+const App = () => {
+    const [isScanning, setIsScanning] = useState(false);
+    const [peripherals, setPeripherals] = useState(
+        new Map<Peripheral['id'], Peripheral>(),
+    );
+
+    appLog('peripherals map updated', [...peripherals.entries()]);
+
+    const addOrUpdatePeripheral = (id: string, updatedPeripheral: Peripheral) => {
+        // new Map() enables changing the reference & refreshing UI.
+        // TOFIX not efficient.
+        setPeripherals(map => new Map(map.set(id, updatedPeripheral)));
+    };
+
+    const startScan = () => {
+        if (!isScanning) {
+            // reset found peripherals before scan
+            setPeripherals(new Map<Peripheral['id'], Peripheral>());
+
+            try {
+                appLog('[startScan] starting scan...');
+                setIsScanning(true);
+                BleManager.scan(SERVICE_UUIDS, SECONDS_TO_SCAN_FOR, ALLOW_DUPLICATES, {
+                    matchMode: BleScanMatchMode.Sticky,
+                    scanMode: BleScanMode.LowLatency,
+                    callbackType: BleScanCallbackType.AllMatches,
+                })
+                    .then(() => {
+                        appLog('[startScan] scan promise returned successfully.');
+                    })
+                    .catch(err => {
+                        appLog('[startScan] ble scan returned in error', err);
+                    });
+            } catch (error) {
+                appLog('[startScan] ble scan error thrown', error);
+            }
+        }
+    };
+
+    const handleStopScan = () => {
+        setIsScanning(false);
+        appLog('[handleStopScan] scan is stopped.');
+    };
+
+    const handleDisconnectedPeripheral = (
+        event: BleDisconnectPeripheralEvent,
+    ) => {
+        let peripheral = peripherals.get(event.peripheral);
+        if (peripheral) {
+            appLog(
+                `[handleDisconnectedPeripheral][${peripheral.id}] previously connected peripheral is disconnected.`,
+                event.peripheral,
+            );
+            addOrUpdatePeripheral(peripheral.id, {...peripheral, connected: false});
+        }
+        appLog(
+            `[handleDisconnectedPeripheral][${event.peripheral}] disconnected.`,
+        );
+    };
+
+    const handleUpdateValueForCharacteristic = (
+        data: BleManagerDidUpdateValueForCharacteristicEvent,
+    ) => {
+        appLog(
+            `[handleUpdateValueForCharacteristic] received data from '${data.peripheral}' with characteristic='${data.characteristic}' and value='${data.value}'`,
+        );
+    };
+
+    const handleDiscoverPeripheral = (peripheral: Peripheral) => {
+        appLog('[handleDiscoverPeripheral] new BLE peripheral=', peripheral);
+        if (!peripheral.name) {
+            peripheral.name = 'NO NAME';
+        }
+        addOrUpdatePeripheral(peripheral.id, peripheral);
+    };
+
+    const togglePeripheralConnection = async (peripheral: Peripheral) => {
+        if (peripheral && peripheral.connected) {
+            try {
+                await BleManager.disconnect(peripheral.id);
+            } catch (error) {
+                appLog(
+                    `[togglePeripheralConnection][${peripheral.id}] error when trying to disconnect device.`,
+                    error,
+                );
+            }
+        } else {
+            await connectPeripheral(peripheral);
+        }
+    };
+
+    const retrieveConnected = async () => {
+        try {
+            const connectedPeripherals = await BleManager.getConnectedPeripherals();
+            if (connectedPeripherals.length === 0) {
+                console.warn('[retrieveConnected] No connected peripherals found.');
+                return;
+            }
+
+            appLog(
+                '[retrieveConnected] connectedPeripherals',
+                connectedPeripherals,
+            );
+
+            for (var i = 0; i < connectedPeripherals.length; i++) {
+                var peripheral = connectedPeripherals[i];
+                addOrUpdatePeripheral(peripheral.id, {...peripheral, connected: true});
+            }
+        } catch (error) {
+            appLog(
+                '[retrieveConnected] unable to retrieve connected peripherals.',
+                error,
+            );
+        }
+    };
+
+    const connectPeripheral = async (peripheral: Peripheral) => {
+        try {
+            if (peripheral) {
+                addOrUpdatePeripheral(peripheral.id, {...peripheral, connecting: true});
+
+                await BleManager.connect(peripheral.id);
+                appLog(`[connectPeripheral][${peripheral.id}] connected.`);
+
+                addOrUpdatePeripheral(peripheral.id, {
+                    ...peripheral,
+                    connecting: false,
+                    connected: true,
+                });
+
+                // before retrieving services, it is often a good idea to let bonding & connection finish properly
+                await sleep(900);
+
+                /* Test read current RSSI value, retrieve services first */
+                const peripheralData = await BleManager.retrieveServices(peripheral.id);
+                appLog(
+                    `[connectPeripheral][${peripheral.id}] retrieved peripheral services`,
+                    peripheralData,
+                );
+
+                const rssi = await BleManager.readRSSI(peripheral.id);
+                appLog(
+                    `[connectPeripheral][${peripheral.id}] retrieved current RSSI value: ${rssi}.`,
+                );
+
+                if (peripheralData.characteristics) {
+                    for (let characteristic of peripheralData.characteristics) {
+                        if (characteristic.descriptors) {
+                            for (let descriptor of characteristic.descriptors) {
+                                try {
+                                    let data = await BleManager.readDescriptor(peripheral.id, characteristic.service, characteristic.characteristic, descriptor.uuid);
+                                    appLog(`[connectPeripheral][${peripheral.id}] descriptor read as:`, data);
+                                } catch (error) {
+                                    appLog(`[connectPeripheral][${peripheral.id}] failed to retrieve descriptor ${descriptor} for characteristic ${characteristic}:`, error);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                let p = peripherals.get(peripheral.id);
+                if (p) {
+                    addOrUpdatePeripheral(peripheral.id, {...peripheral, rssi});
+                }
+            }
+        } catch (error) {
+            appLog(
+                `[connectPeripheral][${peripheral.id}] connectPeripheral error`,
+                error,
+            );
+        }
+    };
+
+    function sleep(ms: number) {
+        return new Promise<void>(resolve => setTimeout(resolve, ms));
+    }
+
+    useEffect(() => {
+        try {
+            BleManager.start({showAlert: false})
+                .then(() => appLog('BleManager started.'))
+                .catch(error =>
+                    appLog('BeManager could not be started.', error),
+                );
+        } catch (error) {
+            appLog('unexpected error starting BleManager.', error);
+            return;
+        }
+
+        const listeners = [
+            bleManagerEmitter.addListener(
+                'BleManagerDiscoverPeripheral',
+                handleDiscoverPeripheral,
+            ),
+            bleManagerEmitter.addListener('BleManagerStopScan', handleStopScan),
+            bleManagerEmitter.addListener(
+                'BleManagerDisconnectPeripheral',
+                handleDisconnectedPeripheral,
+            ),
+            bleManagerEmitter.addListener(
+                'BleManagerDidUpdateValueForCharacteristic',
+                handleUpdateValueForCharacteristic,
+            ),
+        ];
+
+        handleAndroidPermissions();
+
+        return () => {
+            appLog('[app] main component unmounting. Removing listeners...');
+            for (const listener of listeners) {
+                listener.remove();
+            }
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const handleAndroidPermissions = () => {
+        if (Platform.OS === 'android' && Platform.Version >= 31) {
+            PermissionsAndroid.requestMultiple([
+                PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+                PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+            ]).then(result => {
+                if (result) {
+                    appLog(
+                        '[handleAndroidPermissions] User accepts runtime permissions android 12+',
+                    );
+                } else {
+                    appLog(
+                        '[handleAndroidPermissions] User refuses runtime permissions android 12+',
+                    );
+                }
+            });
+        } else if (Platform.OS === 'android' && Platform.Version >= 23) {
+            PermissionsAndroid.check(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            ).then(checkResult => {
+                if (checkResult) {
+                    appLog(
+                        '[handleAndroidPermissions] runtime permission Android <12 already OK',
+                    );
+                } else {
+                    PermissionsAndroid.request(
+                        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                    ).then(requestResult => {
+                        if (requestResult) {
+                            appLog(
+                                '[handleAndroidPermissions] User accepts runtime permission android <12',
+                            );
+                        } else {
+                            appLog(
+                                '[handleAndroidPermissions] User refuses runtime permission android <12',
+                            );
+                        }
+                    });
+                }
+            });
+        }
+    };
+
+    const renderItem = ({item}: {item: Peripheral}) => {
+        const backgroundColor = item.connected ? '#069400' : Colors.white;
+        return (
+            <TouchableHighlight
+                underlayColor="#0082FC"
+                onPress={() => togglePeripheralConnection(item)}>
+                <View style={[styles.row, {backgroundColor}]}>
+                    <Paragraph style={styles.peripheralName}>
+                        {/* completeLocalName (item.name) & shortAdvertisingName (advertising.localName) may not always be the same */}
+                        {item.name} - {item?.advertising?.localName}
+                        {item.connecting && ' - Connecting...'}
+                    </Paragraph>
+                    <Paragraph style={styles.rssi}>RSSI: {item.rssi}</Paragraph>
+                    <Paragraph style={styles.peripheralId}>{item.id}</Paragraph>
+                </View>
+            </TouchableHighlight>
+        );
+    };
+
+    return (
+        <>
+            <StatusBar />
+            <SafeAreaView style={styles.body}>
+                <Pressable style={styles.scanButton} onPress={startScan}>
+                    <Text style={styles.scanButtonText}>
+                        {isScanning ? 'Scanning...' : 'Scan Bluetooth'}
+                    </Text>
+                </Pressable>
+
+                <Pressable style={styles.scanButton} onPress={retrieveConnected}>
+                    <Text style={styles.scanButtonText}>
+                        {'Retrieve connected peripherals'}
+                    </Text>
+                </Pressable>
+
+                {Array.from(peripherals.values()).length === 0 && (
+                    <View style={styles.row}>
+                        <Text style={styles.noPeripherals}>
+                            No Peripherals, press "Scan Bluetooth" above.
+                        </Text>
+                    </View>
+                )}
+
+                <FlatList
+                    data={Array.from(peripherals.values())}
+                    contentContainerStyle={{rowGap: 12}}
+                    renderItem={renderItem}
+                    keyExtractor={item => item.id}
+                />
+            </SafeAreaView>
+        </>
+    );
+};
+
+const boxShadow = {
+    shadowColor: '#000',
+    shadowOffset: {
+        width: 0,
+        height: 2,
     },
-    box: {
-        width: 60,
-        height: 60,
-        marginVertical: 20,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+};
+
+const styles = StyleSheet.create({
+    engine: {
+        position: 'absolute',
+        right: 10,
+        bottom: 0,
+        color: Colors.black,
+    },
+    scanButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 16,
+        backgroundColor: '#0a398a',
+        margin: 10,
+        borderRadius: 12,
+        ...boxShadow,
+    },
+    scanButtonText: {
+        fontSize: 20,
+        letterSpacing: 0.25,
+        color: Colors.white,
+    },
+    body: {
+        backgroundColor: '#0082FC',
+        flex: 1,
+    },
+    sectionContainer: {
+        marginTop: 32,
+        paddingHorizontal: 24,
+    },
+    sectionTitle: {
+        fontSize: 24,
+        fontWeight: '600',
+        color: Colors.black,
+    },
+    sectionDescription: {
+        marginTop: 8,
+        fontSize: 18,
+        fontWeight: '400',
+        color: Colors.dark,
+    },
+    highlight: {
+        fontWeight: '700',
+    },
+    footer: {
+        color: Colors.dark,
+        fontSize: 12,
+        fontWeight: '600',
+        padding: 4,
+        paddingRight: 12,
+        textAlign: 'right',
+    },
+    peripheralName: {
+        fontSize: 16,
+        textAlign: 'center',
+        padding: 10,
+    },
+    rssi: {
+        fontSize: 12,
+        textAlign: 'center',
+        padding: 2,
+    },
+    peripheralId: {
+        fontSize: 12,
+        textAlign: 'center',
+        padding: 2,
+        paddingBottom: 20,
+    },
+    row: {
+        marginLeft: 10,
+        marginRight: 10,
+        borderRadius: 20,
+        ...boxShadow,
+    },
+    noPeripherals: {
+        margin: 10,
+        textAlign: 'center',
+        color: Colors.white,
     },
 });
+
+export default App;

@@ -8,6 +8,7 @@
       <module name="app.react-native-haptic-feedback" target="17" />
       <module name="app.react-native-slice-image" target="17" />
       <module name="app.react-native-sunmi-inner-printer" target="17" />
+      <module name="app.react-native-thermal-receipt-printer" target="17" />
       <module name="app.ReactAndroid" target="17" />
       <module name="app.ReactAndroid.hermes-engine" target="17" />
       <module name="app.rn-fetch-blob" target="17" />

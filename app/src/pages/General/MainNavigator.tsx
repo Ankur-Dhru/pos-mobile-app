@@ -80,6 +80,7 @@ import TerminalSettings from "../TerminalSettings";
 import ChangePin from "../Pin/ChangePin";
 import QRWebsite from "../QRWebsite";
 import PrintQR from "../QRWebsite/PrintQR";
+import OtherSettings from "../QRWebsite/OtherSettings";
 
 
 const screenOptions = {...screenOptionStyle};
@@ -303,6 +304,8 @@ const ProfileSettingsNavigator = (props: any) => {
             <Stack.Screen name={'QRWebsite'} component={QRWebsite} options={({route}: any) => ({title: 'Website & Digital Menu'})} />
 
             <Stack.Screen name={'PrintQR'} component={PrintQR} options={({route}: any) => ({title: 'QR Preview'})} />
+
+            <Stack.Screen name={'OtherSettings'} component={OtherSettings} options={({route}: any) => ({title: 'More Settings'})} />
 
             <Stack.Screen name={'DropDownList'} component={DropDownList}
                           options={{headerShown: false, headerTitle: 'Select'}}/>

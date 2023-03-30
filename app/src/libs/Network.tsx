@@ -60,6 +60,8 @@ export const sendDataToPrinter = async (input?: any, template?: string, printer?
                 if (printer?.printertype === 'bluetooth') {
                     const peripheral = printer?.bluetoothdetail.more;
 
+                    appLog('peripheral',peripheral)
+
                     BleManager.start({showAlert: false}).then(() => {
                         readyforPrint(peripheral).then((findSC: any) => {
 

@@ -292,7 +292,7 @@ PODS:
   - React-jsinspector (0.70.1)
   - React-logger (0.70.1):
     - glog
-  - react-native-ble-manager (8.8.0):
+  - react-native-ble-manager (9.0.0):
     - React-Core
   - react-native-camera (4.2.1):
     - React-Core
@@ -764,7 +764,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 47201924064085223b63ec7e3ee9fd40ad8508e8
   React-jsinspector: 1363be638eccfe1aea1b10dd42e632b0397e5ec8
   React-logger: 7bd569e3857d74ed412ce0a5c51f421ff7d4ca7f
-  react-native-ble-manager: f8add48474ad08a0bd3e46b2d1ebff5e00a628b7
+  react-native-ble-manager: a1f4022361f5df4194cf45fa44dde8d212caa314
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-contacts: 0aa99963d8f29099d4725cd0d2f8b6ef5f0d9a2d
   react-native-document-picker: 495c444c0c773c6e83a5d91165890ecb1c0a399a
@@ -815,4 +815,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 8843edd6bed8c636affdbf3bc9f2e39e8add99fd
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.0

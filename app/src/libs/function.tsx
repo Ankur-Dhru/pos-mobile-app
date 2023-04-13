@@ -2606,13 +2606,13 @@ export const printDayEndReport = ({date: date, data: data}: any) => {
             printinvoice: true,
             terminalname: terminal_name,
             invoicetype: 'Retail Invoice',
-            head: () => getLeftRight("#ID | Name", "Amount"),
+            head: () => getLeftRight("TID | SID | Name", "Amount"),
             isItems: true,
             items: Object.values(data.order).filter((order:any)=>{
                 return order.vouchertypeid === VOUCHER.INVOICE
             })?.map((item: any) => {
                     total += +item.vouchertotal;
-                    return getLeftRight(item.voucherdisplayid + ' | ' + item.client, numberFormat(item.vouchertotal, false, decimalPlace))
+                    return getLeftRight(item.posinvoice + '  |  ' + item.voucherdisplayid + '  |  ' + item.client , numberFormat(item.vouchertotal, false, decimalPlace))
                 }
             ),
             isSummary: true,

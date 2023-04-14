@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {ScrollView, View} from "react-native";
+import {Dimensions, ScrollView, View} from "react-native";
 import {Card, RadioButton, ToggleButton} from "react-native-paper"
 import Container from "../../components/Container";
 import {styles} from "../../theme";
@@ -10,9 +10,8 @@ import {Field, Form} from "react-final-form";
 import {appLog, getLocalSettings, nextFocus, retrieveData, saveLocalSettings, setAPIUrl} from "../../libs/function";
 import {setSettings} from "../../redux-store/reducer/local-settings-data";
 import InputField from "../../components/InputField";
-import {Button} from "../../components";
-import KAccessoryView from "../../components/KAccessoryView";
-import {localredux, required} from "../../libs/static";
+
+import {device, localredux, required} from "../../libs/static";
 
 
 const Index = () => {
@@ -23,9 +22,12 @@ const Index = () => {
     const {terminal_name}: any = localredux.licenseData.data;
 
 
-    let [initdata, setInitdata]: any = useState({disabledDefaultSourceHomeDelivery: false, disabledDefaultSourceTakeAway: false, betamode: false,disabledpax:false,kotongenerateinvoice:'Enable',terminalname:terminal_name})
+    let [initdata, setInitdata]: any = useState({disabledDefaultSourceHomeDelivery: false, disabledDefaultSourceTakeAway: false, betamode: false,disabledpax:false,kotongenerateinvoice:'Enable',advancecartview:false,terminalname:terminal_name})
 
-    const [loading, setLoading]: any = useState(false)
+    const [loading, setLoading]: any = useState(false);
+
+    const {height, width} = Dimensions.get('window');
+    const aspectRatio = height / width;
 
 
     useEffect(() => {
@@ -109,23 +111,44 @@ const Index = () => {
                                 </Field>
 
 
-                                <Field name="betamode">
-                                    {props => (
-                                        <><CheckBox
-                                            value={props.input.value}
-                                            label={'Enable Beta Mode'}
-                                            onChange={(value: any) => {
-                                                initdata = {
-                                                    ...initdata,
-                                                    betamode: value
-                                                }
-                                                setAPIUrl(value)
-                                                dispatch(setSettings(initdata));
-                                                saveLocalSettings("betamode", value).then();
-                                            }}
-                                        /></>
-                                    )}
-                                </Field>
+
+
+
+                            {aspectRatio <= 1.6 &&  <Field name="advancecartview">
+                                {props => (
+                                    <><CheckBox
+                                        value={props.input.value}
+                                        label={'Advance Cart View'}
+                                        onChange={(value: any) => {
+                                            initdata = {
+                                                ...initdata,
+                                                advancecartview: value
+                                            }
+                                            dispatch(setSettings(initdata));
+                                            saveLocalSettings("advancecartview", value).then();
+                                        }}
+                                    /></>
+                                )}
+                            </Field>}
+
+
+                            <Field name="betamode">
+                                {props => (
+                                    <><CheckBox
+                                        value={props.input.value}
+                                        label={'Enable Beta Mode'}
+                                        onChange={(value: any) => {
+                                            initdata = {
+                                                ...initdata,
+                                                betamode: value
+                                            }
+                                            setAPIUrl(value)
+                                            dispatch(setSettings(initdata));
+                                            saveLocalSettings("betamode", value).then();
+                                        }}
+                                    /></>
+                                )}
+                            </Field>
 
                                 <View style={[styles.mt_5]}>
                                     <Field name="kotongenerateinvoice">

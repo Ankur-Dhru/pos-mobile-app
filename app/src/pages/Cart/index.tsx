@@ -31,6 +31,11 @@ const Index = (props: any) => {
 
     const tabledetails: any = props?.route?.params;
 
+
+
+    const {advancecartview} = props;
+
+
     const mainproductgroupid = localredux.localSettingsData?.currentLocation?.mainproductgroupid || PRODUCTCATEGORY.DEFAULT
 
     const dispatch = useDispatch();
@@ -40,12 +45,10 @@ const Index = (props: any) => {
     const openMenu = () => setVisible(true);
     const closeMenu = () => setVisible(false);
 
-
-
-
-
     const [loaded, setLoaded] = useState(false)
     const [gridView,setGridView] = useState(true)
+
+    device.tablet = Boolean(advancecartview)
 
 
     useEffect(() => {
@@ -170,6 +173,7 @@ const Index = (props: any) => {
         })
     }
 
+
     return    <Cart tabledetails={tabledetails} gridView={gridView}/>
 
 }
@@ -177,6 +181,7 @@ const Index = (props: any) => {
 
 const mapStateToProps = (state: any) => ({
     disabledpax: state.localSettings?.disabledpax,
+    advancecartview: state.localSettings?.advancecartview,
 })
 
 export default connect(mapStateToProps)(Index);

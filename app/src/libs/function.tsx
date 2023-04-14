@@ -765,7 +765,7 @@ export const toCurrency = (value: any, code?: any, decimal?: any) => {
                 value={parseFloat(value).toFixed(decimalplace)}
                 displayType={'text'}
                 thousandSeparator={true}
-                thousandsGroupStyle="lakh"
+                thousandsGroupStyle={code === 'INR'?"lakh":""}
                 prefix={getSymbolFromCurrency(code)}
                 renderText={(value: any, props: any) => <Text {...props}>{value}</Text>}
             />;

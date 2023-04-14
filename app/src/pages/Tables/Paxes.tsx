@@ -22,9 +22,9 @@ const Paxes = () => {
         <ScrollView>
             <View style={[styles.grid]}>
                 {
-                     paxes.map((number:any)=>{
+                     paxes.map((number:any,index:any)=>{
                          return <>
-                             <TouchableOpacity  style={[styles.m_2,styles.p_6,styles.flexGrow,{borderRadius:10,width:'20%',backgroundColor:styles.light.color}]} onPress={()=>{ onClickPax(number);}}>
+                             <TouchableOpacity key={index} style={[styles.m_2,styles.p_6,styles.flexGrow,{borderRadius:10,width:'20%',backgroundColor:styles.light.color}]} onPress={()=>{ onClickPax(number);}}>
                                  <Paragraph style={[styles.bold,{textAlign:'center',textAlignVertical:'center'}]}>{number}</Paragraph>
                              </TouchableOpacity>
                          </>

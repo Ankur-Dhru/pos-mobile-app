@@ -44,7 +44,7 @@ LogBox.ignoreAllLogs();
 const {height, width} = Dimensions.get('window');
 const aspectRatio = height / width;
 
-if (aspectRatio > 1.6) {
+if (width < 960) {
     device.tablet = false
 }
 
@@ -53,8 +53,6 @@ const App = () => {
     const isDarkMode = useColorScheme() === 'dark';
 
     // StatusBar.setHidden(true);
-
-
 
     const CombinedDefaultTheme = {
         ...PaperDefaultTheme,

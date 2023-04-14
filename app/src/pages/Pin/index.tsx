@@ -1,6 +1,6 @@
 import React, {memo, useEffect, useRef, useState} from "react";
 
-import {Image, Keyboard, TouchableOpacity, View} from "react-native";
+import {Image, Keyboard, ScrollView, TouchableOpacity, View} from "react-native";
 import Container from "../../components/Container";
 import ReactNativePinView from "react-native-pin-view"
 import {connect, useDispatch} from "react-redux";
@@ -224,11 +224,13 @@ const Index = (props: any) => {
 
     return <Container    style={styles.bg_white}>
 
-
+        <ScrollView>
 
             <View style={[styles.h_100,styles.middle]}>
 
-                <View style={{width:300,marginTop:40}}>
+
+
+                <View style={{width:300,marginTop:20}}>
 
 
 
@@ -263,9 +265,9 @@ const Index = (props: any) => {
                     </View>
 
 
-            </View>
+                </View>
 
-                <View  style={[styles.mt_auto,styles.p_6,styles.w_100,{maxWidth:320,marginBottom:35}]}>
+                <View  style={[styles.p_6,styles.w_100,{maxWidth:320,marginTop:50,}]}>
 
                     {!Boolean(urls?.localserver) && <Button style={[styles.noshadow]}
                             more={{
@@ -282,7 +284,11 @@ const Index = (props: any) => {
 
                 </View>
 
+
+
         </View>
+
+        </ScrollView>
 
     </Container>
 }

@@ -72,7 +72,7 @@ const Index = memo((props: any) => {
                             editCartitem().then()
                         }}>
 
-                            <View style={[styles.grid,styles.top]}>
+                            <View style={[styles.grid,styles.top,styles.justifyContent]}>
 
                                 <View style={[styles.flexGrow,styles.w_auto,{paddingLeft: 0,paddingRight:10,minWidth:200}]}>
 
@@ -212,7 +212,7 @@ const Index = memo((props: any) => {
 
                                 </View>
 
-                                <View style={[styles.flexGrow,{paddingRight: 0,minWidth:100}]}>
+                                <View style={[{paddingRight: 0,minWidth:120}]}>
 
                                    {
                                        haskot ? <>

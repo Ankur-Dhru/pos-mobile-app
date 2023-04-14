@@ -4,11 +4,11 @@ import {styles} from "../../theme";
 import DetailView from "./DetailView";
 import GroupList from "../Items/GroupList";
 import {useDispatch} from "react-redux";
-import {Card, List, Paragraph} from "react-native-paper";
+import {Appbar, Card, List, Menu, Paragraph} from "react-native-paper";
 import Button from "../../components/Button";
 
 
-import {device, localredux} from "../../libs/static";
+import {device, localredux, urls} from "../../libs/static";
 
 import CartActions from "./CartActions";
 import {Container, ProIcon} from "../../components";
@@ -28,7 +28,11 @@ const Index = (props: any) => {
 
 
     const {tabledetails,gridView} = props;
-    const navigation = useNavigation()
+    const navigation = useNavigation();
+
+    const [visible, setVisible] = React.useState(false);
+    const openMenu = () => setVisible(true);
+    const closeMenu = () => setVisible(false);
 
     const [numpad, setNumpad] = useState(false)
 
@@ -58,17 +62,15 @@ const Index = (props: any) => {
                                 </TouchableOpacity>
                             </Card>
                             :
-
                             <Card style={[styles.card]}>
                                 <TouchableOpacity style={[{padding:7}]}   onPress={() => navigation.navigate('ProfileSettingsNavigator')}>
                                     <ProIcon name={'bars'}/>
                                 </TouchableOpacity>
                             </Card>
-
                         }
 
 
-                        <Card style={[styles.card, styles.w_auto, {minWidth: 60,marginLeft:5,marginRight:5,padding:0}]}>
+                        <Card style={[styles.card, styles.w_auto, {minWidth:110,marginLeft:5,marginRight:5,padding:0}]}>
                                 <TouchableOpacity
                                     onPress={() => navigation.navigate('SearchItem')}>
                                     <Paragraph style={[styles.p_4,styles.px_5,styles.bold]}>Search Item</Paragraph>
@@ -79,23 +81,30 @@ const Index = (props: any) => {
                             </TouchableOpacity>*/}
                         </Card>
                         <ClientDetail/>
-                        <View style={[{marginLeft: 5}]}>
-                            <Button
-                                onPress={() => cancelOrder(navigation).then()}
-                                more={{backgroundColor: styles.red.color, color: 'white', height: 45}}
-                            > Cancel </Button>
-                        </View>
 
-                        {canapplydiscount &&  <View style={[{marginLeft: 5}]}>
-                            <Button
-                                onPress={() =>  dispatch(setBottomSheet({
+
+
+
+                        <View style={[{marginLeft: 5}]}>
+
+                           <Menu
+                                visible={visible}
+                                onDismiss={closeMenu}
+                                anchor={<Appbar.Action icon={'dots-vertical'} onPress={() => {
+                                    openMenu()
+                                }}/>}>
+                                <Menu.Item onPress={() => cancelOrder(navigation).then()} title="Cancel Order"/>
+
+                               {canapplydiscount &&   <Menu.Item onPress={() =>  dispatch(setBottomSheet({
                                     visible: true,
                                     height: '80%',
                                     component: () => <Discount/>
-                                })) }
-                                more={{backgroundColor: styles.secondary.color, color: 'black', height: 45}}
-                            > Discount </Button>
-                        </View>}
+                                })) } title="Discount"/>}
+
+                            </Menu>
+
+
+                        </View>
 
                     </View>
 
@@ -107,7 +116,7 @@ const Index = (props: any) => {
                                 <Card style={[styles.card]}>
 
                                     <View style={[styles.grid,styles.justifyContent,styles.top]}>
-                                        <View style={[{width:100}]}>
+                                        <View style={[{width:110}]}>
                                             <GroupList navigation={navigation}/>
                                         </View>
 

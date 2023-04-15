@@ -2594,6 +2594,7 @@ export const printDayEndReport = ({date: date, data: data}: any) => {
         }: any = localredux.localSettingsData;
         const {general: {legalname},printingtemplate}: any = localredux.initData;
 
+        const {username}: any = localredux.authData;
 
         const {terminal_name}: any = localredux.licenseData.data;
         const decimalPlace = 2;
@@ -2604,6 +2605,7 @@ export const printDayEndReport = ({date: date, data: data}: any) => {
             locationname,
             legalname,
             printinvoice: true,
+            staffname: username,
             terminalname: terminal_name,
             invoicetype: 'Retail Invoice',
             head: () => getLeftRight("TID | SID | Name", "Amount"),
@@ -2663,7 +2665,7 @@ export const intervalInvoice = () => {
                         }
                     })
                 }
-            }, 10000);
+            }, 600000);
         }
         return () => {
             clearInterval(interval);

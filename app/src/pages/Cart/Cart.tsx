@@ -80,9 +80,8 @@ const Index = (props: any) => {
                                 <Paragraph><ProIcon name={'keyboard'} color={!numpad?'#ccc':'#000'} action_type={'text'}/></Paragraph>
                             </TouchableOpacity>*/}
                         </Card>
+
                         <ClientDetail/>
-
-
 
 
                         <View style={[{marginLeft: 5}]}>

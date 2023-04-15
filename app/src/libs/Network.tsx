@@ -3,7 +3,7 @@ import Mustache from "mustache";
 import BleManager from "react-native-ble-manager";
 import apiService from "./api-service";
 import {ACTIONS, device, METHOD, STATUS, urls} from "./static";
-import {appLog, base64Encode, getTemplate, printImage} from "./function";
+import {appLog, base64Encode, getTemplate} from "./function";
 import EscPosPrinter from "react-native-esc-pos-printer";
 
 global.Buffer = require('buffer').Buffer;
@@ -59,8 +59,6 @@ export const sendDataToPrinter = async (input?: any, template?: string, printer?
 
                 if (printer?.printertype === 'bluetooth') {
                     const peripheral = printer?.bluetoothdetail.more;
-
-                    appLog('peripheral',peripheral)
 
                     BleManager.start({showAlert: false}).then(() => {
                         readyforPrint(peripheral).then((findSC: any) => {

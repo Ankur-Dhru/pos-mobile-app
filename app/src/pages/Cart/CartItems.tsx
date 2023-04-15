@@ -8,9 +8,7 @@ import Item from "../Cart/Item";
 import Kot from "../Cart/Kot";
 import {styles} from "../../theme";
 import {Card, Paragraph, Text} from "react-native-paper";
-import Button from "../../components/Button";
 import {appLog, isRestaurant, updateComponent} from "../../libs/function";
-import ProIcon from "../../components/ProIcon";
 import {ItemDivider} from "../../libs/static";
 import ToggleButtons from "../../components/ToggleButton";
 

@@ -1819,6 +1819,9 @@ export  const  dayendReportTemplate = `
 </text>
 </align>
 <line-feed/>
+<text>Staff : {{{staffname}}}
+</text>
+{{{line}}}
 <text>Date : {{{date}}}
 </text>
 {{{line}}}
@@ -1870,7 +1873,9 @@ export  const  dayendReportTemplateHtml = `
 <div>{{invoicetype}}
 </div>
 </div>
- 
+ <div>Staff : {{{staffname}}}
+</div>
+<div>--------------------------------------------------</div>
 <div>Date : {{{date}}}
 </div>
 <div>--------------------------------------------------</div>

@@ -29,8 +29,6 @@ export const sendDataToPrinter = async (input?: any, template?: string, printer?
                 let xmlData:any = '';
                 let buffer:any = bufferdata || '';
 
-
-
                 if(!Boolean(buffer)) {
 
                     if (printer?.printertype !== 'broadcast') {

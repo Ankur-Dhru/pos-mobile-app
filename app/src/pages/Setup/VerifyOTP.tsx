@@ -8,19 +8,12 @@ import {Field, Form} from "react-final-form";
 import InputField from "../../components/InputField";
 import apiService from "../../libs/api-service";
 import {ACTIONS, device, localredux, loginUrl, METHOD, STATUS, urls} from "../../libs/static";
-import {appLog, isEmpty, saveLocalSettings} from "../../libs/function";
+
 import {setAlert, setDialog} from "../../redux-store/reducer/component";
 import store from "../../redux-store/store";
-import ChangeEmail from "./ChangeEmail";
+
 import KAccessoryView from "../../components/KAccessoryView"
-import {
-    CodeField,
-    Cursor,
-    isLastFilledCell,
-    MaskSymbol,
-    useBlurOnFulfill,
-    useClearByFocusCell
-} from "react-native-confirmation-code-field";
+
 import {onLoginDetailCheck} from "./Login";
 
 const Index = (props: any) => {
@@ -71,37 +64,6 @@ const Index = (props: any) => {
         });
     }
 
-    const [value, setValue]:any = useState("")
-    const ref = useBlurOnFulfill({value, cellCount: 5});
-    const [props1, getCellOnLayoutHandler] = useClearByFocusCell({
-        value,
-        setValue,
-    });
-
-    const renderCell = ({index, symbol, isFocused}:any) => {
-        let textChild = null;
-
-        if (symbol) {
-            textChild = (
-                <MaskSymbol
-                    maskSymbol="*️"
-                    isLastFilledCell={isLastFilledCell({index, value})}>
-                    {symbol}
-                </MaskSymbol>
-            );
-        } else if (isFocused) {
-            textChild = <Cursor />;
-        }
-
-        return (
-            <Text
-                key={index}
-                style={[styles.cellBox, isFocused && styles.focusCell]}
-                onLayout={getCellOnLayoutHandler(index)}>
-                {textChild}
-            </Text>
-        );
-    };
 
     return (
         <Container    style={styles.bg_white}>

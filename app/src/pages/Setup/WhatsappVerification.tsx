@@ -84,7 +84,7 @@ class Index extends Component<any> {
 
                 <Form
                     onSubmit={this.handleSubmit}
-                    initialValues={{code: '+91'}}>
+                    initialValues={{code: ''}}>
                     {props => (
                         <>
 

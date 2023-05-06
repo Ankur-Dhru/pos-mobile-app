@@ -60,7 +60,7 @@ export const onLoginDetailCheck = (response:any,values:any,navigation:any) => {
             navigation.navigate('Workspaces')
         }
     }
-    else if(response.status === STATUS.ERROR){
+    else if(response.code === 201){
         navigation.navigate('VerifyOTP',{userdetail: response.data,logindetails:values})
     }
 }

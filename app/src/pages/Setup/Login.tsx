@@ -34,6 +34,37 @@ import KAccessoryView from "../../components/KAccessoryView";
 import InputField from "../../components/InputField";
 
 
+export const onLoginDetailCheck = (response:any,values:any,navigation:any) => {
+
+    const {email_verified, mobile_verified, whatsapp_verified, phone_number_verified} = response?.data;
+
+
+    if (!isEmpty(response.data)) {
+
+        localredux.licenseData = {...values, ...response.data}
+        localredux.authData = {...response.data, token: response.token,global_token: response.global_token}
+        device.token =   response.token;
+        device.global_token = response.global_token;
+        urls.localserver = '';
+        saveLocalSettings('serverip',urls.localserver).then();
+    }
+
+    if(response.status === STATUS.SUCCESS){
+        if (!email_verified) {
+            navigation.navigate('EmailVerification', {userdetail: response.data});
+        }
+        else if (!whatsapp_verified) {
+            navigation.navigate('WhatsappVerification', {userdetail: response.data});
+        }
+        else {
+            navigation.navigate('Workspaces')
+        }
+    }
+    else if(response.status === STATUS.ERROR){
+        navigation.navigate('VerifyOTP',{userdetail: response.data,logindetails:values})
+    }
+}
+
 const Index = (props: any) => {
 
     const {navigation}: any = props;
@@ -78,32 +109,14 @@ const Index = (props: any) => {
             deviceid: 'asdfadsf',
             "g-recaptcha-response": grecaptcharesponse
         }
+
         await apiService({
             method: METHOD.POST,
             action: ACTIONS.LOGIN,
             other: {url: loginUrl},
             body: values
         }).then((response: any) => {
-
-
-            const {email_verified, mobile_verified, whatsapp_verified, phone_number_verified} = response.data;
-
-            if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
-
-                localredux.licenseData = {...values, ...response.data}
-
-                localredux.authData = {...response.data, token: response.token,global_token: response.global_token}
-                device.token = response.token;
-                device.global_token = response.global_token;
-                urls.localserver = '';
-                saveLocalSettings('serverip',urls.localserver).then();
-                if (!email_verified) {
-                    navigation.navigate('Verification', {userdetail: response.data});
-                } else {
-                    navigation.navigate('Workspaces');
-                }
-            }
-
+            onLoginDetailCheck(response,values,navigation)
         })
     }
 

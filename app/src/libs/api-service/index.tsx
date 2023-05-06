@@ -34,6 +34,9 @@ const apiService = async (config: configData) => {
         // headers["x-workspace"] = config.workspace;
     }
 
+    appLog('config.token',config.token);
+    appLog('device.token',device.token)
+
     if (Boolean(config.token || device.token)) {
         headers["Authorization"] = 'Bearer ' + (config.token || device.token);
     }
@@ -109,6 +112,8 @@ const apiService = async (config: configData) => {
             if ((response?.status === STATUS.SUCCESS) && !config?.hidealert) {
                 store.dispatch(setAlert({visible: true, message: response.message}))
             }
+
+            appLog('response?.code',response?.code)
 
             if (response?.code === 401) {
                 refreshToken();

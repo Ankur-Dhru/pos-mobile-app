@@ -8,11 +8,10 @@ import {Field, Form} from "react-final-form";
 import InputField from "../../components/InputField";
 import apiService from "../../libs/api-service";
 import {loginUrl, METHOD, STATUS} from "../../libs/static";
-import {appLog} from "../../libs/function";
 import {setAlert, setDialog} from "../../redux-store/reducer/component";
 import store from "../../redux-store/store";
-import ChangeEmail from "./ChangeEmail";
 import KAccessoryView from "../../components/KAccessoryView"
+import ChangeWhatsapp from "./ChangeWhatsapp";
 
 class Index extends Component<any> {
 
@@ -23,7 +22,6 @@ class Index extends Component<any> {
 
         const {route}: any = this.props;
 
-
         this.initdata = {
             "code": "",
             ...route.params.userdetail
@@ -32,14 +30,22 @@ class Index extends Component<any> {
     }
 
     componentDidMount() {
-
+        apiService({
+            method: METHOD.GET,
+            action: 'verifywhatsapp',
+            other: {url: loginUrl},
+        }).then((result) => {
+            if (result.status === STATUS.SUCCESS) {
+                store.dispatch(setAlert({visible: true, message: 'Code successfully send'}))
+            }
+        });
     }
 
     handleSubmit = (values: any) => {
 
         apiService({
             method: METHOD.POST,
-            action: 'verifyemail',
+            action: 'verifywhatsapp',
             other: {url: loginUrl},
             body: values,
         }).then((result) => {
@@ -53,7 +59,7 @@ class Index extends Component<any> {
 
         apiService({
             method: METHOD.GET,
-            action: 'verifyemail',
+            action: 'verifywhatsapp',
             other: {url: loginUrl},
         }).then((result) => {
             if (result.status === STATUS.SUCCESS) {
@@ -62,8 +68,8 @@ class Index extends Component<any> {
         });
     }
 
-    updateEmail = (email: any) => {
-        this.initdata.email = email;
+    updateWhatsapp = (whatsapp_number: any) => {
+        this.initdata.whatsapp_number = whatsapp_number;
         this.forceUpdate()
     }
 
@@ -78,7 +84,7 @@ class Index extends Component<any> {
 
                 <Form
                     onSubmit={this.handleSubmit}
-                    initialValues={{code: ''}}>
+                    initialValues={{code: '+91'}}>
                     {props => (
                         <>
 
@@ -91,20 +97,20 @@ class Index extends Component<any> {
                                             <Card.Content style={[styles.cardContent]}>
 
                                         <View>
-                                            <Paragraph style={[styles.paragraph,styles.muted]}>Your Registered Email </Paragraph>
+                                            <Paragraph style={[styles.paragraph,styles.muted]}>Your Registered WhatsApp Number </Paragraph>
                                             <View style={[styles.grid, styles.middle]}>
                                                 <Paragraph>
-                                                    {this.initdata.email} -
+                                                    {this.initdata.whatsapp_number} -
                                                 </Paragraph>
                                                 <TouchableOpacity onPress={() => {
                                                     store.dispatch(setDialog({
                                                         visible: true,
                                                         hidecancel: true,
                                                         width: 360,
-                                                        component: () => <ChangeEmail updateEmail={this.updateEmail}/>
+                                                        component: () => <ChangeWhatsapp updateWhatsapp={this.updateWhatsapp}/>
                                                     }))
                                                 }}>
-                                                    <Text style={[{color: colors.accent}]}> Change Email </Text>
+                                                    <Text style={[{color: colors.accent}]}> Change WhatsApp Number </Text>
                                                 </TouchableOpacity>
                                             </View>
                                         </View>

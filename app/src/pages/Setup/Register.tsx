@@ -74,7 +74,7 @@ const Register = (props: any) => {
                 device.token = response.token;
                 device.global_token = response.global_token;
                 store.dispatch(setAlert({visible: true, message: 'Register Successful'}))
-                navigation.replace('Verification', {userdetail: {...values, ...response.data}});
+                navigation.replace('EmailVerification', {userdetail: {...values, ...response.data}});
             }
         })
     }

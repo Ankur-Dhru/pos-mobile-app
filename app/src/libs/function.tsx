@@ -2190,16 +2190,20 @@ export const arraySome = (arrayList: any[], key: string) => {
 export const refreshToken = () => {
 
     const {workspace}: any = localredux.initData;
-    const {token}: any = localredux.authData;
+
+    appLog('device.token',device.token)
 
     return apiService({
         method: METHOD.GET,
         action: ACTIONS.REFRESH,
         workspace: workspace,
-        token: token,
+        /*token: device.token,*/
         hideLoader: true,
-        other: {url: urls.posUrl},
+        other: {url: loginUrl},
     }).then((response: any) => {
+
+        appLog('refresh totken')
+
         const {newtoken}: any = response?.data
 
         if (Boolean(newtoken)) {
@@ -2215,6 +2219,7 @@ export const updateToken = async (token: any) => {
     appLog('updateToken')
 
     localredux.authData.token = token;
+    device.token = token;
     await retrieveData(db.name).then(async (data: any) => {
         data = {
             ...data,

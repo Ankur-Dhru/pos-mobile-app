@@ -29,7 +29,8 @@ import DefaultInputValues from "../DefaultInputValues";
 import {useDispatch} from "react-redux";
 import Register from "../Setup/Register";
 
-import Verification from "../Setup/Verification";
+import EmailVerification from "../Setup/EmailVerification";
+import WhatsappVerification from "../Setup/WhatsappVerification";
 
 import AddWorkspace from "../SetupWorkspace/AddWorkspace";
 import OrganizationProfile from "../SetupWorkspace/OrganizationProfile";
@@ -81,6 +82,7 @@ import ChangePin from "../Pin/ChangePin";
 import QRWebsite from "../QRWebsite";
 import PrintQR from "../QRWebsite/PrintQR";
 import OtherSettings from "../QRWebsite/OtherSettings";
+import VerifyOTP from "../Setup/VerifyOTP";
 
 
 const screenOptions = {...screenOptionStyle};
@@ -144,7 +146,9 @@ const SetupStackNavigator = () => {
 
             <Stack.Screen name="Register" component={Register} options={{headerTitle: 'Create an account'}}/>
 
-            <Stack.Screen name="Verification" component={Verification} options={{headerTitle: 'Verify Email'}}/>
+            <Stack.Screen name="EmailVerification" component={EmailVerification} options={{headerTitle: 'Verify Email'}}/>
+
+            <Stack.Screen name="WhatsappVerification" component={WhatsappVerification} options={{headerTitle: 'Verify Whatsapp'}}/>
 
             <Stack.Screen name="AddWorkspace" component={AddWorkspace} options={{headerTitle: 'Add Workspace'}}/>
 
@@ -158,6 +162,8 @@ const SetupStackNavigator = () => {
                           options={{headerTitle: 'Currency Preferences'}}/>
 
             <Stack.Screen name="Workspaces" component={Workspaces} options={{headerTitle: 'Workspaces'}}/>
+
+            <Stack.Screen name="VerifyOTP" component={VerifyOTP} options={{headerTitle: 'Verify OTP'}}/>
 
             <Stack.Screen name="Terminal" component={Terminal} options={{headerTitle: 'Terminal'}}/>
 

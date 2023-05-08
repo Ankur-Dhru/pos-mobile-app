@@ -61,7 +61,7 @@ const Register = (props: any) => {
         const country: any = countrylist.find((item: any) => {
             return item.code === values.country
         })
-        values = {...values, code: country.dial_code,mobile_number:'+'+values.code+''+values.mobile_number,whatsapp_number:values.code+''+values.mobile_number}
+        values = {...values, code: country.dial_code,countrycode: country.dial_code,mobile_number:country.dial_code+''+values.mobile_number,whatsapp_number:country.dial_code+''+values.mobile_number}
 
         await apiService({
             method: METHOD.POST,
@@ -74,7 +74,9 @@ const Register = (props: any) => {
                 device.token = response.token;
                 device.global_token = response.global_token;
                 store.dispatch(setAlert({visible: true, message: 'Register Successful'}))
-                navigation.replace('EmailVerification', {userdetail: {...values, ...response.data}});
+
+
+                navigation.replace('EmailVerification', {userdetail: {...response.data,...values}});
             }
         })
     }

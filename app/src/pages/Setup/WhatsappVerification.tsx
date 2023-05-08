@@ -7,7 +7,7 @@ import {Field, Form} from "react-final-form";
 
 import InputField from "../../components/InputField";
 import apiService from "../../libs/api-service";
-import {loginUrl, METHOD, STATUS} from "../../libs/static";
+import {countrylist, loginUrl, METHOD, STATUS} from "../../libs/static";
 import {setAlert, setDialog} from "../../redux-store/reducer/component";
 import store from "../../redux-store/store";
 import KAccessoryView from "../../components/KAccessoryView"
@@ -30,7 +30,12 @@ const Index = (props: any) => {
         ...route.params.userdetail
     }
 
+    const country: any = countrylist.find((item: any) => {
+        return item.code === initdata.country
+    })
+
     const [number,setNumber] = useState(initdata.whatsapp_number)
+
 
     useEffect(()=>{
         apiService({
@@ -39,7 +44,7 @@ const Index = (props: any) => {
             other: {url: loginUrl},
         }).then((result) => {
             if (result.status === STATUS.SUCCESS) {
-                store.dispatch(setAlert({visible: true, message: 'Code successfully send'}))
+                store.dispatch(setAlert({visible: true, message: result.message}))
             }
         });
     },[])
@@ -75,9 +80,9 @@ const Index = (props: any) => {
         });
     }
 
-    const updateWhatsapp = (whatsapp_number: any) => {
-        initdata.whatsapp_number = whatsapp_number;
-        setNumber(whatsapp_number)
+    const updateWhatsapp = (values: any) => {
+        initdata.whatsapp_number =  values.whatsapp_number;
+        setNumber(initdata.whatsapp_number)
     }
 
 
@@ -149,16 +154,18 @@ const Index = (props: any) => {
                                                 <Paragraph style={[styles.paragraph,styles.muted]}>Your Registered WhatsApp Number </Paragraph>
                                                 <View style={[styles.grid, styles.middle]}>
                                                     <Paragraph>
-                                                        {number} -
+                                                         {number} -
                                                     </Paragraph>
                                                     <TouchableOpacity onPress={() => {
 
-                                                        store.dispatch(setDialog({
+                                                        navigation.navigate('ChangeWhatsapp',{initdata:initdata,updateWhatsapp:updateWhatsapp});
+
+                                                        /*store.dispatch(setDialog({
                                                             visible: true,
                                                             hidecancel: true,
                                                             width: 360,
                                                             component: () => <ChangeWhatsapp initdata={initdata} updateWhatsapp={updateWhatsapp}/>
-                                                        }))
+                                                        }))*/
                                                     }}>
                                                         <Text style={[{color: colors.accent}]}> Change WhatsApp Number </Text>
                                                     </TouchableOpacity>
@@ -198,8 +205,10 @@ const Index = (props: any) => {
                                     <View style={[styles.submitbutton]}>
                                         <Button
                                                 onPress={() => {
-                                                    props.values.code = value
-                                                    handleSubmit(props.values)
+                                                    if(Boolean(value.length === 6)) {
+                                                        props.values.code = value
+                                                        handleSubmit(props.values)
+                                                    }
                                                 }}> Verify </Button>
 
                                     </View>

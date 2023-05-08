@@ -39,7 +39,7 @@ export const onLoginDetailCheck = (response:any,values:any,navigation:any) => {
 
     if(response.code === 200) {
 
-        const {email_verified, mobile_verified, whatsapp_verified, phone_number_verified} = response?.data;
+        const {email_verified, mobile_verified,whatsapp_number, whatsapp_verified, phone_number_verified} = response?.data;
 
         if (!isEmpty(response.data)) {
             localredux.licenseData = {...values, ...response.data}
@@ -52,9 +52,9 @@ export const onLoginDetailCheck = (response:any,values:any,navigation:any) => {
 
         if (response.status === STATUS.SUCCESS) {
             if (!email_verified) {
-                navigation.navigate('EmailVerification', {userdetail: response.data});
-            } else if (!whatsapp_verified) {
-                navigation.navigate('WhatsappVerification', {userdetail: response.data});
+                navigation.replace('EmailVerification', {userdetail: response.data});
+            } else if (!whatsapp_verified && Boolean(whatsapp_number)) {
+                navigation.replace('WhatsappVerification', {userdetail: response.data});
             } else {
                 navigation.navigate('Workspaces')
             }

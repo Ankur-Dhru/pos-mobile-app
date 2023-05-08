@@ -27,12 +27,23 @@ const Index = (props: any) => {
     const {route}: any = props;
 
     let initdata = {
-        "code": "",
         ...route.params.userdetail
     }
 
     const [email,setEmail] = useState(initdata.email)
 
+
+    useEffect(()=>{
+        apiService({
+            method: METHOD.GET,
+            action: 'verifyemail',
+            other: {url: loginUrl},
+        }).then((result) => {
+            if (result.status === STATUS.SUCCESS) {
+                store.dispatch(setAlert({visible: true, message: 'Code successfully send'}))
+            }
+        });
+    },[])
 
     const handleSubmit = (values: any) => {
 
@@ -43,7 +54,12 @@ const Index = (props: any) => {
             body: values,
         }).then((result) => {
             if (result.status === STATUS.SUCCESS) {
-                props.navigation.replace('WhatsappVerification',{userdetail:initdata});
+                const {email_verified, mobile_verified,whatsapp_number, whatsapp_verified, phone_number_verified} = initdata;
+                 if (!whatsapp_verified  && Boolean(whatsapp_number)) {
+                     navigation.replace('WhatsappVerification',{userdetail:initdata});
+                } else {
+                    navigation.navigate('AddWorkspace')
+                }
             }
         });
     }
@@ -178,9 +194,12 @@ const Index = (props: any) => {
                                 <KAccessoryView>
                                     <View style={[styles.submitbutton]}>
                                         <Button
+
                                                 onPress={() => {
-                                                    props.values.code = value
-                                                    handleSubmit(props.values)
+                                                    if(Boolean(value.length === 6)) {
+                                                        props.values.code = value
+                                                        handleSubmit(props.values)
+                                                    }
                                                 }}> Verify </Button>
 
                                     </View>

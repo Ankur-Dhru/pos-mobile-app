@@ -64,7 +64,7 @@ const Index = (props: any) => {
             other: {url: loginUrl},
         }).then((result) => {
             if (result.status === STATUS.SUCCESS) {
-                store.dispatch(setAlert({visible: true, message: 'Code successfully send'}))
+                store.dispatch(setAlert({visible: true, message: result.message}))
             }
         });
     }
@@ -161,7 +161,6 @@ const Index = (props: any) => {
                                             <View>
                                                 <ResendCounting onResendOTP={resendCode}/>
                                             </View>
-
 
 
                                         </Card.Content>

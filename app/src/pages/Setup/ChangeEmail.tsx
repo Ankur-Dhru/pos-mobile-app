@@ -27,6 +27,7 @@ const Index = (props: any) => {
             body: values
         }).then((result) => {
             if (result.status === STATUS.SUCCESS) {
+                console.log('values.new_email',values.new_email)
                 props.updateEmail(values.new_email)
                 dispatch(setDialog({visible: false}))
             }

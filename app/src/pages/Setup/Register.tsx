@@ -61,7 +61,7 @@ const Register = (props: any) => {
         const country: any = countrylist.find((item: any) => {
             return item.code === values.country
         })
-        values = {...values, code: country.dial_code}
+        values = {...values, code: country.dial_code,mobile_number:'+'+values.code+''+values.mobile_number,whatsapp_number:values.code+''+values.mobile_number}
 
         await apiService({
             method: METHOD.POST,

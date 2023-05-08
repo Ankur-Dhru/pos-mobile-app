@@ -1,4 +1,4 @@
-import React, {Component, useState} from "react";
+import React, {Component, useEffect, useState} from "react";
 import {ScrollView, TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
 import {Button, Container} from "../../components";
@@ -7,14 +7,23 @@ import {Field, Form} from "react-final-form";
 
 import InputField from "../../components/InputField";
 import apiService from "../../libs/api-service";
-import {ACTIONS, device, localredux, loginUrl, METHOD, STATUS, urls} from "../../libs/static";
+import {ACTIONS, db, device, localredux, loginUrl, METHOD, STATUS, urls} from "../../libs/static";
 
-import {setAlert, setDialog} from "../../redux-store/reducer/component";
+import {setAlert, setDialog, showLoader} from "../../redux-store/reducer/component";
 import store from "../../redux-store/store";
 
 import KAccessoryView from "../../components/KAccessoryView"
 
 import {onLoginDetailCheck} from "./Login";
+import {
+    CodeField, Cursor,
+    isLastFilledCell,
+    MaskSymbol,
+    useBlurOnFulfill,
+    useClearByFocusCell
+} from "react-native-confirmation-code-field";
+
+import ResendCounting from "../../components/ResendCounting";
 
 const Index = (props: any) => {
 
@@ -31,9 +40,6 @@ const Index = (props: any) => {
 
 
    const  handleSubmit = (values: any) => {
-
-       //appLog('values',values)
-
         apiService({
             method: METHOD.POST,
             action: ACTIONS.LOGIN,
@@ -41,16 +47,15 @@ const Index = (props: any) => {
             body: values,
         }).then((response) => {
             if (response.status === STATUS.SUCCESS) {
-
                 onLoginDetailCheck(response,values,navigation)
-
-
+            }
+            else{
+                console.log('response',response)
             }
         });
     }
 
     const resendCode = () => {
-
         apiService({
             method: METHOD.GET,
             action: ACTIONS.LOGIN,
@@ -63,6 +68,49 @@ const Index = (props: any) => {
             }
         });
     }
+
+
+    const [value, setValue]:any = useState("")
+    const ref = useBlurOnFulfill({value, cellCount: 6});
+    const [props1, getCellOnLayoutHandler] = useClearByFocusCell({
+        value,
+        setValue,
+    });
+
+
+    useEffect(() => {
+        setTimeout(async () => {
+            if (value.length === 6) {
+                console.log('value',value)
+            }
+        }, 200)
+    }, [value]);
+
+
+    const renderCell = ({index, symbol, isFocused}:any) => {
+        let textChild = null;
+
+        if (symbol) {
+            textChild = (
+                <MaskSymbol
+                    maskSymbol="*️"
+                    isLastFilledCell={isLastFilledCell({index, value})}>
+                    {symbol}
+                </MaskSymbol>
+            );
+        } else if (isFocused) {
+            textChild = <Cursor />;
+        }
+
+        return (
+            <Text
+                key={index}
+                style={[styles.cellBox, isFocused && styles.focusCell]}
+                onLayout={getCellOnLayoutHandler(index)}>
+                {textChild}
+            </Text>
+        );
+    };
 
 
     return (
@@ -95,47 +143,26 @@ const Index = (props: any) => {
                                             </View>
 
 
-                                            <View style={[styles.py_5, styles.middle, {marginBottom: 10, marginTop: 10}]}>
-                                                <TouchableOpacity onPress={() => {
-                                                    resendCode()
-                                                }}>
-                                                    <Paragraph style={[{color: colors.accent}]}> Resend OTP</Paragraph>
-                                                </TouchableOpacity>
+                                                <View style={[styles.flex,styles.middle]}>
+                                                    <CodeField
+                                                        ref={ref}
+                                                        {...props1}
+                                                        value={value}
+                                                        onChangeText={setValue}
+                                                        cellCount={6}
+                                                        autoFocus={true}
+                                                        rootStyle={styles.codeFieldRoot}
+                                                        keyboardType="number-pad"
+                                                        textContentType="oneTimeCode"
+                                                        renderCell={renderCell}
+                                                    />
+                                                </View>
+
+                                            <View>
+                                                <ResendCounting onResendOTP={resendCode}/>
                                             </View>
 
 
-                                            <View style={[styles.mt_5]}>
-                                                <Field name="otp">
-                                                    {props => (
-                                                        /*<CodeField
-                                                            ref={ref}
-                                                            {...props1}
-                                                            // Use `caretHidden={false}` when users can't paste a text value, because context menu doesn't appear
-                                                            value={value}
-                                                            onChangeText={setValue}
-                                                            cellCount={5}
-                                                            autoFocus={true}
-                                                            rootStyle={styles.codeFieldRoot}
-                                                            keyboardType="number-pad"
-                                                            textContentType="oneTimeCode"
-                                                            renderCell={renderCell}
-                                                        />*/
-                                                        <InputField
-                                                            value={props.input.value}
-                                                            label={'OTP'}
-                                                            keyboardType='numeric'
-                                                            inputtype={'textbox'}
-                                                            autoCapitalize='none'
-                                                            autoFocus={true}
-                                                            onSubmitEditing={(e: any) => {
-                                                                handleSubmit(props.values)
-                                                            }}
-                                                            returnKeyType={'go'}
-                                                            onChange={props.input.onChange}
-                                                        />
-                                                    )}
-                                                </Field>
-                                            </View>
 
                                         </Card.Content>
                                     </Card>
@@ -144,10 +171,11 @@ const Index = (props: any) => {
 
                                 <KAccessoryView>
                                     <View style={[styles.submitbutton]}>
-                                        <Button disabled={props.submitting || props.pristine}
+                                        <Button
                                                 onPress={() => {
+                                                    props.values.otp = value
                                                     handleSubmit(props.values)
-                                                }}> Next </Button>
+                                                }}> Verify </Button>
 
                                     </View>
                                 </KAccessoryView>

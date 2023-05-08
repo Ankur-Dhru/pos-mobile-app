@@ -2187,29 +2187,34 @@ export const arraySome = (arrayList: any[], key: string) => {
 }
 
 
-export const refreshToken = () => {
+export const refreshToken = async () => {
 
-    const {workspace}: any = localredux.initData;
+    return new Promise(async (resolve) => {
+        const {workspace}: any = localredux.initData;
 
-    appLog('device.token',device.token)
+        return await apiService({
+            method: METHOD.GET,
+            action: ACTIONS.REFRESH,
+            workspace: workspace,
+            /*token: device.token,*/
+            hideLoader: true,
+            other: {url: loginUrl},
+        }).then(async (response: any) => {
 
-    return apiService({
-        method: METHOD.GET,
-        action: ACTIONS.REFRESH,
-        workspace: workspace,
-        /*token: device.token,*/
-        hideLoader: true,
-        other: {url: loginUrl},
-    }).then((response: any) => {
+            if(response.status === STATUS.SUCCESS) {
+                const {newtoken}: any = response?.data
+                if (Boolean(newtoken)) {
+                    await updateToken(newtoken).then()
+                    resolve(true)
+                }
+            }
+            else{
+                device.navigation.navigate('Login')
 
-        appLog('refresh totken')
+                resolve(false)
+            }
 
-        const {newtoken}: any = response?.data
-
-        if (Boolean(newtoken)) {
-            updateToken(newtoken).then()
-        }
-
+        })
     })
 }
 

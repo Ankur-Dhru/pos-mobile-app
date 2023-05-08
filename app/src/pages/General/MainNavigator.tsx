@@ -83,6 +83,7 @@ import QRWebsite from "../QRWebsite";
 import PrintQR from "../QRWebsite/PrintQR";
 import OtherSettings from "../QRWebsite/OtherSettings";
 import VerifyOTP from "../Setup/VerifyOTP";
+import ChangeWhatsapp from "../Setup/ChangeWhatsapp";
 
 
 const screenOptions = {...screenOptionStyle};
@@ -149,6 +150,8 @@ const SetupStackNavigator = () => {
             <Stack.Screen name="EmailVerification" component={EmailVerification} options={{headerTitle: 'Verify Email'}}/>
 
             <Stack.Screen name="WhatsappVerification" component={WhatsappVerification} options={{headerTitle: 'Verify Whatsapp'}}/>
+
+            <Stack.Screen name="ChangeWhatsapp" component={ChangeWhatsapp} options={{headerTitle: 'Change Whatsapp Number'}}/>
 
             <Stack.Screen name="AddWorkspace" component={AddWorkspace} options={{headerTitle: 'Add Workspace'}}/>
 

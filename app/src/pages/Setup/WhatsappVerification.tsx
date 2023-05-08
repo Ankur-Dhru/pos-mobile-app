@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {Component, useEffect, useState} from "react";
 import {ScrollView, TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
 import {Button, Container} from "../../components";
@@ -12,24 +12,27 @@ import {setAlert, setDialog} from "../../redux-store/reducer/component";
 import store from "../../redux-store/store";
 import KAccessoryView from "../../components/KAccessoryView"
 import ChangeWhatsapp from "./ChangeWhatsapp";
+import {
+    CodeField, Cursor,
+    isLastFilledCell,
+    MaskSymbol,
+    useBlurOnFulfill,
+    useClearByFocusCell
+} from "react-native-confirmation-code-field";
+import ResendCounting from "../../components/ResendCounting";
 
-class Index extends Component<any> {
+const Index = (props: any) => {
 
-    initdata: any;
+    const {route}: any = props;
 
-    constructor(props: any) {
-        super(props);
-
-        const {route}: any = this.props;
-
-        this.initdata = {
-            "code": "",
-            ...route.params.userdetail
-        }
-
+    let initdata = {
+        "code": "",
+        ...route.params.userdetail
     }
 
-    componentDidMount() {
+    const [number,setNumber] = useState(initdata.whatsapp_number)
+
+    useEffect(()=>{
         apiService({
             method: METHOD.GET,
             action: 'verifywhatsapp',
@@ -39,9 +42,11 @@ class Index extends Component<any> {
                 store.dispatch(setAlert({visible: true, message: 'Code successfully send'}))
             }
         });
-    }
+    },[])
 
-    handleSubmit = (values: any) => {
+
+
+    const handleSubmit = (values: any) => {
 
         apiService({
             method: METHOD.POST,
@@ -50,12 +55,14 @@ class Index extends Component<any> {
             body: values,
         }).then((result) => {
             if (result.status === STATUS.SUCCESS) {
-                this.props.navigation.replace('AddWorkspace');
+                props.navigation.replace('AddWorkspace');
             }
         });
     }
 
-    resendCode = () => {
+
+
+    const resendCode = () => {
 
         apiService({
             method: METHOD.GET,
@@ -68,110 +75,147 @@ class Index extends Component<any> {
         });
     }
 
-    updateWhatsapp = (whatsapp_number: any) => {
-        this.initdata.whatsapp_number = whatsapp_number;
-        this.forceUpdate()
+    const updateWhatsapp = (whatsapp_number: any) => {
+        initdata.whatsapp_number = whatsapp_number;
+        setNumber(whatsapp_number)
     }
 
 
-    render() {
+    const {navigation, theme: {colors}} = props;
 
-        const {navigation, theme: {colors}} = this.props;
 
+
+    const [value, setValue]:any = useState("")
+    const ref = useBlurOnFulfill({value, cellCount: 6});
+    const [props1, getCellOnLayoutHandler] = useClearByFocusCell({
+        value,
+        setValue,
+    });
+
+
+    useEffect(() => {
+        setTimeout(async () => {
+            if (value.length === 6) {
+                console.log('value',value)
+            }
+        }, 200)
+    }, [value]);
+
+
+    const renderCell = ({index, symbol, isFocused}:any) => {
+        let textChild = null;
+
+        if (symbol) {
+            textChild = (
+                <MaskSymbol
+                    maskSymbol="*️"
+                    isLastFilledCell={isLastFilledCell({index, value})}>
+                    {symbol}
+                </MaskSymbol>
+            );
+        } else if (isFocused) {
+            textChild = <Cursor />;
+        }
 
         return (
-            <Container    style={styles.bg_white}>
-
-                <Form
-                    onSubmit={this.handleSubmit}
-                    initialValues={{code: ''}}>
-                    {props => (
-                        <>
-
-                            <View style={[styles.middle]}>
-                                <View style={[styles.middleForm, {maxWidth: 400,}]}>
-
-                                    <ScrollView>
-
-                                        <Card style={[styles.card]}>
-                                            <Card.Content style={[styles.cardContent]}>
-
-                                        <View>
-                                            <Paragraph style={[styles.paragraph,styles.muted]}>Your Registered WhatsApp Number </Paragraph>
-                                            <View style={[styles.grid, styles.middle]}>
-                                                <Paragraph>
-                                                    {this.initdata.whatsapp_number} -
-                                                </Paragraph>
-                                                <TouchableOpacity onPress={() => {
-                                                    store.dispatch(setDialog({
-                                                        visible: true,
-                                                        hidecancel: true,
-                                                        width: 360,
-                                                        component: () => <ChangeWhatsapp updateWhatsapp={this.updateWhatsapp}/>
-                                                    }))
-                                                }}>
-                                                    <Text style={[{color: colors.accent}]}> Change WhatsApp Number </Text>
-                                                </TouchableOpacity>
-                                            </View>
-                                        </View>
-
-
-                                        <View style={[styles.mt_5]}>
-                                            <Field name="code">
-                                                {props => (
-                                                    <InputField
-                                                        value={props.input.value}
-                                                        label={'Code'}
-
-                                                        keyboardType='numeric'
-                                                        inputtype={'textbox'}
-                                                        autoCapitalize='none'
-                                                        autoFocus={true}
-                                                        onSubmitEditing={(e: any) => {
-                                                            this.handleSubmit(props.values)
-                                                        }}
-                                                        returnKeyType={'go'}
-                                                        onChange={props.input.onChange}
-                                                    />
-                                                )}
-                                            </Field>
-                                        </View>
-
-
-                                        <View style={[styles.py_5, styles.middle, {marginBottom: 10, marginTop: 10}]}>
-                                            <TouchableOpacity onPress={() => {
-                                                this.resendCode()
-                                            }}>
-                                                <Paragraph style={[{color: colors.accent}]}> Resend Code</Paragraph>
-                                            </TouchableOpacity>
-                                        </View>
-
-                                            </Card.Content>
-                                        </Card>
-
-                                    </ScrollView>
-
-                                    <KAccessoryView>
-                                        <View style={[styles.submitbutton]}>
-                                            <Button disabled={props.submitting || props.pristine}
-                                                    onPress={() => {
-                                                        this.handleSubmit(props.values)
-                                                    }}> Verify </Button>
-
-                                        </View>
-                                    </KAccessoryView>
-
-                                </View>
-                            </View>
-
-                        </>
-                    )}
-                </Form>
-
-
-            </Container>
+            <Text
+                key={index}
+                style={[styles.cellBox, isFocused && styles.focusCell]}
+                onLayout={getCellOnLayoutHandler(index)}>
+                {textChild}
+            </Text>
         );
-    }
+    };
+
+
+    return (
+        <Container    style={styles.bg_white}>
+
+            <Form
+                onSubmit={handleSubmit}
+                initialValues={{code: ''}}>
+                {props => (
+                    <>
+
+                        <View style={[styles.middle]}>
+                            <View style={[styles.middleForm, {maxWidth: 400,}]}>
+
+                                <ScrollView>
+
+                                    <Card style={[styles.card]}>
+                                        <Card.Content style={[styles.cardContent]}>
+
+                                            <View>
+                                                <Paragraph style={[styles.paragraph,styles.muted]}>Your Registered WhatsApp Number </Paragraph>
+                                                <View style={[styles.grid, styles.middle]}>
+                                                    <Paragraph>
+                                                        {number} -
+                                                    </Paragraph>
+                                                    <TouchableOpacity onPress={() => {
+
+                                                        store.dispatch(setDialog({
+                                                            visible: true,
+                                                            hidecancel: true,
+                                                            width: 360,
+                                                            component: () => <ChangeWhatsapp initdata={initdata} updateWhatsapp={updateWhatsapp}/>
+                                                        }))
+                                                    }}>
+                                                        <Text style={[{color: colors.accent}]}> Change WhatsApp Number </Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                            </View>
+
+
+
+                                            <View style={[styles.flex,styles.middle]}>
+                                                <CodeField
+                                                    ref={ref}
+
+                                                    value={value}
+                                                    onChangeText={setValue}
+                                                    cellCount={6}
+                                                    autoFocus={true}
+                                                    rootStyle={styles.codeFieldRoot}
+                                                    keyboardType="number-pad"
+                                                    textContentType="oneTimeCode"
+                                                    renderCell={renderCell}
+                                                />
+                                            </View>
+
+                                            <View>
+                                                <ResendCounting onResendOTP={resendCode}/>
+                                            </View>
+
+
+
+
+                                        </Card.Content>
+                                    </Card>
+
+                                </ScrollView>
+
+                                <KAccessoryView>
+                                    <View style={[styles.submitbutton]}>
+                                        <Button
+                                                onPress={() => {
+                                                    props.values.code = value
+                                                    handleSubmit(props.values)
+                                                }}> Verify </Button>
+
+                                    </View>
+                                </KAccessoryView>
+
+                            </View>
+                        </View>
+
+                    </>
+                )}
+            </Form>
+
+
+        </Container>
+    );
+
 }
 
 

@@ -54,11 +54,14 @@ const Index = (props: any) => {
             body: values,
         }).then((result) => {
             if (result.status === STATUS.SUCCESS) {
-                const {email_verified, mobile_verified,whatsapp_number, whatsapp_verified, phone_number_verified} = initdata;
+
+
+                const {email_verified, mobile_verified,whatsapp_number, whatsapp_verified, phone_number_verified,workspaces} = initdata;
                  if (!whatsapp_verified  && Boolean(whatsapp_number)) {
                      navigation.replace('WhatsappVerification',{userdetail:initdata});
-                } else {
-                    navigation.navigate('AddWorkspace')
+                }
+                 else {
+                     navigation.navigate('Workspaces')
                 }
             }
         });

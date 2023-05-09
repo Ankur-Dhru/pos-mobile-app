@@ -2253,6 +2253,7 @@ export const selectWorkspace = async (workspace: any, navigation: any) => {
         token: token,
         workspace: workspace.name
     }).then((response: any) => {
+
         store.dispatch(hideLoader())
 
         if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {

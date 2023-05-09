@@ -78,9 +78,20 @@ const Index = (props: any) => {
                 device.global_token = initData.global_token
 
                 const {itemgroup}: any = localredux.initData;
+
+                let filterGroups:any = {}
+
                 if (Boolean(itemgroup)) {
-                    await dispatch(setGroupList(itemgroup))
+
+                    Object.keys(itemgroup).forEach((key)=>{
+                        if(itemgroup[key].itemgroupstatus == 1) {
+                            filterGroups[key] = itemgroup[key]
+                        }
+                    })
+
                 }
+
+                await dispatch(setGroupList(filterGroups))
 
                 await getClients().then()
                 await getAddons().then()

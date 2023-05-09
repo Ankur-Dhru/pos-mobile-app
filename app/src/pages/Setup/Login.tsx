@@ -41,6 +41,7 @@ export const onLoginDetailCheck = (response:any,values:any,navigation:any) => {
 
         const {email_verified, mobile_verified,whatsapp_number, whatsapp_verified, phone_number_verified} = response?.data;
 
+
         if (!isEmpty(response.data)) {
             localredux.licenseData = {...values, ...response.data}
             localredux.authData = {...response.data, token: response.token, global_token: response.global_token}

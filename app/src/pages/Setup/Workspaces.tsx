@@ -15,6 +15,8 @@ const Workspaces = (props: any) => {
     const {navigation}: any = props;
     const {authData: {workspaces}}: any = localredux;
 
+    console.log('workspaces',workspaces)
+
 
     const renderitems = ({item}: any) => {
 
@@ -31,6 +33,7 @@ const Workspaces = (props: any) => {
             </TouchableOpacity>
         );
     };
+
 
     if (workspaces?.length === 0) {
         return <AddWorkspace/>

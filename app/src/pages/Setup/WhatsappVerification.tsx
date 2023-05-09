@@ -60,7 +60,7 @@ const Index = (props: any) => {
             body: values,
         }).then((result) => {
             if (result.status === STATUS.SUCCESS) {
-                props.navigation.replace('AddWorkspace');
+                navigation.navigate('Workspaces')
             }
         });
     }

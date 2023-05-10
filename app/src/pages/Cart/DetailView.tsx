@@ -17,6 +17,8 @@ import {setBottomSheet} from "../../redux-store/reducer/component";
 import {useDispatch} from "react-redux";
 import HoldOrders from "./HoldOrders";
 import Discount from "./Discount";
+import Adjustment from "./Adjustment";
+import store from "../../redux-store/store";
 
 const Index = (props: any) => {
 
@@ -25,6 +27,10 @@ const Index = (props: any) => {
     const openMenu = () => setVisible(true);
     const closeMenu = () => setVisible(false);
     const dispatch = useDispatch()
+
+    const {isadjustment} = store.getState().cartData
+
+
     const {cancelorder,canapplydiscount}:any = localredux?.authData?.settings;
 
     const askPermission = (action:any) => {
@@ -90,6 +96,15 @@ const Index = (props: any) => {
                             component: () => <Discount/>
                         }))
                     }} title="Discount"/>}
+
+                    {isadjustment && <Menu.Item onPress={async () => {
+                        closeMenu();
+                        await dispatch(setBottomSheet({
+                            visible: true,
+                            height: '80%',
+                            component: () => <Adjustment/>
+                        }))
+                    }} title="Adjustment"/>}
 
                 </Menu>
             </View>

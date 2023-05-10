@@ -9,7 +9,7 @@ import HoldOrders from "./HoldOrders";
 import Discount from "./Discount";
 
 
-const Index = ({vouchersubtotaldisplay, globaltax, voucherroundoffdisplay,vouchertotaldiscountamountdisplay,voucherinlinediscountdisplay, loading}: any) => {
+const Index = ({vouchersubtotaldisplay, globaltax,adjustmentamount, voucherroundoffdisplay,vouchertotaldiscountamountdisplay,voucherinlinediscountdisplay, loading}: any) => {
 
 
 
@@ -64,13 +64,15 @@ const Index = ({vouchersubtotaldisplay, globaltax, voucherroundoffdisplay,vouche
             {/*</View>*/}
 
 
-            <View style={[styles.grid, styles.justifyContent]}>
+            {Boolean(vouchertotaldiscountamountdisplay) &&   <View style={[styles.grid, styles.justifyContent]}>
                 <View><Paragraph style={[styles.paragraph]}>Discount</Paragraph></View>
                 <View>
                     <Paragraph
                         style={[styles.paragraph, styles.bold]}>{toCurrency(vouchertotaldiscountamountdisplay || '0')}</Paragraph>
                 </View>
-            </View>
+            </View>}
+
+
 
 
             {
@@ -88,6 +90,15 @@ const Index = ({vouchersubtotaldisplay, globaltax, voucherroundoffdisplay,vouche
                 })
             }
 
+
+            {Boolean(adjustmentamount) &&  <View style={[styles.grid, styles.justifyContent]}>
+                <View><Paragraph style={[styles.paragraph]}>Adjustment</Paragraph></View>
+                <View>
+                    <Paragraph
+                        style={[styles.paragraph, styles.bold]}>{toCurrency(adjustmentamount || '0')}</Paragraph>
+                </View>
+            </View>}
+
             {Boolean(voucherroundoffdisplay) && <View style={[styles.grid, styles.justifyContent]}>
                 <View><Paragraph style={[styles.paragraph]}>Roundoff</Paragraph></View>
                 <View><Paragraph
@@ -102,6 +113,7 @@ const Index = ({vouchersubtotaldisplay, globaltax, voucherroundoffdisplay,vouche
 const mapStateToProps = (state: any) => ({
     vouchersubtotaldisplay: state.cartData.vouchersubtotaldisplay,
     globaltax: state.cartData.globaltax,
+    adjustmentamount:state.cartData.adjustmentamount,
     voucherroundoffdisplay: state.cartData.voucherroundoffdisplay,
     voucherglobaldiscountdisplay:state.cartData.voucherglobaldiscountdisplay,
     voucherinlinediscountdisplay:state.cartData.voucherinlinediscountdisplay,

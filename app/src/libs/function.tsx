@@ -377,6 +377,7 @@ export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = t
         selectedtemplate: voucherTypeData?.printtemplate,
         paymentmethod: payment[0]?.paymentmethod,
         payment: payment,
+        isadjustment:voucherTypeData?.isadjustment,
         edit: true,
         paxes: 1,
         deviceid:device.uniqueid,
@@ -386,6 +387,7 @@ export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = t
         "shifttable": false,
         "taxInvoice": false,
     }
+
 
     return data;
 }
@@ -2210,7 +2212,6 @@ export const refreshToken = async () => {
             }
             else{
                 device.navigation.navigate('Login')
-
                 resolve(false)
             }
 

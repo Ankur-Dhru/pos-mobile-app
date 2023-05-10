@@ -40,6 +40,9 @@ const Index = (props: any) => {
 
 
    const  handleSubmit = (values: any) => {
+
+       console.log('values',values)
+
         apiService({
             method: METHOD.POST,
             action: ACTIONS.LOGIN,

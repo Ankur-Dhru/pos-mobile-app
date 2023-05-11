@@ -2189,35 +2189,53 @@ export const arraySome = (arrayList: any[], key: string) => {
 }
 
 
-export const refreshToken = async () => {
 
-    return new Promise(async (resolve) => {
+export const refreshToken = () => {
+
+
+    return new Promise(((resolve, reject) => {
+
+        let headers: any = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + device.token,
+        };
+
         const {workspace}: any = localredux.initData;
 
-        return await apiService({
-            method: METHOD.GET,
-            action: ACTIONS.REFRESH,
+
+        const init: any = {
+            method:'GET',
             workspace: workspace,
-            /*token: device.token,*/
-            hideLoader: true,
-            other: {url: loginUrl},
-        }).then(async (response: any) => {
+            headers: new Headers(headers),
+        };
 
-            if(response.status === STATUS.SUCCESS) {
-                const {newtoken}: any = response?.data
-                if (Boolean(newtoken)) {
-                    await updateToken(newtoken).then()
-                    resolve(true)
+        fetch('https://api.dhru.com/client/api/v1/refresh', init)
+            .then((result) => {
+                return result.json()
+            })
+            .then(async (result: any) => {
+
+                if (result?.status === STATUS.SUCCESS) {
+                    const {newtoken}: any = result?.data
+                    if (Boolean(newtoken)) {
+                        await updateToken(newtoken).then()
+                        resolve(true)
+                    }
                 }
-            }
-            else{
-                device.navigation.navigate('Login')
-                resolve(false)
-            }
+                else{
+                    console.log('Expire token refresh token')
+                    device.navigation.navigate('Login')
+                    resolve(false)
+                }
+            });
 
-        })
-    })
+
+    }))
+
 }
+
+
 
 
 export const updateToken = async (token: any) => {

@@ -25,6 +25,7 @@ import AddButton from "./AddButton";
 import Avatar from "../../components/Avatar";
 import GroupHeading from "./GroupHeading";
 import {setSelected} from "../../redux-store/reducer/selected-data";
+import {useNavigation} from "@react-navigation/native";
 
 
 
@@ -58,6 +59,8 @@ export const ItemView = memo(({item,displayType}:any)=>{
     const hasRestaurant = isRestaurant();
     const hasKot = Boolean(item?.kotid);
     let imagepath = getItemImage(item)
+    const navigation = useNavigation();
+
 
 
     if(displayType === 'flatlist') {
@@ -82,7 +85,9 @@ export const ItemView = memo(({item,displayType}:any)=>{
                     </View>
                 }}
                 onPress={() => {
-                    (!Boolean(item?.productqnt) && !hasKot) && selectItem(item).then()
+                    (!Boolean(item?.productqnt) && !hasKot) && selectItem(item).then();
+                    navigation.goBack()
+                    appLog('navigation',navigation)
                 }}
                 /*left={() => <View style={{marginTop:5}}><Avatar label={item.itemname} value={item.itemid || item.comboid} fontsize={14} size={40}/></View>}*/
 

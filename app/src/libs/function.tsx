@@ -45,7 +45,7 @@ import ItemDetail from "../pages/Items/ItemDetail";
 import AddonActions from "../pages/Items/AddonActions";
 import {onPressNumber} from "../pages/Items/AddButton";
 import NetInfo from "@react-native-community/netinfo";
-import {insertAddons, insertClients, insertItems, insertOrder, insertTempOrder} from "./Sqlite/insertData";
+import {insertAddons, insertClients, insertItems, insertOrder, insertSkus, insertTempOrder} from "./Sqlite/insertData";
 import {sendDataToPrinter} from "./Network";
 import {CommonActions} from "@react-navigation/native";
 import {
@@ -583,6 +583,7 @@ export const syncData = async (loader = true,synctype  = '') => {
                                 });
                             }
                         }
+
 
                         if (type !== "finish") {
                             await store.dispatch(setSyncDetail({

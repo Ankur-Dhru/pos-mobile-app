@@ -52,7 +52,7 @@ const Index = (props: any) => {
 
                     <View style={[styles.grid, styles.w_100, styles.justifyContent,styles.bg_light,{padding:5}]}>
                         {hasrestaurant ?
-                            <Card style={[styles.card]}>
+                            <Card style={[styles.card,{marginRight:5}]}>
                                 <TouchableOpacity style={[{padding:7}]}  onPress={() => {
                                     saveTempLocalOrder().then(() => {
                                         navigation.goBack();
@@ -69,8 +69,9 @@ const Index = (props: any) => {
                             </Card>
                         }
 
+                        <ClientDetail/>
 
-                        <Card style={[styles.card, styles.w_auto, {minWidth:110,marginLeft:5,marginRight:5,padding:0}]}>
+                        <Card style={[styles.card, styles.w_auto, {minWidth:110,marginLeft:5, padding:0}]}>
                                 <TouchableOpacity
                                     onPress={() => navigation.navigate('SearchItem')}>
                                     <Paragraph style={[styles.p_4,styles.px_5,styles.bold]}>Search Item</Paragraph>
@@ -81,7 +82,7 @@ const Index = (props: any) => {
                             </TouchableOpacity>*/}
                         </Card>
 
-                        <ClientDetail/>
+
 
 
                         <View style={[{marginLeft: 5}]}>
@@ -110,6 +111,11 @@ const Index = (props: any) => {
                     <View style={[styles.h_100, styles.w_100, styles.flex,styles.bg_light,{paddingHorizontal:5,paddingBottom:3}]}>
                         <View  style={[styles.grid, styles.justifyContent,   styles.h_100, styles.w_100, styles.flex]}>
 
+                            <View style={[styles.flexGrow,styles.h_100,styles.flex,{paddingRight: 0,minWidth:220,maxWidth:350}]}>
+                                <Card style={[styles.card,styles.h_100,styles.flex,{marginLeft:4,}]}>
+                                    <DetailView/>
+                                </Card>
+                            </View>
 
                             <View style={[styles.flexGrow]}>
                                 <Card style={[styles.card]}>
@@ -138,11 +144,7 @@ const Index = (props: any) => {
                                 </Card>
                             </View>
 
-                            <View style={[styles.flexGrow,styles.h_100,styles.flex,{paddingRight: 0,minWidth:220,maxWidth:350}]}>
-                                <Card style={[styles.card,styles.h_100,styles.flex,{marginLeft:4,}]}>
-                                    <DetailView/>
-                                </Card>
-                            </View>
+
 
                         </View>
 

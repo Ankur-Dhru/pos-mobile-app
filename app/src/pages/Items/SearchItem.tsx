@@ -5,7 +5,7 @@ import {Card, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
 import {Container, ProIcon, SearchBox} from "../../components";
 
-import {appLog} from "../../libs/function";
+import {appLog, selectItem} from "../../libs/function";
 import {connect} from "react-redux";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 
@@ -21,12 +21,15 @@ const Index = ({navigation, invoiceitems}: any) => {
     const [loading, setLoading]: any = useState(true);
 
 
-    const handleSearch = async (search?: any) => {
+    const handleSearch = async (search?: any,event?:any) => {
         setLoading(false)
         if (Boolean(search)) {
             setSearch(search);
             await getItemsByWhere({itemname: search, start: 0}).then((items) => {
-                appLog('items',items)
+                if(event === 'submit' && items.length === 1){
+                    selectItem(items[0]).then();
+                    navigation.goBack()
+                }
                 mergeVoucherItem(items)
                 setLoading(true)
             });
@@ -61,7 +64,7 @@ const Index = ({navigation, invoiceitems}: any) => {
 
     const renderItem = useCallback(({item, index}: any) => {
         return <ItemView displayType={'flatlist'}  item={item}   index={index}
-                                key={item.productid}/>
+                                key={item.productid}  />
     }, [search]);
 
     return (

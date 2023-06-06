@@ -4,6 +4,7 @@ export enum TABLE {
   ITEM = "tblItem",
   ADDON = "tblAddon",
   CLIENT = "tblClient",
+  SKU = "tblSku",
   ORDER = "tblOrder",
   TEMPORDER = "tblTempOrder",
 }
@@ -31,7 +32,8 @@ export const CREATE_ITEM_TABLE = `create table if not exists ${TABLE.ITEM}
   primary key,
   itemname          TEXT,
   itemgroupid       TEXT,
-  uniqueproductcode TEXT,
+  uniqueproductcode TEXT,  
+  sku TEXT,
   data              TEXT,
   itemstatus        TEXT,
   pricealert        tinyint(1) default 0
@@ -50,7 +52,16 @@ export const CREATE_ADDON_TABLE = `create table if not exists ${TABLE.ADDON}
 );`;
 
 
+export const CREATE_SKU_TABLE = `create table if not exists ${TABLE.SKU}
+(
+  skuid            INT not null
+  primary key,
+  itemid          TEXT,  
+);`;
+
+
 export const ADD_COLUMN_ITEM_GROUPID = `ALTER TABLE ${TABLE.ITEM} ADD COLUMN groupid TEXT`;
+export const ADD_COLUMN_ITEM_SKU = `ALTER TABLE ${TABLE.ITEM} ADD COLUMN sku TEXT`;
 
 export const CREATE_ITEM_INDEX_ITEMGROUPID = `create index index_itemgroupid on ${TABLE.ITEM} (itemgroupid);`;
 export const CREATE_ITEM_INDEX_ITEMNAME = `create index index_itemname on ${TABLE.ITEM} (itemname);`;

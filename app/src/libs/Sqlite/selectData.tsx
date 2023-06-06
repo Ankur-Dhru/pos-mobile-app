@@ -73,7 +73,7 @@ export const getItemsByWhere = async ({itemgroupid,itemname,itemid,groupid,start
                     where += ` and groupid = '${groupid}' `;
                 }
                 if (Boolean(itemname)) {
-                    where += ` and (itemname LIKE '%${itemname}%' or uniqueproductcode = '${itemname}') `;
+                    where += ` and (itemname LIKE '%${itemname}%' or uniqueproductcode = '${itemname}' or sku LIKE '%${itemname}%') `;
                 }
                 if (Boolean(itemid)) {
                     where += ` and (itemid = '${itemid}') `;
@@ -82,6 +82,7 @@ export const getItemsByWhere = async ({itemgroupid,itemname,itemid,groupid,start
                 const query = `SELECT *
                                FROM ${TABLE.ITEM}
                                where ${where}  order by itemname`; // limit ${start*20},20
+
 
                 txn.executeSql(
                     query,

@@ -47,7 +47,7 @@ const Search = (props: any) => {
                 autoFocus={false}
                 value={searchQuery}
                 useNativeDriver={true}
-                onSubmitEditing={() => props.handleSearch(searchQuery.trim())}
+                onSubmitEditing={() => props.handleSearch(searchQuery.trim(),'submit')}
                 style={[styles.noshadow,{elevation: 0,  borderRadius: 5,backgroundColor:styles.light.color}]}
                 {...props}
             />

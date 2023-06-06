@@ -178,7 +178,6 @@ const Index = (props: any) => {
         return selectItemObject(dept.name, dept.departmentid, index + 1)
     })
 
-
     const handleSubmit = async (values: any) => {
 
         if(!Boolean(access) || (access?.add && !initdata.edit) || (access?.update && initdata.edit)) {

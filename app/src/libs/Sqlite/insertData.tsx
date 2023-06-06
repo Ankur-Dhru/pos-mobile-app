@@ -46,13 +46,13 @@ export const insertItems = async (  itemsdata?: any,type:any = 'all') => {
 
           data.itemname = data?.itemname?.replace(regx," ");
           data.groupname =  data?.groupname?.replace(regx," ");
-          let values = `(${data?.itemid}, "${data?.itemname}", "${data?.itemgroupid}", "${data?.uniqueproductcode}", '${JSON.stringify(data)}', "${data?.itemstatus}", ${data?.pricealert}, "${data?.groupid}")`;
+          let values = `(${data?.itemid}, "${data?.itemname}", "${data?.itemgroupid}", "${data?.uniqueproductcode}","${data?.sku}", '${JSON.stringify(data)}', "${data?.itemstatus}", ${data?.pricealert}, "${data?.groupid}")`;
 
           if(type === 'all'){
               insertQuery.push(values);
           }
           else{
-              insertQuery = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert","groupid") values ${values}`;
+              insertQuery = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","sku","data","itemstatus","pricealert","groupid") values ${values}`;
               try {
                   const results = await db.executeSql(insertQuery);
               }
@@ -65,7 +65,7 @@ export const insertItems = async (  itemsdata?: any,type:any = 'all') => {
       if(type === 'all'){
 
           try {
-              const query = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","data","itemstatus","pricealert","groupid") values ${insertQuery.join(', ')}`;
+              const query = `INSERT OR REPLACE INTO tblItem("itemid","itemname","itemgroupid","uniqueproductcode","sku","data","itemstatus","pricealert","groupid") values ${insertQuery.join(', ')}`;
               try {
                   const results = await db.executeSql(query);
               }
@@ -156,6 +156,48 @@ export const insertClients = async (  clientsdata?: any,type:any = 'all') => {
 
         if(type === 'all'){
             const query = `INSERT OR REPLACE INTO tblClient("clientid","displayname","phone","taxregtype","data","clienttype","phonebook") values ${insertQuery.join(', ')}`;
+            try {
+                const results = await db.executeSql(query);
+            }
+            catch (e) {
+                appLog('ERROR',query)
+            }
+
+
+        }
+    }
+    await closeDB(db);
+};
+
+
+export const insertSkus = async (  skusdata?: any,type:any = 'all') => {
+    const db:any = await getDBConnection();
+
+    let insertQuery:any = [];
+
+    if(skusdata?.length > 0) {
+
+        for (const data of skusdata) {
+
+            let values = `(${data?.sku}, "${data?.itemid}")`;
+
+            if(type === 'all'){
+                insertQuery.push(values);
+            }
+            else{
+                insertQuery = `INSERT OR REPLACE INTO tblClient("skuid","itemid") values ${values}`;
+                appLog('insertQuery',insertQuery)
+                try {
+                    await db.executeSql(insertQuery);
+                }
+                catch (e) {
+                    appLog('ERROR',insertQuery)
+                }
+            }
+        }
+
+        if(type === 'all'){
+            const query = `INSERT OR REPLACE INTO tblClient("skuid","itemid") values ${insertQuery.join(', ')}`;
             try {
                 const results = await db.executeSql(query);
             }

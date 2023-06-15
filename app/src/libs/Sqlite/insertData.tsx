@@ -16,7 +16,7 @@ export const insertInit = async (  initdata?: any) => {
             let values = `(${key},   '${JSON.stringify(initdata[key])}' )`;
 
             insertQuery = `INSERT OR REPLACE INTO tblInit("id","data") values ${values}`;
-            appLog('insertQuery',insertQuery)
+
             try {
                  db.executeSql(insertQuery);
             }
@@ -144,7 +144,7 @@ export const insertClients = async (  clientsdata?: any,type:any = 'all') => {
             }
             else{
                 insertQuery = `INSERT OR REPLACE INTO tblClient("clientid","displayname","phone","taxregtype","data","clienttype","phonebook") values ${values}`;
-                appLog('insertQuery',insertQuery)
+
                 try {
                     await db.executeSql(insertQuery);
                 }
@@ -186,7 +186,7 @@ export const insertSkus = async (  skusdata?: any,type:any = 'all') => {
             }
             else{
                 insertQuery = `INSERT OR REPLACE INTO tblClient("skuid","itemid") values ${values}`;
-                appLog('insertQuery',insertQuery)
+
                 try {
                     await db.executeSql(insertQuery);
                 }
@@ -264,7 +264,6 @@ export const insertOrder =  (data?: any) => {
         let values = `('${data?.orderid}', '${JSON.stringify(data)}')`;
         let  insertQuery = `INSERT OR REPLACE INTO tblOrder("orderid","data") values ${values}`;
         try {
-            appLog('insertQuery',insertQuery)
             await db.executeSql(insertQuery);
         }
         catch (e) {
@@ -272,6 +271,25 @@ export const insertOrder =  (data?: any) => {
         }
         await closeDB(db);
         resolve('Inset Order')
+    })
+
+};
+
+
+export const insertLog =  (data?: any) => {
+    return new Promise<any>(async (resolve)=>{
+        const db:any = await getDBConnection();
+        let values = `('${JSON.stringify(data)}')`;
+        let  insertQuery = `INSERT OR REPLACE INTO tblLog("data") values ${values}`;
+        appLog('insertLog insertQuery',insertQuery)
+        try {
+            await db.executeSql(insertQuery);
+        }
+        catch (e) {
+            appLog('ERROR',insertQuery)
+        }
+        await closeDB(db);
+        resolve('Inset Log')
     })
 
 };

@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import {Appearance, Dimensions, LogBox, SafeAreaView, StatusBar, useColorScheme,} from 'react-native';
 

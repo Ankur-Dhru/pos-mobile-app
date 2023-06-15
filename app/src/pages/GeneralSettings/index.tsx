@@ -22,7 +22,7 @@ const Index = () => {
     const {terminal_name}: any = localredux.licenseData.data;
 
 
-    let [initdata, setInitdata]: any = useState({disabledDefaultSourceHomeDelivery: false, disabledDefaultSourceTakeAway: false, betamode: false,disabledpax:false,kotongenerateinvoice:'Enable',advancecartview:false,terminalname:terminal_name})
+    let [initdata, setInitdata]: any = useState({disabledDefaultSourceHomeDelivery: false,syncinvoiceintervaltime:300000,disablesyncinvoicesrealtime:false, disabledDefaultSourceTakeAway: false, betamode: false,disabledpax:false,kotongenerateinvoice:'Enable',advancecartview:false,terminalname:terminal_name})
 
     const [loading, setLoading]: any = useState(false);
 
@@ -149,6 +149,59 @@ const Index = () => {
                                     /></>
                                 )}
                             </Field>
+
+
+                            <Field name="disablesyncinvoicesrealtime">
+                                {props => (
+                                    <><CheckBox
+                                        value={props.input.value}
+                                        label={'Disable Sync Invoice Real Time'}
+                                        onChange={(value: any) => {
+                                            initdata = {
+                                                ...initdata,
+                                                disablesyncinvoicesrealtime: value
+                                            }
+                                            setAPIUrl(value)
+                                            dispatch(setSettings(initdata));
+                                            saveLocalSettings("disablesyncinvoicesrealtime", value).then();
+                                        }}
+                                    /></>
+                                )}
+                            </Field>
+
+
+                            <View style={[styles.mt_5]}>
+                                <Field name="syncinvoiceintervaltime">
+                                    {props => {
+                                        return (<>
+                                            <InputField
+                                                label={'Sync Invoices Interval Time'}
+                                                divider={true}
+                                                displaytype={'bottomlist'}
+                                                inputtype={'dropdown'}
+                                                list={[
+                                                    {value: '600000',label: '60 Sec'},
+                                                    {value: '300000',label: '30 Sec'},
+                                                    {value: '200000',label: '20 Sec'},
+                                                    {value: '100000',label: '10 Sec'},
+                                                ]}
+                                                search={false}
+                                                listtype={'other'}
+                                                selectedValue={props.input.value}
+                                                onChange={(value: any) => {
+                                                    initdata = {
+                                                        ...initdata,
+                                                        syncinvoiceintervaltime: value
+                                                    }
+                                                    dispatch(setSettings(initdata));
+                                                    saveLocalSettings("syncinvoiceintervaltime", value).then();
+                                                }}
+                                            />
+                                        </>)
+                                    }}
+                                </Field>
+                            </View>
+
 
                                 <View style={[styles.mt_5]}>
                                     <Field name="kotongenerateinvoice">

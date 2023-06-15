@@ -7,6 +7,7 @@ export enum TABLE {
   SKU = "tblSku",
   ORDER = "tblOrder",
   TEMPORDER = "tblTempOrder",
+  LOG = "tblLog"
 }
 
 export const CREATE_INIT_TABLE = `create table if not exists ${TABLE.INIT}
@@ -83,6 +84,11 @@ export const CREATE_ORDER_TABLE = `create table if not exists ${TABLE.ORDER}
   data                   TEXT  
 );`;
 
+
+export const CREATE_LOG_TABLE = `create table if not exists ${TABLE.LOG}
+(   
+  data                   TEXT  
+);`;
 
 export const CREATE_TEMPORDER_TABLE = `create table if not exists ${TABLE.TEMPORDER}
 (

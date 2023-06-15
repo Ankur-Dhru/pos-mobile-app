@@ -45,7 +45,15 @@ import ItemDetail from "../pages/Items/ItemDetail";
 import AddonActions from "../pages/Items/AddonActions";
 import {onPressNumber} from "../pages/Items/AddButton";
 import NetInfo from "@react-native-community/netinfo";
-import {insertAddons, insertClients, insertItems, insertOrder, insertSkus, insertTempOrder} from "./Sqlite/insertData";
+import {
+    insertAddons,
+    insertClients,
+    insertItems,
+    insertLog,
+    insertOrder,
+    insertSkus,
+    insertTempOrder
+} from "./Sqlite/insertData";
 import {sendDataToPrinter} from "./Network";
 import {CommonActions} from "@react-navigation/native";
 import {
@@ -1087,10 +1095,12 @@ export const saveLocalOrder = (order?: any) => {
             ///////// CREATE LOCALORDER ID //////////
 
             deleteTempLocalOrder(order.tableorderid).then(async (msg: any) => {
-                await insertOrder(order).then(() => {
+                await insertOrder({...order,syncinprogress:true}).then(() => {
                     resolve(order)
                 });
-                await syncInvoice(order).then()
+
+                const disablesyncinvoicesrealtime:any = store.getState().localSettings?.disablesyncinvoicesrealtime;
+                !disablesyncinvoicesrealtime && await syncInvoice(order).then()
             })
         }
 
@@ -2446,6 +2456,7 @@ export const syncInvoice = async (invoiceData: any) => {
     const {token}: any = localredux.authData;
 
     if (Boolean(invoiceData.cancelreason) && Boolean(invoiceData.invoiceitems.length === 0)) {
+        appLog('cancel order delete')
         invoiceData.vouchernotes = {
             "reasonid": invoiceData.cancelreasonid,
             "reasonname": invoiceData.cancelreason
@@ -2478,6 +2489,10 @@ export const syncInvoice = async (invoiceData: any) => {
 
                 await saveLocalSettings({sync_in_process: false})
 
+                insertLog({displayno:invoiceData?.invoice_display_number,orderid:invoiceData?.orderid,status:response.status,code:response.code,message:response.message}).then(()=>{
+
+                })
+
                 const clientdetails = response?.data?.client;
 
                 if (Boolean(clientdetails)) {
@@ -2486,15 +2501,32 @@ export const syncInvoice = async (invoiceData: any) => {
                 }
 
                 if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
+                    appLog('save success on server')
                     deleteTable(TABLE.ORDER, `orderid = '${invoiceData?.orderid}'`).then(async () => {
                         store.dispatch(setOrder({...invoiceData, synced: true}))
-                        resolve('synced')
+                        appLog('delete from local table')
+                        appLog('order synced',invoiceData?.orderid)
+                        resolve('synced',)
                     });
                 } else {
+                    appLog('response error')
+                    appLog('sync pending',invoiceData?.orderid)
+                    await insertOrder({...invoiceData,syncinprogress:false}).then(() => {
+
+                    });
                     resolve({status: "ERROR"})
                 }
 
             }).catch(async () => {
+
+                insertLog({displayno:invoiceData?.invoice_display_number,orderid:invoiceData?.orderid,status:'error'}).then(()=>{
+
+                })
+
+                appLog('response catch error')
+                await insertOrder({...invoiceData,syncinprogress:false}).then(() => {
+
+                });
                 await saveLocalSettings({sync_in_process: false})
                 resolve({status: "TRY CATCH ERROR"})
             })
@@ -2684,6 +2716,9 @@ export const printDayEndReport = ({date: date, data: data}: any) => {
 export const intervalInvoice = () => {
     let interval: any = null;
 
+    const syncinvoiceintervaltime:any = store.getState().localSettings?.syncinvoiceintervaltime
+    console.log('======================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================intervalInvoice',syncinvoiceintervaltime)
+
     CheckConnectivity()
     useEffect(() => {
         if (!interval) {
@@ -2692,11 +2727,12 @@ export const intervalInvoice = () => {
                     getOrders().then((orders: any) => {
                         if (!isEmpty(orders)) {
                             let invoice: any = Object.values(orders)[0]
+                            appLog('get new order for sync')
                             syncInvoice(invoice).then()
                         }
                     })
                 }
-            }, 600000);
+            }, syncinvoiceintervaltime || 300000);
         }
         return () => {
             clearInterval(interval);

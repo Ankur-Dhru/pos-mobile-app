@@ -64,7 +64,7 @@ const Index = ({navigation, invoiceitems}: any) => {
 
     const renderItem = useCallback(({item, index}: any) => {
         return <ItemView displayType={'flatlist'}  item={item}   index={index}
-                                key={item.productid}  />
+                                key={item.productid} search={true} />
     }, [search]);
 
     return (

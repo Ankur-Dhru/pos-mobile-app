@@ -51,7 +51,7 @@ export const AddItem = ({navigation,search}: any) => {
 }
 
 
-export const ItemView = memo(({item,displayType}:any)=>{
+export const ItemView = memo(({item,displayType,search}:any)=>{
 
     const {veg} = item;
     const pricingtype = item?.pricing?.type;
@@ -86,8 +86,9 @@ export const ItemView = memo(({item,displayType}:any)=>{
                 }}
                 onPress={() => {
                     (!Boolean(item?.productqnt) && !hasKot) && selectItem(item).then();
-                    navigation.goBack()
-                    appLog('navigation',navigation)
+                    if(search) {
+                        navigation.goBack()
+                    }
                 }}
                 /*left={() => <View style={{marginTop:5}}><Avatar label={item.itemname} value={item.itemid || item.comboid} fontsize={14} size={40}/></View>}*/
 

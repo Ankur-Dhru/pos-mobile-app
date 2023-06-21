@@ -17,11 +17,15 @@ const Search = (props: any) => {
 
         if (Boolean(searchQuery)) {
             const delayDebounceFn = setTimeout(() => {
-                !props.disableKeypress && props?.handleSearch(searchQuery);
+                if(!props.disableKeypress){
+                    props?.handleSearch(searchQuery);
+                }
             }, props.timeout ? props.timeout : 500)
             return () => clearTimeout(delayDebounceFn)
         } else {
-            !props.disabledefaultload && props?.handleSearch(searchQuery)
+            if(!props.disabledefaultload) {
+                props?.handleSearch(searchQuery)
+            }
         }
     }, [searchQuery]);
 

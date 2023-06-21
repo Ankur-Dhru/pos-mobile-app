@@ -92,9 +92,9 @@ const Index = memo((props: any) => {
 
                                             {Boolean(item?.itemtags) && <>
                                                 {
-                                                    item?.itemtags.map((tags: any) => {
+                                                    item?.itemtags?.map((tags: any) => {
                                                         {
-                                                            return tags?.taglist.map((list: any, key: any) => {
+                                                            return tags?.taglist?.map((list: any, key: any) => {
                                                                 if (list.selected) {
                                                                     return (
                                                                         <Text

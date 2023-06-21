@@ -62,7 +62,7 @@ const Index = ({tags,notes,itemtags,updateProduct}: any) => {
                                 <View key={tagid} style={[styles.ml_1]}>
                                     {<View style={[styles.grid,{display:(selectedTag === tagid)?'flex':'none'}]}>
                                         {
-                                           tags?.taglist.map((tag: any, key: any) => {
+                                           tags?.taglist?.map((tag: any, key: any) => {
                                                 return (<Chip key={key} style={[tag.selected?styles.bg_light_blue:styles.light.color,styles.m_2,styles.p_3]}     icon={tag.selected?'check':'stop'} onPress={() => {
                                                     tag.selected = !Boolean(tag?.selected)
                                                     setTempTags(clone(temptags))

@@ -1660,7 +1660,7 @@ export const generateKOT = async (cancelkotprint?: any) => {
 
                                             if (Boolean(itemtags)) {
                                                 let tags = itemtags?.map((itemtag: any) => {
-                                                    return itemtag?.taglist.filter((tag: any) => {
+                                                    return itemtag?.taglist?.filter((tag: any) => {
                                                         return tag.selected
                                                     })?.map((tag: any) => {
                                                         return `${itemtag.taggroupname} : ${tag.name}`

@@ -71,7 +71,7 @@ const Index = (props: any) => {
 
                         <ClientDetail/>
 
-                        <Card style={[styles.card, styles.w_auto, {minWidth:110,marginLeft:5, padding:0}]}>
+                        <Card style={[styles.card, styles.w_auto,styles.center,styles.middle, {minWidth:110,marginLeft:5, padding:0}]}>
                                 <TouchableOpacity
                                     onPress={() => navigation.navigate('SearchItem')}>
                                     <Paragraph style={[styles.p_4,styles.px_5,styles.bold]}>Search Item</Paragraph>

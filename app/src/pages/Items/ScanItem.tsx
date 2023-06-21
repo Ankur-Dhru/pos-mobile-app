@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import {View} from 'react-native';
-import {styles} from "../../theme";
 
 import {Container,  ProIcon} from "../../components";
 import {connect} from "react-redux";
@@ -20,10 +18,13 @@ if (Platform.OS === 'android') {
 }
 
 
+
 class Index extends Component<any> {
 
 
+
     onRead = (value?:any) =>{
+        store.dispatch(setAlert({visible: true, message:   value}));
         getItemsByWhere({itemname:value,sku:true}).then((items:any)=>{
             if(Boolean(items.length)) {
                 selectItem(items[0]).then()
@@ -38,6 +39,7 @@ class Index extends Component<any> {
 
         return (
             <Container style={{padding:0}}>
+
                 <>
                     <QRCodeScanner
                         onRead={this.onRead}

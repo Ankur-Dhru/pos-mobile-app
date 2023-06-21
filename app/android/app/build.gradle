@@ -139,8 +139,8 @@ android {
         applicationId "com.dhru.pos.terminal"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 344
-        versionName "3.4.4"
+        versionCode 345
+        versionName "3.4.5"
         missingDimensionStrategy 'react-native-camera', 'general'
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
@@ -262,6 +262,7 @@ dependencies {
     implementation project(':react-native-image-size')
 
     implementation project(':react-native-image-resizer')
+
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 

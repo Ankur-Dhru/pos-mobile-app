@@ -5,9 +5,13 @@ import {styles} from "../../theme";
 
 import {connect, useDispatch} from "react-redux";
 import {localredux} from "../../libs/static";
-import {ProIcon} from "../../components";
-import {appLog, clone, saveLocalSettings} from "../../libs/function";
+import {ProIcon, SearchBox} from "../../components";
+import {appLog, clone, errorAlert, saveLocalSettings, selectItem} from "../../libs/function";
 import {setSelected} from "../../redux-store/reducer/selected-data";
+import {getItemsByWhere} from "../../libs/Sqlite/selectData";
+import store from "../../redux-store/store";
+import {setAlert} from "../../redux-store/reducer/component";
+import SkuSearch from "./SkuSearch";
 
 
 const Index = (props: any) => {
@@ -27,6 +31,7 @@ const Index = (props: any) => {
     }, [selectedgroup])
 
 
+
     const  setCurrentGroup = (groupid:any) => {
         const index = selectedgroup.findIndex(function(key:any) {
             return key == groupid
@@ -39,7 +44,12 @@ const Index = (props: any) => {
     }
 
 
-    return <View><View style={[styles.bg_light,styles.p_4,styles.mb_2,{borderRadius:5}]}>
+    return <View>
+
+
+        <SkuSearch/>
+
+        <View style={[styles.bg_light,styles.p_4,styles.mb_2,{borderRadius:5}]}>
         <ScrollView>
             <View style={[styles.grid,styles.middle]}>
                 {

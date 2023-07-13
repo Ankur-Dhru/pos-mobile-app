@@ -17,7 +17,7 @@ import Button from "../../components/Button";
 import {resetCart, setCartData} from "../../redux-store/reducer/cart-data";
 import {hideLoader, setAlert, setBottomSheet, showLoader} from "../../redux-store/reducer/component";
 import HoldOrders from "./HoldOrders";
-import {db, device, localredux, PRINTER} from "../../libs/static";
+import {db, device, localredux, PRINTER, urls} from "../../libs/static";
 import store from "../../redux-store/store";
 import {ProIcon} from "../../components";
 
@@ -35,6 +35,8 @@ const Index = ({
     const navigation = useNavigation()
     const hasRestaurant = isRestaurant()
     const dispatch = useDispatch()
+
+    const {settings:{cant_complete_remote_order}} = localredux.authData
 
     useEffect(() => {
         if (printcounter && !device.tablet) {
@@ -181,7 +183,7 @@ const Index = ({
                         </View></>}
 
 
-                    <View style={[styles.w_auto, styles.ml_1]}>
+                    {(!Boolean(urls.localserver) || (Boolean(urls.localserver) && !cant_complete_remote_order)) && <View style={[styles.w_auto, styles.ml_1]}>
                         <Button
 
                             secondbutton={!Boolean(vouchertotaldisplay)}
@@ -197,7 +199,7 @@ const Index = ({
                             more={{backgroundColor: styles.green.color, color: 'white',height:50}}
                         > Payment Received
                         </Button>
-                    </View>
+                    </View>}
                 </View>
             </View>
 

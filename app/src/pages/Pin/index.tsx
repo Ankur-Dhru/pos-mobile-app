@@ -73,6 +73,9 @@ const Index = (props: any) => {
 
                 localredux.licenseData = licenseData;
                 localredux.authData = {...authData,...params};
+
+                console.log('localredux.authData',localredux.authData)
+
                 localredux.localSettingsData = localSettingsData;
 
                 device.global_token = initData.global_token

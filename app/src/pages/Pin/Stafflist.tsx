@@ -17,6 +17,7 @@ const Index = (props: any) => {
 
     let {staff}: any = localredux?.initData;
 
+
     const {location_id} =  localredux.licenseData?.data || {};
 
     staff = Boolean(staff) && Object.values(staff).filter((staf:any)=>{

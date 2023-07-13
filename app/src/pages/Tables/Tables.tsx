@@ -55,6 +55,7 @@ const Index = ({tableorders}: any) => {
     const [floating, setFloating] = useState(false);
     const [shifttable, setShifttable] = useState(false);
     const [shiftingFromtable, setShiftingFromtable] = useState<any>();
+    const [shiftingFromtableid, setShiftingFromtableid] = useState<any>();
     const [shiftingTotable, setShiftingTotable] = useState<any>();
 
 
@@ -217,7 +218,9 @@ const Index = ({tableorders}: any) => {
         const sameStaff = ((Boolean(tabledetails?.staffid) && (tabledetails?.staffid === adminid)) || (!Boolean(tabledetails?.staffid)))
 
         if ((accessMultipleDevice && sameStaff) || !accessMultipleDevice) {
-            if (Boolean(urls.localserver) && Boolean(tabledetails.tableorderid)) {
+            if ((Boolean(urls.localserver) && Boolean(tabledetails.tableorderid))) {
+
+
                 await apiService({
                     method: METHOD.GET,
                     action: 'tableorder',
@@ -227,7 +230,7 @@ const Index = ({tableorders}: any) => {
 
                     const {kots,numOfKOt}:any = tabledetails
 
-                    if(kots.length > 0 || numOfKOt > 0){
+                    if(kots?.length > 0 || numOfKOt > 0){
                         let {staffid,staffname,...others}:any = response.data;
                         tabledetails = {
                             ...tabledetails,
@@ -240,10 +243,10 @@ const Index = ({tableorders}: any) => {
                             ...response.data,
                         }
                     }
-
                 })
             }
             navigation.navigate('CartStackNavigator', tabledetails)
+
         } else {
             errorAlert(`Table only access by ${tabledetails.staffname}`)
         }
@@ -259,8 +262,9 @@ const Index = ({tableorders}: any) => {
                 shiftingFromtable,
             } = props
 
-            const shiftFrom = (tableorderid: any) => {
+            const shiftFrom = (tableorderid: any,tableid:any) => {
                 setShiftingFromtable(tableorderid);
+                setShiftingFromtableid(tableid)
             }
             const shiftTo = async (tabledetail: any) => {
                 dispatch(showLoader())
@@ -269,17 +273,45 @@ const Index = ({tableorders}: any) => {
 
                 let clone_tableorders = clone(tableorders)
 
-                clone_tableorders[shiftingFromtable] = clone({
-                    ...clone_tableorders[shiftingFromtable],
-                    tableid: tableid,
-                    tablename: tablename,
-                    area : area
-                })
 
-                await saveTempLocalOrder(clone_tableorders[shiftingFromtable]).then(async () => {
-                    await resetTables()
-                    await dispatch(hideLoader())
-                })
+                if (Boolean(urls.localserver)) {
+
+                    await apiService({
+                        method: METHOD.GET,
+                        action: 'tableorder',
+                        queryString: {key: 'tableid', value: shiftingFromtableid},
+                        other: {url: urls.localserver},
+                    }).then(async (response: any) => {
+
+                        response.data = clone({
+                            ...response.data,
+                            tableid: tableid,
+                            tablename: tablename,
+                            area: area
+                        })
+
+                        await saveTempLocalOrder(response.data).then(async () => {
+                            await resetTables()
+                            await dispatch(hideLoader())
+                        })
+
+                    })
+
+
+                }
+                else {
+                    clone_tableorders[shiftingFromtable] = clone({
+                        ...clone_tableorders[shiftingFromtable],
+                        tableid: tableid,
+                        tablename: tablename,
+                        area: area
+                    })
+                    await saveTempLocalOrder(clone_tableorders[shiftingFromtable]).then(async () => {
+                        await resetTables()
+                        await dispatch(hideLoader())
+                    })
+                }
+
 
             }
 
@@ -303,7 +335,7 @@ const Index = ({tableorders}: any) => {
                         style={{minHeight: 120}}
                         onPress={() => {
                             current.table = {invoiceitems: [], kots: [], ...item};
-                            !shifttable ? setTableOrderDetail(current.table) : Boolean(shifting) ? shiftTo(props) : shiftFrom(item.tableorderid)
+                            !shifttable ? setTableOrderDetail(current.table) : Boolean(shifting) ? shiftTo(props) : shiftFrom(item.tableorderid,item.tableid)
                         }}>
                         {((shiftstart || shifting) || !shifttable) && <View style={[styles.p_4]}>
                             <View style={[styles.grid, styles.mb_3]}>
@@ -359,7 +391,7 @@ const Index = ({tableorders}: any) => {
 
                 <View style={[styles.grid, styles.justifyContent, styles.middle]}>
 
-                    {!Boolean(urls.localserver) ? <Menu
+                     <Menu
                         visible={visible}
                         onDismiss={closeMenu}
                         anchor={<Appbar.Action icon={'dots-vertical'} onPress={() => {
@@ -374,8 +406,12 @@ const Index = ({tableorders}: any) => {
                             closeMenu()
                             setShifttable(false)
                         }} title="Disable Shift"/>}
-                        <Menu.Item onPress={onClickReserveTable} title="Reserved Tables"/>
+                         {!Boolean(urls.localserver) && <Menu.Item onPress={onClickReserveTable} title="Reserved Tables"/>}
 
+                        <Menu.Item onPress={() => {
+                            getOrder().then();
+                            closeMenu()
+                        }} title="Refresh"/>
                         {/*{!isRestaurant() && <Menu.Item onPress={async () => {
                         await dispatch(setBottomSheet({
                             visible: true,
@@ -383,9 +419,12 @@ const Index = ({tableorders}: any) => {
                             component: () => <HoldOrders/>
                         }))
                     }} title="Holding Orders"/>}*/}
-                    </Menu> : <Appbar.Action icon={'refresh'} onPress={() => {
+                    </Menu>
+
+
+                    {/*<Appbar.Action icon={'refresh'} onPress={() => {
                         getOrder().then()
-                    }}/>}
+                    }}/>*/}
 
                 </View>
 

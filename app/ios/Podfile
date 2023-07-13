@@ -29,6 +29,7 @@ target 'app' do
     pod 'Permission-Contacts', :path => "#{permissions_path}/Contacts"
     pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
     pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary"
+    pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
 
 
   target 'appTests' do

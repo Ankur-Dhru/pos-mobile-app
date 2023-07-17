@@ -4,7 +4,7 @@ import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-nati
 import {Card, List, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
 import {Container, ProIcon, SearchBox} from "../../components";
-import {gePhonebook} from "../../libs/function";
+import {gePhonebook, setItemRowData} from "../../libs/function";
 
 
 import {getClientsByWhere} from "../../libs/Sqlite/selectData";
@@ -13,7 +13,7 @@ import {getClientsByWhere} from "../../libs/Sqlite/selectData";
 import {useNavigation} from "@react-navigation/native";
 
 import store from "../../redux-store/store";
-import {updateCartField} from "../../redux-store/reducer/cart-data";
+import {changeCartItem, updateCartField} from "../../redux-store/reducer/cart-data";
 import Avatar from "../../components/Avatar";
 import Button from "../../components/Button";
 
@@ -40,6 +40,7 @@ const Item = memo(({client}: any) => {
                     label: `${client?.displayname} ${client?.phone ? `(${client.phone})` : ''}`,
                     value: client?.clientid,
                     thumbnailPath: client?.thumbnailPath,
+                    pricingtemplate:client?.clientconfig?.pricingtemplate || '',
                     clienttype: 0,
                 }
 
@@ -61,8 +62,16 @@ const Item = memo(({client}: any) => {
                     client: clientdetail,
                     "placeofsupply": client.state || state,
                 }));
-                navigation.goBack();
 
+                const invoiceitems = store.getState().cartData.invoiceitems;
+
+                invoiceitems.map((item: any,index:any) => {
+                    const itemRowData: any = setItemRowData(item,clientdetail.pricingtemplate);
+                    store.dispatch(changeCartItem({itemIndex: index, item: itemRowData,itemUpdate:true}));
+                })
+
+
+                navigation.goBack();
             }}
             left={() => <View style={{marginTop: 5}}>
                 <Avatar label={client.displayname} thumbnailPath={client?.thumbnailPath} value={client.clientid}

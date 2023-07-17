@@ -2,7 +2,7 @@ import React, {memo, useEffect, useState} from "react";
 import {Caption, Paragraph, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
-import {appLog, clone, setItemRowData, toCurrency} from "../../libs/function";
+import {appLog, clone, removeItem, setItemRowData, toCurrency} from "../../libs/function";
 import {TouchableOpacity, View} from "react-native";
 import {ProIcon} from "../../components";
 import Button from "../../components/Button";
@@ -14,6 +14,9 @@ import Addons from "./Addons";
 import {changeCartItem, setCartItems} from "../../redux-store/reducer/cart-data";
 import { setItemDetail } from "../../redux-store/reducer/item-detail";
 import Qnt from "./Qnt";
+import InputBox from "../../components/InputBox";
+import store from "../../redux-store/store";
+import InputField from "../../components/InputField";
 
 const {v4: uuid} = require('uuid')
 
@@ -22,7 +25,7 @@ const Index = ({itemDetail, index, inittags, sheetRef,edit, theme: {colors}}: an
     const dispatch = useDispatch()
     let product = itemDetail;
 
-    const {pricing, description, itemname, groupname} = itemDetail;
+    const {pricing, description,productrate, itemname, groupname} = itemDetail;
 
     const selectItem = async () => {
 
@@ -63,6 +66,25 @@ const Index = ({itemDetail, index, inittags, sheetRef,edit, theme: {colors}}: an
     }
 
 
+/*    const updateRate = (value:any) => {
+
+        let invoiceitems: any = store.getState().cartData?.invoiceitems || {}
+
+        let filtered = invoiceitems?.filter((item: any, key: any) => {
+            return item.key === itemDetail.key
+        })
+
+        let finditem = {
+            ...filtered[0],
+            ...itemDetail,
+            change: true,
+            productrate: value,
+            productdisplayrate: value,
+        }
+
+        store.dispatch(changeCartItem({itemIndex: index, item: finditem,itemUpdate:true}));
+
+    }*/
 
 
 
@@ -83,6 +105,23 @@ const Index = ({itemDetail, index, inittags, sheetRef,edit, theme: {colors}}: an
                     </View>
 
                     <Text>{description}</Text>
+                </View>
+
+
+                <View>
+                    <View style={[styles.mt_5,styles.px_5]}>
+                        <InputBox
+                            defaultValue={''+productrate}
+                            label={'Price'}
+                            autoFocus={false}
+                            onChange={(value:any)=>{
+                                updateProduct({productrate:value,productratedisplay:value})
+                            }}
+                        />
+
+
+
+                    </View>
                 </View>
 
 

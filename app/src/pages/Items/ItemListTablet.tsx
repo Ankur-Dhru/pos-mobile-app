@@ -13,7 +13,15 @@ import {
 
 import {connect, useDispatch} from "react-redux";
 import {styles} from "../../theme";
-import {appLog, clone, getItemImage, isRestaurant, selectItem, toCurrency} from "../../libs/function";
+import {
+    appLog,
+    clone,
+    getItemImage,
+    getPricingTemplate,
+    isRestaurant,
+    selectItem,
+    toCurrency
+} from "../../libs/function";
 import {List, Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
@@ -53,9 +61,11 @@ export const AddItem = ({navigation,search}: any) => {
 
 export const ItemView = memo(({item,displayType,search}:any)=>{
 
+
+    let pricingTemplate = getPricingTemplate();
     const {veg} = item;
     const pricingtype = item?.pricing?.type;
-    const baseprice = item?.pricing?.price?.default[0][pricingtype]?.baseprice || 0;
+    const baseprice = (Boolean(item?.pricing?.price) && Boolean(item?.pricing?.price[pricingTemplate]) && item?.pricing?.price[pricingTemplate][0][pricingtype]?.baseprice) || item?.pricing?.price['default'][0][pricingtype]?.baseprice || 0;
     const hasRestaurant = isRestaurant();
     const hasKot = Boolean(item?.kotid);
     let imagepath = getItemImage(item)
@@ -171,9 +181,6 @@ export const ItemView = memo(({item,displayType,search}:any)=>{
                     </View>}
 
                 </TouchableOpacity>
-
-
-
 
                 {
                     Boolean(item?.productqnt) && !hasKot  && <View style={[styles.w_100,styles.absolute,{bottom:0}]}><AddButton item={item}  /></View>

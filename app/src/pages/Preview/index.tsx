@@ -13,7 +13,7 @@ import Button from "../../components/Button";
 
 
 import EscPosPrinter, {getPrinterSeriesByName,} from 'react-native-esc-pos-printer';
-import {useDispatch} from "react-redux";
+import {connect, useDispatch} from "react-redux";
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
 
 
@@ -26,6 +26,7 @@ import ZigzagLines from "../../components/ZigZag";
 import ZigZag from "../../components/ZigZag";
 import {Paragraph} from "react-native-paper";
 import store from "../../redux-store/store";
+import {useNavigation} from "@react-navigation/native";
 
 let printerList:any = ''
 
@@ -39,14 +40,15 @@ if(Platform.OS === 'android') {
     });
 }
 
-const Index = ({navigation, route}: any) => {
+const Index = (props:any) => {
 
 
 
-    const params = route.params;
+    const params = props.route.params;
     const ref: any = useRef();
     const scrollviewRef: any = useRef();
     const {menu, filename, printer}: any = params;
+    const navigation = useNavigation()
 
     const Printer: typeof NetPrinter = printerList['net'] || {};
 
@@ -115,7 +117,9 @@ const Index = ({navigation, route}: any) => {
                             await SunmiPrinter.printBitmap(base64result, width)
                         }
                         await SunmiPrinter.lineWrap(3)
-                        await SunmiPrinter.cutPaper()
+                        if(!props?.papercutmanual) {
+                            await SunmiPrinter.cutPaper()
+                        }
                         dispatch(setAlert({visible: true, message: 'Print Successful'}))
                     } else {
 
@@ -136,7 +140,9 @@ const Index = ({navigation, route}: any) => {
                                     await printing.image({uri: 'data:image/png;base64,' + base64result}, {width: width})
                                 }
 
-                                await printing.cut().send();
+                                if(!props?.papercutmanual) {
+                                    await printing.cut().send();
+                                }
                                 dispatch(setAlert({visible: true, message: 'Print Successful'}))
                             }
                             catch (e) {
@@ -163,7 +169,7 @@ const Index = ({navigation, route}: any) => {
                 });
 
                 dispatch(hideLoader())
-                navigation.goBack()
+                navigation?.goBack()
 
 
             });
@@ -285,6 +291,12 @@ const Index = ({navigation, route}: any) => {
 }
 
 
-export default Index;
+const mapStateToProps = (state: any) => ({
+    papercutmanual: state.localSettings?.papercutmanual,
+})
+
+export default connect(mapStateToProps)(Index);
+
+
 
 

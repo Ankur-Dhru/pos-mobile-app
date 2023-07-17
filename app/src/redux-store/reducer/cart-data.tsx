@@ -1,5 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit'
-import {appLog, clone, isEmpty, voucherData, voucherTotal} from "../../libs/function";
+import {appLog, clone, getPricingTemplate, isEmpty, voucherData, voucherTotal} from "../../libs/function";
 import {current, defaultclient, VOUCHER} from "../../libs/static";
 import {v4 as uuid} from "uuid";
 
@@ -64,8 +64,7 @@ export const cartData = createSlice({
             return {...state, ...action.payload}
         },
         refreshCartData: (state: any, action) => {
-
-            return {...intialState, ...action.payload}
+            return {...intialState,...action.payload}
         },
         setCartItems: (state: any, action) => {
 

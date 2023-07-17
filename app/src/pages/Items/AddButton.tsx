@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {appLog, arraySome, isRestaurant, removeItem} from "../../libs/function";
+import {appLog, arraySome, getPricingTemplate, isRestaurant, removeItem} from "../../libs/function";
 import {TouchableOpacity, View} from "react-native";
 import {List, Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
@@ -14,7 +14,6 @@ import {localredux} from "../../libs/static";
 
 
 const Index = (props: any) => {
-
 
     let {bottomsheet, theme: {colors}, item, defaultAmountOpen} = props;
 

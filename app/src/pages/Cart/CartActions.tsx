@@ -40,7 +40,9 @@ const Index = ({
 
     useEffect(() => {
         if (printcounter && !device.tablet) {
-            navigation.navigate('Payment')
+            if(!Boolean(urls.localserver) || (Boolean(urls.localserver) && !cant_complete_remote_order)){
+                navigation.navigate('Payment')
+            }
         }
     }, [])
 

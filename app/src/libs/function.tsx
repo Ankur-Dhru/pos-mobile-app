@@ -850,7 +850,7 @@ export const voucherTotal = (items: any, vouchertaxtype: any) => {
 }
 
 
-export const setItemRowData = (data: any) => {
+export const setItemRowData = (data: any,pricingtemplate?:any) => {
 
     try {
 
@@ -864,7 +864,12 @@ export const setItemRowData = (data: any) => {
 
         let client = cartData?.client;
 
-        let pricingTemplate = localSettingsData?.taxInvoice ? client?.clientconfig?.pricingtemplate : undefined
+        let pricingTemplate = getPricingTemplate(pricingtemplate);
+
+        const clientdetail = store.getState().cartData.client
+        if(Boolean(clientdetail?.pricingtemplate)){
+            pricingTemplate = clientdetail?.pricingtemplate
+        }
 
         let isDepartmentSelected = false;
 
@@ -899,13 +904,20 @@ export const setItemRowData = (data: any) => {
 
         let recurring = undefined, producttaxgroupid, productqntunitid;
 
+        if(!Boolean(pricing.price[pricingTemplate])){
+            pricingTemplate = 'default'
+        }
+
         if (pricing?.type !== "free" &&
             pricing.price &&
-            pricing.price.default &&
-            pricing.price.default[0] &&
-            pricing.price.default?.length > 0) {
-            recurring = Object.keys(pricing.price.default[0])[0];
+            pricing.price[pricingTemplate] &&
+            pricing.price[pricingTemplate][0] &&
+            pricing.price[pricingTemplate]?.length > 0) {
+            recurring = Object.keys(pricing.price[pricingTemplate][0])[0];
         }
+
+
+
         if (Boolean(salesunit)) {
             productqntunitid = salesunit;
         }
@@ -1242,10 +1254,52 @@ export const groupBy = (arr: any, property: any) => {
     }
 }
 
+export const getPricingTemplate = (pricingTemplate?: any) => {
+    if(!pricingTemplate) {
+
+        const {localSettingsData}: any = localredux
+        /**
+         * set location wise pricing template
+         */
+        pricingTemplate = localSettingsData?.currentLocation?.locationpricingtemplate;
+
+        if(localSettingsData?.currentTable?.area && !isEmpty(localSettingsData?.currentLocation?.areas)) {
+            let areaList = localSettingsData?.currentLocation?.areas;
+            if(!Array.isArray(areaList)) {
+                areaList = Object.values(areaList);
+            }
+            let findArea = areaList.find((area: any) => area?.areaname === localSettingsData?.currentTable?.area);
+            /**
+             * set area wise pricing template,
+             * if area template is not default.
+             */
+            if(!isEmpty(findArea) && findArea?.pricingtemplate !== 'default') {
+                pricingTemplate = findArea?.pricingtemplate;
+            }
+        }
+
+
+
+
+    }
+    if(!pricingTemplate) {
+        pricingTemplate = 'default';
+    }
+    return pricingTemplate;
+};
+
 export const selectItem = async (item: any) => {
 
     const pricingtype = item?.pricing?.type;
-    const baseprice = item?.pricing?.price?.default[0][pricingtype]?.baseprice || 0;
+
+    let pricingtemplate = getPricingTemplate()
+
+    const clientdetail = store.getState().cartData.client
+    if(Boolean(clientdetail?.pricingtemplate)){
+        pricingtemplate = clientdetail?.pricingtemplate
+    }
+
+    const baseprice = (item?.pricing?.price[pricingtemplate] && item?.pricing?.price[pricingtemplate][0][pricingtype]?.baseprice) || item?.pricing?.price['default'][0][pricingtype]?.baseprice || 0;
 
     const setItemQnt = async (item: any) => {
 

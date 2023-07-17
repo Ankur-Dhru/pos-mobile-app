@@ -116,8 +116,9 @@ const Index = (props:any) => {
                             const {base64result, width}: any = images[key];
                             await SunmiPrinter.printBitmap(base64result, width)
                         }
-                        await SunmiPrinter.lineWrap(3)
+
                         if(!props?.papercutmanual) {
+                            await SunmiPrinter.lineWrap(3)
                             await SunmiPrinter.cutPaper()
                         }
                         dispatch(setAlert({visible: true, message: 'Print Successful'}))

@@ -286,6 +286,7 @@ const Index = (props: any) => {
                                                                 list={[
                                                                     {label: '56mm - 1x', value: '32',webview:150},
                                                                     {label: '56mm - 2x', value: '32.1',webview:180},
+                                                                    {label: '56mm - 3x', value: '32.2',webview:195},
                                                                     {label: '72mm - 1x', value: '42',webview:195},
                                                                     {label: '80mm - 1x', value: '48',webview:240},
                                                                     {label: '80mm - 2x', value: '48.1',webview:390},

@@ -98,6 +98,7 @@ const Index = (props:any) => {
 
     const snapShot = () => {
         const {printer}: any = params;
+        console.log('printer',printer)
 
        // dispatch(showLoader())
 
@@ -117,9 +118,12 @@ const Index = (props:any) => {
                             await SunmiPrinter.printBitmap(base64result, width)
                         }
 
-                        if(!props?.papercutmanual) {
+                        if(!Boolean(printer?.papercutmanual)) {
                             await SunmiPrinter.lineWrap(3)
                             await SunmiPrinter.cutPaper()
+                        }
+                        else{
+                            await SunmiPrinter.lineWrap(1)
                         }
                         dispatch(setAlert({visible: true, message: 'Print Successful'}))
                     } else {
@@ -141,8 +145,11 @@ const Index = (props:any) => {
                                     await printing.image({uri: 'data:image/png;base64,' + base64result}, {width: width})
                                 }
 
-                                if(!props?.papercutmanual) {
+                                if(!Boolean(printer?.papercutmanual)) {
                                     await printing.cut().send();
+                                }
+                                else{
+                                    await printing.send();
                                 }
                                 dispatch(setAlert({visible: true, message: 'Print Successful'}))
                             }
@@ -293,7 +300,7 @@ const Index = (props:any) => {
 
 
 const mapStateToProps = (state: any) => ({
-    papercutmanual: state.localSettings?.papercutmanual,
+
 })
 
 export default connect(mapStateToProps)(Index);

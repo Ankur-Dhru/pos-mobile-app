@@ -27,6 +27,7 @@ import {setBottomSheet} from "../../redux-store/reducer/component";
 import QRCode from "react-native-qrcode-svg";
 import {uuid} from "uuidv4";
 import {v4 as uuidv4} from "uuid";
+import {setSettings} from "../../redux-store/reducer/local-settings-data";
 
 
 
@@ -63,6 +64,7 @@ const Index = (props: any) => {
             templatetype:'',
             printpreview:false,
             printoncancel: true,
+            papercutmanual:false,
             ...printers[type.departmentid]
         }
     )
@@ -307,6 +309,20 @@ const Index = (props: any) => {
                                                         )}
                                                     </Field>
                                                     </View>
+
+
+
+                                                    {<Field name="papercutmanual">
+                                                        {props => (
+                                                            <><CheckBox
+                                                                value={props.input.value}
+                                                                label={'Paper Cut Manual'}
+                                                                onChange={(value: any) => {
+                                                                    values.papercutmanual = value;
+                                                                }}
+                                                            /></>
+                                                        )}
+                                                    </Field>}
 
                                                     {/*<>
                                                         {values.templatetype === 'ThermalHtml' ? <View>

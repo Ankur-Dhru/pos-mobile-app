@@ -132,22 +132,6 @@ const Index = () => {
                             </Field>}
 
 
-                            {<Field name="papercutmanual">
-                                {props => (
-                                    <><CheckBox
-                                        value={props.input.value}
-                                        label={'Paper Cut Manual'}
-                                        onChange={(value: any) => {
-                                            initdata = {
-                                                ...initdata,
-                                                papercutmanual: value
-                                            }
-                                            dispatch(setSettings(initdata));
-                                            saveLocalSettings("papercutmanual", value).then();
-                                        }}
-                                    /></>
-                                )}
-                            </Field>}
 
 
                             <Field name="betamode">

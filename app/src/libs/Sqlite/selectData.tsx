@@ -9,7 +9,7 @@ import moment from "moment";
 
 
 
-export const getItemsByWhere = async ({itemgroupid,itemname,itemid,groupid,start,sku}:any) => {
+export const getItemsByWhere = async ({itemgroupid,itemname,itemid,groupid,start,sku,treatby}:any) => {
 
 
     if(Boolean(urls.localserver)){
@@ -77,6 +77,13 @@ export const getItemsByWhere = async ({itemgroupid,itemname,itemid,groupid,start
                 }
                 if (Boolean(itemid)) {
                     where += ` and (itemid = '${itemid}') `;
+                }
+
+                if (Boolean(treatby)) {
+                    where += ` and (treatby = 'charges') `;
+                }
+                else{
+                    where += ` and (treatby != 'charges') `;
                 }
 
                 const query = `SELECT *

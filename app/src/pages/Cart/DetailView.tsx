@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 
 import Container from "../../components/Container";
 
@@ -19,11 +19,14 @@ import HoldOrders from "./HoldOrders";
 import Discount from "./Discount";
 import Adjustment from "./Adjustment";
 import store from "../../redux-store/store";
+import ExtraCharges from "./ExtraCharges";
+import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 
 const Index = (props: any) => {
 
     const navigation: any = useNavigation();
     const [visible, setVisible] = React.useState(false);
+    const [extrachargesvisible, setExtrachargesvisible] = React.useState(false);
     const openMenu = () => setVisible(true);
     const closeMenu = () => setVisible(false);
     const dispatch = useDispatch()
@@ -31,14 +34,22 @@ const Index = (props: any) => {
     const {isadjustment} = store.getState().cartData
 
 
-    const {cancelorder,canapplydiscount}:any = localredux?.authData?.settings;
+    useEffect(() => {
+        getItemsByWhere({treatby: true}).then((items: any) => {
+            if (Boolean(items?.length)) {
+                setExtrachargesvisible(true)
+            }
+        })
+    }, [])
 
-    const askPermission = (action:any) => {
-        navigation.navigate('AskPermission',{cancelOrder:cancelOrder,action:action})
+    const {cancelorder, canapplydiscount}: any = localredux?.authData?.settings;
+
+    const askPermission = (action: any) => {
+        navigation.navigate('AskPermission', {cancelOrder: cancelOrder, action: action})
     }
 
     navigation.setOptions({
-        headerRight:()=>{
+        headerRight: () => {
             return <View>
 
                 <Menu
@@ -49,30 +60,26 @@ const Index = (props: any) => {
                     }}/>}>
 
                     <DeleteButton
-                        options={['Yes','No']}
+                        options={['Yes', 'No']}
                         title={'Cancel Order'}
                         message={`Are you sure want to Cancel Order?`}
-                        render={()=>{
-                            return (
-                                <Menu.Item  title="Cancel Order"/>
-                            )
+                        render={() => {
+                            return (<Menu.Item title="Cancel Order"/>)
                         }}
                         onPress={(index: any) => {
                             if (index === 0) {
                                 closeMenu();
 
-                                if(cancelorder) {
-                                    cancelOrder(navigation).then(r => {})
-                                }
-                                else{
-                                    Alert.alert(
-                                        "Alert",
-                                        'You do not have cancel Order permission',
-                                        [
-                                            {text: "Cancel",onPress: () => {},style:'cancel'},
-                                            {text: "Ask Permission", onPress: () => askPermission('cancelorder')}
-                                        ]
-                                    );
+                                if (cancelorder) {
+                                    cancelOrder(navigation).then(r => {
+                                    })
+                                } else {
+                                    Alert.alert("Alert", 'You do not have cancel Order permission', [{
+                                        text: "Cancel",
+                                        onPress: () => {
+                                        },
+                                        style: 'cancel'
+                                    }, {text: "Ask Permission", onPress: () => askPermission('cancelorder')}]);
                                 }
                             }
                         }}
@@ -81,9 +88,7 @@ const Index = (props: any) => {
                     {!isRestaurant() && <Menu.Item onPress={async () => {
                         closeMenu();
                         await dispatch(setBottomSheet({
-                            visible: true,
-                            height: '50%',
-                            component: () => <HoldOrders/>
+                            visible: true, height: '50%', component: () => <HoldOrders/>
                         }))
                     }} title="Holding Orders"/>}
 
@@ -91,18 +96,23 @@ const Index = (props: any) => {
                     {canapplydiscount && <Menu.Item onPress={async () => {
                         closeMenu();
                         await dispatch(setBottomSheet({
-                            visible: true,
-                            height: '80%',
-                            component: () => <Discount/>
+                            visible: true, height: '80%', component: () => <Discount/>
                         }))
                     }} title="Discount"/>}
+
+
+                    {extrachargesvisible && <Menu.Item onPress={async () => {
+                        closeMenu();
+                        await dispatch(setBottomSheet({
+                            visible: true, height: '80%', component: () => <ExtraCharges/>
+                        }))
+                    }} title="Extra Charges"/>}
+
 
                     {isadjustment && <Menu.Item onPress={async () => {
                         closeMenu();
                         await dispatch(setBottomSheet({
-                            visible: true,
-                            height: '80%',
-                            component: () => <Adjustment/>
+                            visible: true, height: '80%', component: () => <Adjustment/>
                         }))
                     }} title="Adjustment"/>}
 
@@ -111,25 +121,24 @@ const Index = (props: any) => {
         }
     })
 
-    let tablet:any;
-    let mobile:any;
-    if(device.tablet){
-        tablet = {paddingHorizontal: 5,paddingVertical: 5}
-    }
-    else{
-        mobile = {backgroundColor:styles.bg_light.backgroundColor,padding:5}
+    let tablet: any;
+    let mobile: any;
+    if (device.tablet) {
+        tablet = {paddingHorizontal: 5, paddingVertical: 5}
+    } else {
+        mobile = {backgroundColor: styles.bg_light.backgroundColor, padding: 5}
     }
 
     return <Container style={{padding: 0}}>
         {!device.tablet && <ClientDetail/>}
-        <View style={[styles.h_100,styles.flex,mobile]}>
-            <View style={[styles.bg_white,styles.flex,{borderRadius:5}]}>
-                <View style={[styles.cardContent,styles.h_100,styles.flex,tablet]}>
+        <View style={[styles.h_100, styles.flex, mobile]}>
+            <View style={[styles.bg_white, styles.flex, {borderRadius: 5}]}>
+                <View style={[styles.cardContent, styles.h_100, styles.flex, tablet]}>
                     <CartItems/>
                 </View>
 
-            <CartSummary navigation={navigation}/>
-        </View>
+                <CartSummary navigation={navigation}/>
+            </View>
 
 
         </View>

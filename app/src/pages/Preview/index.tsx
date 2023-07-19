@@ -98,7 +98,6 @@ const Index = (props:any) => {
 
     const snapShot = () => {
         const {printer}: any = params;
-        console.log('printer',printer)
 
        // dispatch(showLoader())
 
@@ -108,7 +107,7 @@ const Index = (props:any) => {
         try {
             ref.current.capture().then(async (uri: any) => {
 
-                await captureImages(isGeneric ? 2000 :1000, uri).then(async (images: any) => {
+                await captureImages( isGeneric ? 2000 :1000, uri).then(async (images: any) => {
                     //setImages(images)
 
                     if (isSunmi) {
@@ -118,12 +117,9 @@ const Index = (props:any) => {
                             await SunmiPrinter.printBitmap(base64result, width)
                         }
 
+                        await SunmiPrinter.lineWrap(2)
                         if(!Boolean(printer?.papercutmanual)) {
-                            await SunmiPrinter.lineWrap(3)
                             await SunmiPrinter.cutPaper()
-                        }
-                        else{
-                            await SunmiPrinter.lineWrap(1)
                         }
                         dispatch(setAlert({visible: true, message: 'Print Successful'}))
                     } else {
@@ -224,30 +220,34 @@ const Index = (props:any) => {
 
 
 
-    const webViewScript = `window.ReactNativeWebView.postMessage(document.body.scrollHeight);
+    const webViewScript = `window.ReactNativeWebView.postMessage((document.getElementById('image-print').scrollHeight || document.body.scrollHeight) + 50);      
   true; // note: this is required, or you'll sometimes get silent failures
 `;
+
 
     const onProductDetailsWebViewMessage = (event: any) => {
         setHeight(Number(event.nativeEvent.data))
     }
 
-    const {webviewwidth} = printer
 
 
-    if (!height) {
+    const webviewwidth = +printer.webviewwidth
+
+
+    if (height === 0) {
         return <View style={[styles.h_100,   styles.middle,{backgroundColor:styles.light.color}]}>
 
             <View style={[styles.h_100, {width: webviewwidth}]}>
 
                 <WebView
                     source={{html: data}}
-                    automaticallyAdjustContentInsets={false}
+                    automaticallyAdjustContentInsets={true}
                     scalesPageToFit={true}
                     scrollEnabled={false}
                     javaScriptEnabled={true}
                     onMessage={onProductDetailsWebViewMessage}
                     injectedJavaScript={webViewScript}
+                    viewportContent={'width=device-width, user-scalable=no, initial-scale=1.0'}
                 />
 
                 <View  style={[styles.loader,styles.bg_light]}>

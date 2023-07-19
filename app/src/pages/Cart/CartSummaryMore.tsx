@@ -1,5 +1,5 @@
 import React, {memo} from "react";
-import {toCurrency} from "../../libs/function";
+import {appLog, toCurrency} from "../../libs/function";
 import {ActivityIndicator, TouchableOpacity, View} from "react-native";
 import {Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
@@ -7,11 +7,10 @@ import {connect, useDispatch} from "react-redux";
 import {setBottomSheet} from "../../redux-store/reducer/component";
 import HoldOrders from "./HoldOrders";
 import Discount from "./Discount";
+import store from "../../redux-store/store";
 
 
 const Index = ({vouchersubtotaldisplay, globaltax,adjustmentamount, voucherroundoffdisplay,vouchertotaldiscountamountdisplay,voucherinlinediscountdisplay, loading}: any) => {
-
-
 
     if (loading) {
         return <View style={{marginTop: 20}}>

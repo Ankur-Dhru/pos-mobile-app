@@ -2751,7 +2751,8 @@ export const printDayEndReport = ({date: date, data: data}: any) => {
 
         return new Promise(async (resolve) => {
             if (Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip)) {
-                sendDataToPrinter(printJson, printer.printertype === 'sunmi'? getPrintTemplate(26) || dayendReportTemplateHtml : getPrintTemplate(29) || dayendReportTemplate, {...printer, templatetype: printer.printertype === 'sunmi' ? 'ThermalHtml' : ''}).then((msg) => {
+
+                sendDataToPrinter(printJson, printer.templatetype === 'ThermalHtml'? getPrintTemplate(28) || dayendReportTemplateHtml : getPrintTemplate(29) || dayendReportTemplate, {...printer}).then((msg) => {
                     resolve(msg)
                 });
             } else {
@@ -2800,6 +2801,7 @@ export const captureImages = async (cropheight: any = 500, image: any) => {
 
 
     return new Promise(async (resolve) => {
+
 
         const base64result = image.split(',')[1];
         const path = 'file://' + RNFS.DocumentDirectoryPath + '/printpreview.jpg';

@@ -288,12 +288,9 @@ const Index = (props: any) => {
                                                                 list={[
                                                                     {label: '56mm - 1x', value: '32',webview:150},
                                                                     {label: '56mm - 2x', value: '32.1',webview:180},
-                                                                    {label: '56mm - 3x', value: '32.2',webview:195},
                                                                     {label: '72mm - 1x', value: '42',webview:195},
                                                                     {label: '80mm - 1x', value: '48',webview:240},
                                                                     {label: '80mm - 2x', value: '48.1',webview:390},
-                                                                    {label: '80mm - 3x', value: '48.2',webview:480},
-                                                                    {label: '80mm - 4x', value: '48.3',webview:780},
                                                                 ]}
                                                                 value={props.input.value}
                                                                 selectedValue={props.input.value}
@@ -302,7 +299,7 @@ const Index = (props: any) => {
                                                                 listtype={'other'}
                                                                 onChange={(value: any,more:any) => {
                                                                     appLog('more',more)
-                                                                    values.webviewwidth = more.webview
+                                                                    values.webviewwidth = more.webview;
                                                                     props.input.onChange(value);
                                                                 }}>
                                                             </InputField>
@@ -310,6 +307,24 @@ const Index = (props: any) => {
                                                     </Field>
                                                     </View>
 
+
+                                                    <View>
+                                                        <Field name="webviewwidth">
+                                                            {props => (
+                                                                <InputField
+                                                                    {...props}
+                                                                    label={'Custom Size'}
+                                                                    value={props.input.value+''}
+                                                                    inputtype={'textbox'}
+
+                                                                    onChange={(value: any) => {
+                                                                        props.input.onChange(value)
+                                                                    }}
+
+                                                                />
+                                                            )}
+                                                        </Field>
+                                                    </View>
 
 
                                                     {<Field name="papercutmanual">

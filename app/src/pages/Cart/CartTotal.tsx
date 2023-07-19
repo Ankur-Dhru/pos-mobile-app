@@ -13,7 +13,9 @@ const Index = ({vouchertotaldisplay, invoiceitems, theme: {colors}}: any) => {
 
     let totalqnt = 0
 
-    invoiceitems.map((item: any) => {
+    invoiceitems.filter((item:any)=>{
+        return item?.treatitem !== 'charges'
+    }).map((item: any) => {
         totalqnt += item.productqnt
     })
 

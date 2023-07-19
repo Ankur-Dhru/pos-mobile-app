@@ -37,7 +37,7 @@ const Index = ({vouchertotaldisplay, paidamount, payment, vouchercurrencyrate,cl
 
     const getGatewayDetailByKey = (key: any, value: any) => {
         const gatewayname: any = Object.keys(paymentgateway[key]).filter((key) => key !== "settings");
-        let returnData = paymentgateway[key][gatewayname].find((a: any) => a.input === value)
+        let returnData = paymentgateway[key] && paymentgateway[key][gatewayname] && paymentgateway[key][gatewayname].find((a: any) => a.input === value)
         return {...returnData, type: gatewayname[0]}
     }
 

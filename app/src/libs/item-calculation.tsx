@@ -270,6 +270,59 @@ export const getProductData = (product: any,
     return returnObject;
 }
 
+export const filterItems = (item: any, onlyCheck?: 'change' | 'treatitem') => {
+    // return Boolean(item.change) && isEmpty(item?.itemdetail?.treatitem)
+
+    if(onlyCheck == 'change') {
+        return Boolean(item.change)
+    } else if(onlyCheck == 'treatitem') {
+        return isEmpty(item?.treatitem)
+    }
+
+    return Boolean(item.change) && isEmpty(item?.treatitem)
+}
+
+const canChargeApply = (item: any, position?: 'beforetax' | 'aftertax') => {
+    return Boolean(item?.treatitem == "charges") && Boolean(item?.data_json?.position == position)
+}
+
+const extraChargeCalculation = (invoiceitems: any, position: 'beforetax' | 'aftertax', totalAmount: any, totalAmountForDiscountDisplay: any, totalAmountForDiscount: any, globaldiscountvalue: any, discounttype: any, vouchertaxtype: any, currentDecimalPlace: any, companyDecimalPlace: any, isDiscountAfterTax: any, totalAmountDisplay: any) => {
+    invoiceitems            = invoiceitems
+        .map((item: any, index: any) => {
+            if(canChargeApply(item, position)) {
+                if(item?.data_json?.chargetype == "percentage") {
+                    let priceObject         = getProductData(item)
+                    let amount              = (+totalAmount * +priceObject.productratedisplay) / 100
+                    let amountDisplay       = (+totalAmountDisplay * +priceObject.productratedisplay) / 100
+                    item.productrate        = amount
+                    item.productratedisplay = amountDisplay
+                }
+                item                 = newItemCalculation('inline', item, totalAmountForDiscountDisplay, totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
+                item.pricenew        = item.productrate
+                item.pricedisplaynew = item.productratedisplay
+            }
+            return item;
+        });
+    // Extra Charge add on Summary
+    let totalChargesDisplay = 0, totalCharges = 0
+    invoiceitems
+        .filter((item: any) => canChargeApply(item, position))
+        .forEach((item: any) => {
+            totalChargesDisplay += item.productratedisplay
+            totalCharges += item.productrate
+        });
+    return {
+        invoiceitems,
+        totalChargesDisplay,
+        totalCharges,
+        totalAmountWithoutCharge       : totalAmount,
+        totalAmountWithoutChargeDisplay: totalAmountDisplay,
+        totalAmount                    : totalAmount + totalCharges,
+        totalAmountDisplay             : totalAmountDisplay + totalChargesDisplay
+    }
+}
+
+
 export const itemTotalCalculation = (
     values: any,
     tds: any,
@@ -297,6 +350,10 @@ export const itemTotalCalculation = (
 
         if (values.invoiceitems) {
 
+            let anyExtraCharge = values.invoiceitems?.some((item: any) => {
+                return Boolean(item?.treatitem == 'charges')
+            })
+
             let total = grandTotal(values, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
 
             // inline Discount
@@ -307,7 +364,7 @@ export const itemTotalCalculation = (
                         item.change = true;
                     }
 
-                    if (Boolean(item?.change)) {
+                    if(filterItems(item)) {
 
 
                         if (vouchertaxtype === "inclusive" &&
@@ -353,7 +410,7 @@ export const itemTotalCalculation = (
 
                 if (vouchertaxtype === "inclusive" && !isDiscountAfterTax) {
                     values.invoiceitems = values.invoiceitems.map((item: any, index: any) => {
-                        if (Boolean(item?.change)) {
+                        if(filterItems(item)) {
                             item = newItemCalculation("inclusive", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
 
                             if (Boolean(item.itemaddon)) {
@@ -374,7 +431,7 @@ export const itemTotalCalculation = (
                 if (Boolean(vouchertransitionaldiscount) && !isDiscountAfterTax) {
                     total = grandTotal(values, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
                     values.invoiceitems = values.invoiceitems.map((item: any, index: any) => {
-                        if (Boolean(item?.change)) {
+                        if(filterItems(item)) {
                             item = newItemCalculation("global", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace,
                                 companyDecimalPlace, isDiscountAfterTax);
 
@@ -394,7 +451,7 @@ export const itemTotalCalculation = (
 
                 // TAX CAL
                 values.invoiceitems = values.invoiceitems?.map((item: any, index: any) => {
-                    if (Boolean(item?.change)) {
+                    if(filterItems(item)) {
                         item = newItemCalculation("tax", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax)
                     }
 
@@ -507,7 +564,7 @@ export const itemTotalCalculation = (
                 if (Boolean(vouchertransitionaldiscount) && isDiscountAfterTax) {
                     total = grandTotal(values, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);
                     values.invoiceitems = values.invoiceitems.map((item: any, index: any) => {
-                        if (Boolean(item?.change)) {
+                        if(filterItems(item)) {
                             item = newItemCalculation("global", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax, values?.reversecharge);
                             if (Boolean(item.itemaddon)) {
                                 item.itemaddon = item.itemaddon.map((ai: any) => {
@@ -539,7 +596,7 @@ export const itemTotalCalculation = (
 
             values.inclusive_subtotal_display = 0;
             values.inclusive_subtotal = 0;
-            values?.invoiceitems?.forEach((item: any, index: any) => {
+            values?.invoiceitems.filter((item: any) => filterItems(item, 'treatitem'))?.forEach((item: any, index: any) => {
                 const {
                     productqnt,
                     pricedisplay
@@ -678,6 +735,46 @@ export const itemTotalCalculation = (
                 values.invoiceitems[index].change = false;
             })
 
+
+            values.extrachargeboforetax        = 0;
+            values.extrachargeafter            = 0;
+            values.extrachargeboforetaxDisplay = 0;
+            values.extrachargeafterdisplay     = 0;
+            // Extra Charge Process Before Tax
+            if(anyExtraCharge && vouchertaxtype === taxtype.exclusive) {
+
+                let inlineDiscountDisplayAmount                    = (+values.voucherinlinediscountdisplay);
+                // Extra Charge Calculation
+                const extraChargeCalculationBeforeTax = extraChargeCalculation(
+                    values.invoiceitems,
+                    'beforetax',
+                    subtotalamountdisplay-inlineDiscountDisplayAmount,
+                    total.totalAmountForDiscountDisplay,
+                    total.totalAmountForDiscount,
+                    globaldiscountvalue,
+                    discounttype,
+                    vouchertaxtype,
+                    currentDecimalPlace,
+                    companyDecimalPlace,
+                    isDiscountAfterTax,
+                    subtotalamountdisplay-inlineDiscountDisplayAmount
+                )
+
+                values.invoiceitems                   = extraChargeCalculationBeforeTax.invoiceitems;
+
+                values.extrachargeboforetax        = extraChargeCalculationBeforeTax.totalCharges;
+                values.extrachargeboforetaxDisplay = extraChargeCalculationBeforeTax.totalChargesDisplay;
+
+                subtotalamountdisplay = extraChargeCalculationBeforeTax.totalAmountDisplay+inlineDiscountDisplayAmount;
+
+                values.vouchersubtotaldisplay = getFloatValue(subtotalamountdisplay, currentDecimalPlace);
+                values.vouchersubtotal        = values.vouchersubtotaldisplay;
+                values.subtotalamount         = values.vouchersubtotaldisplay
+
+                values.subtotalwithoutcharge        = extraChargeCalculationBeforeTax.totalAmountWithoutCharge;
+                values.subtotalwithoutchargedisplay = extraChargeCalculationBeforeTax.totalAmountWithoutChargeDisplay;
+            }
+
             if (!isDiscountAfterTax && vouchertaxtype === taxtype.exclusive && discounttype === "$") {
                 if (globaldiscountvalue !== values.voucherglobaldiscount) {
                     let differencedisplay = getFloatValue(globaldiscountvalue - values.voucherglobaldiscountdisplay, companyDecimalPlace);
@@ -745,6 +842,42 @@ export const itemTotalCalculation = (
             }
             values.totalwithoutroundoffdisplay = getFloatValue(totalamountwithoutroundoffdisplay, currentDecimalPlace);
             values.totalwithoutroundoff = values.totalwithoutroundoffdisplay;
+
+
+            // Extra Charge Process After Tax
+            if(anyExtraCharge) {
+
+                // Extra Charge Calculation
+                const extraChargeCalculationBeforeTax = extraChargeCalculation(
+                    values.invoiceitems,
+                    'aftertax',
+                    totalamountwithoutroundoffdisplay,
+                    total.totalAmountForDiscountDisplay,
+                    total.totalAmountForDiscount,
+                    globaldiscountvalue,
+                    discounttype,
+                    vouchertaxtype,
+                    currentDecimalPlace,
+                    companyDecimalPlace,
+                    isDiscountAfterTax,
+                    totalamountwithoutroundoffdisplay
+                )
+
+                values.invoiceitems = extraChargeCalculationBeforeTax.invoiceitems;
+
+                totalamountwithoutroundoffdisplay = extraChargeCalculationBeforeTax.totalAmountDisplay;
+
+                values.totalwithoutroundoffdisplay = getFloatValue(totalamountwithoutroundoffdisplay, currentDecimalPlace);
+                values.totalwithoutroundoff        = getFloatValue(totalamountwithoutroundoffdisplay, currentDecimalPlace);
+
+                values.extrachargeafter        = extraChargeCalculationBeforeTax.totalCharges;
+                values.extrachargeafterdisplay = extraChargeCalculationBeforeTax.totalChargesDisplay;
+
+                values.totalwithoutcharge        = extraChargeCalculationBeforeTax.totalAmountWithoutCharge;
+                values.totalwithoutchargedisplay = extraChargeCalculationBeforeTax.totalAmountWithoutChargeDisplay;
+            }
+
+
             if (Boolean(values.adjustmentamount)) {
                 values.totalwithoutroundoffdisplay = getFloatValue(values.totalwithoutroundoffdisplay + parseFloat(values.adjustmentamount), currentDecimalPlace);
                 values.totalwithoutroundoff = values.totalwithoutroundoffdisplay;

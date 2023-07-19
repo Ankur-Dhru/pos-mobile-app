@@ -1,6 +1,6 @@
 import {deleteDatabase, enablePromise, openDatabase} from 'react-native-sqlite-storage';
 import {
-    ADD_COLUMN_ITEM_GROUPID, ADD_COLUMN_ITEM_SKU,
+    ADD_COLUMN_ITEM_GROUPID, ADD_COLUMN_ITEM_SKU,ADD_COLUMN_ITEM_TREATBY,
     CREATE_ADDON_TABLE,
     CREATE_CLIENT_TABLE, CREATE_ITEM_INDEX_ITEMGROUPID, CREATE_ITEM_INDEX_ITEMNAME, CREATE_ITEM_INDEX_ITEMUNIQUE,
     CREATE_ITEM_TABLE, CREATE_LOG_TABLE,
@@ -47,6 +47,7 @@ export const createTables = async () => {
 
         db.executeSql(ADD_COLUMN_ITEM_GROUPID);
         db.executeSql(ADD_COLUMN_ITEM_SKU);
+        db.executeSql(ADD_COLUMN_ITEM_TREATBY);
 
         db.executeSql(CREATE_ITEM_INDEX_ITEMGROUPID);
         db.executeSql(CREATE_ITEM_INDEX_ITEMNAME);

@@ -89,7 +89,9 @@ const Index = (props: any) => {
 
             <>
                 <FlatList
-                    data={invoiceitems}
+                    data={invoiceitems.filter((item:any)=>{
+                        return item?.treatitem !== 'charges'
+                    })}
                     ref={cartListRef}
                     getItemLayout={(data, index) => {
                         return { length: 80, offset: 80 * index, index };

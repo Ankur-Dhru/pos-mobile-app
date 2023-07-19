@@ -63,6 +63,7 @@ export const CREATE_SKU_TABLE = `create table if not exists ${TABLE.SKU}
 
 export const ADD_COLUMN_ITEM_GROUPID = `ALTER TABLE ${TABLE.ITEM} ADD COLUMN groupid TEXT`;
 export const ADD_COLUMN_ITEM_SKU = `ALTER TABLE ${TABLE.ITEM} ADD COLUMN sku TEXT`;
+export const ADD_COLUMN_ITEM_TREATBY = `ALTER TABLE ${TABLE.ITEM} ADD COLUMN treatby TEXT`;
 
 export const CREATE_ITEM_INDEX_ITEMGROUPID = `create index index_itemgroupid on ${TABLE.ITEM} (itemgroupid);`;
 export const CREATE_ITEM_INDEX_ITEMNAME = `create index index_itemname on ${TABLE.ITEM} (itemname);`;

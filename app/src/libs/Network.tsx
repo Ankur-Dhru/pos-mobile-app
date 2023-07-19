@@ -20,8 +20,8 @@ export const sendDataToPrinter = async (input?: any, template?: string, printer?
         }
     }*/
 
-    return await new Promise(async (resolve) => {
 
+    return await new Promise(async (resolve) => {
 
         if(Boolean(printer?.template)) {
             try {

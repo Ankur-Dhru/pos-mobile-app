@@ -36,15 +36,18 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
             dispatch(contentLoader(true))
             setTimeout(async () => {
                 const cartdata:any = clone(store.getState().cartData);
-                if(cartdata.updatecart) {
-                    let data = await itemTotalCalculation(cartdata, undefined, undefined, undefined, undefined, 2, 2, false, false);
-                    await dispatch(setCartData(clone(data)));
+                const vouchertotaldisplay:any = clone(store.getState().cartData.vouchertotaldisplay);
+
+                if(Boolean(vouchertotaldisplay)) {
+                    if (cartdata.updatecart) {
+                        let data = await itemTotalCalculation(cartdata, undefined, undefined, undefined, undefined, 2, 2, false, false);
+                        await dispatch(setCartData(clone(data)));
+                    } else {
+                        await dispatch(setCartData(cartdata));
+                    }
+                    await dispatch(setUpdateCart());
+                    dispatch(contentLoader(false))
                 }
-                else {
-                    await dispatch(setCartData(cartdata));
-                }
-                   await dispatch(setUpdateCart());
-                   dispatch(contentLoader(false))
 
             })
         }

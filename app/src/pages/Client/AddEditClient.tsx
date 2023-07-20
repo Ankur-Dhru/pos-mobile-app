@@ -17,10 +17,10 @@ import {
 import {Field, Form} from "react-final-form";
 
 import {
-    ACTIONS,
+    ACTIONS, betweenLength,
     defalut_payment_term,
     isEmail,
-    localredux,
+    localredux, maxLength,
     METHOD,
     minLength,
     required,
@@ -278,7 +278,7 @@ const Index = (props: any) => {
                                                 <View>
                                                     <Field
                                                         name="phone"
-                                                        validate={(value) => Boolean(value) ? minLength(10)(value) : undefined}>
+                                                        validate={(value) => Boolean(value) ? betweenLength(7,10)(value) : undefined}>
                                                         {props => (
                                                             <InputField
                                                                 {...props}

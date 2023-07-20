@@ -10,7 +10,7 @@ import Discount from "./Discount";
 import store from "../../redux-store/store";
 
 
-const Index = ({vouchersubtotaldisplay, globaltax,adjustmentamount, voucherroundoffdisplay,vouchertotaldiscountamountdisplay,voucherinlinediscountdisplay, loading}: any) => {
+const Index = ({vouchersubtotaldisplay, globaltax,adjustmentamount, voucherroundoffdisplay,vouchertotaldiscountamountdisplay,voucherinlinediscountdisplay,extrachargeboforetaxDisplay,totalwithoutroundoffdisplay,extrachargeafterdisplay, loading}: any) => {
 
     if (loading) {
         return <View style={{marginTop: 20}}>
@@ -49,6 +49,14 @@ const Index = ({vouchersubtotaldisplay, globaltax,adjustmentamount, voucherround
             style={styles.m_1} color={'#016EFE'} size='large' animating={true}/></View>}
 
         <View style={{opacity: loading ? 0.3 : 1}}>
+
+            {Boolean(extrachargeboforetaxDisplay) &&   <View style={[styles.grid, styles.justifyContent]}>
+                <View><Paragraph style={[styles.paragraph]}>Extra Charges On ({toCurrency(!loading ? vouchersubtotaldisplay - (voucherinlinediscountdisplay + extrachargeboforetaxDisplay) : '0')})</Paragraph></View>
+                <View>
+                    <Paragraph
+                        style={[styles.paragraph, styles.bold]}>{toCurrency(extrachargeboforetaxDisplay)}</Paragraph>
+                </View>
+            </View>}
 
             <View style={[styles.grid, styles.justifyContent]}>
                 <View><Paragraph style={[styles.paragraph]}>Subtotal</Paragraph></View>
@@ -90,6 +98,16 @@ const Index = ({vouchersubtotaldisplay, globaltax,adjustmentamount, voucherround
             }
 
 
+            {Boolean(extrachargeafterdisplay) &&   <View style={[styles.grid, styles.justifyContent]}>
+                <View><Paragraph style={[styles.paragraph]}>Extra Charges On ({toCurrency(!loading ? totalwithoutroundoffdisplay - extrachargeafterdisplay : '0')})</Paragraph></View>
+                <View>
+                    <Paragraph
+                        style={[styles.paragraph, styles.bold]}>{toCurrency(extrachargeafterdisplay)}</Paragraph>
+                </View>
+            </View>}
+
+
+
             {Boolean(adjustmentamount) &&  <View style={[styles.grid, styles.justifyContent]}>
                 <View><Paragraph style={[styles.paragraph]}>Adjustment</Paragraph></View>
                 <View>
@@ -111,6 +129,9 @@ const Index = ({vouchersubtotaldisplay, globaltax,adjustmentamount, voucherround
 
 const mapStateToProps = (state: any) => ({
     vouchersubtotaldisplay: state.cartData.vouchersubtotaldisplay,
+    extrachargeboforetaxDisplay: state.cartData.extrachargeboforetaxDisplay,
+    totalwithoutroundoffdisplay: state.cartData.totalwithoutroundoffdisplay,
+    extrachargeafterdisplay:state.cartData.extrachargeafterdisplay,
     globaltax: state.cartData.globaltax,
     adjustmentamount:state.cartData.adjustmentamount,
     voucherroundoffdisplay: state.cartData.voucherroundoffdisplay,

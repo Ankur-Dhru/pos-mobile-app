@@ -4,24 +4,33 @@ import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {Caption, Paragraph} from "react-native-paper";
 
-import {getPricingTemplate, selectItem} from "../../libs/function";
+import {clone, findObject, getPricingTemplate, removeItem, selectItem} from "../../libs/function";
 import {setBottomSheet} from "../../redux-store/reducer/component";
-import {setUpdateCart} from "../../redux-store/reducer/cart-data";
+import {setCartData, setUpdateCart} from "../../redux-store/reducer/cart-data";
 import {Field, Form} from "react-final-form";
 import KAccessoryView from "../../components/KAccessoryView";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 import CheckBox from "../../components/CheckBox";
+import store from "../../redux-store/store";
+import {itemTotalCalculation} from "../../libs/item-calculation";
 
 
-const Index = ({cartData}: any) => {
+const Index = () => {
 
     const dispatch = useDispatch()
     const [chargesitems, setChargesitems] = useState([])
 
+    const {cartData:{invoiceitems}} = store.getState()
+
     useEffect(() => {
         getItemsByWhere({treatby: true}).then((items: any) => {
             if (Boolean(items.length)) {
-                setChargesitems(items)
+                let checkitems = []
+                checkitems = items.map((item:any)=>{
+                   const find = findObject(invoiceitems,'itemid',item.itemid,true);
+                    return {...item,selected:Boolean(find)}
+                })
+                setChargesitems(checkitems)
             }
         })
     }, [])
@@ -30,15 +39,34 @@ const Index = ({cartData}: any) => {
 
     const handleSubmit = async (values: any) => {
 
-        values?.items.filter((item: any) => {
-            return item.selected
-        }).map((item: any) => {
-            selectItem(item)
-        })
+        const vouchertotaldisplay =  clone(store.getState().cartData.vouchertotaldisplay);
 
-        await dispatch(setUpdateCart());
+        if(Boolean(vouchertotaldisplay)) {
 
-        dispatch(setBottomSheet({visible: false}))
+            values?.items.filter((item: any) => {
+                const find = findObject(invoiceitems, 'itemid', item.itemid, true);
+                removeItem(find?.key).then(() => {
+                });
+                return item.selected
+            }).map((item: any) => {
+                selectItem(item)
+            })
+
+            await dispatch(setUpdateCart());
+
+
+            setTimeout(async () => {
+                const cartdata: any = clone(store.getState().cartData);
+
+                let data = await itemTotalCalculation(cartdata, undefined, undefined, undefined, undefined, 2, 2, false, false);
+                await dispatch(setCartData(clone(data)));
+
+                dispatch(setBottomSheet({visible: false}));
+
+
+            }, 1000)
+        }
+
 
     }
 
@@ -130,7 +158,7 @@ const Index = ({cartData}: any) => {
 
 
 const mapStateToProps = (state: any) => ({
-    cartData: state.cartData
+
 })
 const mapDispatchToProps = (dispatch: any) => ({});
 

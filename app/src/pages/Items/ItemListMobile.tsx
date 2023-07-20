@@ -93,7 +93,7 @@ const Index = (props: any) => {
 
         const combogroup = getCombos(lastgroup)
 
-        if (Boolean(newitems.length > 0)) {
+        if (Boolean(newitems?.length > 0)) {
             let items = updateItems(newitems)
             setDataSource([...items,...combogroup]);
 

@@ -289,6 +289,15 @@ export const minLength = (min: any, label?: any) => (value: any) => {
         return message
     }
 }
+export const betweenLength = (min:any,max: any, label?: any) => (value: any) => {
+    if (value?.length > max || value?.length < min) {
+        let message = `min ${min} and max ${max} digit`
+        if (Boolean(label) && getType(label) === "string") {
+            message = `${label} ${message}`
+        }
+        return message
+    }
+}
 export const maxValue = (max: any, label?: any) => (value: any) => {
     if (value > max) {
         let message = `maximum value is ${max}`

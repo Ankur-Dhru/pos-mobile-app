@@ -576,7 +576,7 @@ export const syncData = async (loader = true,synctype  = '') => {
 
                         } else if (result === 'item') {
                             if (Boolean(data.result)) {
-                                await insertItems(data.result, 'all').then(() => {
+                                await insertItems(data.result, 'onebyone').then(() => {
                                 });
                             }
                         } else if (result === 'addon') {
@@ -1221,6 +1221,22 @@ export const removeItem = async (unique: any) => {
             // Boolean(current.table?.tableorderid) && await deleteTempLocalOrder(current.table?.tableorderid);
             await store.dispatch(updateCartField({invoiceitems: []}))
         }
+
+        setTimeout(()=>{
+
+            const invoiceitems: any = store.getState().cartData.invoiceitems || {}
+
+            const totalitems = invoiceitems?.filter((item:any)=>{
+                return item?.treatitem !== 'charges'
+            }).length
+
+            if(totalitems === 0) {
+                store.dispatch(updateCartField({invoiceitems: [],vouchertotaldisplay:0}))
+            }
+
+        },500)
+
+
     } catch (e) {
         console.log('e', e)
     }
@@ -1606,7 +1622,7 @@ export const generateKOT = async (cancelkotprint?: any) => {
                         if (invoiceitems) {
 
                             itemForKot = invoiceitems.filter((itemL1: any) => {
-                                return Boolean(itemL1?.itemdepartmentid) && !Boolean(itemL1?.kotid)
+                                return Boolean(itemL1?.itemdepartmentid) && !Boolean(itemL1?.kotid) && Boolean(itemL1?.treatitem !== 'charges')
                             });
 
                             if (itemForKot?.length > 0) {

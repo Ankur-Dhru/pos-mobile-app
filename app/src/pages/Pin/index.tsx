@@ -37,6 +37,7 @@ import Avatar from "../../components/Avatar";
 import Button from "../../components/Button";
 import HoldOrders from "../Cart/HoldOrders";
 import {getUniqueId} from "react-native-device-info";
+import analytics from "@react-native-firebase/analytics";
 
 
 const md5 = require('md5');
@@ -117,6 +118,13 @@ const Index = (props: any) => {
             }
 
         }
+
+       /* const {workspace}: any = localredux.initData;
+        analytics().logEvent('workspace', {
+            name: workspace,
+        }).then(r => {
+
+        })*/
 
         await dispatch(hideLoader())
         localredux.loginuserData = params;

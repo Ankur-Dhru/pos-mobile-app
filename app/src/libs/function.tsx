@@ -16,12 +16,17 @@ import {hideLoader, setAlert, setBottomSheet, setDialog, showLoader} from "../re
 import apiService from "./api-service";
 import {
     ACTIONS,
-    dayendReportTemplate, dayendReportTemplateHtml,
-    db, device, grecaptcharesponse,
+    dayendReportTemplate,
+    dayendReportTemplateHtml,
+    db,
+    device,
+    grecaptcharesponse,
     isDevelopment,
-    localredux, loginUrl,
+    localredux,
+    loginUrl,
     METHOD,
-    port, pricing,
+    port,
+    pricing,
     PRINTER,
     STATUS,
     taxTypes,
@@ -45,15 +50,7 @@ import ItemDetail from "../pages/Items/ItemDetail";
 import AddonActions from "../pages/Items/AddonActions";
 import {onPressNumber} from "../pages/Items/AddButton";
 import NetInfo from "@react-native-community/netinfo";
-import {
-    insertAddons,
-    insertClients,
-    insertItems,
-    insertLog,
-    insertOrder,
-    insertSkus,
-    insertTempOrder
-} from "./Sqlite/insertData";
+import {insertAddons, insertClients, insertItems, insertLog, insertOrder, insertTempOrder} from "./Sqlite/insertData";
 import {sendDataToPrinter} from "./Network";
 import {CommonActions} from "@react-navigation/native";
 import {
@@ -76,9 +73,7 @@ import ImageSize from "react-native-image-size";
 import ImageEditor from "@react-native-community/image-editor";
 import ItemListCombo from "../pages/Items/ItemListCombo";
 import {createTables} from "./Sqlite";
-import {getCombos} from "../pages/Items/ItemListMobile";
-import {exp} from "@gorhom/bottom-sheet/lib/typescript/utilities/easingExp";
-import {setInitDataWithKeyValue} from "../redux-store/reducer/init-data";
+import crashlytics from "@react-native-firebase/crashlytics";
 
 
 let NumberFormat = require('react-number-format');
@@ -129,6 +124,7 @@ export const appLog2 = (arg1: any, ...argn: any[]) => {
 }
 
 export const clone = (obj: any) => {
+    crashlytics().log('clone');
     var copy: any;
     if (null == obj || "object" != typeof obj) return obj;
     if (obj instanceof Date) {
@@ -154,17 +150,20 @@ export const clone = (obj: any) => {
 };
 
 export const getDefaultCurrency = () => {
+    crashlytics().log('getDefaultCurrency');
     const {currency}: any = localredux.initData;
     return Object.keys(currency).find((k) => currency[k]?.rate === "1") || {}
 }
 
 export const currencyRate = (currencyName: any) => {
+    crashlytics().log('currencyRate');
     const {currency}: any = localredux.initData;
     const rate = currency[currencyName].rate
     return parseFloat(rate);
 }
 
 export const getFloatValue = (value: any, fraxtionDigits?: number, notConvert?: boolean, isLog?: boolean) => {
+    crashlytics().log('getFloatValue');
     if (!Boolean(fraxtionDigits)) {
         fraxtionDigits = 4;
     }
@@ -192,7 +191,7 @@ export const debounce = (func: any, timeout = 200) => {
 }
 
 export const findObject = (array: any, field: any, value: any, onlyOne: any) => {
-
+    crashlytics().log('findObject');
     if (Boolean(array && array.length)) {
         let find: any = array.filter(function (item: any) {
             if (!Boolean(item[field])) {
@@ -251,6 +250,7 @@ export const getCurrencyData = (currencyKey?: any) => {
 }
 
 export const numberFormat = (amount: any, customcurrency?: any, decimalPlace?: any) => {
+    crashlytics().log('numberFormat');
     const {general, currency}: any = localredux.initData;
 
     if (!Boolean(amount)) {
@@ -286,6 +286,7 @@ export const numberFormat = (amount: any, customcurrency?: any, decimalPlace?: a
 };
 
 export const getDateWithFormat = (date?: string, dateFormat?: string) => {
+    crashlytics().log('getDateWithFormat');
     if (!dateFormat) {
         dateFormat = "YYYY-MM-DD HH:mm:ss"
     }
@@ -293,6 +294,7 @@ export const getDateWithFormat = (date?: string, dateFormat?: string) => {
 }
 
 export const dateFormat = (withTime?: boolean, standardformat?: boolean) => {
+    crashlytics().log('dateFormat');
     let {initData: {general}}: any = localredux;
     let dateFormat = general?.dateformat;
 
@@ -308,6 +310,7 @@ export const dateFormat = (withTime?: boolean, standardformat?: boolean) => {
 
 
 export const getVoucherKey = (findKey: any, findValue: any) => {
+    crashlytics().log('getVoucherKey');
     let {initData}: any = localredux;
 
     let key = Object.keys(initData?.voucher?.data).find((voucherKey: any) => {
@@ -321,6 +324,7 @@ export const getVoucherKey = (findKey: any, findValue: any) => {
 }
 
 export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = true, isTaxInvoice: boolean = false) => {
+    crashlytics().log('voucherData');
 
     let {initData, licenseData, staffData, localSettingsData, loginuserData}: any = localredux;
 
@@ -385,10 +389,10 @@ export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = t
         selectedtemplate: voucherTypeData?.printtemplate,
         paymentmethod: payment[0]?.paymentmethod,
         payment: payment,
-        isadjustment:voucherTypeData?.isadjustment,
+        isadjustment: voucherTypeData?.isadjustment,
         edit: true,
         paxes: 1,
-        deviceid:device.uniqueid,
+        deviceid: device.uniqueid,
         "placeofsupply": state,
         "updatecart": false,
         "debugPrint": true,
@@ -422,7 +426,7 @@ export const options_itc: any = [
 
 
 export const shortName = (str: any) => {
-
+    crashlytics().log('shortName');
     if (Boolean(str)) {
         const firstLetters = str
             .split(' ')
@@ -434,6 +438,7 @@ export const shortName = (str: any) => {
 }
 
 export const base64Decode = (encodedData: any) => {
+    crashlytics().log('base64Decode');
     try {
         if (Boolean(encodedData)) {
             let bytes = base64.decode(encodedData);
@@ -446,6 +451,7 @@ export const base64Decode = (encodedData: any) => {
 }
 
 export const base64Encode = (content: any) => {
+    crashlytics().log('base64Encode');
     if (!content) {
         content = ' '
     }
@@ -507,14 +513,15 @@ export const selectItemObject = (label: string, value: string | number, rank: nu
 })
 
 export const CheckConnectivity = () => {
+    crashlytics().log('CheckConnectivity');
     NetInfo.addEventListener((networkState: any) => {
         //store.dispatch(setConnection({internet: networkState.isConnected}));
         store.dispatch(setSettings({internet: networkState.isConnected}))
     });
 };
 
-export const syncData = async (loader = true,synctype  = '') => {
-
+export const syncData = async (loader = true, synctype = '') => {
+    crashlytics().log('syncData');
     Keyboard.dismiss()
 
     await retrieveData(db.name).then(async (data: any) => {
@@ -560,7 +567,7 @@ export const syncData = async (loader = true,synctype  = '') => {
                     workspace: initData.workspace,
                     token: licenseData?.token,
                     hideLoader: true,
-                    hidealert:true,
+                    hidealert: true,
                     other: {url: urls.posUrl},
                 }).then(async (response: any) => {
 
@@ -698,6 +705,7 @@ export const getType = (p: any) => {
 
 
 export const filterArray = (array: any, fields: any, searchText: any, multilevel: any = false) => {
+    crashlytics().log('filterArray');
     if (Boolean(array.length)) {
         if (multilevel) {
 
@@ -733,19 +741,17 @@ export const filterArray = (array: any, fields: any, searchText: any, multilevel
 }
 
 
-
-
 export const startWith = (array: any, fields: any, searchText: any) => {
+    crashlytics().log('startWith');
     let filter = [];
     if (Boolean(array.length)) {
         filter = array?.filter((item: any, key: any) => {
-            return  item[fields].toLowerCase().startsWith(searchText && searchText?.toLowerCase())
+            return item[fields].toLowerCase().startsWith(searchText && searchText?.toLowerCase())
         })
     }
-    if(Boolean(filter.length)) {
+    if (Boolean(filter.length)) {
         return filter
-    }
-    else{
+    } else {
         return filterArray(array, ['itemname'], searchText)
     }
 }
@@ -755,6 +761,7 @@ export const chevronRight: any = <ProIcon name={'chevron-right'} align={'right'}
 
 
 export const toCurrency = (value: any, code?: any, decimal?: any) => {
+    crashlytics().log('toCurrency');
 
     const {currency}: any = localredux.initData;
     const {currency: cartCurrency}: any = store.getState().cartData;
@@ -776,7 +783,7 @@ export const toCurrency = (value: any, code?: any, decimal?: any) => {
                 value={parseFloat(value).toFixed(decimalplace)}
                 displayType={'text'}
                 thousandSeparator={true}
-                thousandsGroupStyle={code === 'INR'?"lakh":""}
+                thousandsGroupStyle={code === 'INR' ? "lakh" : ""}
                 prefix={getSymbolFromCurrency(code)}
                 renderText={(value: any, props: any) => <Text {...props}>{value}</Text>}
             />;
@@ -807,6 +814,7 @@ export const errorAlert = (message: any, title?: any) => {
 }
 
 export const voucherTotal = (items: any, vouchertaxtype: any) => {
+    crashlytics().log('voucherTotal');
     let vouchertotaldisplay = 0;
 
     let taxesList: any = localredux.initData.tax;
@@ -850,8 +858,8 @@ export const voucherTotal = (items: any, vouchertaxtype: any) => {
 }
 
 
-export const setItemRowData = (data: any,pricingtemplate?:any) => {
-
+export const setItemRowData = (data: any, pricingtemplate?: any) => {
+    crashlytics().log('setItemRowData');
     try {
 
         let isInward: boolean = false;
@@ -867,7 +875,7 @@ export const setItemRowData = (data: any,pricingtemplate?:any) => {
         let pricingTemplate = getPricingTemplate(pricingtemplate);
 
         const clientdetail = store.getState().cartData.client
-        if(Boolean(clientdetail?.pricingtemplate)){
+        if (Boolean(clientdetail?.pricingtemplate)) {
             pricingTemplate = clientdetail?.pricingtemplate
         }
 
@@ -904,7 +912,7 @@ export const setItemRowData = (data: any,pricingtemplate?:any) => {
 
         let recurring = undefined, producttaxgroupid, productqntunitid;
 
-        if(!Boolean(pricing.price[pricingTemplate])){
+        if (!Boolean(pricing.price[pricingTemplate])) {
             pricingTemplate = 'default'
         }
 
@@ -915,7 +923,6 @@ export const setItemRowData = (data: any,pricingtemplate?:any) => {
             pricing.price[pricingTemplate]?.length > 0) {
             recurring = Object.keys(pricing.price[pricingTemplate][0])[0];
         }
-
 
 
         if (Boolean(salesunit)) {
@@ -973,7 +980,7 @@ export const setItemRowData = (data: any,pricingtemplate?:any) => {
 
 
 export const saveTempLocalOrder = (order?: any, config?: any) => {
-
+    crashlytics().log('saveTempLocalOrder');
     return new Promise<any>(async (resolve) => {
         try {
 
@@ -1013,13 +1020,12 @@ export const saveTempLocalOrder = (order?: any, config?: any) => {
                 order.payment[0].paymentAmount = order.vouchertotaldisplay
             }*/
 
-            appLog('order',order.tablename)
+            appLog('order', order.tablename)
 
             insertTempOrder(order).then((data: any) => {
-                if(Boolean(data)) {
+                if (Boolean(data)) {
                     store.dispatch(setCartData(data));
-                }
-                else{
+                } else {
                     store.dispatch(resetCart())
                 }
                 resolve(data)
@@ -1032,6 +1038,7 @@ export const saveTempLocalOrder = (order?: any, config?: any) => {
 }
 
 export const deleteTempLocalOrder = (tableorderid?: any) => {
+    crashlytics().log('deleteTempLocalOrder');
     return new Promise<any>(async (resolve) => {
         await deleteTable(TABLE.TEMPORDER, `tableorderid = '${tableorderid}'`).then(() => {
             store.dispatch(resetCart())
@@ -1043,6 +1050,8 @@ export const deleteTempLocalOrder = (tableorderid?: any) => {
 
 
 export const saveLocalOrder = (order?: any) => {
+
+    crashlytics().log('saveLocalOrder');
 
     return new Promise<any>(async (resolve) => {
 
@@ -1107,11 +1116,11 @@ export const saveLocalOrder = (order?: any) => {
             ///////// CREATE LOCALORDER ID //////////
 
             deleteTempLocalOrder(order.tableorderid).then(async (msg: any) => {
-                await insertOrder({...order,syncinprogress:true}).then(() => {
+                await insertOrder({...order, syncinprogress: true}).then(() => {
                     resolve(order)
                 });
 
-                const disablesyncinvoicesrealtime:any = store.getState().localSettings?.disablesyncinvoicesrealtime;
+                const disablesyncinvoicesrealtime: any = store.getState().localSettings?.disablesyncinvoicesrealtime;
                 !disablesyncinvoicesrealtime && await syncInvoice(order).then()
             })
         }
@@ -1139,6 +1148,7 @@ export const saveDatabaseName = async (databasename: any) => {
 
 
 export const saveLocalSettings = async (key: any, setting?: any) => {
+    crashlytics().log('saveLocalSettings');
     await retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
         data = {
             ...data,
@@ -1152,6 +1162,7 @@ export const saveLocalSettings = async (key: any, setting?: any) => {
 
 
 export const getLocalSettings = async (key: any) => {
+    crashlytics().log('getLocalSettings');
     return new Promise(async resolve => {
         await retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
             if (Boolean(data) && Boolean(data[key])) {
@@ -1182,6 +1193,7 @@ export const setAPIUrl = (betamode: any) => {
 
 
 export const getTicketStatus = (statusid: any) => {
+    crashlytics().log('getTicketStatus');
     const currentTicketType = localredux.initData?.tickets[TICKETS_TYPE.KOT];
     let status: any = {};
     if (!isEmpty(currentTicketType?.ticketstatuslist) && currentTicketType?.ticketstatuslist[statusid]) {
@@ -1206,7 +1218,7 @@ export const objToArray = (data: any) => {
 
 
 export const removeItem = async (unique: any) => {
-
+    crashlytics().log('removeItem');
     const invoiceitems: any = store.getState().cartData.invoiceitems || {}
 
     try {
@@ -1222,19 +1234,19 @@ export const removeItem = async (unique: any) => {
             await store.dispatch(updateCartField({invoiceitems: []}))
         }
 
-        setTimeout(()=>{
+        setTimeout(() => {
 
             const invoiceitems: any = store.getState().cartData.invoiceitems || {}
 
-            const totalitems = invoiceitems?.filter((item:any)=>{
+            const totalitems = invoiceitems?.filter((item: any) => {
                 return item?.treatitem !== 'charges'
             }).length
 
-            if(totalitems === 0) {
-                store.dispatch(updateCartField({invoiceitems: [],vouchertotaldisplay:0}))
+            if (totalitems === 0) {
+                store.dispatch(updateCartField({invoiceitems: [], vouchertotaldisplay: 0}))
             }
 
-        },500)
+        }, 500)
 
 
     } catch (e) {
@@ -1244,6 +1256,7 @@ export const removeItem = async (unique: any) => {
 }
 
 export const getCurrencySign = () => {
+    crashlytics().log('getCurrencySign');
     const {currency}: any = localredux.initData;
     const {currency: cartCurrency}: any = store.getState().cartData;
     let currencylist = currency;
@@ -1257,6 +1270,7 @@ export const getCurrencySign = () => {
 
 
 export const groupBy = (arr: any, property: any) => {
+    crashlytics().log('groupBy');
     try {
         return arr.reduce(function (memo: any, x: any) {
             if (!memo[x[property]]) {
@@ -1271,7 +1285,10 @@ export const groupBy = (arr: any, property: any) => {
 }
 
 export const getPricingTemplate = (pricingTemplate?: any) => {
-    if(!pricingTemplate) {
+
+    crashlytics().log('getPricingTemplate');
+
+    if (!pricingTemplate) {
 
         const {localSettingsData}: any = localredux
         /**
@@ -1279,9 +1296,9 @@ export const getPricingTemplate = (pricingTemplate?: any) => {
          */
         pricingTemplate = localSettingsData?.currentLocation?.locationpricingtemplate;
 
-        if(localSettingsData?.currentTable?.area && !isEmpty(localSettingsData?.currentLocation?.areas)) {
+        if (localSettingsData?.currentTable?.area && !isEmpty(localSettingsData?.currentLocation?.areas)) {
             let areaList = localSettingsData?.currentLocation?.areas;
-            if(!Array.isArray(areaList)) {
+            if (!Array.isArray(areaList)) {
                 areaList = Object.values(areaList);
             }
             let findArea = areaList.find((area: any) => area?.areaname === localSettingsData?.currentTable?.area);
@@ -1289,16 +1306,14 @@ export const getPricingTemplate = (pricingTemplate?: any) => {
              * set area wise pricing template,
              * if area template is not default.
              */
-            if(!isEmpty(findArea) && findArea?.pricingtemplate !== 'default') {
+            if (!isEmpty(findArea) && findArea?.pricingtemplate !== 'default') {
                 pricingTemplate = findArea?.pricingtemplate;
             }
         }
 
 
-
-
     }
-    if(!pricingTemplate) {
+    if (!pricingTemplate) {
         pricingTemplate = 'default';
     }
     return pricingTemplate;
@@ -1306,12 +1321,14 @@ export const getPricingTemplate = (pricingTemplate?: any) => {
 
 export const selectItem = async (item: any) => {
 
+    crashlytics().log('selectItem');
+
     const pricingtype = item?.pricing?.type;
 
     let pricingtemplate = getPricingTemplate()
 
     const clientdetail = store.getState().cartData.client
-    if(Boolean(clientdetail?.pricingtemplate)){
+    if (Boolean(clientdetail?.pricingtemplate)) {
         pricingtemplate = clientdetail?.pricingtemplate
     }
 
@@ -1327,7 +1344,7 @@ export const selectItem = async (item: any) => {
                 ...item,
                 added: true,
                 key: uuid(),
-                deviceid:device.uniqueid
+                deviceid: device.uniqueid
             }
 
             let start = moment();
@@ -1378,7 +1395,7 @@ export const selectItem = async (item: any) => {
         }
     }
 
-    const {defaultAmountOpen,defaultOpenUnitType}:any = store.getState()?.localSettings || {};
+    const {defaultAmountOpen, defaultOpenUnitType}: any = store.getState()?.localSettings || {};
 
     const directQnt = arraySome(defaultAmountOpen, item.salesunit) && defaultOpenUnitType
 
@@ -1400,7 +1417,7 @@ export const selectItem = async (item: any) => {
 
         onPressNumber(item, 'amount', (price: any) => {
             const pricingtype = item?.pricing?.type || 'onetime';
-            item.pricing = {...pricing,type:pricingtype,price:{default:[{[pricingtype]: {baseprice: price}}]}};
+            item.pricing = {...pricing, type: pricingtype, price: {default: [{[pricingtype]: {baseprice: price}}]}};
 
             selectItem(item).then(() => {
                 store.dispatch(setDialog({visible: false}))
@@ -1536,10 +1553,12 @@ export const getLeftRight = (left: string, right: string, large: boolean = false
 
 export const generateKOT = async (cancelkotprint?: any) => {
 
+    crashlytics().log('generateKOT');
+
     return new Promise(async (resolve, reject) => {
 
         let kotid: any = '';
-       // store.dispatch(showLoader())
+        // store.dispatch(showLoader())
         let cartData = store.getState().cartData;
 
         if (Boolean(urls.localserver)) {
@@ -1833,6 +1852,8 @@ export const generateKOT = async (cancelkotprint?: any) => {
 
 
 export const printInvoice = async (order?: any) => {
+
+    crashlytics().log('printInvoice');
 
     try {
 
@@ -2133,6 +2154,7 @@ export const printInvoice = async (order?: any) => {
         }
 
     } catch (e) {
+        crashlytics().log('print invoice' + e);
         appLog('error printInvoice', e)
     }
 
@@ -2141,8 +2163,9 @@ export const printInvoice = async (order?: any) => {
 
 export const printKOT = async (kot?: any, cancelkotprint?: any) => {
 
+    crashlytics().log('printKOT');
     if (Boolean(urls.localserver)) {
-       await apiService({
+        await apiService({
             method: METHOD.POST,
             action: 'remote/cancelkot',
             body: [kot],
@@ -2205,6 +2228,7 @@ export const getPrintTemplateLogo = (type?: any) => {
 
 
 export const getPrintTemplate = (id?: any) => {
+    crashlytics().log('getPrintTemplate');
     const {printingtemplate} = localredux.initData
     if (Boolean(printingtemplate) && Boolean(printingtemplate[id])) {
         return base64Decode(printingtemplate[id]?.content)
@@ -2214,9 +2238,11 @@ export const getPrintTemplate = (id?: any) => {
 
 export const cancelOrder = async (navigation: any) => {
 
+    crashlytics().log('cancelOrder');
+
     let cartData = store.getState().cartData;
 
-    const {cancelorder}:any = localredux?.authData?.settings;
+    const {cancelorder}: any = localredux?.authData?.settings;
 
 
     try {
@@ -2270,9 +2296,9 @@ export const arraySome = (arrayList: any[], key: string) => {
 }
 
 
-
 export const refreshToken = () => {
 
+    crashlytics().log('refreshToken');
 
     return new Promise(((resolve, reject) => {
 
@@ -2286,7 +2312,7 @@ export const refreshToken = () => {
 
 
         const init: any = {
-            method:'GET',
+            method: 'GET',
             workspace: workspace,
             headers: new Headers(headers),
         };
@@ -2303,8 +2329,7 @@ export const refreshToken = () => {
                         await updateToken(newtoken).then()
                         resolve(true)
                     }
-                }
-                else{
+                } else {
                     console.log('Expire token refresh token')
                     device.navigation.navigate('Login')
                     resolve(false)
@@ -2317,11 +2342,10 @@ export const refreshToken = () => {
 }
 
 
-
-
 export const updateToken = async (token: any) => {
 
-    appLog('updateToken')
+
+    crashlytics().log('updateToken');
 
     localredux.authData.token = token;
     device.token = token;
@@ -2342,6 +2366,7 @@ export const createDatabaseName = ({workspace, locationid}: any) => {
 
 export const selectWorkspace = async (workspace: any, navigation: any) => {
 
+
     store.dispatch(showLoader())
     const {token}: any = localredux.authData;
 
@@ -2358,7 +2383,12 @@ export const selectWorkspace = async (workspace: any, navigation: any) => {
 
         if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
 
-            localredux.initData = {...response.data, deviceName: response?.deviceName, workspace: workspace.name,license_token:response.license_token}
+            localredux.initData = {
+                ...response.data,
+                deviceName: response?.deviceName,
+                workspace: workspace.name,
+                license_token: response.license_token
+            }
 
             if (Boolean(localredux.initData?.general?.legalname) && Boolean(localredux.initData?.location) && Boolean(localredux.initData?.currency)) {
                 navigation.replace('Terminal');
@@ -2404,12 +2434,14 @@ Permissions.getPermissionStatus('localNetwork').then((r) => {
 
 
 export const getClients = async (refresh = false) => {
+    crashlytics().log('getClients');
     await getClientsByWhere({}).then((clients: any) => {
         localredux.clientsData = clients
     });
 }
 
 export const getAddons = async (refresh = false) => {
+    crashlytics().log('getAddons');
     await getAddonByWhere({}).then((addons: any) => {
         localredux.addonsData = addons
     });
@@ -2514,6 +2546,7 @@ export const loadContacts = async () => {
             });
         })
         .catch(e => {
+            crashlytics().log('get contacts from mobile  ' + e);
             appLog('error', e)
         });
     Contacts.checkPermission().then();
@@ -2541,8 +2574,7 @@ export const syncInvoice = async (invoiceData: any) => {
         if (syncstatus) {
             appLog('sync in progress')
             resolve('sync in progress')
-        }
-        else {
+        } else {
 
             saveLocalSettings({sync_in_process: true})
 
@@ -2559,7 +2591,13 @@ export const syncInvoice = async (invoiceData: any) => {
 
                 await saveLocalSettings({sync_in_process: false})
 
-                insertLog({displayno:invoiceData?.invoice_display_number,orderid:invoiceData?.orderid,status:response.status,code:response.code,message:response.message}).then(()=>{
+                insertLog({
+                    displayno: invoiceData?.invoice_display_number,
+                    orderid: invoiceData?.orderid,
+                    status: response.status,
+                    code: response.code,
+                    message: response.message
+                }).then(() => {
 
                 })
 
@@ -2575,13 +2613,13 @@ export const syncInvoice = async (invoiceData: any) => {
                     deleteTable(TABLE.ORDER, `orderid = '${invoiceData?.orderid}'`).then(async () => {
                         store.dispatch(setOrder({...invoiceData, synced: true}))
                         appLog('delete from local table')
-                        appLog('order synced',invoiceData?.orderid)
+                        appLog('order synced', invoiceData?.orderid)
                         resolve('synced',)
                     });
                 } else {
                     appLog('response error')
-                    appLog('sync pending',invoiceData?.orderid)
-                    await insertOrder({...invoiceData,syncinprogress:false}).then(() => {
+                    appLog('sync pending', invoiceData?.orderid)
+                    await insertOrder({...invoiceData, syncinprogress: false}).then(() => {
 
                     });
                     resolve({status: "ERROR"})
@@ -2589,12 +2627,16 @@ export const syncInvoice = async (invoiceData: any) => {
 
             }).catch(async () => {
 
-                insertLog({displayno:invoiceData?.invoice_display_number,orderid:invoiceData?.orderid,status:'error'}).then(()=>{
+                insertLog({
+                    displayno: invoiceData?.invoice_display_number,
+                    orderid: invoiceData?.orderid,
+                    status: 'error'
+                }).then(() => {
 
                 })
 
                 appLog('response catch error')
-                await insertOrder({...invoiceData,syncinprogress:false}).then(() => {
+                await insertOrder({...invoiceData, syncinprogress: false}).then(() => {
 
                 });
                 await saveLocalSettings({sync_in_process: false})
@@ -2725,7 +2767,7 @@ export const printDayEndReport = ({date: date, data: data}: any) => {
                 locationname,
             }
         }: any = localredux.localSettingsData;
-        const {general: {legalname},printingtemplate}: any = localredux.initData;
+        const {general: {legalname}, printingtemplate}: any = localredux.initData;
 
         const {username}: any = localredux.authData;
 
@@ -2743,11 +2785,11 @@ export const printDayEndReport = ({date: date, data: data}: any) => {
             invoicetype: 'Retail Invoice',
             head: () => getLeftRight("TID | SID | Name", "Amount"),
             isItems: true,
-            items: Object.values(data.order).filter((order:any)=>{
+            items: Object.values(data.order).filter((order: any) => {
                 return order.vouchertypeid === VOUCHER.INVOICE
             })?.map((item: any) => {
                     total += +item.vouchertotal;
-                    return getLeftRight(item.posinvoice + '  |  ' + item.voucherdisplayid + '  |  ' + item.client , numberFormat(item.vouchertotal, false, decimalPlace))
+                    return getLeftRight(item.posinvoice + '  |  ' + item.voucherdisplayid + '  |  ' + item.client, numberFormat(item.vouchertotal, false, decimalPlace))
                 }
             ),
             isSummary: true,
@@ -2768,7 +2810,7 @@ export const printDayEndReport = ({date: date, data: data}: any) => {
         return new Promise(async (resolve) => {
             if (Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip)) {
 
-                sendDataToPrinter(printJson, printer.templatetype === 'ThermalHtml'? getPrintTemplate(28) || dayendReportTemplateHtml : getPrintTemplate(29) || dayendReportTemplate, {...printer}).then((msg) => {
+                sendDataToPrinter(printJson, printer.templatetype === 'ThermalHtml' ? getPrintTemplate(28) || dayendReportTemplateHtml : getPrintTemplate(29) || dayendReportTemplate, {...printer}).then((msg) => {
                     resolve(msg)
                 });
             } else {
@@ -2787,8 +2829,8 @@ export const printDayEndReport = ({date: date, data: data}: any) => {
 export const intervalInvoice = () => {
     let interval: any = null;
 
-    const syncinvoiceintervaltime:any = store.getState().localSettings?.syncinvoiceintervaltime
-    console.log('======================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================intervalInvoice',syncinvoiceintervaltime)
+    const syncinvoiceintervaltime: any = store.getState().localSettings?.syncinvoiceintervaltime
+    console.log('======================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================intervalInvoice', syncinvoiceintervaltime)
 
     CheckConnectivity()
     useEffect(() => {
@@ -2966,13 +3008,12 @@ export const getDefaultPayment = () => {
 export const sortByGroup = (a: any, b: any) => a.order < b.order ? -1 : a.order > b.order ? 1 : 0
 
 
-
 export const syncImages = async () => {
 
     await getItemsByWhere({}).then(async (items: any) => {
         for (let key in items) {
-           let imagepath = items[key]?.itemimage;
-            saveImage(imagepath,false).then()
+            let imagepath = items[key]?.itemimage;
+            saveImage(imagepath, false).then()
         }
     });
 
@@ -2986,16 +3027,16 @@ export const syncImages = async () => {
 
 }
 
-export const saveImage = async (imagepath:any,local:any) => {
-    if(Boolean(imagepath)) {
-        if(!local){
+export const saveImage = async (imagepath: any, local: any) => {
+    if (Boolean(imagepath)) {
+        if (!local) {
             imagepath = `https://${imagepath}`
         }
         await toDataURL(imagepath, async function (dataUrl: any) {
             let filename = imagepath.split('/').pop()
 
             const base64result = dataUrl.split(',')[1];
-            const path = 'file://' + RNFS.DocumentDirectoryPath + '/'+filename;
+            const path = 'file://' + RNFS.DocumentDirectoryPath + '/' + filename;
 
             await RNFS.writeFile(path, base64result, 'base64')
                 .then((success) => {
@@ -3009,11 +3050,11 @@ export const saveImage = async (imagepath:any,local:any) => {
 }
 
 
-function toDataURL(url:any, callback:any) {
+function toDataURL(url: any, callback: any) {
     let xhr = new XMLHttpRequest();
-    xhr.onload = function() {
+    xhr.onload = function () {
         let reader = new FileReader();
-        reader.onloadend = function() {
+        reader.onloadend = function () {
             callback(reader.result);
         }
         reader.readAsDataURL(xhr.response);
@@ -3023,19 +3064,17 @@ function toDataURL(url:any, callback:any) {
     xhr.send();
 }
 
-export const getItemImage = (item:any) => {
+export const getItemImage = (item: any) => {
     let imagepath = ''
-    if(Boolean(urls.localserver)){
-        if(Boolean(item?.itemimagelocal)) {
+    if (Boolean(urls.localserver)) {
+        if (Boolean(item?.itemimagelocal)) {
             imagepath = `${urls.localserver}item/image/${item.itemimagelocal}`;
         }
-    }
-    else{
-        if(Boolean(item?.itemimage)) {
+    } else {
+        if (Boolean(item?.itemimage)) {
             let filename = item?.itemimage.split('/').pop()
-            imagepath = 'file://' + RNFS.DocumentDirectoryPath + '/'+filename;
-        }
-        else if(Boolean(item?.itemgroupimage)) {
+            imagepath = 'file://' + RNFS.DocumentDirectoryPath + '/' + filename;
+        } else if (Boolean(item?.itemgroupimage)) {
             imagepath = `https://${item?.itemgroupimage}`;
         }
     }
@@ -3043,14 +3082,13 @@ export const getItemImage = (item:any) => {
 }
 
 
-
 export const uploadFile = async (file: any, callback: any) => {
     if (file) {
-       await apiService({
+        await apiService({
             method: METHOD.GET,
             action: 'getuploadurl',
-            queryString: {file_name: file.name, file_type: file.type,uri:file.uri},
-            other:{url: 'https://apigateway.dhru.com/v1/',token: localredux.authData.global_token,xhrRequest: true},
+            queryString: {file_name: file.name, file_type: file.type, uri: file.uri},
+            other: {url: 'https://apigateway.dhru.com/v1/', token: localredux.authData.global_token, xhrRequest: true},
             token: localredux.authData.global_token
         }).then(async (responseUrl) => {
             if (responseUrl.status === STATUS.SUCCESS) {
@@ -3069,12 +3107,12 @@ export const uploadFile = async (file: any, callback: any) => {
                         }
                     })
                     .catch(error => {
-
+                        crashlytics().log('Upload file  ' + error);
                     });
             } else {
                 appLog('relogin')
                 await autoLogin().then();
-                await uploadFile(file,callback).then()
+                await uploadFile(file, callback).then()
             }
         });
     }
@@ -3082,11 +3120,11 @@ export const uploadFile = async (file: any, callback: any) => {
 
 const autoLogin = async () => {
 
-    const {email,password} = localredux.licenseData
+    const {email, password} = localredux.licenseData
 
     const values = {
-        email:email,
-        password:password,
+        email: email,
+        password: password,
         deviceid: 'asdfadsf',
         "g-recaptcha-response": grecaptcharesponse
     }
@@ -3098,15 +3136,16 @@ const autoLogin = async () => {
     }).then(async (response: any) => {
 
         if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
-            localredux.authData = {...localredux.authData,...response.data,  global_token: response.global_token}
+            localredux.authData = {...localredux.authData, ...response.data, global_token: response.global_token}
             device.global_token = response.global_token;
             await retrieveData(db.name).then(async (data: any) => {
                 try {
                     data = {
                         ...data,
-                        authData:localredux.authData,
+                        authData: localredux.authData,
                     }
-                    await storeData(db.name, data).then(async () => {});
+                    await storeData(db.name, data).then(async () => {
+                    });
                 } catch (e) {
                     appLog('retrieveData', e)
                 }
@@ -3117,12 +3156,10 @@ const autoLogin = async () => {
 }
 
 
-export const getRoleAccess = (key:any) => {
+export const getRoleAccess = (key: any) => {
     const {role}: any = localredux.loginuserData;
-     return localredux.initData.role[role]?.access[key]
+    return localredux.initData.role[role]?.access[key]
 }
-
-
 
 
 export const saveServerSettings = (key: string, settingdata: any) => {

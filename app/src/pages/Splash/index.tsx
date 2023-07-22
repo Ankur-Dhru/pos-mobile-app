@@ -13,6 +13,7 @@ const Index = (props: any) => {
     useEffect(() => {
         setTimeout(() => {
             navigation.replace('GettingStarted')
+            //navigation.replace('Sample')
         }, 500)
     }, [])
 

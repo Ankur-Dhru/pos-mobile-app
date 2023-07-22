@@ -9,6 +9,7 @@ import {Card, Text} from "react-native-paper";
 import KeyboardScroll from "../../components/KeyboardScroll";
 import {localredux} from "../../libs/static";
 import {appLog} from "../../libs/function";
+import crashlytics from "@react-native-firebase/crashlytics";
 
 
 const Index = (props: any) => {

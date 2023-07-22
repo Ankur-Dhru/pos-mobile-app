@@ -16,6 +16,8 @@
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@react-native-community/datetimepicker/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@react-native-community/image-editor/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@react-native-community/netinfo/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@react-native-firebase/app/android" />
+    <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@react-native-firebase/crashlytics/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/@react-native-picker/picker/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-ble-manager/android" />
     <file type="web" url="file://$PROJECT_DIR$/app/node_modules/react-native-camera/android" />

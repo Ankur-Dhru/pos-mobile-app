@@ -6,24 +6,13 @@ import {connect, useDispatch} from "react-redux";
 import {withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {Field, Form} from "react-final-form";
-import InputBox from "../../components/InputBox";
 import Button from "../../components/Button";
 import apiService from "../../libs/api-service";
-import {
-    composeValidators,
-    localredux,
-    loginUrl,
-    METHOD,
-    minLength,
-    mustBeNumber, posUrl,
-    required,
-    STATUS, urls
-} from "../../libs/static";
+import {composeValidators, localredux, METHOD, minLength, required, STATUS, urls} from "../../libs/static";
 import KAccessoryView from "../../components/KAccessoryView";
-import {appLog, errorAlert, nextFocus} from "../../libs/function";
+import {errorAlert} from "../../libs/function";
 import InputField from "../../components/InputField";
 import {useNavigation} from "@react-navigation/native";
-import {setAlert} from "../../redux-store/reducer/component";
 
 
 const md5 = require('md5');
@@ -31,7 +20,7 @@ const md5 = require('md5');
 
 const Index = (props: any) => {
 
-    const {adminid,loginpin}:any = localredux.authData
+    const {adminid, loginpin}: any = localredux.authData
 
     const dispatch = useDispatch()
     const navigation = useNavigation()
@@ -47,16 +36,15 @@ const Index = (props: any) => {
                 action: 'changepin',
                 workspace: workspace,
                 token: token,
-                other: {url:  urls.posUrl},
+                other: {url: urls.posUrl},
                 body: values
             }).then((result) => {
                 if (result.status === STATUS.SUCCESS) {
-                    errorAlert(result.message,'Success')
+                    errorAlert(result.message, 'Success')
                     navigation?.goBack()
                 }
             });
-        }
-        else{
+        } else {
             errorAlert('Old Pin do not match')
         }
     }
@@ -77,7 +65,7 @@ const Index = (props: any) => {
 
                                     <View>
 
-                                        <Field name="oldpin"  validate={required}>
+                                        <Field name="oldpin" validate={required}>
                                             {props => (
                                                 <InputField
                                                     {...props}
@@ -97,7 +85,7 @@ const Index = (props: any) => {
                                     <View>
 
 
-                                        <Field name="newpin"  validate={composeValidators(required, minLength(5))}>
+                                        <Field name="newpin" validate={composeValidators(required, minLength(5))}>
                                             {props => (
                                                 <InputField
                                                     {...props}

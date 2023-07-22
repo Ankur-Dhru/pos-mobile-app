@@ -36,6 +36,7 @@ import ReserveList from "./ReserveList";
 import {TabBar, TabView} from "react-native-tab-view";
 import apiService from "../../libs/api-service";
 import {uuid} from "uuidv4";
+import crashlytics from "@react-native-firebase/crashlytics";
 
 let interval: any = ''
 const Index = ({tableorders}: any) => {
@@ -214,17 +215,17 @@ const Index = ({tableorders}: any) => {
     }
 
     const setTableOrderDetail = async (tabledetails: any) => {
-
+        crashlytics().log('setTableOrderDetail');
         const sameStaff = ((Boolean(tabledetails?.staffid) && (tabledetails?.staffid === adminid)) || (!Boolean(tabledetails?.staffid)))
 
         if ((accessMultipleDevice && sameStaff) || !accessMultipleDevice) {
-            if ((Boolean(urls.localserver) && Boolean(tabledetails.tableorderid))) {
+            if ((Boolean(urls.localserver) && Boolean(tabledetails?.tableorderid))) {
 
 
                 await apiService({
                     method: METHOD.GET,
                     action: 'tableorder',
-                    queryString: {key: 'tableid', value: tabledetails.tableid},
+                    queryString: {key: 'tableid', value: tabledetails?.tableid},
                     other: {url: urls.localserver},
                 }).then((response: any) => {
 
@@ -248,7 +249,7 @@ const Index = ({tableorders}: any) => {
             navigation.navigate('CartStackNavigator', tabledetails)
 
         } else {
-            errorAlert(`Table only access by ${tabledetails.staffname}`)
+            errorAlert(`Table only access by ${tabledetails?.staffname}`)
         }
     }
 
@@ -263,12 +264,13 @@ const Index = ({tableorders}: any) => {
             } = props
 
             const shiftFrom = (tableorderid: any,tableid:any) => {
+                crashlytics().log('shiftFrom');
                 setShiftingFromtable(tableorderid);
                 setShiftingFromtableid(tableid)
             }
             const shiftTo = async (tabledetail: any) => {
                 dispatch(showLoader())
-
+                crashlytics().log('shiftTo');
                 const {tableid, tablename,area}: any = tabledetail.item;
 
                 let clone_tableorders = clone(tableorders)

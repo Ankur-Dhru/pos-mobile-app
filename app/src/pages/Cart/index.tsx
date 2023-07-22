@@ -25,6 +25,7 @@ import {setTableOrders} from "../../redux-store/reducer/table-orders-data";
 import HoldOrders from "./HoldOrders";
 import {ProIcon} from "../../components";
 import {TouchableOpacity} from "react-native";
+import crashlytics from "@react-native-firebase/crashlytics";
 
 
 const Index = (props: any) => {
@@ -52,6 +53,8 @@ const Index = (props: any) => {
 
 
     useEffect(() => {
+
+        crashlytics().log('cart useffect');
         const voucherDataJson: any = voucherData(VOUCHER.INVOICE, false);
 
         const {kots,numOfKOt}:any = tabledetails || {}

@@ -6,6 +6,7 @@ import {Provider} from "react-redux";
 import store from "./redux-store/store";
 
 
+
 import ActivityIndicator from "./components/ActivityIndicator";
 import BottomSheet from "./components/BottomSheet";
 import Modal from "./components/Modal";
@@ -24,13 +25,15 @@ import {
 
 
 import {configureFontAwesomePro} from "react-native-fontawesome-pro";
-import {MainStackNavigator} from "./pages/General/MainNavigator";
+
 import SnackBar from "./components/SnackBar";
 import {device} from "./libs/static";
 import Dialog from "./components/Dialog";
 import Page from "./components/Page";
 import NetworkStatus from "./components/NetworkStatus";
 import {styles} from "./theme";
+import {MainStackNavigator} from "./pages/General/MainNavigator";
+import {firebase} from "@react-native-firebase/analytics";
 
 
 
@@ -48,6 +51,15 @@ const aspectRatio = height / width;
 if (width < 960) {
     device.tablet = false
 }
+
+
+
+
+
+firebase.analytics().setAnalyticsCollectionEnabled(true).then(r => {});
+
+
+
 
 
 const App = () => {

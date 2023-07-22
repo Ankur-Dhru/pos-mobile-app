@@ -2,6 +2,7 @@ import {appLog, refreshToken, saveLocalSettings, wait} from "../function";
 import {ACTIONS, device, METHOD, STATUS} from "../static";
 import store from "../../redux-store/store";
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
+import crashlytics from "@react-native-firebase/crashlytics";
 
 
 interface configData {
@@ -132,6 +133,8 @@ const apiService = async (config: configData) => {
             /*if(!navigator.onLine){
               AppToaster({message: 'Internet connection not available', intent: "danger"});
             }*/
+
+            crashlytics().log('APi  '+error);
 
             return {
                 status: STATUS.ERROR,

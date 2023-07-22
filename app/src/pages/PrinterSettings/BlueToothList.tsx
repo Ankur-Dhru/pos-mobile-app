@@ -20,6 +20,7 @@ import PageLoader from "../../components/PageLoader";
 import {useDispatch} from "react-redux";
 import {setBottomSheet} from "../../redux-store/reducer/component";
 import InputField from "../../components/InputField";
+import crashlytics from "@react-native-firebase/crashlytics";
 
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
@@ -45,6 +46,7 @@ const Index = ({setMacId}: any) => {
                         setIsScanning(true);
 
                     }).catch(err => {
+                        crashlytics().log('Start Scan  '+err);
                         appLog(err);
                     });
                 }

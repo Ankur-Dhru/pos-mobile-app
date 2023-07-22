@@ -1,64 +1,58 @@
-import React, {memo, useEffect, useState} from "react";
-import {Caption, Paragraph, Text, withTheme} from "react-native-paper";
+import React from "react";
+import {Caption, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
-import {appLog, clone, removeItem, setItemRowData, toCurrency} from "../../libs/function";
-import {TouchableOpacity, View} from "react-native";
-import {ProIcon} from "../../components";
+import {clone, setItemRowData, toCurrency} from "../../libs/function";
+import {View} from "react-native";
 import Button from "../../components/Button";
-import {addItem} from "../../libs/item-calculation";
 import KeyboardScroll from "../../components/KeyboardScroll";
 import {setBottomSheet} from "../../redux-store/reducer/component";
 import TagsNotes from "./TagsNotes";
 import Addons from "./Addons";
 import {changeCartItem, setCartItems} from "../../redux-store/reducer/cart-data";
-import { setItemDetail } from "../../redux-store/reducer/item-detail";
 import Qnt from "./Qnt";
 import InputBox from "../../components/InputBox";
-import store from "../../redux-store/store";
-import InputField from "../../components/InputField";
 
 const {v4: uuid} = require('uuid')
 
-const Index = ({itemDetail, index, inittags, sheetRef,edit, theme: {colors}}: any) => {
+const Index = ({itemDetail, index, inittags, sheetRef, edit, theme: {colors}}: any) => {
 
     const dispatch = useDispatch()
     let product = itemDetail;
 
-    const {pricing, description,productrate, itemname, groupname} = itemDetail;
+    const {pricing, description, productrate, itemname, groupname} = itemDetail;
 
     const selectItem = async () => {
 
-        if(edit){
+        if (edit) {
             product = {
                 ...product,
-                itemUpdate:true,
+                itemUpdate: true,
             }
             dispatch(changeCartItem({
                 itemIndex: index, item: clone(product)
             }));
-        }
-        else {
-            const itemRowData:any = setItemRowData(product);
+        } else {
+            const itemRowData: any = setItemRowData(product);
             product = {
                 ...product,
                 ...itemRowData,
             }
-            if(product?.itemaddon){
-                product.itemaddon =  product?.itemaddon.map((addon:any)=>{
+            if (product?.itemaddon) {
+                product.itemaddon = product?.itemaddon.map((addon: any) => {
                     return {
                         ...addon,
                         ...setItemRowData(addon)
                     }
                 })
             }
-            await  dispatch(setCartItems(product))
+            await dispatch(setCartItems(product))
         }
         await dispatch(setBottomSheet({visible: false}))
 
     }
 
-   const updateProduct = (field:any) => {
+    const updateProduct = (field: any) => {
         product = {
             ...product,
             ...field
@@ -66,26 +60,25 @@ const Index = ({itemDetail, index, inittags, sheetRef,edit, theme: {colors}}: an
     }
 
 
-/*    const updateRate = (value:any) => {
+    /*    const updateRate = (value:any) => {
 
-        let invoiceitems: any = store.getState().cartData?.invoiceitems || {}
+            let invoiceitems: any = store.getState().cartData?.invoiceitems || {}
 
-        let filtered = invoiceitems?.filter((item: any, key: any) => {
-            return item.key === itemDetail.key
-        })
+            let filtered = invoiceitems?.filter((item: any, key: any) => {
+                return item.key === itemDetail.key
+            })
 
-        let finditem = {
-            ...filtered[0],
-            ...itemDetail,
-            change: true,
-            productrate: value,
-            productdisplayrate: value,
-        }
+            let finditem = {
+                ...filtered[0],
+                ...itemDetail,
+                change: true,
+                productrate: value,
+                productdisplayrate: value,
+            }
 
-        store.dispatch(changeCartItem({itemIndex: index, item: finditem,itemUpdate:true}));
+            store.dispatch(changeCartItem({itemIndex: index, item: finditem,itemUpdate:true}));
 
-    }*/
-
+        }*/
 
 
     const pricingtype = pricing?.type;
@@ -93,7 +86,7 @@ const Index = ({itemDetail, index, inittags, sheetRef,edit, theme: {colors}}: an
 
     return (
 
-        <View style={[styles.p_5,styles.w_100,styles.h_100]}>
+        <View style={[styles.p_5, styles.w_100, styles.h_100]}>
 
             <KeyboardScroll>
 
@@ -109,40 +102,39 @@ const Index = ({itemDetail, index, inittags, sheetRef,edit, theme: {colors}}: an
 
 
                 <View>
-                    <View style={[styles.mt_5,styles.px_5]}>
+                    <View style={[styles.mt_5, styles.px_5]}>
                         <InputBox
-                            defaultValue={''+productrate}
+                            defaultValue={productrate ? productrate + '' : ''}
                             label={'Price'}
                             autoFocus={false}
-                            onChange={(value:any)=>{
-                                updateProduct({productrate:value,productratedisplay:value})
+                            onChange={(value: any) => {
+                                updateProduct({productrate: value, productratedisplay: value})
                             }}
                         />
-
 
 
                     </View>
                 </View>
 
 
-                <Addons  updateProduct={updateProduct}  />
-                <TagsNotes   updateProduct={updateProduct}   />
+                <Addons updateProduct={updateProduct}/>
+                <TagsNotes updateProduct={updateProduct}/>
 
 
             </KeyboardScroll>
 
-            <View style={{marginTop:15}}>
+            <View style={{marginTop: 15}}>
 
                 <View style={[styles.grid, styles.middle, styles.justifyContent]}>
 
-                     <Qnt updateProduct={updateProduct} />
+                    <Qnt updateProduct={updateProduct}/>
 
                     <View>
-                          <View>
+                        <View>
                             <Button
                                 onPress={() => {
                                     selectItem().then()
-                                }}>{!edit ? '+ Add Item': 'Update'}
+                                }}>{!edit ? '+ Add Item' : 'Update'}
                             </Button>
                         </View>
                     </View>

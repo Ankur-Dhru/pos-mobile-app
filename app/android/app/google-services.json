@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "383240213505",
+    "project_id": "dhru-pos-44ea7",
+    "storage_bucket": "dhru-pos-44ea7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:383240213505:android:22b924af76622bec429c00",
+        "android_client_info": {
+          "package_name": "com.dhru.pos.terminal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "383240213505-96i3jb62c2gmt806r040fi0jnal7vn9a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDP76ZTYH7qfx_b-ez5bdEzO-C3MwhC3fo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "383240213505-96i3jb62c2gmt806r040fi0jnal7vn9a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

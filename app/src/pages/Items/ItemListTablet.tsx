@@ -34,6 +34,7 @@ import Avatar from "../../components/Avatar";
 import GroupHeading from "./GroupHeading";
 import {setSelected} from "../../redux-store/reducer/selected-data";
 import {useNavigation} from "@react-navigation/native";
+import crashlytics from "@react-native-firebase/crashlytics";
 
 
 
@@ -226,7 +227,7 @@ const Index = (props: any) => {
 
 
     const getItems = async (refresh = false) => {
-
+        crashlytics().log('getItems');
         try {
 
             const lastgroup = selectedgroup[selectedgroup.length - 1];
@@ -253,6 +254,7 @@ const Index = (props: any) => {
     }
 
     useEffect(() => {
+        crashlytics().log('selectedgroup change');
         getItems().then()
     }, [selectedgroup]) //start
 

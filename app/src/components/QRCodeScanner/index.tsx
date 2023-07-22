@@ -9,6 +9,7 @@ import {
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
 import {withTheme} from "react-native-paper";
+import crashlytics from "@react-native-firebase/crashlytics";
 
 
 class ScanScreen extends Component<any> {
@@ -40,8 +41,10 @@ class ScanScreen extends Component<any> {
         setTimeout(()=>{
             this?.scanner?.reactivate()
         },3000)
-        Linking.openURL(e?.data).catch(err =>
-            console.error('An error occured', err)
+        Linking.openURL(e?.data).catch(err => {
+                crashlytics().log('Scan  '+err);
+                console.error('An error occured', err)
+            }
         );
     };
 

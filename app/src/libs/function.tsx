@@ -2344,6 +2344,8 @@ export const refreshToken = () => {
 
 export const updateToken = async (token: any) => {
 
+    console.log('localredux.authData.token',localredux.authData.token)
+    console.log('new last token',token)
 
     crashlytics().log('updateToken');
 
@@ -2497,6 +2499,7 @@ export const gePhonebook = async (force?: any) => {
         }
 
         if (Platform.OS === "ios") {
+
             requestMultiple([PERMISSIONS.IOS.CONTACTS]).then(async (statuses: any) => {
                 if (statuses[PERMISSIONS.IOS.CONTACTS]) {
                     await loadContacts()
@@ -2731,7 +2734,6 @@ export const getStateAndTaxType = async (country: any, reset?: boolean) => {
                 const {workspace}: any = localredux.initData;
                 const {token}: any = localredux.authData;
 
-                appLog('token', token)
 
                 await apiService({
                     method: METHOD.GET,

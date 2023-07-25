@@ -43,7 +43,7 @@ export default function App() {
             />
             <Button title="Test Crash" onPress={() => {
                 crashlytics().log('App crash array test.');
-                arr.push({label:'adsf'});
+                //arr.push({label:'adsf'});
                 crashlytics().crash()
             }} />
         </View>

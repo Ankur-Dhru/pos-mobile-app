@@ -39,22 +39,20 @@
     <array>
         <string>itms-apps</string>
     </array>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-        <string>Our app uses bluetooth to find, connect and transfer data between different devices</string>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-    <string>Our app uses bluetooth to find, connect and transfer data between different devices</string>
-	<key>NSContactsUsageDescription</key>
-    	<string>Contact Permission</string>
-    <key>NSCameraUsageDescription</key>
+
+
+<key>NSCameraUsageDescription</key>
         <string>Our app uses camera to capture, item and item category photos</string>
-        <key>NSPhotoLibraryAddUsageDescription</key>
+<key>NSContactsUsageDescription</key>
+    	<string>Contact Permission</string>
+
+<key>NSPhotoLibraryAddUsageDescription</key>
         	<string>Photo Permission</string>
         	<key>NSPhotoLibraryUsageDescription</key>
         	<string>Our app uses Photos to select item and item category image</string>
-	<key>UIAppFonts</key>
 
+
+	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
 		<string>Entypo.ttf</string>

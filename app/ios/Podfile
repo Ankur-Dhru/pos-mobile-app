@@ -18,18 +18,20 @@ target 'app' do
     :production => production,
     :hermes_enabled => true,
     :fabric_enabled => flags[:fabric_enabled],
-    :flipper_configuration => FlipperConfiguration.enabled,
+    # :flipper_configuration => FlipperConfiguration.enabled,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-    permissions_path = '../node_modules/react-native-permissions/ios'
+use_frameworks! :linkage => :static
+$RNFirebaseAsStaticFramework = true
+$FirebaseSDKVersion = '10.12.0'
 
-    pod 'react-native-sqlite-storage', :path => '../node_modules/react-native-sqlite-storage'
-    pod 'Permission-Contacts', :path => "#{permissions_path}/Contacts"
-    pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
-    pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary"
-    pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
+
+        pod 'react-native-sqlite-storage', :path => '../node_modules/react-native-sqlite-storage'
+
+pod 'RNPermissions', :path => '../node_modules/react-native-permissions'
+
 
 
   target 'appTests' do
@@ -42,3 +44,4 @@ target 'app' do
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 end
+

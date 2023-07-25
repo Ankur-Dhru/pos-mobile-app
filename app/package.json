@@ -2,7 +2,7 @@
   "name": "app",
   "private": true,
   "scripts": {
-    "android": "yarn  react-native run-android ",
+    "android": "yarn  react-native run-android",
     "iosdefault": "yarn  react-native run-ios",
     "ios": "yarn  react-native run-ios   --simulator='iPhone 11 Pro'  ",
     "iosIpadSimulator": "yarn  react-native run-ios --simulator='iPad Pro (12.9-inch)' ",
@@ -18,6 +18,11 @@
     "patch-package": "yarn patch-package react-native-camera",
     "gradle clean": "cd android && ./gradlew clean"
   },
+  "reactNativePermissionsIOS": [
+    "Camera",
+    "Contacts",
+    "PhotoLibrary"
+  ],
   "dependencies": {
     "@datahex/escpos-xml": "^1.1.9",
     "@fortawesome/free-brands-svg-icons": "^6.1.2",

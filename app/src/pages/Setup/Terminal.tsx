@@ -60,6 +60,7 @@ const Terminal = (props: any) => {
         values = {...values, timezone: values?.timezone, locationid: values?.locationid, deviceid: uniqueDeviceId}
 
         const useThis = async (response: any) => {
+
             const licensedata = {
                 data: response.data,
                 token: response.token
@@ -114,6 +115,7 @@ const Terminal = (props: any) => {
                 });
             })
         }
+
 
         await apiService({
             method: METHOD.POST,

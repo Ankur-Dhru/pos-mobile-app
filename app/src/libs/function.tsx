@@ -124,7 +124,6 @@ export const appLog2 = (arg1: any, ...argn: any[]) => {
 }
 
 export const clone = (obj: any) => {
-    crashlytics().log('clone');
     var copy: any;
     if (null == obj || "object" != typeof obj) return obj;
     if (obj instanceof Date) {
@@ -163,7 +162,7 @@ export const currencyRate = (currencyName: any) => {
 }
 
 export const getFloatValue = (value: any, fraxtionDigits?: number, notConvert?: boolean, isLog?: boolean) => {
-    crashlytics().log('getFloatValue');
+
     if (!Boolean(fraxtionDigits)) {
         fraxtionDigits = 4;
     }
@@ -1269,14 +1268,25 @@ export const getCurrencySign = () => {
 }
 
 
-export const groupBy = (arr: any, property: any) => {
+export const groupBy = (arr: any, property: any, fields?:any,fixedreturn?:any) => {
     crashlytics().log('groupBy');
     try {
-        return arr.reduce(function (memo: any, x: any) {
+        return arr?.reduce(function (memo: any, x: any) {
             if (!memo[x[property]]) {
                 memo[x[property]] = [];
             }
-            memo[x[property]].push(x);
+            if(fields){
+                let selectedobject = fields.map((field:any)=>{
+                    return {[field] : x[field]}
+                })
+                memo[x[property]].push(selectedobject[0]);
+            }
+            else if(fixedreturn){
+                memo[x[property]]= fixedreturn;
+            }
+            else {
+                memo[x[property]].push(x);
+            }
             return memo;
         }, {});
     } catch (e) {

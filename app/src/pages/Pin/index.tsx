@@ -38,6 +38,7 @@ import Button from "../../components/Button";
 import HoldOrders from "../Cart/HoldOrders";
 import {getUniqueId} from "react-native-device-info";
 import analytics from "@react-native-firebase/analytics";
+import crashlytics from "@react-native-firebase/crashlytics";
 
 
 const md5 = require('md5');
@@ -102,6 +103,9 @@ const Index = (props: any) => {
                 })
 
                 const {othersettings} = localredux.initData;
+
+                crashlytics().log(`workspace : ${localredux.initData.workspace}`);
+
                 isRestaurant = (localredux.localSettingsData?.currentLocation?.industrytype === 'foodservices');
 
                 await retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {

@@ -26,7 +26,7 @@ import {List, Paragraph} from "react-native-paper";
 import VegNonVeg from "./VegNonVeg";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 import Button from "../../components/Button";
-import {urls} from "../../libs/static";
+import {device, urls} from "../../libs/static";
 import {getCombos} from "./ItemListMobile";
 import LinearGradient from 'react-native-linear-gradient'
 import AddButton from "./AddButton";
@@ -70,7 +70,10 @@ export const ItemView = memo(({item,displayType,search}:any)=>{
     const hasRestaurant = isRestaurant();
     const hasKot = Boolean(item?.kotid);
     let imagepath = getItemImage(item)
-    const navigation = useNavigation();
+
+    const navigation = device.navigation
+
+    //const navigation = useNavigation();
 
 
 

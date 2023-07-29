@@ -84,6 +84,7 @@ import PrintQR from "../QRWebsite/PrintQR";
 import OtherSettings from "../QRWebsite/OtherSettings";
 import VerifyOTP from "../Setup/VerifyOTP";
 import ChangeWhatsapp from "../Setup/ChangeWhatsapp";
+import ItemWiseSales from "../Report/ItemWiseSales";
 
 
 const screenOptions = {...screenOptionStyle};
@@ -274,6 +275,7 @@ const ProfileSettingsNavigator = (props: any) => {
             <Stack.Screen name={'SalesReport'} component={SalesReport} options={{headerTitle: 'Sales Report'}}/>
             <Stack.Screen name={'DayEndReport'} component={DayEndReport} options={{headerTitle: 'Day End Report'}}/>
             <Stack.Screen name={'CurrentStock'} component={CurrentStock} options={{headerTitle: 'Current Stock'}}/>
+            <Stack.Screen name={'ItemWiseSales'} component={ItemWiseSales} options={{headerTitle: 'Item Wise Sales'}}/>
 
 
             <Stack.Screen name={'ListItems'} component={ListItems} options={{headerTitle: 'Items'}}/>

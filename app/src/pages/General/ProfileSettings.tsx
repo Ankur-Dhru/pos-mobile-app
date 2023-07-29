@@ -333,6 +333,19 @@ const ProfileSettings = () => {
                                             right={() => <List.Icon icon="chevron-right"/>}
                                         />
 
+
+                                        <ItemDivider/>
+
+                                        <List.Item
+                                            style={[styles.listitem]}
+                                            title={'Item Wise Sales'}
+                                            onPress={() => {
+                                                navigation.navigate("ItemWiseSales");
+                                            }}
+                                            left={() => <List.Icon icon="point-of-sale"/>}
+                                            right={() => <List.Icon icon="chevron-right"/>}
+                                        />
+
                                        {/* <ItemDivider/>
 
                                         <List.Item

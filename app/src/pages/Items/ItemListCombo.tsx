@@ -6,11 +6,11 @@ import {styles} from "../../theme";
 import {Caption} from "react-native-paper";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 import {ItemDivider} from "../../libs/static";
-import {Item} from "./ItemListMobile";
+
 import {connect, useDispatch} from "react-redux";
 import {Button} from "../../components";
 import {setBottomSheet} from "../../redux-store/reducer/component";
-import {appLog} from "../../libs/function";
+
 import {ItemView} from "./ItemListTablet";
 
 
@@ -56,13 +56,14 @@ const Index = (props: any) => {
     }, [comboitem.comboid]);
 
 
+
     if (!loading) {
         return <></>
     }
 
     return (
         <>
-            <Caption style={[styles.caption]}>{comboitem.itemname}</Caption>
+            <Caption style={[styles.caption]}>{comboitem?.itemname}</Caption>
             <View style={[styles.h_100, styles.w_100,styles.flex, styles.p_5]}>
                 <FlatList
                     data={dataSource || []}

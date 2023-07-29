@@ -1,9 +1,9 @@
-import React from "react";
-import {Caption, Text, withTheme} from "react-native-paper";
+import React, {useState} from "react";
+import {Caption, Paragraph, Text, TextInput as TI, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
-import {clone, setItemRowData, toCurrency} from "../../libs/function";
-import {View} from "react-native";
+import {clone, getCurrencySign, setItemRowData, toCurrency} from "../../libs/function";
+import {TouchableHighlight, TouchableOpacity, View} from "react-native";
 import Button from "../../components/Button";
 import KeyboardScroll from "../../components/KeyboardScroll";
 import {setBottomSheet} from "../../redux-store/reducer/component";
@@ -12,6 +12,9 @@ import Addons from "./Addons";
 import {changeCartItem, setCartItems} from "../../redux-store/reducer/cart-data";
 import Qnt from "./Qnt";
 import InputBox from "../../components/InputBox";
+import ToggleButtons from "../../components/ToggleButton";
+import InputField from "../../components/InputField";
+import store from "../../redux-store/store";
 
 const {v4: uuid} = require('uuid')
 
@@ -20,7 +23,9 @@ const Index = ({itemDetail, index, inittags, sheetRef, edit, theme: {colors}}: a
     const dispatch = useDispatch()
     let product = itemDetail;
 
-    const {pricing, description, productrate, itemname, groupname} = itemDetail;
+    const {pricing, description, productrate, itemname, groupname,productdiscounttype,productdiscountvalue} = itemDetail;
+
+    const {cartData} = store.getState()
 
     const selectItem = async () => {
 
@@ -58,6 +63,20 @@ const Index = ({itemDetail, index, inittags, sheetRef, edit, theme: {colors}}: a
             ...field
         }
     }
+
+
+
+    const [discounttype, setDiscounttype]: any = useState(cartData?.discounttype || '%');
+    let discount = '0';
+    const isInclusive = Boolean(cartData.vouchertaxtype === 'inclusive');
+    let discountType = [{label: 'Percentage', value: '%'}];
+    if (!isInclusive) {
+        discountType.push({label: 'Amount', value: 'amount'})
+    }
+    const onButtonToggle = (value: any) => {
+        setDiscounttype(value)
+    };
+
 
 
     /*    const updateRate = (value:any) => {
@@ -111,9 +130,36 @@ const Index = ({itemDetail, index, inittags, sheetRef, edit, theme: {colors}}: a
                                 updateProduct({productrate: value, productratedisplay: value})
                             }}
                         />
-
-
                     </View>
+                </View>
+
+
+                <View style={[styles.mt_5, styles.px_5]}>
+
+                    {!isInclusive && <>
+
+                        <ToggleButtons
+                        width={'50%'}
+                        default={productdiscounttype}
+                        btns={discountType}
+                        onValueChange={onButtonToggle}
+                    /></> }
+
+                    <View style={[styles.mt_3]}>
+                        <InputBox
+                            defaultValue={productdiscountvalue ? productdiscountvalue + '' : ''}
+                            label={'Discount'}
+                            autoFocus={false}
+                            keyboardType={'numeric'}
+                            right={ <TI.Affix
+                                text={discounttype === '%' ? '%' : getCurrencySign()}   /> }
+                            onChange={(value: any) => {
+                                updateProduct({productdiscounttype: discounttype, productdiscountvalue: value})
+                            }}
+                        />
+                    </View>
+
+
                 </View>
 
 

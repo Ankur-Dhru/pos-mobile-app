@@ -90,6 +90,7 @@ export enum ACTIONS {
     REPORT_SALES = "reportsales",
     DAY_END_REPORT = "dayendreport",
     REPORTCURRENTSTOCK = "reportcurrentstock",
+    REPORTITEMWISE = "reportitemwise"
 }
 
 

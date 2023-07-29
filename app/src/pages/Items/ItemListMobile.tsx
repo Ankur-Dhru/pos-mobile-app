@@ -187,6 +187,7 @@ const mapStateToProps = (state: any) => ({
     invoiceitems: state.cartData.invoiceitems,
     selectedgroup: state.selectedData.group?.value,
 
+
 })
 
 export default connect(mapStateToProps)(Index);

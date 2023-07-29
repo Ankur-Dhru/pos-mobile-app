@@ -1,23 +1,27 @@
 import React, {memo, useEffect, useState} from "react";
-import {appLog, clone, getType, toCurrency} from "../../libs/function";
+import {appLog, clone, getCurrencySign, getType, toCurrency} from "../../libs/function";
 import {Animated, TouchableOpacity, View} from "react-native";
-import {Divider, Paragraph, Text, withTheme} from "react-native-paper";
+import {Divider, Paragraph, Text, TextInput as TI, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import AddButton from "../Items/AddButton";
 import {setItemDetail} from "../../redux-store/reducer/item-detail";
 import {setBottomSheet} from "../../redux-store/reducer/component";
 import ItemDetail from "../Items/ItemDetail";
 import {connect, useDispatch} from "react-redux";
-import {device, localredux} from "../../libs/static";
+import {device, localredux, required} from "../../libs/static";
 import {ProIcon} from "../../components";
 import {setKOTDetail} from "../../redux-store/reducer/kot-detail";
 import store from "../../redux-store/store";
 import KOTDetail from "./KOTDetail";
+import ToggleButtons from "../../components/ToggleButton";
+import {Field} from "react-final-form";
+import InputField from "../../components/InputField";
 
 const Index = memo((props: any) => {
 
     const {item, index,  theme: {colors}, isRestaurant,hasLast,length} = props;
     const{unit}:any = localredux.initData;
+
 
     const editCartitem = async () => {
         if (!Boolean(item.kotid)) {
@@ -41,8 +45,6 @@ const Index = memo((props: any) => {
 
         }
     }
-
-
 
 
     const dispatch = useDispatch()
@@ -79,7 +81,7 @@ const Index = memo((props: any) => {
 
                                     <Paragraph
                                         style={[styles.paragraph,  styles.bold,styles.ml_1, {textTransform:'capitalize'}]}
-                                        numberOfLines={2}>{index + 1}) {item?.itemname || item?.productdisplayname}</Paragraph>
+                                        numberOfLines={2}>{index + 1}) {item?.itemname || item?.productdisplayname} </Paragraph>
 
 
 
@@ -145,6 +147,10 @@ const Index = memo((props: any) => {
                                             </View>
 
                                         </>}
+
+
+
+
 
                                         <View>
 
@@ -247,8 +253,8 @@ const Index = memo((props: any) => {
     );
 },(r1, r2) => {
         //appLog('r2.item',r2.item)
-        const c1 = {productqnt:r1.item.productqnt,productrate:r1.item.productrate,itemaddon:r1.item.itemaddon,itemtags:r1.item.itemtags,notes:r1.item.notes,kotid:r1.item.kotid}
-        const c2 = {productqnt:r2.item.productqnt,productrate:r2.item.productrate,itemaddon:r2.item.itemaddon,itemtags:r2.item.itemtags,notes:r2.item.notes,kotid:r2.item.kotid}
+        const c1 = {productqnt:r1.item.productqnt,productrate:r1.item.productrate,itemaddon:r1.item.itemaddon,itemtags:r1.item.itemtags,notes:r1.item.notes,kotid:r1.item.kotid,productdiscountvalue:r1.item.productdiscountvalue}
+        const c2 = {productqnt:r2.item.productqnt,productrate:r2.item.productrate,itemaddon:r2.item.itemaddon,itemtags:r2.item.itemtags,notes:r2.item.notes,kotid:r2.item.kotid,productdiscountvalue:r2.item.productdiscountvalue}
 
       return (JSON.stringify(c1)===JSON.stringify(c2));
 })

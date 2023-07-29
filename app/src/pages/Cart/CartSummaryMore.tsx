@@ -50,6 +50,7 @@ const Index = ({vouchersubtotaldisplay, globaltax,adjustmentamount, voucherround
 
         <View style={{opacity: loading ? 0.3 : 1}}>
 
+
             {Boolean(extrachargeboforetaxDisplay) &&   <View style={[styles.grid, styles.justifyContent]}>
                 <View><Paragraph style={[styles.paragraph]}>Extra Charges On ({toCurrency(!loading ? vouchersubtotaldisplay - (voucherinlinediscountdisplay + extrachargeboforetaxDisplay) : '0')})</Paragraph></View>
                 <View>
@@ -62,7 +63,7 @@ const Index = ({vouchersubtotaldisplay, globaltax,adjustmentamount, voucherround
                 <View><Paragraph style={[styles.paragraph]}>Subtotal</Paragraph></View>
                 <View>
                     <Paragraph
-                        style={[styles.paragraph, styles.bold]}>{toCurrency(!loading ? vouchersubtotaldisplay - voucherinlinediscountdisplay : '0')}</Paragraph>
+                        style={[styles.paragraph, styles.bold]}> {toCurrency(!loading ? vouchersubtotaldisplay - voucherinlinediscountdisplay : '0')}</Paragraph>
                 </View>
             </View>
 
@@ -71,7 +72,7 @@ const Index = ({vouchersubtotaldisplay, globaltax,adjustmentamount, voucherround
             {/*</View>*/}
 
 
-            {Boolean(vouchertotaldiscountamountdisplay) &&   <View style={[styles.grid, styles.justifyContent]}>
+            {Boolean(vouchertotaldiscountamountdisplay) &&    <View style={[styles.grid, styles.justifyContent]}>
                 <View><Paragraph style={[styles.paragraph]}>Discount</Paragraph></View>
                 <View>
                     <Paragraph

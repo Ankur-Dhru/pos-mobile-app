@@ -16,7 +16,7 @@ import {ItemView} from "./ItemListTablet";
 
 const Index = (props: any) => {
 
-    const {comboitem, invoiceitems} = props;
+    const {comboitem, invoiceitems,currentpax} = props;
 
     const [loading, setLoading]: any = useState(false);
     const [dataSource, setDataSource]: any = useState([]);
@@ -50,10 +50,10 @@ const Index = (props: any) => {
 
 
     const renderItem = useCallback(({item, index}: any) => {
-        return <ItemView displayType={'flatlist'}  item={item} index={index}
+        return <ItemView displayType={'flatlist'}  currentpax={currentpax} item={item} index={index}
                          key={item.productid}/>
 
-    }, [comboitem.comboid]);
+    }, [comboitem.comboid,currentpax]);
 
 
 
@@ -99,6 +99,7 @@ const Index = (props: any) => {
 
 const mapStateToProps = (state: any) => ({
     invoiceitems: state.cartData.invoiceitems,
+    currentpax:state.cartData.currentpax
 })
 
 export default connect(mapStateToProps)(Index);

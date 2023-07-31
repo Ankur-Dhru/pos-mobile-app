@@ -49,7 +49,7 @@ const Index = (props: any) => {
                     }}
                     placeholder={`Enter SKU`}
                     onChangeText={onChangeSearch}
-                    autoFocus={true}
+                    autoFocus={false}
                     value={searchQuery}
 
                     onSubmitEditing={() => handleSearch(searchQuery.trim(),'submit')}

@@ -35,6 +35,8 @@ import GroupHeading from "./GroupHeading";
 import {setSelected} from "../../redux-store/reducer/selected-data";
 import {useNavigation} from "@react-navigation/native";
 import crashlytics from "@react-native-firebase/crashlytics";
+import store from "../../redux-store/store";
+import PaxesSelection from "./PaxesSelection";
 
 
 
@@ -60,8 +62,7 @@ export const AddItem = ({navigation,search}: any) => {
 }
 
 
-export const ItemView = memo(({item,displayType,search}:any)=>{
-
+export const ItemView = memo(({item,displayType,search,currentpax}:any)=>{
 
     let pricingTemplate = getPricingTemplate();
     const {veg} = item;
@@ -70,6 +71,7 @@ export const ItemView = memo(({item,displayType,search}:any)=>{
     const hasRestaurant = isRestaurant();
     const hasKot = Boolean(item?.kotid);
     let imagepath = getItemImage(item)
+
 
     const navigation = device.navigation
 
@@ -82,7 +84,7 @@ export const ItemView = memo(({item,displayType,search}:any)=>{
             <List.Item
                 style={[styles.listitem,{paddingTop:5}]}
                 key={item.itemid || item.comboid}
-                title={item.itemname}
+                title={item.itemname }
                 titleStyle={[styles.bold,{textTransform: 'capitalize'}]}
                 titleNumberOfLines={2}
                 description={()=>{
@@ -99,7 +101,8 @@ export const ItemView = memo(({item,displayType,search}:any)=>{
                     </View>
                 }}
                 onPress={() => {
-                    (!Boolean(item?.productqnt) && !hasKot) && selectItem(item).then();
+
+                    ((!Boolean(item?.productqnt) && !hasKot) || (currentpax !== item?.pax)) && selectItem(item).then();
                     if(search) {
                         navigation.goBack()
                     }
@@ -112,7 +115,7 @@ export const ItemView = memo(({item,displayType,search}:any)=>{
                         return  <List.Icon icon="chevron-right" style={{height:35,width:35,margin:0}} />
                     }
 
-                    if(Boolean(item?.productqnt) && !hasKot){
+                    if(((Boolean(item?.productqnt) && !hasKot) && (currentpax === item?.pax))){
                         return <View><AddButton item={item}  /></View>
                     }
                     else if(Boolean(imagepath)){
@@ -193,7 +196,8 @@ export const ItemView = memo(({item,displayType,search}:any)=>{
         }
 
 },(r1,r2)=>{
-    return ((r1.item.productqnt === r2.item.productqnt) && (r1.item.itemid === r2.item.itemid));
+
+    return ((r1.item.productqnt === r2.item.productqnt) && (r1.item.itemid === r2.item.itemid) && (r1.currentpax === r2.currentpax));
 })
 
 
@@ -204,7 +208,7 @@ export const ItemView = memo(({item,displayType,search}:any)=>{
 
 const Index = (props: any) => {
 
-    const {selectedgroup, navigation} = props;
+    const {selectedgroup, navigation,currentpax} = props;
 
 
     const [loading, setLoading]: any = useState(false);
@@ -264,14 +268,14 @@ const Index = (props: any) => {
 
     const renderItem = useCallback(({item, index}: any) => {
         if(true) {
-            return <ItemView displayType={'withimage'}  item={item}   index={index}
+            return <ItemView displayType={'withimage'}  item={item} currentpax={currentpax}  index={index}
                                   key={item.productid || item.categoryid}/>
         }
         else{
-            return <ItemView displayType={'withoutimage'}  item={item}  index={index}
+            return <ItemView displayType={'withoutimage'}  item={item} currentpax={currentpax}  index={index}
                                   key={item.productid || item.categoryid}/>
         }
-    }, [selectedgroup,hasImage]);
+    }, [selectedgroup,hasImage,currentpax]);
 
 
     if (!loading) {
@@ -284,6 +288,7 @@ const Index = (props: any) => {
         <View style={[styles.flex,styles.h_100]}>
 
             <GroupHeading  />
+            <PaxesSelection/>
 
         <View key={oriantation}  style={[styles.flex,styles.h_100]}>
 
@@ -326,6 +331,7 @@ const Index = (props: any) => {
 
 const mapStateToProps = (state: any) => ({
     selectedgroup: state.selectedData.group?.value,
+    currentpax:state.cartData.currentpax
 })
 
 export default connect(mapStateToProps)(memo(Index));

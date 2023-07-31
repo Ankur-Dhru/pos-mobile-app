@@ -80,8 +80,8 @@ const Index = memo((props: any) => {
 
 
                                     <Paragraph
-                                        style={[styles.paragraph,  styles.bold,styles.ml_1, {textTransform:'capitalize'}]}
-                                        numberOfLines={2}>{index + 1}) {item?.itemname || item?.productdisplayname} </Paragraph>
+                                        style={[styles.paragraph,  styles.bold,styles.ml_1,  {textTransform:'capitalize',color:item.productdiscountvalue?'orange':'black'}]}
+                                        numberOfLines={2}>{index + 1}) {item?.itemname || item?.productdisplayname}  </Paragraph>
 
 
 

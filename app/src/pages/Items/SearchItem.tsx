@@ -13,7 +13,7 @@ import {AddItem, ItemView} from "./ItemListTablet";
 import CartTotal from "../Cart/CartTotal";
 
 
-const Index = ({navigation, invoiceitems}: any) => {
+const Index = ({navigation, invoiceitems,currentpax}: any) => {
 
 
     let [items, setItems]: any = useState([]);
@@ -63,9 +63,9 @@ const Index = ({navigation, invoiceitems}: any) => {
 
 
     const renderItem = useCallback(({item, index}: any) => {
-        return <ItemView displayType={'flatlist'}  item={item}   index={index}
+        return <ItemView displayType={'flatlist'}  item={item}  currentpax={currentpax} index={index}
                                 key={item.productid} search={true} />
-    }, [search]);
+    }, [search,currentpax]);
 
     return (
         <Container style={{backgroundColor: 'white', padding: 0}}>
@@ -123,6 +123,8 @@ const Index = ({navigation, invoiceitems}: any) => {
 
 const mapStateToProps = (state: any) => ({
     invoiceitems: state.cartData.invoiceitems,
+    currentpax:state.cartData.currentpax
+
 })
 
 export default connect(mapStateToProps)(Index);

@@ -14,6 +14,7 @@ import GroupListMobile from "./GroupListMobile";
 import CartTotal from "../Cart/CartTotal";
 import {ItemDivider, localredux} from "../../libs/static";
 import GroupHeading from "./GroupHeading";
+import PaxesSelection from "./PaxesSelection";
 
 
 let itemslist: any = [];
@@ -45,7 +46,7 @@ export const getCombos = (selectedgroup: any) => {
 
 const Index = (props: any) => {
 
-    const {selectedgroup, invoiceitems, gridView} = props;
+    const {selectedgroup, invoiceitems, gridView,currentpax} = props;
 
     const navigation = useNavigation()
 
@@ -59,7 +60,9 @@ const Index = (props: any) => {
 
     const updateItems = (items: any) => {
         return items?.map((i: any) => {
-            const find = invoiceitems.filter((ii: any) => {
+            const find = invoiceitems.filter((item:any)=>{
+                return item.pax === currentpax
+            }).filter((ii: any) => {
                 return ((+i.itemid === +ii.itemid) && Boolean(ii.added));
             })
             if (Boolean(find) && Boolean(find[0])) {
@@ -68,6 +71,10 @@ const Index = (props: any) => {
             return i;
         })
     }
+
+    useEffect(() => {
+        updateItems(itemslist);
+    }, [currentpax])
 
     useEffect(() => {
         setItems(itemslist);
@@ -103,24 +110,24 @@ const Index = (props: any) => {
             itemslist = clone(newitems)
             setItems(newitems)
         });
-    }, [selectedgroup])
+    }, [selectedgroup,currentpax])
 
 
     const renderItem = useCallback(({item, index}: any) => {
 
         if (gridView) {
             if (true) {
-                return <ItemView displayType={'withimage'} item={item} index={index}
+                return <ItemView displayType={'withimage'} item={item} currentpax={currentpax} index={index}
                                  key={item.productid || item.categoryid}/>
             } else {
-                return <ItemView displayType={'withoutimage'} item={item} index={index}
+                return <ItemView displayType={'withoutimage'} item={item} currentpax={currentpax} index={index}
                                  key={item.productid || item.categoryid}/>
             }
         } else {
-            return <ItemView displayType={'flatlist'} item={item} index={index}
+            return <ItemView displayType={'flatlist'} item={item} index={index} currentpax={currentpax}
                              key={item.productid || item.categoryid}/>
         }
-    }, [selectedgroup, gridView, hasImage]);
+    }, [selectedgroup, gridView, hasImage,currentpax]);
 
 
     if (!loading) {
@@ -135,6 +142,8 @@ const Index = (props: any) => {
                 <Card.Content style={[styles.cardContent]}>
 
                     <GroupHeading/>
+
+                    <PaxesSelection/>
 
 
                     <View style={[styles.h_100]} key={gridView}>
@@ -186,7 +195,7 @@ const Index = (props: any) => {
 const mapStateToProps = (state: any) => ({
     invoiceitems: state.cartData.invoiceitems,
     selectedgroup: state.selectedData.group?.value,
-
+    currentpax:state.cartData.currentpax
 
 })
 

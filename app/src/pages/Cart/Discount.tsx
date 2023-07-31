@@ -17,17 +17,26 @@ import CheckBox from "../../components/CheckBox";
 import {v4 as uuidv4} from "uuid";
 
 
-const Index = ({cartData,grouplist}: any) => {
+const Index = ({cartData, grouplist}: any) => {
 
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
-    const [discounttype, setDiscounttype]: any = useState(cartData?.discounttype || '%');
+    const {discountdetail} = cartData
 
-    const [groups,setGroups] =  useState(groupBy(cartData.invoiceitems,'itemgroupid','',{selected:false}));
+    let groupsby = groupBy(cartData.invoiceitems, 'itemgroupid', '', {selected: false,productdiscounttype:'%',productdiscountvalue:'0'});
+    if(discountdetail?.groups){
+        Object.keys(groupsby).map((key:any)=>{
+            groupsby[key] = {
+                ...groupsby[key],
+                ...discountdetail?.groups[key]
+            }
+        })
+    }
+
+    const [discount,setDiscount] = useState({all:{productdiscounttype:discountdetail?.all?.productdiscounttype || '%',productdiscountvalue:discountdetail?.all?.productdiscountvalue || '0'},groups:  groupsby,selected: discountdetail?.selected || 'all'})
 
 
 
-    const initdata = {discount: '0',allgroup:false,groups}
     const isInclusive = Boolean(cartData.vouchertaxtype === 'inclusive');
 
     const handleSubmit = async (values: any) => {
@@ -35,19 +44,24 @@ const Index = ({cartData,grouplist}: any) => {
 
         // cartData = await itemTotalCalculation(clone(cartData), undefined, undefined, undefined, undefined, 2, 2, false, false);
 
-        const {groupdiscount,globaldiscount,groups}: any = values;
+        const {groups,all,selected}: any = values;
+
 
         cartData = {
-            ...cartData,
-            //globaldiscountvalue: isInclusive ? 0 :  discount,
-            globaldiscountvalue: isInclusive ? 0 : globaldiscount,
-            discounttype: discounttype,
+            ...cartData, //globaldiscountvalue: isInclusive ? 0 :  discount,
+            globaldiscountvalue: isInclusive ? 0 : selected === 'all'? all.productdiscountvalue :  0,
+            discounttype: selected === 'all'? all.productdiscounttype : '%',
             updatecart: true,
+            discountdetail:values,
             invoiceitems: cartData.invoiceitems.map((item: any) => {
-                item = {...item, productdiscountvalue:0, productdiscounttype: ''}
+                item = {...item, productdiscountvalue: 0, productdiscounttype: ''}
 
-                if (isInclusive || (Boolean(groupdiscount) && groups[item.itemgroupid].selected)) {
-                    item = {...item, productdiscountvalue:groupdiscount || globaldiscount, productdiscounttype: discounttype}
+                if (isInclusive || (Boolean(selected === 'groups') && groups[item.itemgroupid].selected)) {
+                    item = {
+                        ...item,
+                        productdiscountvalue: selected === 'all'? all.productdiscountvalue :  groups[item.itemgroupid].productdiscountvalue,
+                        productdiscounttype: selected === 'all'? all.productdiscounttype : '%',
+                    }
                 }
                 return {...item, change: true}
             })
@@ -55,11 +69,14 @@ const Index = ({cartData,grouplist}: any) => {
 
         let data = await itemTotalCalculation(clone(cartData), undefined, undefined, undefined, undefined, 2, 2, false, false);
 
-
         await dispatch(setCartData(clone(data)));
         await dispatch(setUpdateCart());
 
         dispatch(setBottomSheet({visible: false}))
+
+    }
+
+    const onButtonToggle = () => {
 
     }
 
@@ -69,184 +86,155 @@ const Index = ({cartData,grouplist}: any) => {
     }
 
 
-    const onButtonToggle = (value: any) => {
-        setDiscounttype(value)
-    };
-
     return (<View style={[styles.w_100, styles.p_6]}>
 
         <Form
             onSubmit={handleSubmit}
-            initialValues={initdata}
-            render={({handleSubmit, submitting,form, values, ...more}: any) => {
+            initialValues={discount}
+            render={({handleSubmit, submitting, form, values, ...more}: any) => {
 
-                const {groups} = values
+                const {all,groups,selected} = values
 
-                return (
-                    <View style={[styles.middle]}>
-                        <View style={[styles.middleForm, {maxWidth: 400}]}>
+                return (<View style={[styles.middle]}>
+                    <View style={[styles.middleForm, {maxWidth: 400}]}>
 
-                            <Caption style={[styles.caption]}>Global Discount</Caption>
 
-                            <ScrollView>
+                        <ScrollView>
 
-                                {/*<View style={[styles.grid,styles.mb_5]}>
+                            <Caption style={[styles.caption]}>Discount To</Caption>
 
-                                    <Field name={`allgroup`}>
-                                        {props => (
-                                            <><CheckBox
-                                                {...props}
-                                                value={props.input.value}
-                                                label={'All'}
-                                                onChange={(value: any) => {
-                                                    Object.keys(groups).forEach((key)=>{
-                                                        groups[key] = {...groups[key],selected:value}
-                                                    })
-                                                    props.input.onChange(value);
-                                                }}
-                                            /></>
-                                        )}
-                                    </Field>
+                            <ToggleButtons
+                                width={'50%'}
+                                default={discount.selected}
+                                btns={[{label: 'All', value: 'all'}, {label: 'Selected Groups', value: 'groups'}]}
+                                onValueChange={(value:any)=>setDiscount({...values,selected: value})}
+                            />
 
-                                    {
-                                        Object.keys(groups).map((key,index)=>{
-                                            return(
-                                                <View key={key}>
-                                                    <Field name={`groups[${key}].selected`}>
-                                                        {props => (
-                                                            <><CheckBox
-                                                                {...props}
-                                                                key={uuidv4()}
-                                                                value={props.input.value}
-                                                                label={grouplist[key].itemgroupname}
-                                                                onChange={(value: any) => {
-                                                                    props.input.onChange(value);
-                                                                }}
-                                                            /></>
-                                                        )}
-                                                    </Field>
-                                                </View>
-                                            )
-                                        })
-                                    }
+                            {selected === 'all' ? <>
 
-                                </View>*/}
 
-                                {!isInclusive && <ToggleButtons
-                                    width={'50%'}
-                                    default={cartData.discounttype}
-                                    btns={discountType}
-                                    onValueChange={onButtonToggle}
-                                />}
 
                                 <View style={[styles.mt_5]}>
-                                    <Field name="globaldiscount"  >
-                                        {props => (<InputField
-                                            {...props}
-                                            value={props.input.value}
-                                            label={'Discount'}
-                                            autoFocus={true}
-                                            onSubmitEditing={() => handleSubmit(values)}
-                                            right={<TI.Affix
-                                                text={discounttype === '%' ? '%' : getCurrencySign()}/>}
-                                            inputtype={'textbox'}
-                                            keyboardType={'numeric'}
-                                            onChange={(value: any) => {
-                                                form.change('groupdiscount','')
-                                                props.input.onChange(value);
-                                            }}
-                                        />)}
-                                    </Field>
-                                </View>
 
+                                    <View style={[styles.px_5]}>
 
+                                        <View>
+                                            <Field name="all.productdiscountvalue">
+                                                {props => (<InputField
+                                                    {...props}
+                                                    value={props.input.value}
+                                                    label={`Discount (${all.productdiscounttype === '%' ? '%' : getCurrencySign()})`}
+                                                    autoFocus={false}
+                                                    onSubmitEditing={() => handleSubmit(values)}
+                                                    right={<TI.Affix
+                                                        text={all.productdiscounttype === '%' ? '%' : getCurrencySign()}/>}
+                                                    inputtype={'textbox'}
+                                                    keyboardType={'numeric'}
+                                                    onChange={(value: any) => {
+                                                        props.input.onChange(value);
+                                                    }}
+                                                />)}
+                                            </Field>
+                                        </View>
 
-                                <View style={[styles.p_5]}>
-                                    <Paragraph style={{textAlign:'center'}}>OR</Paragraph>
-                                </View>
+                                        <View>
+                                            {!isInclusive && <ToggleButtons
+                                                width={'50%'}
+                                                default={discount.all.productdiscounttype}
+                                                btns={discountType}
+                                                onValueChange={(value:any)=>{
+                                                    setDiscount({...values,all:{productdiscounttype:value}})
+                                                }}
+                                            />}
+                                        </View>
 
-
-                                <Caption style={[styles.caption,styles.mt_5,styles.pt_15]}>Discount by Group</Caption>
-
-                                <View style={[styles.grid]}>
-
-                                    {
-                                        Object.keys(groups).map((key,index)=>{
-                                            return(
-                                                <View key={key}>
-                                                    <Field name={`groups[${key}].selected`}>
-                                                        {props => (
-                                                            <><CheckBox
-                                                                {...props}
-                                                                key={uuidv4()}
-                                                                value={props.input.value}
-                                                                label={grouplist[key].itemgroupname}
-                                                                onChange={(value: any) => {
-                                                                    props.input.onChange(value);
-                                                                }}
-                                                            /></>
-                                                        )}
-                                                    </Field>
-                                                </View>
-                                            )
-                                        })
-                                    }
-
-                                </View>
-
-                                <View >
-                                    <Field name="groupdiscount" >
-                                        {props => (<InputField
-                                            {...props}
-                                            value={props.input.value}
-                                            label={'Group Discount'}
-                                            right={<TI.Affix
-                                                text={'%'}/>}
-                                            inputtype={'textbox'}
-                                            keyboardType={'numeric'}
-                                            onChange={(value: any) => {
-                                                onButtonToggle('%')
-                                                setDiscounttype('%');
-                                                form.change('globaldiscount','')
-                                                props.input.onChange(value);
-                                            }}
-                                        />)}
-                                    </Field>
-                                </View>
-
-                            </ScrollView>
-
-
-                            <KAccessoryView>
-                                <View style={[styles.submitbutton]}>
-                                    <View>
-
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                handleSubmit(values)
-                                            }}
-                                            style={[{
-                                                backgroundColor: styles.secondary.color,
-                                                borderRadius: 7,
-                                                height: 50,
-                                                marginTop: 20
-                                            }]}>
-                                            <View
-                                                style={[styles.grid, styles.noWrap, styles.middle, styles.center, styles.w_100, styles.h_100]}>
-                                                <View>
-                                                    <Paragraph style={[styles.paragraph, styles.bold]}>Apply</Paragraph>
-                                                </View>
-                                            </View>
-                                        </TouchableOpacity>
 
                                     </View>
                                 </View>
-                            </KAccessoryView>
+                            </> : <>
 
-                        </View>
+                                <View style={[styles.px_5]}>
+
+                                    {Object.keys(groups).map((key, index) => {
+                                        return (
+                                            <View style={[styles.grid, styles.justifyContent,styles.mt_5, styles.w_100]} key={key}>
+
+                                                <View>
+                                                    <Field name={`groups[${key}].selected`}>
+                                                        {props => (<><CheckBox
+                                                            {...props}
+                                                            key={uuidv4()}
+                                                            value={props.input.value}
+                                                            label={grouplist[key]?.itemgroupname}
+                                                            onChange={(value: any) => {
+                                                                props.input.onChange(value);
+                                                            }}
+                                                        /></>)}
+                                                    </Field>
+                                                </View>
+
+
+                                                <View style={{width: 150}}>
+                                                    <View>
+                                                        <Field  name={`groups[${key}].productdiscountvalue`}>
+                                                            {props => (<InputField
+                                                                {...props}
+                                                                value={props.input.value}
+                                                                label={`Discount (%)`}
+                                                                right={<TI.Affix
+                                                                    text={'%'}/>}
+                                                                inputtype={'textbox'}
+                                                                keyboardType={'numeric'}
+                                                                onChange={(value: any) => {
+                                                                    props.input.onChange(value);
+                                                                }}
+                                                            />)}
+                                                        </Field>
+                                                    </View>
+                                                </View>
+
+
+                                            </View>)
+                                    })}
+
+
+                                </View>
+
+
+                            </>}
+
+                        </ScrollView>
+
+
+                        <KAccessoryView>
+                            <View style={[styles.submitbutton]}>
+                                <View>
+
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            handleSubmit(values)
+                                        }}
+                                        style={[{
+                                            backgroundColor: styles.secondary.color,
+                                            borderRadius: 7,
+                                            height: 50,
+                                            marginTop: 20
+                                        }]}>
+                                        <View
+                                            style={[styles.grid, styles.noWrap, styles.middle, styles.center, styles.w_100, styles.h_100]}>
+                                            <View>
+                                                <Paragraph style={[styles.paragraph, styles.bold]}>Apply</Paragraph>
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
+
+                                </View>
+                            </View>
+                        </KAccessoryView>
 
                     </View>
-                )
+
+                </View>)
             }}
         >
         </Form>
@@ -258,8 +246,7 @@ const Index = ({cartData,grouplist}: any) => {
 
 
 const mapStateToProps = (state: any) => ({
-    cartData: state.cartData,
-    grouplist: state.groupList
+    cartData: state.cartData, grouplist: state.groupList
 })
 const mapDispatchToProps = (dispatch: any) => ({});
 

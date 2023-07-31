@@ -1342,6 +1342,8 @@ export const selectItem = async (item: any) => {
         pricingtemplate = clientdetail?.pricingtemplate
     }
 
+    const currentpax = store.getState().cartData.currentpax;
+
     const baseprice = (item?.pricing?.price[pricingtemplate] && item?.pricing?.price[pricingtemplate][0][pricingtype]?.baseprice) || item?.pricing?.price['default'][0][pricingtype]?.baseprice || 0;
 
     const setItemQnt = async (item: any) => {
@@ -1354,6 +1356,7 @@ export const selectItem = async (item: any) => {
                 ...item,
                 added: true,
                 key: uuid(),
+                pax:currentpax,
                 deviceid: device.uniqueid
             }
 

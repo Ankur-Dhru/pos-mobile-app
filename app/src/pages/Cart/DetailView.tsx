@@ -21,6 +21,7 @@ import Adjustment from "./Adjustment";
 import store from "../../redux-store/store";
 import ExtraCharges from "./ExtraCharges";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
+import PaxesSelection from "../Items/PaxesSelection";
 
 const Index = (props: any) => {
 
@@ -133,6 +134,11 @@ const Index = (props: any) => {
         {!device.tablet && <ClientDetail/>}
         <View style={[styles.h_100, styles.flex, mobile]}>
             <View style={[styles.bg_white, styles.flex, {borderRadius: 5}]}>
+
+                <View style={[styles.px_5,styles.py_3]}>
+                    <PaxesSelection all={true}/>
+                </View>
+
                 <View style={[styles.cardContent, styles.h_100, styles.flex, tablet]}>
                     <CartItems/>
                 </View>

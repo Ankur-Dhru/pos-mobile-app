@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ScrollView, TouchableOpacity, View,} from 'react-native';
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
@@ -13,8 +13,6 @@ import {required} from "../../libs/static";
 import KAccessoryView from "../../components/KAccessoryView";
 import ToggleButtons from "../../components/ToggleButton";
 import {itemTotalCalculation} from "../../libs/item-calculation";
-import CheckBox from "../../components/CheckBox";
-import {v4 as uuidv4} from "uuid";
 
 
 const Index = ({cartData, grouplist}: any) => {
@@ -23,7 +21,7 @@ const Index = ({cartData, grouplist}: any) => {
 
     const {discountdetail} = cartData
 
-    let groupsby = groupBy(cartData.invoiceitems, 'itemgroupid', '', {selected: false,productdiscounttype:'%',productdiscountvalue:'0'});
+    let groupsby = groupBy(cartData.invoiceitems, 'itemgroupid', '', {productdiscounttype:'%',productdiscountvalue:'0'});
     if(discountdetail?.groups){
         Object.keys(groupsby).map((key:any)=>{
             groupsby[key] = {
@@ -37,6 +35,12 @@ const Index = ({cartData, grouplist}: any) => {
 
 
 
+
+    useEffect(()=>{
+        setDiscount(discountdetail)
+    },[discountdetail])
+
+
     const isInclusive = Boolean(cartData.vouchertaxtype === 'inclusive');
 
     const handleSubmit = async (values: any) => {
@@ -45,7 +49,6 @@ const Index = ({cartData, grouplist}: any) => {
         // cartData = await itemTotalCalculation(clone(cartData), undefined, undefined, undefined, undefined, 2, 2, false, false);
 
         const {groups,all,selected}: any = values;
-
 
         cartData = {
             ...cartData, //globaldiscountvalue: isInclusive ? 0 :  discount,
@@ -56,7 +59,7 @@ const Index = ({cartData, grouplist}: any) => {
             invoiceitems: cartData.invoiceitems.map((item: any) => {
                 item = {...item, productdiscountvalue: 0, productdiscounttype: ''}
 
-                if (isInclusive || (Boolean(selected === 'groups') && groups[item.itemgroupid].selected)) {
+                if (isInclusive || (Boolean(selected === 'groups') && Boolean(groups[item.itemgroupid].productdiscountvalue))) {
                     item = {
                         ...item,
                         productdiscountvalue: selected === 'all'? all.productdiscountvalue :  groups[item.itemgroupid].productdiscountvalue,
@@ -85,7 +88,6 @@ const Index = ({cartData, grouplist}: any) => {
         discountType.push({label: 'Amount', value: 'amount'})
     }
 
-
     return (<View style={[styles.w_100, styles.p_6]}>
 
         <Form
@@ -101,12 +103,12 @@ const Index = ({cartData, grouplist}: any) => {
 
                         <ScrollView>
 
-                            <Caption style={[styles.caption]}>Discount To</Caption>
+                            <Caption style={[styles.caption]}>Discount</Caption>
 
                             <ToggleButtons
                                 width={'50%'}
                                 default={discount.selected}
-                                btns={[{label: 'All', value: 'all'}, {label: 'Selected Groups', value: 'groups'}]}
+                                btns={[{label: 'On Total', value: 'all'}, {label: 'By Group', value: 'groups'}]}
                                 onValueChange={(value:any)=>setDiscount({...values,selected: value})}
                             />
 
@@ -123,7 +125,7 @@ const Index = ({cartData, grouplist}: any) => {
                                                 {props => (<InputField
                                                     {...props}
                                                     value={props.input.value}
-                                                    label={`Discount (${all.productdiscounttype === '%' ? '%' : getCurrencySign()})`}
+                                                    label={`Discount`}
                                                     autoFocus={false}
                                                     onSubmitEditing={() => handleSubmit(values)}
                                                     right={<TI.Affix
@@ -157,20 +159,23 @@ const Index = ({cartData, grouplist}: any) => {
 
                                     {Object.keys(groups).map((key, index) => {
                                         return (
-                                            <View style={[styles.grid, styles.justifyContent,styles.mt_5, styles.w_100]} key={key}>
+                                            <View style={[styles.grid, styles.justifyContent,styles.mt_5, styles.w_100,styles.borderBottom]} key={key}>
 
                                                 <View>
-                                                    <Field name={`groups[${key}].selected`}>
+                                                    {/*<Field name={`groups[${key}].selected`}>
                                                         {props => (<><CheckBox
                                                             {...props}
                                                             key={uuidv4()}
                                                             value={props.input.value}
-                                                            label={grouplist[key]?.itemgroupname}
+                                                            label={`${grouplist[key]?.itemgroupname}`}
                                                             onChange={(value: any) => {
                                                                 props.input.onChange(value);
                                                             }}
                                                         /></>)}
-                                                    </Field>
+                                                    </Field>*/}
+
+                                                    <Paragraph>{grouplist[key]?.itemgroupname}</Paragraph>
+
                                                 </View>
 
 
@@ -180,7 +185,7 @@ const Index = ({cartData, grouplist}: any) => {
                                                             {props => (<InputField
                                                                 {...props}
                                                                 value={props.input.value}
-                                                                label={`Discount (%)`}
+                                                                label={`Discount`}
                                                                 right={<TI.Affix
                                                                     text={'%'}/>}
                                                                 inputtype={'textbox'}

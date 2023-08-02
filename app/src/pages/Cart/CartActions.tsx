@@ -3,7 +3,7 @@ import {
     appLog, base64Encode,
     clone, dateFormat,
     generateKOT, getItem, getLeftRight, getPrintTemplate, getPrintTemplateLogo, getTrimChar,
-    isRestaurant, numberFormat, objToArray, printInvoice, renderTemplate,
+    isRestaurant, numberFormat, objToArray, printInvoice,
 
     retrieveData,
     saveTempLocalOrder, storeData
@@ -14,7 +14,7 @@ import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {useNavigation} from "@react-navigation/native";
 import Button from "../../components/Button";
-import {resetCart, setCartData} from "../../redux-store/reducer/cart-data";
+import {resetCart, setCartData, updateCartField} from "../../redux-store/reducer/cart-data";
 import {hideLoader, setAlert, setBottomSheet, showLoader} from "../../redux-store/reducer/component";
 import HoldOrders from "./HoldOrders";
 import {db, device, localredux, PRINTER, urls} from "../../libs/static";

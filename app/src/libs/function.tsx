@@ -2583,6 +2583,8 @@ export const syncInvoice = async (invoiceData: any) => {
             invoiceData.deletedorder = true
     }
 
+    invoiceData.paxwise = '';
+
     const syncstatus: any = await getLocalSettings('sync_in_process')
 
     return new Promise((resolve) => {
@@ -2607,7 +2609,7 @@ export const syncInvoice = async (invoiceData: any) => {
 
                 await saveLocalSettings({sync_in_process: false})
 
-                insertLog({
+                /*insertLog({
                     displayno: invoiceData?.invoice_display_number,
                     orderid: invoiceData?.orderid,
                     status: response.status,
@@ -2615,7 +2617,7 @@ export const syncInvoice = async (invoiceData: any) => {
                     message: response.message
                 }).then(() => {
 
-                })
+                })*/
 
                 const clientdetails = response?.data?.client;
 

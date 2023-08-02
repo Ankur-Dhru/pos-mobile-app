@@ -13,7 +13,7 @@ import {device, localredux, METHOD, PRODUCTCATEGORY, STATUS, urls, VOUCHER} from
 import {connect, useDispatch} from "react-redux";
 import {Appbar, Menu, withTheme} from "react-native-paper";
 import {setSelected} from "../../redux-store/reducer/selected-data";
-import {refreshCartData, setCartData} from "../../redux-store/reducer/cart-data";
+import {refreshCartData, setCartData, updateCartField} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
 
@@ -34,7 +34,7 @@ const Index = (props: any) => {
 
 
 
-    const {advancecartview} = props;
+    const {advancecartview,orderbypax,pax} = props;
 
 
     const mainproductgroupid = localredux.localSettingsData?.currentLocation?.mainproductgroupid || PRODUCTCATEGORY.DEFAULT
@@ -142,24 +142,30 @@ const Index = (props: any) => {
         navigation.setOptions({
             headerRight: () =><>
 
-                <TouchableOpacity onPress={()=> {
-                    let view = !gridView;
-                    saveLocalSettings(`gridview-${localredux?.authData?.adminid}`, view).then();
-                    setGridView(view)
-                }}>
-                    <ProIcon name={!gridView?'grid':'list'}/>
-                </TouchableOpacity>
-
                 <Appbar.Action icon={'magnify'} onPress={() => {
                 navigation.navigate('SearchItem')
             }}/>
 
-                {!isRestaurant() &&   <Menu
+
+
+                {<Menu
                     visible={visible}
                     onDismiss={closeMenu}
                     anchor={<Appbar.Action icon={'dots-vertical'} onPress={() => {
                         openMenu()
                     }}/>}>
+
+                    <Menu.Item onPress={async () => {
+                        closeMenu()
+                        let view = !gridView;
+                        saveLocalSettings(`gridview-${localredux?.authData?.adminid}`, view).then();
+                        setGridView(view)
+                    }} title={!gridView?'grid View':'list View'}/>
+
+                    {pax>1 && <Menu.Item onPress={async () => {
+                        closeMenu()
+                        dispatch(updateCartField({orderbypax:!orderbypax}))
+                    }} title={`${orderbypax?'Disabled':'Enable'} by Pax`}/>}
 
 
                     {!isRestaurant() && <Menu.Item onPress={async () => {
@@ -185,6 +191,8 @@ const Index = (props: any) => {
 const mapStateToProps = (state: any) => ({
     disabledpax: state.localSettings?.disabledpax,
     advancecartview: state.localSettings?.advancecartview,
+    orderbypax:state.cartData.orderbypax,
+    pax:state.cartData.pax,
 })
 
 export default connect(mapStateToProps)(Index);

@@ -15,7 +15,7 @@ import ToggleButtons from "../../components/ToggleButton";
 const Index = (props: any) => {
 
 
-    let {invoiceitems,kots} = props;
+    let {invoiceitems,kots,currentpax} = props;
 
     const hasrestaurant = isRestaurant();
 
@@ -90,6 +90,8 @@ const Index = (props: any) => {
             <>
                 <FlatList
                     data={invoiceitems.filter((item:any)=>{
+                        return item.pax === currentpax || currentpax === 'all'
+                    }).filter((item:any)=>{
                         return item?.treatitem !== 'charges'
                     })}
                     ref={cartListRef}
@@ -121,7 +123,8 @@ const Index = (props: any) => {
 
 const mapStateToProps = (state: any) => ({
     invoiceitems: state.cartData.invoiceitems,
-    kots: state.cartData.kots
+    kots: state.cartData.kots,
+    currentpax:state.cartData.currentpax
 })
 
 export default connect(mapStateToProps)(Index);

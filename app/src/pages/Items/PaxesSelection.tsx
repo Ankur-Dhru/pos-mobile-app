@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {ScrollView, TouchableOpacity, View,} from "react-native";
-import {Paragraph} from "react-native-paper";
+import {Caption, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
 
 import {connect, useDispatch} from "react-redux";
@@ -34,8 +34,11 @@ const Index = (props: any) => {
 
 
         <View style={[styles.mb_2]}>
-            <ScrollView>
+
                 <View style={[styles.grid, styles.middle,styles.justifyContent]}>
+
+                    <ScrollView horizontal={true}>
+
                     <View  style={[styles.grid, styles.middle]}>
 
 
@@ -45,17 +48,19 @@ const Index = (props: any) => {
                                 return   <TouchableOpacity    key={i} onPress={() => {
                                         setCurrent((i+1))
                                         dispatch(updateCartField({currentpax:(i+1)}))
-                                    }} style={[styles.bg_light, styles.px_5, styles.py_3, styles.mr_1, styles.mb_2, {
+                                    }} style={[styles.bg_light, styles.px_5, styles.py_3, styles.mr_1, styles.mb_2,styles.grid,styles.justifyContent, {
                                         borderRadius: 4,
                                         backgroundColor: +current === +(i + 1) ? styles.secondary.color : 'white'
-                                }]}><Paragraph style={[styles.grid,styles.justifyContent]}>
+                                }]}>
                                         {!isEmpty(paxdetail) && Boolean(paxdetail[i+1]?.payments) && paxdetail[i+1]?.payments[0]?.remainingamount == 0 && <ProIcon name={'check'}></ProIcon>}
                                         <Paragraph>{i + 1} </Paragraph>
-                                    </Paragraph>
+
                                 </TouchableOpacity>
                             })
                         }
                     </View>
+
+                    </ScrollView>
 
                     {all && <TouchableOpacity   onPress={() => {
                         setCurrent(('all'))
@@ -66,7 +71,7 @@ const Index = (props: any) => {
                     }]}><Paragraph> View All </Paragraph></TouchableOpacity>}
 
                 </View>
-            </ScrollView>
+
         </View>
 
     </View>

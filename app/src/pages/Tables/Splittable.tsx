@@ -13,10 +13,10 @@ const Paxes = () => {
 
     const dispatch = useDispatch();
 
-    const [paxes, setPaxes] = useState({pax: '', orderbypax: false,currentpax:1})
+    const [split, setSplit] = useState({pax: '', orderbypax: false,currentpax:1})
 
 
-    const noofpaxes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    const paxes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
     return <>
         <ScrollView>
@@ -26,21 +26,21 @@ const Paxes = () => {
                 <CheckBox
                     label={'Order by Pax'}
                     onChange={(value: any) => {
-                        setPaxes({...paxes, orderbypax: value})
+                        setSplit({...split, orderbypax: value})
                     }}
                 />
             </View>
 
 
             <View style={[styles.grid]}>
-                {noofpaxes.map((number: any, index: any) => {
+                {paxes.map((number: any, index: any) => {
                     return <>
                         <TouchableOpacity key={index} style={[styles.m_2, styles.p_6, styles.flexGrow, {
                             borderRadius: 10,
                             width: '20%',
-                            backgroundColor: paxes.pax === number ? styles.secondary.color : styles.light.color
+                            backgroundColor: split.pax === number ? styles.secondary.color : styles.light.color
                         }]} onPress={() => {
-                            setPaxes({...paxes, pax: number})
+                            setSplit({...split, pax: number})
                         }}>
                             <Paragraph style={[styles.bold, {
                                 textAlign: 'center',
@@ -60,7 +60,7 @@ const Paxes = () => {
 
                 <Button more={{color: 'white'}}
                         onPress={() => {
-                            dispatch(updateCartField({...paxes}))
+                            dispatch(updateCartField({...split}))
                             dispatch(setDialog({visible: false}))
                         }}>OK
                 </Button>

@@ -19,7 +19,7 @@ const Index = ({cartData, grouplist}: any) => {
 
     const dispatch = useDispatch();
 
-    const {discountdetail} = cartData
+    const {discountdetail,orderbypax} = cartData
 
     let groupsby = groupBy(cartData.invoiceitems, 'itemgroupid', '', {productdiscounttype:'%',productdiscountvalue:'0'});
     if(discountdetail?.groups){
@@ -37,7 +37,7 @@ const Index = ({cartData, grouplist}: any) => {
 
 
     useEffect(()=>{
-        setDiscount(discountdetail)
+       Boolean(discountdetail) && setDiscount(discountdetail)
     },[discountdetail])
 
 
@@ -84,9 +84,15 @@ const Index = ({cartData, grouplist}: any) => {
     }
 
     let discountType = [{label: 'Percentage', value: '%'}];
-    if (!isInclusive) {
+    if (!isInclusive && !orderbypax) {
         discountType.push({label: 'Amount', value: 'amount'})
     }
+
+
+    if(!Boolean(discount)){
+        return <></>
+    }
+
 
     return (<View style={[styles.w_100, styles.p_6]}>
 
@@ -107,7 +113,7 @@ const Index = ({cartData, grouplist}: any) => {
 
                             <ToggleButtons
                                 width={'50%'}
-                                default={discount.selected}
+                                default={discount?.selected}
                                 btns={[{label: 'On Total', value: 'all'}, {label: 'By Group', value: 'groups'}]}
                                 onValueChange={(value:any)=>setDiscount({...values,selected: value})}
                             />
@@ -140,9 +146,9 @@ const Index = ({cartData, grouplist}: any) => {
                                         </View>
 
                                         <View>
-                                            {!isInclusive && <ToggleButtons
+                                            {discountType.length > 1 && <ToggleButtons
                                                 width={'50%'}
-                                                default={discount.all.productdiscounttype}
+                                                default={discount?.all?.productdiscounttype}
                                                 btns={discountType}
                                                 onValueChange={(value:any)=>{
                                                     setDiscount({...values,all:{productdiscounttype:value}})

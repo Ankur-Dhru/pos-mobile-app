@@ -2,7 +2,7 @@ import React, {memo, useEffect, useState} from "react";
 import {
     appLog,
     clone,
-    errorAlert,
+    errorAlert, findObject,
     getDefaultCurrency,
     getFloatValue,
     getTicketStatus,
@@ -26,6 +26,28 @@ import ToggleButtons from "../../components/ToggleButton";
 import PaxesSelection from "../Items/PaxesSelection";
 import {itemTotalCalculation} from "../../libs/item-calculation";
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
+
+
+export const splitPaxwise = async () => {
+    let {cartData, cartData: {invoiceitems}} = store.getState()
+    const paxwiseitems = groupBy(invoiceitems, 'pax');
+    let data: any = {}
+    return await new Promise(async (resolve) => {
+        let vouchertotal = 0;
+        for (const key of Object.keys(paxwiseitems)) {
+            data[key] = await itemTotalCalculation({
+                ...cartData,
+                invoiceitems: paxwiseitems[key]
+            }, undefined, undefined, undefined, undefined, 2, 2, false, false);
+            vouchertotal += data[key].vouchertotaldisplay
+        }
+
+        let paxarray = Object.keys(data);
+        let difference = cartData.vouchertotaldisplay - vouchertotal
+        data[paxarray.length].vouchertotaldisplay = data[paxarray.length].vouchertotaldisplay + difference
+        resolve(data)
+    })
+}
 
 const Index = ({
                    paidamount,
@@ -63,20 +85,6 @@ const Index = ({
     }, [taxInvoice]);
 
 
-    const splitPaxwise = async () => {
-        const paxwiseitems = groupBy(invoiceitems, 'pax');
-        let data: any = {}
-        return await new Promise(async (resolve) => {
-            for (const key of Object.keys(paxwiseitems)) {
-                data[key] = await itemTotalCalculation({
-                    ...cartData,
-                    invoiceitems: paxwiseitems[key]
-                }, undefined, undefined, undefined, undefined, 2, 2, false, false)
-            }
-            resolve(data)
-        })
-    }
-
     useEffect(() => {
         splitPaxwise().then((data: any) => {
             cartData = {
@@ -84,7 +92,7 @@ const Index = ({
                 payment: payment,
                 currentpax:'all'
             }
-            setPaxwise(data)
+            setPaxwise(data);
             dispatch(setCartData(cartData));
         })
     }, [])
@@ -102,6 +110,7 @@ const Index = ({
     }
 
     const getPaymentgateways = () => {
+
         return Object.keys(paymentgateway).map((key: any) => {
             const b: any = getGatewayDetailByKey(key, 'displayname');
             const find = payment.find((pay: any) => pay.paymentmethod === key);
@@ -112,6 +121,13 @@ const Index = ({
 
             if (defaultpaymentgateway === key) {
                 item.paymentAmount = vouchertotaldisplay || 0
+            }
+
+            if(currentpax !== 'all') {
+                if (paxwise[currentpax]?.payments && paxwise[currentpax]?.payments[0]?.paymentgateways) {
+                    let find = findObject(paxwise[currentpax]?.payments[0]?.paymentgateways,'gid',key,true)
+                    item.paymentAmount = find?.pay;
+                }
             }
 
             return item
@@ -160,16 +176,16 @@ const Index = ({
         if(currentpax !=='all') {
             total = paxwise[currentpax]?.vouchertotaldisplay
         }
+
         setVouchertotaldisplay(total)
     },[currentpax])
 
 
-    useEffect(()=>{
+    /*useEffect(()=>{
         Object.keys(paxwise).map((key:any)=>{
-            //console.log('paxwise',JSON.stringify(paxwise[key].payments,0,1))
-        })
 
-    },[paxwise])
+        })
+    },[paxwise])*/
 
 
     useEffect(()=>{
@@ -178,6 +194,7 @@ const Index = ({
 
 
     const setPaymentbypax = (cartData:any) => {
+
         cartData = {
             ...cartData, payment: paymentMethods,
         }
@@ -208,6 +225,8 @@ const Index = ({
             }
         })
 
+
+
         if (remainingAmount === vouchertotaldisplay) {
             paymentgateways = [{gatewayname: 'Pay later', gatewaytype: 'paylater', pay: vouchertotaldisplay}]
         }
@@ -228,7 +247,12 @@ const Index = ({
         try {
             let cartData: any = setPaymentbypax(paxwise[currentpax]);
             setPaxwise({...paxwise,[currentpax]:cartData})
-            dispatch(updateCartField({currentpax:currentpax + 1}))
+            if(Boolean(paxwise[currentpax + 1])) {
+                dispatch(updateCartField({currentpax: currentpax + 1}))
+            }
+            else{
+                dispatch(updateCartField({currentpax: 1}))
+            }
 
         } catch (e) {
             appLog('e', e)
@@ -244,7 +268,25 @@ const Index = ({
 
            let cartData = setPaymentbypax(store.getState().cartData)
 
-            console.log('cartData.payments',JSON.stringify(cartData.payments))
+
+
+            if(currentpax !== 'all'){
+                let payments:any = []
+                Object.keys(paxwise).map((key:any)=>{
+                    paxwise[key]?.payments[0]?.paymentgateways?.map((paxpayment:any)=>{
+                        payments.push(paxpayment);
+                    })
+                })
+                cartData = {
+                    ...cartData,
+                    payments: [{
+                        "remainingamount": 0,
+                        "totalamount": cartData.vouchertotaldisplay,
+                        "paymentgateways": payments
+                    }]
+                }
+            }
+
 
 
             if (Boolean(cartData?.kots.length)) {
@@ -261,7 +303,6 @@ const Index = ({
             }
 
             cartData.paidamount = paidamount;
-
 
             ////////// SAVE FINAL DATA //////////
 
@@ -448,7 +489,7 @@ const Index = ({
                         })}
 
 
-                        <View style={[styles.grid, styles.justifyContent]}>
+                        {currentpax === 'all' &&  <View style={[styles.grid, styles.justifyContent]}>
 
                             <View style={{width: 30}}>
                                 <TouchableOpacity>
@@ -486,7 +527,7 @@ const Index = ({
 
                             <View></View>
 
-                        </View>
+                        </View>}
 
                     </View>
 
@@ -522,17 +563,17 @@ const Index = ({
 
 
 
-        {currentpax !== 'all' &&  <View  style={[styles.p_4]}>
+        {currentpax !== 'all' && Boolean(billremainingAmount !== 0) && Boolean(remainingAmount === 0) && <View  style={[styles.p_4]}>
             <Button
                 more={{color: 'black', backgroundColor: styles.secondary.color, height: 55}}
                 onPress={() => {
                     payNext().then()
-                }}>Pay Next</Button>
+                }}>Pay #pax {currentpax} </Button>
         </View>}
 
 
 
-        {currentpax === 'all'   && <View>
+        {(currentpax === 'all'   || Boolean(billremainingAmount === 0)) && <View>
 
 
             {<View style={[styles.grid, styles.justifyContent, styles.p_4]}>

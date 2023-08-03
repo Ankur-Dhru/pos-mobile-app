@@ -27,7 +27,7 @@ import {connect, useDispatch} from "react-redux";
 import ProIcon from "../../components/ProIcon";
 import {refreshCartData} from "../../redux-store/reducer/cart-data";
 import {useIsFocused, useNavigation} from "@react-navigation/native";
-import {hideLoader, setAlert, setBottomSheet, showLoader} from "../../redux-store/reducer/component";
+import {hideLoader, setAlert, setBottomSheet, setDialog, showLoader} from "../../redux-store/reducer/component";
 import ClientAndSource from "../Cart/ClientAndSource";
 import moment from "moment";
 import {setSelected} from "../../redux-store/reducer/selected-data";
@@ -37,6 +37,8 @@ import {TabBar, TabView} from "react-native-tab-view";
 import apiService from "../../libs/api-service";
 import {uuid} from "uuidv4";
 import crashlytics from "@react-native-firebase/crashlytics";
+import Paxes from "./Paxes";
+import Splittable from "./Splittable";
 
 let interval: any = ''
 const Index = ({tableorders}: any) => {
@@ -55,6 +57,7 @@ const Index = ({tableorders}: any) => {
 
     const [floating, setFloating] = useState(false);
     const [shifttable, setShifttable] = useState(false);
+    const [splittable, setSplittable] = useState(false);
     const [shiftingFromtable, setShiftingFromtable] = useState<any>();
     const [shiftingFromtableid, setShiftingFromtableid] = useState<any>();
     const [shiftingTotable, setShiftingTotable] = useState<any>();
@@ -253,11 +256,21 @@ const Index = ({tableorders}: any) => {
         }
     }
 
+
+    const splitTable = (tabledetails:any) => {
+        dispatch(setDialog({
+            visible: true,
+            title: `Split ${tabledetails.tablename}`,
+            hidecancel: true,
+            component: () => <Splittable/>
+        }))
+    }
+
     const Item = memo(
         (props: any) => {
 
             let {
-                item, shifttable,
+                item, shifttable,splittable,
                 resetTables,
                 setShiftingFromtable,
                 shiftingFromtable,
@@ -330,14 +343,14 @@ const Index = ({tableorders}: any) => {
                 <Card style={[styles.card, styles.m_1, styles.mb_2, {
                     marginTop: 0,
                     width: oriantation === 'portrait' ? '45%' : '24%',
-                    backgroundColor: Boolean(item?.printcounter) ? styles.yellow.color : Boolean(item.clientname) ? styles.secondary.color : styles.light.color,
+                    backgroundColor: splittable ?  styles.secondary.color : Boolean(item?.printcounter) ? styles.yellow.color : Boolean(item.clientname) ? styles.secondary.color : styles.light.color,
                     borderRadius: 5,
                 }, styles.flexGrow,]} key={item.tableid}>
                     {<TouchableOpacity
                         style={{minHeight: 120}}
                         onPress={() => {
                             current.table = {invoiceitems: [], kots: [], ...item};
-                            !shifttable ? setTableOrderDetail(current.table) : Boolean(shifting) ? shiftTo(props) : shiftFrom(item.tableorderid,item.tableid)
+                            splittable ? splitTable(current.table) : !shifttable ? setTableOrderDetail(current.table) : Boolean(shifting) ? shiftTo(props) :  shiftFrom(item.tableorderid,item.tableid)
                         }}>
                         {((shiftstart || shifting) || !shifttable) && <View style={[styles.p_4]}>
                             <View style={[styles.grid, styles.mb_3]}>
@@ -400,15 +413,36 @@ const Index = ({tableorders}: any) => {
                             openMenu()
                         }}/>}>
                         {/*<Menu.Item onPress={onClickAddTable} title="Add Table"/>*/}
+
+
                         {!shifttable && <Menu.Item onPress={() => {
                             closeMenu()
                             setShifttable(true)
                         }} title="Shift Table"/>}
+
+
                         {shifttable && <Menu.Item onPress={() => {
                             closeMenu()
                             setShifttable(false)
                         }} title="Disable Shift"/>}
+
+
+                         {!splittable && <Menu.Item onPress={() => {
+                             closeMenu()
+                             setSplittable(true)
+                         }} title="Split Table"/>}
+
+
+                         {splittable && <Menu.Item onPress={() => {
+                             closeMenu()
+                             setSplittable(false)
+                         }} title="Disable Split"/>}
+
+
                          {!Boolean(urls.localserver) && <Menu.Item onPress={onClickReserveTable} title="Reserved Tables"/>}
+
+
+
 
                         <Menu.Item onPress={() => {
                             getOrder().then();
@@ -620,6 +654,7 @@ const Index = ({tableorders}: any) => {
                                                          setShiftingFromtable={setShiftingFromtable}
                                                          shiftingTotable={shiftingTotable}
                                                          setShiftingTotable={setShiftingTotable}
+                                                         splittable={splittable}
                                                          getOrder={getOrder}
                                                          resetTables={resetTables} item={item}
                                                          key={index}/>

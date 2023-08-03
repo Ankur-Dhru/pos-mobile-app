@@ -1,5 +1,14 @@
-import React, {memo, useEffect} from "react";
-import {appLog, chevronRight, clone, dateFormat, isRestaurant, toCurrency, updateComponent} from "../../libs/function";
+import React, {memo, useEffect, useState} from "react";
+import {
+    appLog,
+    chevronRight,
+    clone,
+    dateFormat,
+    groupBy,
+    isRestaurant,
+    toCurrency,
+    updateComponent
+} from "../../libs/function";
 import {TouchableOpacity, View} from "react-native";
 import {Caption, Card, Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
@@ -12,14 +21,36 @@ import {contentLoader} from "../../redux-store/reducer/component";
 import store from "../../redux-store/store";
 import moment from "moment";
 import ClientAndSource from "./ClientAndSource";
+import {splitPaxwise} from "./Payment";
 
 
 
-const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: any) => {
+const Index = ({advanceorder,commonkotnote,orderbypax,currentpax, navigation}: any) => {
 
     const dispatch = useDispatch()
     const moreSummaryRef: any = React.useRef();
     let summary: any = false
+    const [paxwise, setPaxwise]:any = useState({})
+    let {vouchertotaldisplay} = store.getState().cartData
+
+    const [vouchertotal,setVouchertotal] = useState(parseInt(vouchertotaldisplay))
+
+    useEffect(() => {
+        if(orderbypax) {
+            splitPaxwise().then((data: any) => {
+                setPaxwise(data);
+            })
+        }
+    }, [])
+
+    useEffect(()=>{
+        let total = vouchertotaldisplay
+        if(currentpax !== 'all'){
+            total = paxwise[currentpax]?.vouchertotaldisplay
+            updateComponent(moreSummaryRef, 'display', 'none');
+        }
+        setVouchertotal(total)
+    },[currentpax])
 
 
     useEffect(() => {
@@ -101,7 +132,9 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
 
         <View>
             <TouchableOpacity style={[styles.p_5,styles.radiusBottom,{backgroundColor:styles.yellow.color}]} onPress={() => {
-                viewSummary().then()
+                if(currentpax === 'all') {
+                    viewSummary().then()
+                }
             }}>
 
                 <View ref={moreSummaryRef}><CartSummaryMore/></View>
@@ -110,7 +143,7 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
                     <View><Paragraph
                         style={[styles.paragraph, styles.bold]}>Total  </Paragraph></View>
                     <View><Paragraph
-                        style={[styles.paragraph, styles.bold, styles.text_lg]}> <ProIcon name={'chevron-up'} size={15}/>  {toCurrency(vouchertotaldisplay || '0')}</Paragraph></View>
+                        style={[styles.paragraph, styles.bold, styles.text_lg]}> <ProIcon name={'chevron-up'} size={15}/>  {toCurrency(vouchertotal || '0')}</Paragraph></View>
                 </View>
             </TouchableOpacity>
         </View></>)
@@ -119,7 +152,9 @@ const Index = ({vouchertotaldisplay, advanceorder,commonkotnote, navigation}: an
 const mapStateToProps = (state: any) => ({
     advanceorder: state.cartData?.advanceorder,
     commonkotnote:state.cartData?.commonkotnote,
-    vouchertotaldisplay: parseInt(state.cartData.vouchertotaldisplay),
+    orderbypax:state.cartData?.orderbypax,
+    currentpax:state.cartData?.currentpax,
+
 })
 
 export default connect(mapStateToProps)(withTheme(memo(Index)));

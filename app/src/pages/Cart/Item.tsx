@@ -19,7 +19,7 @@ import InputField from "../../components/InputField";
 
 const Index = memo((props: any) => {
 
-    const {item, index,  theme: {colors}, isRestaurant,hasLast,length} = props;
+    const {item, index,orderbypax,  theme: {colors}, isRestaurant,hasLast,length} = props;
     const{unit}:any = localredux.initData;
 
 
@@ -81,7 +81,7 @@ const Index = memo((props: any) => {
 
                                     <Paragraph
                                         style={[styles.paragraph,  styles.bold,styles.ml_1,  {textTransform:'capitalize',color:item.productdiscountvalue?'orange':'black'}]}
-                                        numberOfLines={2}>{index + 1}) {item?.itemname || item?.productdisplayname}  (#pax {item.pax}) </Paragraph>
+                                        numberOfLines={2}>{index + 1}) {item?.itemname || item?.productdisplayname} {(item.pax !== 'all' && orderbypax)?`(#pax ${item.pax})`: ''}   </Paragraph>
 
 
 

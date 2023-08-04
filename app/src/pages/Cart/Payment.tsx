@@ -543,14 +543,14 @@ const Index = ({
                         </View>}
                     </View>
 
-                    {currentpax !== 'all' && <View>
+                    {/*{currentpax !== 'all' && <View>
                         {<View style={[styles.grid, styles.justifyContent, styles.p_5]}>
                             <Paragraph
                                 style={[styles.paragraph, styles.bold, styles.text_lg, {color: styles.red.color}]}>Bill Remaining </Paragraph>
                             <Paragraph
                                 style={[styles.paragraph, styles.bold, styles.text_lg, {color: styles.red.color}]}>  {toCurrency(billremainingAmount || '0')}</Paragraph>
                         </View>}
-                    </View>}
+                    </View>}*/}
 
 
                 </Card.Content>

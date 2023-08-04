@@ -118,7 +118,6 @@ const Index = ({navigation}: any) => {
                     <View style={[styles.grid, styles.justifyContent, styles.middle]}>
 
                         <View style={[styles.w_auto, styles.grid, styles.p_3, styles.center,styles.bg_light, {
-
                             borderRadius: 5
                         }]}>
                             <View>

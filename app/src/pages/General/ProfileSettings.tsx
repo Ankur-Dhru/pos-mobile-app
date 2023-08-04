@@ -397,6 +397,25 @@ const ProfileSettings = () => {
 
                                         <ItemDivider/>
 
+
+                                        <List.Item
+                                            style={[styles.listitem]}
+                                            title="Day End Report Printer"
+                                            onPress={() => {
+                                                navigation.navigate('PrinterSettings', {
+                                                    type: {
+                                                        name: 'Day End Report',
+                                                        departmentid: PRINTER.DAYENDREPORT
+                                                    }
+                                                })
+                                            }}
+                                            left={() => <List.Icon icon="printer-outline"/>}
+                                            right={() => <List.Icon icon="chevron-right"/>}
+                                        />
+
+                                        <ItemDivider/>
+
+
                                         {isRestaurant() && <List.Item
                                             style={[styles.listitem]}
                                             title="Kitchen / KOT Printer"

@@ -16,7 +16,7 @@ import KOTItemListforCancel from "./KOTItemListforCancel";
 
 const Index = (props: any) => {
 
-    let {kot: kt, tablename, theme: {colors}, hasLast}: any = props;
+    let {kot: kt, tablename, theme: {colors}, hasLast,orderbypax}: any = props;
 
     const {departmentname, commonkotnote, staffname, kotid, tickettime, ticketitems,ticketnumberprefix}: any = kt;
 
@@ -90,7 +90,7 @@ const Index = (props: any) => {
                         {
                            Boolean(ticketitems?.length) && ticketitems?.map((item: any, index: any) => {
                                 return <View key={index}>
-                                    <Paragraph style={[{textTransform:'capitalize'},Boolean(item.cancelled) && {color:styles.red.color}]}>{item.productqnt} x {item.productdisplayname} {Boolean(item.cancelled) && `(Cancelled - ${item.reasonname})`}</Paragraph>
+                                    <Paragraph style={[{textTransform:'capitalize'},Boolean(item.cancelled) && {color:styles.red.color}]}>{item.productqnt} x {item.productdisplayname} {item.pax} {Boolean(item.cancelled) && `(Cancelled - ${item.reasonname})`}</Paragraph>
                                 </View>
                             })
                         }

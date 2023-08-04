@@ -103,7 +103,7 @@ const Index = (props: any) => {
     }
 
     navigation.setOptions({
-        headerTitle: `${type.departmentid === PRINTER.INVOICE ? 'Invoice' : 'KOT'} Printer`
+        headerTitle: `${type.departmentid === PRINTER.INVOICE ? 'Invoice' : type.departmentid === PRINTER.DAYENDREPORT ? 'Day end report' :'KOT'} Printer`
     })
 
 
@@ -467,7 +467,7 @@ const Index = (props: any) => {
 
                                                     </View>
 
-                                                    {type.departmentid !== PRINTER.INVOICE &&
+                                                    {(type.departmentid !== PRINTER.INVOICE && type.departmentid !== PRINTER.DAYENDREPORT) &&
                                                         <View>
                                                             <View style={[]}>
                                                                 <Field name="printoncancel">

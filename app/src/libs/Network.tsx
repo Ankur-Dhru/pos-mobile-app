@@ -44,6 +44,7 @@ export const sendDataToPrinter = async (input?: any, template?: string, printer?
 
                     if (printer?.templatetype === 'ThermalHtml') {
                         device.printpreview =  base64Encode(Mustache.render(template, input));
+
                         device.navigation.navigate('Preview', {printer:printer, autoprint: !printer?.printpreview});
                         return true
                     }
@@ -104,10 +105,7 @@ export const sendDataToPrinter = async (input?: any, template?: string, printer?
                 } else {
 
 
-
                     if(printer?.printertype === 'sunmi'){
-
-
 
                     }
                     else if (Boolean(printer?.host)) {
@@ -120,6 +118,7 @@ export const sendDataToPrinter = async (input?: any, template?: string, printer?
                     }
                 }
             } catch (err) {
+                console.log('err',err)
                 resolve('Check Printer Connection')
             }
         }

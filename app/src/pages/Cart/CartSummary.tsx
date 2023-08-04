@@ -25,13 +25,12 @@ import {splitPaxwise} from "./Payment";
 
 
 
-const Index = ({advanceorder,commonkotnote,orderbypax,currentpax, navigation}: any) => {
+const Index = ({advanceorder,commonkotnote,orderbypax,currentpax,vouchertotaldisplay, navigation}: any) => {
 
     const dispatch = useDispatch()
     const moreSummaryRef: any = React.useRef();
     let summary: any = false
     const [paxwise, setPaxwise]:any = useState({})
-    let {vouchertotaldisplay} = store.getState().cartData
 
     const [vouchertotal,setVouchertotal] = useState(parseInt(vouchertotaldisplay))
 
@@ -44,13 +43,13 @@ const Index = ({advanceorder,commonkotnote,orderbypax,currentpax, navigation}: a
     }, [])
 
     useEffect(()=>{
-        let total = vouchertotaldisplay
-        if(currentpax !== 'all'){
-            total = paxwise[currentpax]?.vouchertotaldisplay
+        let total = parseInt(vouchertotaldisplay)
+        if(currentpax !== 'all' &&  orderbypax){
+            total = parseInt(paxwise[currentpax]?.vouchertotaldisplay)
             updateComponent(moreSummaryRef, 'display', 'none');
         }
         setVouchertotal(total)
-    },[currentpax])
+    },[currentpax,paxwise,vouchertotaldisplay])
 
 
     useEffect(() => {
@@ -132,7 +131,7 @@ const Index = ({advanceorder,commonkotnote,orderbypax,currentpax, navigation}: a
 
         <View>
             <TouchableOpacity style={[styles.p_5,styles.radiusBottom,{backgroundColor:styles.yellow.color}]} onPress={() => {
-                if(currentpax === 'all') {
+                if(currentpax === 'all' || !orderbypax) {
                     viewSummary().then()
                 }
             }}>
@@ -154,7 +153,7 @@ const mapStateToProps = (state: any) => ({
     commonkotnote:state.cartData?.commonkotnote,
     orderbypax:state.cartData?.orderbypax,
     currentpax:state.cartData?.currentpax,
-
+    vouchertotaldisplay:state.cartData?.vouchertotaldisplay,
 })
 
 export default connect(mapStateToProps)(withTheme(memo(Index)));

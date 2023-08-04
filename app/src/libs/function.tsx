@@ -390,16 +390,14 @@ export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = t
         payment: payment,
         isadjustment: voucherTypeData?.isadjustment,
         edit: true,
-        paxes: 1,
         deviceid: device.uniqueid,
         "placeofsupply": state,
         "updatecart": false,
         "debugPrint": true,
         "shifttable": false,
         "taxInvoice": false,
+        "currentpax":'all'
     }
-
-
     return data;
 }
 
@@ -1713,12 +1711,13 @@ export const generateKOT = async (cancelkotprint?: any) => {
                                                 itemid,
                                                 itemname,
                                                 itemaddon,
+                                                pax,
                                                 itemtags,
                                             } = itemL1;
 
                                             tickettotal += (productratedisplay * productqnt) || 0;
 
-                                            const kot: any = {
+                                            let kot: any = {
                                                 "productid": itemid,
                                                 "productrate": productratedisplay,
                                                 "productratedisplay": productratedisplay,
@@ -1731,10 +1730,18 @@ export const generateKOT = async (cancelkotprint?: any) => {
                                                 "productdisplayname": itemname,
                                                 "itemgroupname": groupname,
                                                 "instruction": notes || '',
+
                                                 predefinenotes: notes || '',
 
                                                 key: itemL1.key,
                                             };
+
+                                            if(cartData?.orderbypax){
+                                                kot = {
+                                                    ...kot,
+                                                    pax:`#pax ${pax}`
+                                                }
+                                            }
 
                                             if (itemaddon) {
                                                 kot.addons = itemaddon
@@ -2348,17 +2355,12 @@ export const refreshToken = () => {
                     resolve(false)
                 }
             });
-
-
     }))
-
 }
 
 
 export const updateToken = async (token: any) => {
 
-    console.log('localredux.authData.token',localredux.authData.token)
-    console.log('new last token',token)
 
     crashlytics().log('updateToken');
 
@@ -2818,7 +2820,7 @@ export const printDayEndReport = ({date: date, data: data}: any) => {
         }
 
         const PRINTERS: any = store.getState().localSettings?.printers || [];
-        let printer = PRINTERS[PRINTER.INVOICE];
+        let printer = PRINTERS[PRINTER.DAYENDREPORT];
 
 
         PAGE_WIDTH = printer?.printsize || 48;
@@ -2827,7 +2829,7 @@ export const printDayEndReport = ({date: date, data: data}: any) => {
         return new Promise(async (resolve) => {
             if (Boolean(printer?.host) || Boolean(printer?.bluetoothdetail) || Boolean(printer?.broadcastip)) {
 
-                sendDataToPrinter(printJson, printer.templatetype === 'ThermalHtml' ? getPrintTemplate(28) || dayendReportTemplateHtml : getPrintTemplate(29) || dayendReportTemplate, {...printer}).then((msg) => {
+                sendDataToPrinter(printJson, printer.templatetype === 'ThermalHtml' ? getPrintTemplate(printer.template) || dayendReportTemplateHtml : getPrintTemplate(printer.template) || dayendReportTemplate, {...printer}).then((msg) => {
                     resolve(msg)
                 });
             } else {

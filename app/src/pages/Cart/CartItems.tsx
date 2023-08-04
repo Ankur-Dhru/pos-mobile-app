@@ -15,7 +15,7 @@ import ToggleButtons from "../../components/ToggleButton";
 const Index = (props: any) => {
 
 
-    let {invoiceitems,kots,currentpax} = props;
+    let {invoiceitems,kots,currentpax,orderbypax} = props;
 
     const hasrestaurant = isRestaurant();
 
@@ -45,8 +45,8 @@ const Index = (props: any) => {
         firstRenderRef.current=true
     }, [invoiceitems?.length]);
 
-    const renderItem = useCallback(({item, index}: any) => <Item item={item} key={item.key} hasLast={invoiceitems.length === index+1} isRestaurant={hasrestaurant}   index={index}/>, []);
-    const renderKot = useCallback(({item, index}: any) => <Kot kot={item} hasLast={kots.length === index+1} key={item.key} />, []);
+    const renderItem = useCallback(({item, index}: any) => <Item item={item} orderbypax={orderbypax} key={item.key} hasLast={invoiceitems.length === index+1} isRestaurant={hasrestaurant}   index={index}/>, []);
+    const renderKot = useCallback(({item, index}: any) => <Kot kot={item} orderbypax={orderbypax} hasLast={kots.length === index+1} key={item.key} />, []);
 
     const onButtonToggle = (value:any) => {
         if(value === 'items'){
@@ -124,7 +124,8 @@ const Index = (props: any) => {
 const mapStateToProps = (state: any) => ({
     invoiceitems: state.cartData.invoiceitems,
     kots: state.cartData.kots,
-    currentpax:state.cartData.currentpax
+    currentpax:state.cartData.currentpax,
+    orderbypax:state.cartData.orderbypax
 })
 
 export default connect(mapStateToProps)(Index);

@@ -88,7 +88,9 @@ export const ItemView = memo(({item,displayType,search,currentpax}:any)=>{
                 titleStyle={[styles.bold,{textTransform: 'capitalize'}]}
                 titleNumberOfLines={2}
                 description={()=>{
-                    return <View style={[styles.grid, styles.middle]}>
+                    return <>{Boolean(item.uniqueproductcode) &&  <View><Paragraph>{item.uniqueproductcode}</Paragraph></View>}
+                        <View style={[styles.grid, styles.middle]}>
+
                         {hasRestaurant && !Boolean(item.comboid) && <View style={[styles.mr_1]}>
                             <VegNonVeg type={item.veg}/>
                         </View>}
@@ -99,6 +101,7 @@ export const ItemView = memo(({item,displayType,search,currentpax}:any)=>{
                             Boolean(item.comboid) && <Paragraph  style={[styles.paragraph, styles.text_xs]}>Group</Paragraph>
                         }
                     </View>
+                    </>
                 }}
                 onPress={() => {
 
@@ -146,6 +149,9 @@ export const ItemView = memo(({item,displayType,search,currentpax}:any)=>{
                         <Paragraph  style={[styles.paragraph, styles.bold, styles.text_xs, {textAlign: 'center'}]}>
                             {item.itemname}
                         </Paragraph>
+                        <Paragraph  style={[styles.paragraph, styles.bold, styles.text_xs, {textAlign: 'center'}]}>
+                            {item.uniqueproductcode}
+                        </Paragraph>
 
                     </View> : <>
                         <View style={[styles.w_100, ]}>
@@ -170,6 +176,9 @@ export const ItemView = memo(({item,displayType,search,currentpax}:any)=>{
 
                                     <Paragraph  style={[styles.paragraph, styles.bold, styles.text_xs, {textAlign: 'center',color:'white'}]}>
                                         {item.itemname}
+                                    </Paragraph>
+                                    <Paragraph  style={[styles.paragraph, styles.bold, styles.text_xs, {textAlign: 'center',color:'white'}]}>
+                                        {item.uniqueproductcode}
                                     </Paragraph>
 
                                 </View>

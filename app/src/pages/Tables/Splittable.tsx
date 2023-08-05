@@ -6,50 +6,45 @@ import {useDispatch} from "react-redux";
 import {styles} from "../../theme";
 import {updateCartField} from "../../redux-store/reducer/cart-data";
 import Button from "../../components/Button";
-import CheckBox from "../../components/CheckBox";
 
 
-const Paxes = () => {
+const Split = () => {
 
     const dispatch = useDispatch();
 
-    const [split, setSplit] = useState({pax: '', orderbypax: false,currentpax:1})
+    const [split, setSplit] = useState({splitinto: 1, splittable: true})
 
 
-    const paxes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+    const paxes = [1, 2, 3, 4, 5, 6]
 
     return <>
         <ScrollView>
 
-
-            <View style={[styles.mb_5]}>
-                <CheckBox
-                    label={'Order by Pax'}
-                    onChange={(value: any) => {
-                        setSplit({...split, orderbypax: value})
-                    }}
-                />
-            </View>
-
-
             <View style={[styles.grid]}>
                 {paxes.map((number: any, index: any) => {
                     return <>
-                        <TouchableOpacity key={index} style={[styles.m_2, styles.p_6, styles.flexGrow, {
+                        <TouchableOpacity key={index} style={[styles.m_2,  styles.flexGrow, {
                             borderRadius: 10,
-                            width: '20%',
-                            backgroundColor: split.pax === number ? styles.secondary.color : styles.light.color
+                            width: '13%',
+                            backgroundColor: split.splitinto === number ? styles.secondary.color : styles.light.color
                         }]} onPress={() => {
-                            setSplit({...split, pax: number})
+                            setSplit({...split, splitinto: number})
                         }}>
                             <Paragraph style={[styles.bold, {
-                                textAlign: 'center',
-                                textAlignVertical: 'center'
-                            }]}>{number}</Paragraph>
+                                textAlign: 'center', textAlignVertical: 'center'
+                            }]}>1/{number}</Paragraph>
                         </TouchableOpacity>
                     </>
                 })}
             </View>
+
+
+            <View>
+
+            </View>
+
+
+
 
             <View style={[styles.mt_5, styles.grid, styles.justifyContent]}>
                 <Button more={{color: 'black', backgroundColor: '#eee'}}
@@ -72,5 +67,5 @@ const Paxes = () => {
 }
 
 
-export default Paxes;
+export default Split;
 

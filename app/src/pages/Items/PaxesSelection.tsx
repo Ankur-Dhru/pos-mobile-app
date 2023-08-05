@@ -47,7 +47,7 @@ const Index = (props: any) => {
                             Array.from(Array(pax), (e, i) => {
                                 return   <TouchableOpacity    key={i} onPress={() => {
                                         setCurrent((i+1))
-                                        dispatch(updateCartField({currentpax:(i+1)}))
+                                        dispatch(updateCartField({currentpax: (i+1)}))
                                     }} style={[styles.bg_light, styles.px_5, styles.py_3, styles.mr_1, styles.mb_2,styles.grid,styles.justifyContent, {
                                         borderRadius: 4,
                                         backgroundColor: +current === +(i + 1) ? styles.secondary.color : 'white'

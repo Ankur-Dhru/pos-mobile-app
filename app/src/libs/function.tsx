@@ -1354,7 +1354,7 @@ export const selectItem = async (item: any) => {
                 ...item,
                 added: true,
                 key: uuid(),
-                pax:currentpax,
+                pax:currentpax === 'all'?1:currentpax,
                 deviceid: device.uniqueid
             }
 

@@ -39,6 +39,7 @@ import {uuid} from "uuidv4";
 import crashlytics from "@react-native-firebase/crashlytics";
 import Paxes from "./Paxes";
 import Splittable from "./Splittable";
+import TableMenu from "./TableMenu";
 
 let interval: any = ''
 const Index = ({tableorders}: any) => {
@@ -334,8 +335,6 @@ const Index = ({tableorders}: any) => {
             let shiftstart = Boolean((shifttable && Boolean(item.tableorderid) && (item.ordertype === 'tableorder'))) && !Boolean(shiftingFromtable);
             let shifting = Boolean((shifttable && !Boolean(item.tableorderid))) && Boolean(shiftingFromtable);
 
-
-
             const sameStaff = ((Boolean(item?.staffid) && (item?.staffid === adminid)) || (!Boolean(item?.staffid)))
 
 
@@ -388,8 +387,14 @@ const Index = ({tableorders}: any) => {
 
                         </View>}
 
+                        {item.ordertype === 'tableorder'  && <TableMenu data={item} setTableOrderDetail={setTableOrderDetail}/>}
+
 
                     </TouchableOpacity>}
+
+
+
+
                 </Card>
             );
         },
@@ -427,7 +432,7 @@ const Index = ({tableorders}: any) => {
                         }} title="Disable Shift"/>}
 
 
-                         {!splittable && <Menu.Item onPress={() => {
+                         {/*{!splittable && <Menu.Item onPress={() => {
                              closeMenu()
                              setSplittable(true)
                          }} title="Split Table"/>}
@@ -436,7 +441,7 @@ const Index = ({tableorders}: any) => {
                          {splittable && <Menu.Item onPress={() => {
                              closeMenu()
                              setSplittable(false)
-                         }} title="Disable Split"/>}
+                         }} title="Disable Split"/>}*/}
 
 
                          {!Boolean(urls.localserver) && <Menu.Item onPress={onClickReserveTable} title="Reserved Tables"/>}

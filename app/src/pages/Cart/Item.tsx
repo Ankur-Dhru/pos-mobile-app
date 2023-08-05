@@ -30,7 +30,7 @@ const Index = memo((props: any) => {
             await dispatch(setBottomSheet({
                 visible: true,
                 height: '80%',
-                component: () => <ItemDetail edit={true}  index={index}/>
+                component: () => <ItemDetail edit={true}  />
             }))
         }
         else{
@@ -253,8 +253,8 @@ const Index = memo((props: any) => {
     );
 },(r1, r2) => {
         //appLog('r2.item',r2.item)
-        const c1 = {productqnt:r1.item.productqnt,productrate:r1.item.productrate,itemaddon:r1.item.itemaddon,itemtags:r1.item.itemtags,notes:r1.item.notes,kotid:r1.item.kotid,productdiscountvalue:r1.item.productdiscountvalue}
-        const c2 = {productqnt:r2.item.productqnt,productrate:r2.item.productrate,itemaddon:r2.item.itemaddon,itemtags:r2.item.itemtags,notes:r2.item.notes,kotid:r2.item.kotid,productdiscountvalue:r2.item.productdiscountvalue}
+        const c1 = {productqnt:r1.item.productqnt,productrate:r1.item.productrate,itemaddon:r1.item.itemaddon,itemtags:r1.item.itemtags,notes:r1.item.notes,kotid:r1.item.kotid,productdiscountvalue:r1.item.productdiscountvalue,pax:r1.item.pax}
+        const c2 = {productqnt:r2.item.productqnt,productrate:r2.item.productrate,itemaddon:r2.item.itemaddon,itemtags:r2.item.itemtags,notes:r2.item.notes,kotid:r2.item.kotid,productdiscountvalue:r2.item.productdiscountvalue,pax:r2.item.pax}
 
       return (JSON.stringify(c1)===JSON.stringify(c2));
 })

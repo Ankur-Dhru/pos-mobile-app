@@ -3,12 +3,12 @@
 import React, { Component } from 'react';
 
 import {
-    Linking,
+    Linking, TouchableOpacity,
 } from 'react-native';
 
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
-import {withTheme} from "react-native-paper";
+import {Paragraph, withTheme} from "react-native-paper";
 import crashlytics from "@react-native-firebase/crashlytics";
 
 
@@ -55,6 +55,8 @@ class ScanScreen extends Component<any> {
                     ref={(node) => { this.scanner = node }}
                     showMarker={true}
                     markerStyle={{borderColor:'white'}}
+                    cameraTimeout={10000}
+                    vibrate={true}
                     onRead={this.onSuccess}
                 />
 

@@ -9,35 +9,44 @@ import KeyboardScroll from "../../components/KeyboardScroll";
 import {setBottomSheet} from "../../redux-store/reducer/component";
 import TagsNotes from "./TagsNotes";
 import Addons from "./Addons";
-import {changeCartItem, setCartItems} from "../../redux-store/reducer/cart-data";
+import {changeCartItem, setCartItems, setUpdateCart} from "../../redux-store/reducer/cart-data";
 import Qnt from "./Qnt";
 import InputBox from "../../components/InputBox";
 import ToggleButtons from "../../components/ToggleButton";
 import InputField from "../../components/InputField";
 import store from "../../redux-store/store";
+import {updateCartItem} from "./AddButton";
 
 const {v4: uuid} = require('uuid')
 
-const Index = ({itemDetail, index, inittags, sheetRef, edit, theme: {colors}}: any) => {
+const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) => {
 
     const dispatch = useDispatch()
     let product = itemDetail;
 
-    const {pricing, description, productrate, itemname, groupname,productdiscounttype,productdiscountvalue} = itemDetail;
+    const {pricing, description, productrate,pax, itemname, groupname,productdiscounttype,productdiscountvalue} = itemDetail;
 
-    const {cartData} = store.getState()
+
+    const {cartData,cartData:{invoiceitems}} = store.getState()
 
     const selectItem = async () => {
 
         if (edit) {
+
             product = {
                 ...product,
                 itemUpdate: true,
             }
+
+            let index =  invoiceitems.map(function(o:any) { return o.key; }).indexOf(itemDetail.key);
+
             dispatch(changeCartItem({
                 itemIndex: index, item: clone(product)
             }));
+
+
         } else {
+
             const itemRowData: any = setItemRowData(product);
             product = {
                 ...product,
@@ -128,6 +137,21 @@ const Index = ({itemDetail, index, inittags, sheetRef, edit, theme: {colors}}: a
                             autoFocus={false}
                             onChange={(value: any) => {
                                 updateProduct({productrate: value, productratedisplay: value})
+                            }}
+                        />
+                    </View>
+                </View>
+
+
+                <View>
+                    <View style={[styles.mt_5, styles.px_5]}>
+                        <InputBox
+                            defaultValue={pax ? pax + '' : ''}
+                            label={'Pax'}
+                            autoFocus={false}
+                            keyboardType={'numeric'}
+                            onChange={(value: any) => {
+                                updateProduct({pax: ''+value})
                             }}
                         />
                     </View>

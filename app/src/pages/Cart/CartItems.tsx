@@ -24,7 +24,6 @@ const Index = (props: any) => {
 
     const firstRenderRef = useRef(false);
 
-
     useEffect(()=>{
         updateComponent(cartListRef,'display','flex')
         updateComponent(kotListRef,'display','none')
@@ -45,7 +44,9 @@ const Index = (props: any) => {
         firstRenderRef.current=true
     }, [invoiceitems?.length]);
 
-    const renderItem = useCallback(({item, index}: any) => <Item item={item} orderbypax={orderbypax} key={item.key} hasLast={invoiceitems.length === index+1} isRestaurant={hasrestaurant}   index={index}/>, []);
+
+
+    const renderItem = useCallback(({item, index}: any) => <Item item={item} orderbypax={orderbypax} key={item.key} hasLast={invoiceitems.length === index+1} isRestaurant={hasrestaurant}   index={index}/>, [currentpax]);
     const renderKot = useCallback(({item, index}: any) => <Kot kot={item} orderbypax={orderbypax} hasLast={kots.length === index+1} key={item.key} />, []);
 
     const onButtonToggle = (value:any) => {
@@ -89,8 +90,9 @@ const Index = (props: any) => {
 
             <>
                 <FlatList
-                    data={invoiceitems.filter((item:any)=>{
-                        return item.pax === currentpax || currentpax === 'all'
+                    data={invoiceitems?.filter((item:any)=>{
+
+                        return (+item.pax === +currentpax) || currentpax === 'all'
                     }).filter((item:any)=>{
                         return item?.treatitem !== 'charges'
                     })}

@@ -34,18 +34,11 @@ const Index = ({advanceorder,commonkotnote,orderbypax,currentpax,vouchertotaldis
 
     const [vouchertotal,setVouchertotal] = useState(parseInt(vouchertotaldisplay))
 
-    useEffect(() => {
-        if(orderbypax) {
-            splitPaxwise().then((data: any) => {
-                setPaxwise(data);
-            })
-        }
-    }, [])
 
     useEffect(()=>{
         let total = parseInt(vouchertotaldisplay)
         if(currentpax !== 'all' &&  orderbypax){
-            total = parseInt(paxwise[currentpax]?.vouchertotaldisplay)
+            total = parseInt(paxwise[+currentpax]?.vouchertotaldisplay)
             updateComponent(moreSummaryRef, 'display', 'none');
         }
         setVouchertotal(total)
@@ -53,6 +46,11 @@ const Index = ({advanceorder,commonkotnote,orderbypax,currentpax,vouchertotaldis
 
 
     useEffect(() => {
+        if(orderbypax) {
+            splitPaxwise().then((data: any) => {
+                setPaxwise(data);
+            })
+        }
         updateComponent(moreSummaryRef, 'display', 'none');
     }, [vouchertotaldisplay])
 

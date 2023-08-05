@@ -30,21 +30,24 @@ import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/compon
 
 export const splitPaxwise = async () => {
     let {cartData, cartData: {invoiceitems}} = store.getState()
+
     const paxwiseitems = groupBy(invoiceitems, 'pax');
+
     let data: any = {}
     return await new Promise(async (resolve) => {
         let vouchertotal = 0;
-        for (const key of Object.keys(paxwiseitems)) {
+       for (const key of Object.keys(paxwiseitems)) {
             data[key] = await itemTotalCalculation({
                 ...cartData,
                 invoiceitems: paxwiseitems[key]
             }, undefined, undefined, undefined, undefined, 2, 2, false, false);
-            vouchertotal += data[key].vouchertotaldisplay
+
+            vouchertotal += data[key]?.vouchertotaldisplay
         }
 
-        let paxarray = Object.keys(data);
-        let difference = cartData.vouchertotaldisplay - vouchertotal
-        data[paxarray.length].vouchertotaldisplay = data[paxarray.length].vouchertotaldisplay + difference
+         let paxarray = Object.keys(data);
+        let difference = cartData?.vouchertotaldisplay - vouchertotal
+        data[paxarray.length].vouchertotaldisplay = data[paxarray.length]?.vouchertotaldisplay + difference
         resolve(data)
     })
 }

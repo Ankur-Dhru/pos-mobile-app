@@ -137,7 +137,7 @@ const SalesReport = ({ordersData,navigation}: any) => {
 
         const {terminal_name}: any = localredux.licenseData.data;
 
-
+        console.log('item',item)
 
         let name = `(${terminal_name}-${item?.posinvoice || item.invoice_display_number}) - ${item?.clientname}`
 

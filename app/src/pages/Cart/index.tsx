@@ -162,10 +162,14 @@ const Index = (props: any) => {
                         setGridView(view)
                     }} title={!gridView?'grid View':'list View'}/>
 
-                    {pax>1 && <Menu.Item onPress={async () => {
+
+
+                    {pax>1 && isRestaurant() && <Menu.Item onPress={async () => {
                         closeMenu()
                         dispatch(updateCartField({orderbypax:!orderbypax}))
                     }} title={`${orderbypax?'Disabled':'Enable'} by Pax`}/>}
+
+
 
 
                     {!isRestaurant() && <Menu.Item onPress={async () => {

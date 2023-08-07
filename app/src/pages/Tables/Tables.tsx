@@ -250,6 +250,7 @@ const Index = ({tableorders}: any) => {
                     }
                 })
             }
+
             navigation.navigate('CartStackNavigator', tabledetails)
 
         } else {
@@ -387,7 +388,7 @@ const Index = ({tableorders}: any) => {
 
                         </View>}
 
-                        {item.ordertype === 'tableorder'  && <TableMenu data={item} setTableOrderDetail={setTableOrderDetail}/>}
+                        {/*{item.ordertype === 'tableorder'  && <TableMenu data={item} setTableOrderDetail={setTableOrderDetail}/>}*/}
 
 
                     </TouchableOpacity>}
@@ -819,6 +820,10 @@ const Index = ({tableorders}: any) => {
             icon: 'currency-inr',
             label: 'Payment Received',
             onPress: () => navigation.navigate("AddEditPaymentReceived")
+        }, {
+            icon: 'currency-inr',
+            label: 'Sales Return',
+            onPress: () => navigation.navigate("AddEditSalesReturn")
         })
     }
 

@@ -72,6 +72,7 @@ import DateTimePicker from "./DateTimePicker";
 import AskPermission from "../Pin/AskPermission";
 import BlueToothList from "../PrinterSettings/BlueToothList";
 import Preview from "../Preview";
+import InvoicePreview from "../Report/preview";
 
 import LocalServer from "../Setup/LocalServer";
 import GettingStarted from "../Splash/GettingStarted";
@@ -85,6 +86,7 @@ import OtherSettings from "../QRWebsite/OtherSettings";
 import VerifyOTP from "../Setup/VerifyOTP";
 import ChangeWhatsapp from "../Setup/ChangeWhatsapp";
 import ItemWiseSales from "../Report/ItemWiseSales";
+import AddEditSalesReturn from "../SalesReturn/AddEditSalesReturn";
 
 
 const screenOptions = {...screenOptionStyle};
@@ -220,6 +222,7 @@ const ClientAreaStackNavigator = (props: any) => {
             <Stack.Screen name={'AddEditCategory'} component={AddEditCategory} options={{headerTitle: 'Add Category'}}/>
             <Stack.Screen name={'AddEditExpense'} component={AddEditExpense} options={{headerTitle: 'Add Expense'}}/>
             <Stack.Screen name={'AddEditPaymentReceived'} component={AddEditPaymentReceived} options={{headerTitle: 'Add Payment Received'}}/>
+            <Stack.Screen name={'AddEditSalesReturn'} component={AddEditSalesReturn} options={{headerTitle: 'Add Sales Return'}}/>
             <Stack.Screen name={'AddEditAccount'} component={AddEditAccount} options={{headerTitle: 'Add Account'}}/>
             <Stack.Screen name={'AddEditClient'} component={AddEditClient} options={{headerTitle: 'Add Client'}}/>
 
@@ -239,6 +242,11 @@ const ClientAreaStackNavigator = (props: any) => {
 
             <Stack.Screen name={'CancelReason'} component={CancelReason}
                           options={{  headerTitle: 'Cancel Reason'}}/>
+
+            <Stack.Screen name={'InvoicePreview'} component={InvoicePreview} options={({route}: any) => ({
+                presentation: 'modal',
+                title: 'Preview'
+            })} />
 
 
             <Stack.Screen name={'Preview'} component={Preview} options={({route}: any) => ({
@@ -311,6 +319,10 @@ const ProfileSettingsNavigator = (props: any) => {
             <Stack.Screen name={'BlueToothList'} component={BlueToothList} options={{title: 'Bluetooth Devices'}}/>
 
             <Stack.Screen name={'Preview'} component={Preview} options={({route}: any) => ({title: 'Preview'})} />
+
+            <Stack.Screen name={'InvoicePreview'} component={InvoicePreview} options={({route}: any) => ({
+                title: 'Preview'
+            })} />
 
             <Stack.Screen name={'QRWebsite'} component={QRWebsite} options={({route}: any) => ({title: 'Website & Digital Menu'})} />
 

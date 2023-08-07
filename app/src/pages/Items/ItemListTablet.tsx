@@ -77,8 +77,6 @@ export const ItemView = memo(({item,displayType,search,currentpax}:any)=>{
 
     //const navigation = useNavigation();
 
-
-
     if(displayType === 'flatlist') {
         return <>
             <List.Item
@@ -118,7 +116,7 @@ export const ItemView = memo(({item,displayType,search,currentpax}:any)=>{
                         return  <List.Icon icon="chevron-right" style={{height:35,width:35,margin:0}} />
                     }
 
-                    if(((Boolean(item?.productqnt) && !hasKot) && (currentpax === item?.pax))){
+                    if(((Boolean(item?.productqnt) && !hasKot) && (currentpax === item?.pax || (!Boolean(item?.pax))))){
                         return <View><AddButton item={item}  /></View>
                     }
                     else if(Boolean(imagepath)){
@@ -292,7 +290,6 @@ const Index = (props: any) => {
     }
 
 
-
     return (
         <View style={[styles.flex,styles.h_100]}>
 
@@ -340,7 +337,8 @@ const Index = (props: any) => {
 
 const mapStateToProps = (state: any) => ({
     selectedgroup: state.selectedData.group?.value,
-    currentpax:state.cartData.currentpax
+    currentpax:state.cartData.currentpax,
+    disabledpax: state.localSettings?.disabledpax,
 })
 
 export default connect(mapStateToProps)(memo(Index));

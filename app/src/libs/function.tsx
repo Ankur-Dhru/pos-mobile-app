@@ -347,6 +347,7 @@ export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = t
         }
     }
 
+
     let voucherTypeData = initData?.voucher[voucherKey]
 
     const utcDate = moment().format("YYYY-MM-DD HH:mm:ss")
@@ -396,7 +397,7 @@ export const voucherData = (voucherKey: VOUCHER | string, isPayment: boolean = t
         "debugPrint": true,
         "shifttable": false,
         "taxInvoice": false,
-        "currentpax":'all'
+        "currentpax":  1
     }
     return data;
 }
@@ -1422,7 +1423,7 @@ export const selectItem = async (item: any) => {
             setItemQnt({...item, productqnt: +productqnt}).then()
             store.dispatch(setDialog({visible: false}))
         })
-    } else if (!Boolean(baseprice)) {
+    } else if (!Boolean(+baseprice)) {
 
         store.dispatch(setBottomSheet({visible: false}))
 

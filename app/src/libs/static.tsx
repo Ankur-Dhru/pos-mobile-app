@@ -90,7 +90,9 @@ export enum ACTIONS {
     REPORT_SALES = "reportsales",
     DAY_END_REPORT = "dayendreport",
     REPORTCURRENTSTOCK = "reportcurrentstock",
-    REPORTITEMWISE = "reportitemwise"
+    REPORTITEMWISE = "reportitemwise",
+    PRINTINVOICE = "printinvoice",
+    SALESRETURN = "salesreturn"
 }
 
 
@@ -99,6 +101,7 @@ export enum VOUCHER {
     EXPENSE = "ba7f0f54-60da-4f07-b07b-8645632616ac",
     TAX_INVOICE = "372278d3-c3c9-4c5e-9890-f66cfa2cb1e4",
     RECEIPT = "be0e9672-a46e-4e91-a2bf-815530b22b43",
+    SALESRETURN = "8a2c1b35-1781-409c-820e-73e90821735f"
 }
 
 export enum TICKETS_TYPE {

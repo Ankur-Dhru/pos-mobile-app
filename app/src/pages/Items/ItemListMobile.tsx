@@ -61,7 +61,7 @@ const Index = (props: any) => {
     const updateItems = (items: any) => {
         return items?.map((i: any) => {
             const find = invoiceitems.filter((item:any)=>{
-                return item.pax === currentpax
+                return item?.pax === currentpax
             }).filter((ii: any) => {
                 return ((+i.itemid === +ii.itemid) && Boolean(ii.added));
             })
@@ -89,6 +89,7 @@ const Index = (props: any) => {
 
         if (Boolean(newitems?.length > 0)) {
             let items = updateItems(newitems)
+
             setDataSource([...items, ...combogroup]);
 
             let checkimage = items.filter((item: any) => {

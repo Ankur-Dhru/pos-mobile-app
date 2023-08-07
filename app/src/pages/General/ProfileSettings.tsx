@@ -46,8 +46,7 @@ const ProfileSettings = () => {
     const itemcategoryaccess = getRoleAccess('Item Category')
     const expenseaccess = getRoleAccess('Expenses')
     const paymentreceive = getRoleAccess('Receive Payment')
-
-    console.log('clientaccess',clientaccess)
+    const salesreturn = getRoleAccess('Sales Return')
 
 
     const {
@@ -234,6 +233,21 @@ const ProfileSettings = () => {
 
                                         <ItemDivider/>
                                         </>}
+
+
+                                        {/*{<><List.Item
+                                            style={[styles.listitem]}
+                                            title={'Sales Return'}
+                                            onPress={async () => {
+                                                navigation.navigate("AddEditSalesReturn");
+                                            }}
+                                            left={() => <List.Icon icon="currency-inr"/>}
+                                            right={()=><List.Icon icon="plus"/>}
+                                        />
+
+                                            <ItemDivider/>
+                                        </>}*/}
+
 
                                         {(!Boolean(expenseaccess) || expenseaccess?.add) && <><List.Item
                                             style={[styles.listitem]}

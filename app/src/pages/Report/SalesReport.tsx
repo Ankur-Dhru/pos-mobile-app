@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {FlatList, Text, TouchableOpacity, View} from "react-native";
 import {Caption, Card, Paragraph} from "react-native-paper"
 import {
-    appLog,
+    appLog, base64Decode,
     base64Encode,
     dateFormat,
     getDateWithFormat,
@@ -63,30 +63,34 @@ const SalesReport = ({ordersData,navigation}: any) => {
         }).catch(()=>{
             setLoader(true)
         })
-    }, [ordersData])
+    }, []) //ordersData
+
+
 
 
     const printPreview = async (invoice:any) => {
+
+
         const {workspace}: any = localredux.initData;
         const {token}: any = localredux.authData;
 
         await apiService({
             method: METHOD.GET,
-            action: ACTIONS.PRINTING,
-            queryString: {voucherid: invoice.voucherid, printingtemplate: 1},
+            action: ACTIONS.PRINTINVOICE,
+            queryString: {voucherid: invoice.voucherid,  terminalid: licenseData?.data?.terminal_id},
             workspace: workspace,
             token: token,
             other: {url: urls.posUrl},
         }).then(async (result) => {
 
             if (result.status === STATUS.SUCCESS) {
-                navigation.push('Preview',{data:base64Encode(result.data)})
+                navigation.push('InvoicePreview',{data:result.data.data})
             }
 
         });
     }
 
-    const getOrderDetail = async (invoice: any) => {
+    const getOrderDetail = async (invoice: any,preview:any) => {
 
         const {workspace}: any = localredux.initData;
         const {token}: any = localredux.authData;
@@ -116,8 +120,9 @@ const SalesReport = ({ordersData,navigation}: any) => {
                 }
 
                 printInvoice(data).then((xmlData:any)=>{
-                    //navigation.push('Preview',{data:base64Encode(xmlData)})
+
                 })
+
             }
         });
     }
@@ -136,8 +141,6 @@ const SalesReport = ({ordersData,navigation}: any) => {
     const renderItem = ({item, index}: any) => {
 
         const {terminal_name}: any = localredux.licenseData.data;
-
-        console.log('item',item)
 
         let name = `(${terminal_name}-${item?.posinvoice || item.invoice_display_number}) - ${item?.clientname}`
 
@@ -161,9 +164,18 @@ const SalesReport = ({ordersData,navigation}: any) => {
                         </View>
                     </View>
                 </View>
+
                 <View style={{width: 50}}>
                     {Boolean(item?.voucherdisplayid) && <TouchableOpacity onPress={() => {
-                        Boolean(item?.voucherdisplayid) &&  getOrderDetail(item).then()
+                        Boolean(item?.voucherdisplayid) &&  printPreview(item).then()
+                    }}>
+                        <ProIcon name={'eye'} type={'solid'} size={15}/>
+                    </TouchableOpacity>}
+                </View>
+
+                <View style={{width: 50}}>
+                    {Boolean(item?.voucherdisplayid) && <TouchableOpacity onPress={() => {
+                        Boolean(item?.voucherdisplayid) &&  getOrderDetail(item,false).then()
                     }}>
                         <ProIcon name={'print'} type={'solid'} size={15}/>
                     </TouchableOpacity>}

@@ -31,14 +31,15 @@ const index = (props: any) => {
 
     const {defaultValue, onPressCancel, onPressOK, defaultInputValues,defaultInputAmount, customNumber, rate,defaultTab,unitname,canchangeamount,defaultOpenUnitType,defaultAmountOpen} = props;
 
-    const [numPadValue, setNumPadValue] = useState<any>(defaultValue || "");
+    const [numPadValue, setNumPadValue] = useState<any>(+defaultValue || "");
     const [selectedTab, setSelectedTab] = useState<any>("num");
     const [changeitemPrice, setChangeitemPrice] = useState<any>(customNumber?'updateqnt':'updateprice');
 
-    const defaultPrice = getFloatValue(numPadValue/defaultValue,3);
-    const defaultQnt = getFloatValue(numPadValue/rate,3);
+    const defaultPrice = getFloatValue(+numPadValue/defaultValue,3);
+    const defaultQnt = getFloatValue(+numPadValue/rate,3);
 
     const onPressNumKey = (keyValue: string) => {
+
         if (numbers[9] == keyValue) {
             // Clear
             setNumPadValue("");
@@ -47,15 +48,18 @@ const index = (props: any) => {
             onPressCancel && onPressCancel();
         } else if (keyValue == "OK") {
             // OK
-            let newQnt = numPadValue;
-            let newPrice = rate
+
+            let newQnt = +numPadValue;
+            let newPrice = +rate
 
             if (selectedTab == "amt" && Boolean(rate)) {
-                newQnt = getFloatValue(numPadValue / rate, 3)
+                //7th aug 2023
+                //newQnt = getFloatValue(numPadValue / rate, 3)
                 if(changeitemPrice === 'updateprice'){
-                    newPrice = defaultPrice;
-                    newQnt = defaultValue;
+                    newPrice = +defaultPrice;
+                    //newQnt = +defaultValue;
                 }
+
             }
 
             if((checkIntNumber(+newQnt) && !customNumber) || customNumber){

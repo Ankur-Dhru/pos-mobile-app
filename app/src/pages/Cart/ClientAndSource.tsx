@@ -567,6 +567,7 @@ const ClientAndSource = (props: any) => {
                                         ...tabledetails,
                                         ...pass
                                     }
+
                                     dispatch(showLoader())
                                     saveTempLocalOrder(tabledetails).then(() => {
                                         dispatch(hideLoader())

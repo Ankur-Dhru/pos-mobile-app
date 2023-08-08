@@ -87,6 +87,7 @@ import VerifyOTP from "../Setup/VerifyOTP";
 import ChangeWhatsapp from "../Setup/ChangeWhatsapp";
 import ItemWiseSales from "../Report/ItemWiseSales";
 import AddEditSalesReturn from "../SalesReturn/AddEditSalesReturn";
+import SalesReturnReport from "../Report/SalesReturnReport";
 
 
 const screenOptions = {...screenOptionStyle};
@@ -281,6 +282,7 @@ const ProfileSettingsNavigator = (props: any) => {
             <Stack.Screen name={'ProfileSettingsNavigator'} component={General} options={{headerShown: false}}/>
 
             <Stack.Screen name={'SalesReport'} component={SalesReport} options={{headerTitle: 'Sales Report'}}/>
+            <Stack.Screen name={'SalesReturnReport'} component={SalesReturnReport} options={{headerTitle: 'Sales Return Report'}}/>
             <Stack.Screen name={'DayEndReport'} component={DayEndReport} options={{headerTitle: 'Day End Report'}}/>
             <Stack.Screen name={'CurrentStock'} component={CurrentStock} options={{headerTitle: 'Current Stock'}}/>
             <Stack.Screen name={'ItemWiseSales'} component={ItemWiseSales} options={{headerTitle: 'Item Wise Sales'}}/>

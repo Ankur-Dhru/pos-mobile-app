@@ -1,11 +1,11 @@
 import React, {memo, useEffect} from "react";
 import {
     appLog, base64Encode,
-    clone, dateFormat,
+    clone, dateFormat, errorAlert,
     generateKOT, getItem, getLeftRight, getPrintTemplate, getPrintTemplateLogo, getTrimChar,
-    isRestaurant, numberFormat, objToArray, printInvoice,
+    isRestaurant, numberFormat, objToArray, prelog, printInvoice,
 
-    retrieveData,
+    retrieveData, saveLocalOrder,
     saveTempLocalOrder, storeData
 } from "../../libs/function";
 import {Alert, TouchableOpacity, View} from "react-native";
@@ -17,9 +17,12 @@ import Button from "../../components/Button";
 import {resetCart, setCartData, updateCartField} from "../../redux-store/reducer/cart-data";
 import {hideLoader, setAlert, setBottomSheet, showLoader} from "../../redux-store/reducer/component";
 import HoldOrders from "./HoldOrders";
-import {db, device, localredux, PRINTER, urls} from "../../libs/static";
+import {ACTIONS, db, device, localredux, METHOD, PRINTER, STATUS, urls, VOUCHER} from "../../libs/static";
 import store from "../../redux-store/store";
 import {ProIcon} from "../../components";
+import {redirectTo} from "./Payment";
+import apiService from "../../libs/api-service";
+import {itemTotalCalculation} from "../../libs/item-calculation";
 
 
 
@@ -35,6 +38,8 @@ const Index = ({
     const navigation = useNavigation()
     const hasRestaurant = isRestaurant()
     const dispatch = useDispatch()
+
+    let cartData = store.getState().cartData;
 
     const {settings:{cant_complete_remote_order}} = localredux.authData
 
@@ -56,6 +61,87 @@ const Index = ({
                 })
             });
         });
+    }
+
+
+
+    const saveVoucher = async (config:any) => {
+
+
+        cartData =  await itemTotalCalculation({
+            ...cartData,
+        }, undefined, undefined, undefined, undefined, 2, 2, false, false);
+
+
+        if (Boolean(vouchertotaldisplay)) {
+            dispatch(showLoader())
+
+            const {workspace}: any = localredux.initData;
+            const {token}: any = localredux.authData;
+
+            await apiService({
+                method: METHOD.POST,
+                action: ACTIONS.SALESRETURN,
+                body: cartData,
+                workspace: workspace,
+                token: token,
+                other: {url: urls.posUrl},
+            }).then(async (result) => {
+                dispatch(hideLoader())
+                if (result.status === STATUS.SUCCESS) {
+                    if (config?.print) {
+                        printInvoice({...cartData}).then(() => {});
+                    }
+                    redirectTo(cartData,navigation)
+                    dispatch(setAlert({visible: true, message: 'Order Save Successfully'}));
+                } else {
+                    errorAlert(result.message)
+                }
+            });
+
+        }
+    }
+
+    prelog(cartData)
+
+    if(cartData.vouchertypeid === VOUCHER.SALESRETURN) {
+        return <View style={[{
+            backgroundColor: 'white',
+            marginTop: 0,
+            marginBottom: 0,
+            paddingVertical: 5,
+            paddingHorizontal: 5
+        }]}>
+            <View>
+                <View style={[styles.grid, styles.justifyContent, styles.noWrap]}>
+
+                    <View style={[styles.w_auto, styles.ml_1]}>
+                        <Button
+                            secondbutton={!Boolean(vouchertotaldisplay)}
+                            onPress={() => {
+                                saveVoucher({print: false})
+                            }}
+                            more={{backgroundColor: styles.primary.color, color: 'white', height: 50}}
+                        > Save
+                        </Button>
+                    </View>
+
+                    <View style={[styles.w_auto, styles.ml_1]}>
+
+                        <Button
+                            secondbutton={!Boolean(vouchertotaldisplay)}
+                            onPress={() => {
+                                saveVoucher({print: true})
+                            }}
+                            more={{backgroundColor: styles.green.color, color: 'white', height: 50}}
+                        > Save & Print
+                        </Button>
+                    </View>
+
+                </View>
+            </View>
+
+        </View>
     }
 
 

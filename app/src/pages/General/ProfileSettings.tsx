@@ -235,7 +235,7 @@ const ProfileSettings = () => {
                                         </>}
 
 
-                                        {/*{<><List.Item
+                                        {<><List.Item
                                             style={[styles.listitem]}
                                             title={'Sales Return'}
                                             onPress={async () => {
@@ -246,7 +246,7 @@ const ProfileSettings = () => {
                                         />
 
                                             <ItemDivider/>
-                                        </>}*/}
+                                        </>}
 
 
                                         {(!Boolean(expenseaccess) || expenseaccess?.add) && <><List.Item
@@ -324,6 +324,20 @@ const ProfileSettings = () => {
                                         />
 
                                         <ItemDivider/>
+
+
+                                        <List.Item
+                                            style={[styles.listitem]}
+                                            title={'Sales Return Report'}
+                                            onPress={() => {
+                                                navigation.navigate("SalesReturnReport");
+                                            }}
+                                            left={() => <List.Icon icon="point-of-sale"/>}
+                                            right={() => <List.Icon icon="chevron-right"/>}
+                                        />
+
+                                        <ItemDivider/>
+
 
                                         <List.Item
                                             style={[styles.listitem]}

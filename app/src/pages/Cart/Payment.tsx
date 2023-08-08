@@ -28,6 +28,26 @@ import {itemTotalCalculation} from "../../libs/item-calculation";
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
 
 
+export const redirectTo = (cartData:any,navigation:any) => {
+
+    if(cartData.ordertype === 'qsr'){
+        if(!device.tablet) {
+            navigation.goBack()
+        }
+        navigation.goBack()
+    }
+    else {
+        navigation.dispatch(
+            CommonActions.reset({
+                index: 0,
+                routes: [
+                    {name: 'ClientAreaStackNavigator'},
+                ],
+            })
+        );
+    }
+}
+
 export const splitPaxwise = async () => {
     let {cartData, cartData: {invoiceitems}} = store.getState()
 
@@ -316,7 +336,7 @@ const Index = ({
                 if (config?.print) {
                     printInvoice({...order}).then(() => {});
                 }
-                redirectTo()
+                redirectTo(cartData,navigation)
                 dispatch(setAlert({visible: true, message: 'Order Save Successfully'}))
                 dispatch(hideLoader())
             })
@@ -324,25 +344,7 @@ const Index = ({
 
             ////////// SAVE FINAL DATA //////////
 
-            const redirectTo = () => {
 
-                if(cartData.ordertype === 'qsr'){
-                    if(!device.tablet) {
-                        navigation.goBack()
-                    }
-                    navigation.goBack()
-                }
-                else {
-                    navigation.dispatch(
-                        CommonActions.reset({
-                            index: 0,
-                            routes: [
-                                {name: 'ClientAreaStackNavigator'},
-                            ],
-                        })
-                    );
-                }
-            }
 
 
         } catch (e) {

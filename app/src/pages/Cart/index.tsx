@@ -4,7 +4,7 @@ import {
     cancelOrder, errorAlert,
     getLocalSettings,
     getTempOrders,
-    isRestaurant, saveLocalSettings,
+    isRestaurant, prelog, saveLocalSettings,
     saveTempLocalOrder,
     voucherData
 } from "../../libs/function";
@@ -55,7 +55,8 @@ const Index = (props: any) => {
     useEffect(() => {
 
         crashlytics().log('cart useffect');
-        const voucherDataJson: any = voucherData(VOUCHER.INVOICE, false);
+
+        const voucherDataJson: any = voucherData(tabledetails.vouchertypeid?tabledetails.vouchertypeid:VOUCHER.INVOICE, false);
 
         const {kots,numOfKOt}:any = tabledetails || {}
         if(kots?.length > 0 || numOfKOt > 0){
@@ -65,6 +66,8 @@ const Index = (props: any) => {
         else{
             dispatch(refreshCartData({...tabledetails, ...voucherDataJson}));
         }
+
+        prelog(tabledetails.invoiceitems)
 
             if (tabledetails?.printcounter && !device.tablet) {
                 navigation.navigate('DetailViewNavigator')

@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {SafeAreaView, View} from "react-native";
 import {Card} from "react-native-paper";
 import {styles} from "../../theme";
@@ -6,24 +6,13 @@ import {connect, useDispatch} from "react-redux";
 import {Field, Form} from "react-final-form";
 import KeyboardScroll from "../../components/KeyboardScroll";
 import InputField from "../../components/InputField";
-import {
-    appLog,
-    clone,
-    errorAlert,
-    getDefaultCurrency,
-    getRoleAccess,
-    isEmpty,
-    nextFocus,
-    voucherData
-} from "../../libs/function";
+import {clone, errorAlert, getDefaultCurrency, isEmpty, prelog, toCurrency} from "../../libs/function";
 import {ACTIONS, localredux, METHOD, required, STATUS, urls, VOUCHER} from "../../libs/static";
 import {Button, Container} from "../../components";
 import KAccessoryView from "../../components/KAccessoryView";
 import apiService from "../../libs/api-service";
-import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
-import {expenseCalculation} from "../../libs/item-calculation";
+import {hideLoader, showLoader} from "../../redux-store/reducer/component";
 import {getClientsByWhere} from "../../libs/Sqlite/selectData";
-import store from "../../redux-store/store";
 
 import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
@@ -33,22 +22,27 @@ import moment from "moment";
 const AddEditSalesReturn = (props: any) => {
 
     const navigation = useNavigation()
-
+    const dispatch = useDispatch()
 
     let initdata: any = {
-        reason: '',
-        clientid: '',
-        gateway: '',
-        currency:getDefaultCurrency(),
-        localdatetime:moment().format("YYYY-MM-DD HH:mm:ss"),
+        "referencetype": "",
+        "clientid": "",
+        "paymentmethod": "",
+        "referenceid": "",
+        currency: getDefaultCurrency(),
+        localdatetime: moment().format("YYYY-MM-DD HH:mm:ss"),
         locationid: localredux.licenseData?.data?.location_id,
-        vouchertypeid:VOUCHER.SALESRETURN
+        vouchertypeid: VOUCHER.SALESRETURN
     }
 
-    const {paymentgateway}: any = localredux.initData;
+
+    const {paymentgateway, reason: {creditnote}}: any = localredux.initData;
     const [loader, setLoader] = useState(true);
     const [invoices, setInvoices] = useState([]);
 
+    const reasons = Object.keys(creditnote).map((key: any) => {
+        return {label: creditnote[key], value: key}
+    })
 
     const getGatewayDetailByKey = (key: any, value: any) => {
         const gatewayname: any = Object.keys(paymentgateway[key]).filter((key) => key !== "settings");
@@ -69,25 +63,45 @@ const AddEditSalesReturn = (props: any) => {
             setClients(clients);
             setLoader(false)
         });
+
     }, [])
 
-
     const handleSubmit = async (values: any) => {
+
+
         const {workspace}: any = localredux.initData;
         const {token}: any = localredux.authData;
 
         await apiService({
-            method: METHOD.POST,
-            action: ACTIONS.SALESRETURN,
-            body: values,
+            method: METHOD.GET,
+            action: ACTIONS.INVOICE,
+            queryString: {voucherdisplayid: values.referenceid, vouchertypeid: VOUCHER.INVOICE},
             workspace: workspace,
             token: token,
             other: {url: urls.posUrl},
         }).then(async (result) => {
             if (result.status === STATUS.SUCCESS) {
 
-            }
-            else{
+
+                let invoicedetail:any = result.data?.result;
+
+                const voucheritems: any = invoicedetail?.voucheritems;
+
+                invoicedetail = {
+                    ...invoicedetail,
+                    clientname:invoicedetail.client,
+                    invoiceitems: Boolean(voucheritems) ? Object.values(voucheritems)?.map((item: any) => {
+                        return {...item,productqnt:+item.productqnt,...item.itemdetail,  change: true,added:true}
+                    }) : [],
+                    voucherid:'',
+                    voucherdisplayid:'',
+                    vouchertypeid:VOUCHER.SALESRETURN,
+                    payments:[],
+                    ...values
+                }
+
+                navigation.navigate('CartStackNavigator', invoicedetail);
+            } else {
                 errorAlert(result.message)
             }
         });
@@ -96,28 +110,25 @@ const AddEditSalesReturn = (props: any) => {
     const getInvoicesbyClient = async (clientid: any) => {
         const {workspace}: any = localredux.initData;
         const {token}: any = localredux.authData;
-
+        dispatch(showLoader())
         await apiService({
             method: METHOD.GET,
             action: ACTIONS.CLIENT,
-            queryString:{clientid:clientid},
+            queryString: {clientid: clientid},
             workspace: workspace,
             token: token,
             other: {url: urls.posUrl},
         }).then(async (result) => {
+
+            dispatch(hideLoader())
             if (result.status === STATUS.SUCCESS) {
-                setInvoices(Object.values({...result.pendinginvoice,...result.invoicecredit}))
-            }
-            else{
+                setInvoices(Object.values({...result.data.pendinginvoice,...result.data.invoices}))
+            } else {
                 errorAlert(result.message)
             }
         });
     }
 
-
-    console.log('invoices',invoices)
-
-    const inputRef = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef(), useRef(), useRef()]
 
     if (loader) {
         return <PageLoader/>
@@ -162,9 +173,10 @@ const AddEditSalesReturn = (props: any) => {
                                                                     displaytype={'pagelist'}
                                                                     inputtype={'dropdown'}
                                                                     listtype={'other'}
-                                                                    onChange={(value: any) => {
-                                                                        getInvoicesbyClient(value).then()
-                                                                        props.input.onChange(value);
+                                                                    onChange={async (value: any) => {
+                                                                        await getInvoicesbyClient(value).then(() => {
+                                                                            props.input.onChange(value);
+                                                                        })
                                                                     }}
                                                                 >
                                                                 </InputField>
@@ -175,7 +187,7 @@ const AddEditSalesReturn = (props: any) => {
 
                                                     <View>
 
-                                                        <Field name="invoiceid"  >
+                                                        <Field name="referenceid">
                                                             {props => (
                                                                 <InputField
                                                                     {...props}
@@ -183,8 +195,8 @@ const AddEditSalesReturn = (props: any) => {
                                                                     mode={'flat'}
                                                                     list={invoices?.map((invoice: any) => {
                                                                         return {
-                                                                            label: invoice.voucherprefix+'-'+invoice.voucherdisplayid,
-                                                                            value: invoice.voucherid
+                                                                            label: `${invoice.voucherprefix}${invoice.voucherdisplayid} (${invoice.vouchertotaldisplay})`,
+                                                                            value: invoice.voucherdisplayid
                                                                         }
                                                                     })}
                                                                     value={props.input.value}
@@ -202,21 +214,15 @@ const AddEditSalesReturn = (props: any) => {
                                                     </View>
 
 
-
                                                     <View>
 
-                                                        <Field name="reason"  >
+                                                        <Field name="referencetype">
                                                             {props => (
                                                                 <InputField
                                                                     {...props}
                                                                     label={'Reason'}
                                                                     mode={'flat'}
-                                                                    list={clients?.map((client: any) => {
-                                                                        return {
-                                                                            label: client.displayname,
-                                                                            value: client.clientid
-                                                                        }
-                                                                    })}
+                                                                    list={reasons}
                                                                     value={props.input.value}
                                                                     selectedValue={props.input.value}
                                                                     displaytype={'pagelist'}
@@ -233,7 +239,7 @@ const AddEditSalesReturn = (props: any) => {
 
 
                                                     <View>
-                                                        <Field name="gateway" validate={required}>
+                                                        <Field name="paymentmethod"  >
                                                             {props => (
                                                                 <InputField
                                                                     {...props}
@@ -255,8 +261,6 @@ const AddEditSalesReturn = (props: any) => {
                                                     </View>
 
 
-
-
                                                 </Card.Content>
                                             </Card>
 
@@ -271,7 +275,7 @@ const AddEditSalesReturn = (props: any) => {
                                         <Button more={{color: 'white'}} disable={more.invalid}
                                                 secondbutton={more.invalid} onPress={() => {
                                             handleSubmit(values)
-                                        }}> Get Invoice Items </Button>
+                                        }}> Next </Button>
                                     </View>
                                 </KAccessoryView>
 

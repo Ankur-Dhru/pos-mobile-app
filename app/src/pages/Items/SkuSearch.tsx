@@ -1,4 +1,4 @@
-import React, {useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {TouchableOpacity, View,} from "react-native";
 
 import {connect} from "react-redux";
@@ -16,6 +16,7 @@ import {useNavigation} from "@react-navigation/native";
 const Index = (props: any) => {
 
     let searchRf:any = useRef()
+    let touchableRef:any = useRef()
     const navigation = useNavigation()
 
     const handleSearch = async (search: any) => {
@@ -39,6 +40,14 @@ const Index = (props: any) => {
         setSearchQuery(query)
     };
 
+    useEffect(()=>{
+        setTimeout(()=>{
+            touchableRef.setNativeProps?.({ hasTVPreferredFocus: true })
+        },1000)
+
+
+    },[])
+
     return <View>
 
         <View style={[styles.grid, styles.middle, styles.justifyContent,styles.mb_3]}>
@@ -58,7 +67,7 @@ const Index = (props: any) => {
                 />
             </View>
             <View>
-                <TouchableOpacity onPress={async () => {
+                <TouchableOpacity  ref={e=> touchableRef = e}     onPress={async () => {
                     navigation.navigate('ScanItem');
                 }}>
                     <Paragraph style={[styles.paragraph, {marginTop: 10}]}><ProIcon

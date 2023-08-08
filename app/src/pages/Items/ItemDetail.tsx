@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {Caption, Paragraph, Text, TextInput as TI, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
-import {clone, getCurrencySign, setItemRowData, toCurrency} from "../../libs/function";
+import {clone, getCurrencySign, isRestaurant, setItemRowData, toCurrency} from "../../libs/function";
 import {TouchableHighlight, TouchableOpacity, View} from "react-native";
 import Button from "../../components/Button";
 import KeyboardScroll from "../../components/KeyboardScroll";
@@ -143,7 +143,7 @@ const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) =>
                 </View>
 
 
-                <View>
+                {isRestaurant() && <View>
                     <View style={[styles.mt_5, styles.px_5]}>
                         <InputBox
                             defaultValue={pax ? pax + '' : ''}
@@ -155,7 +155,7 @@ const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) =>
                             }}
                         />
                     </View>
-                </View>
+                </View>}
 
 
                 <View style={[styles.mt_5, styles.px_5]}>

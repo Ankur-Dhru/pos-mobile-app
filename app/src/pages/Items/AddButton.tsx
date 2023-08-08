@@ -70,7 +70,7 @@ const Index = (props: any) => {
                     onPress={onPressNumberIN}>
                     <Paragraph
                         style={[{color: colors.secondary}]}
-                    >{parseFloat(item?.productqnt.toFixed(3) || 1)}</Paragraph>
+                    >{parseFloat(item?.productqnt?.toFixed(3) || 1)}</Paragraph>
                 </TouchableOpacity>
                 {<TouchableOpacity style={[styles.py_3,{width:35}]} onPress={() => {
                     updateItem(item, 'add').then(r => {

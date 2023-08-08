@@ -1,5 +1,5 @@
 import React, {memo} from "react";
-import {appLog, toCurrency} from "../../libs/function";
+import {appLog, prelog, toCurrency} from "../../libs/function";
 import {TouchableOpacity, View} from "react-native";
 import {Card, Paragraph, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
@@ -16,7 +16,7 @@ const Index = ({vouchertotaldisplay, invoiceitems, theme: {colors}}: any) => {
     invoiceitems.filter((item:any)=>{
         return item?.treatitem !== 'charges'
     }).map((item: any) => {
-        totalqnt += item.productqnt
+        totalqnt += +item.productqnt
     })
 
     if (!Boolean(totalqnt)) {

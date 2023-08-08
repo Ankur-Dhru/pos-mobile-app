@@ -88,6 +88,7 @@ export enum ACTIONS {
     DRAWER = "drawer",
     SAVE_TABLE_ORDER = "tableorder",
     REPORT_SALES = "reportsales",
+    REPORT_SALES_RETURN = "salesreturnreport",
     DAY_END_REPORT = "dayendreport",
     REPORTCURRENTSTOCK = "reportcurrentstock",
     REPORTITEMWISE = "reportitemwise",

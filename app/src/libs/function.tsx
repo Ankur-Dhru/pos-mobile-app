@@ -3203,3 +3203,8 @@ export const saveServerSettings = (key: string, settingdata: any) => {
 
     })
 }
+
+export const prelog = (data:any) => {
+    console.log(JSON.stringify(data,0,1))
+    console.log('---------------------------------------------------------')
+}

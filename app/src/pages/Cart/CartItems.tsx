@@ -92,7 +92,7 @@ const Index = (props: any) => {
                 <FlatList
                     data={invoiceitems?.filter((item:any)=>{
 
-                        return (+item.pax === +currentpax) || currentpax === 'all'
+                        return (+item.pax === +currentpax) || !Boolean(item.pax) || currentpax === 'all'
                     }).filter((item:any)=>{
                         return item?.treatitem !== 'charges'
                     })}

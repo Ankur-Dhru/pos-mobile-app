@@ -1,16 +1,23 @@
 import React, {memo} from "react";
-import {appLog, toCurrency} from "../../libs/function";
-import {ActivityIndicator, TouchableOpacity, View} from "react-native";
+import {toCurrency} from "../../libs/function";
+import {ActivityIndicator, View} from "react-native";
 import {Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
-import {connect, useDispatch} from "react-redux";
-import {setBottomSheet} from "../../redux-store/reducer/component";
-import HoldOrders from "./HoldOrders";
-import Discount from "./Discount";
-import store from "../../redux-store/store";
+import {connect} from "react-redux";
 
 
-const Index = ({vouchersubtotaldisplay, globaltax,adjustmentamount, voucherroundoffdisplay,vouchertotaldiscountamountdisplay,voucherinlinediscountdisplay,extrachargeboforetaxDisplay,totalwithoutroundoffdisplay,extrachargeafterdisplay, loading}: any) => {
+const Index = ({
+                   vouchersubtotaldisplay,
+                   globaltax,
+                   adjustmentamount,
+                   voucherroundoffdisplay,
+                   vouchertotaldiscountamountdisplay,
+                   voucherinlinediscountdisplay,
+                   extrachargeboforetaxDisplay,
+                   totalwithoutroundoffdisplay,
+                   extrachargeafterdisplay,
+                   loading
+               }: any) => {
 
     if (loading) {
         return <View style={{marginTop: 20}}>
@@ -51,8 +58,9 @@ const Index = ({vouchersubtotaldisplay, globaltax,adjustmentamount, voucherround
         <View style={{opacity: loading ? 0.3 : 1}}>
 
 
-            {Boolean(extrachargeboforetaxDisplay) &&   <View style={[styles.grid, styles.justifyContent]}>
-                <View><Paragraph style={[styles.paragraph]}>Extra Charges On ({toCurrency(!loading ? vouchersubtotaldisplay - (voucherinlinediscountdisplay + extrachargeboforetaxDisplay) : '0')})</Paragraph></View>
+            {Boolean(extrachargeboforetaxDisplay) && <View style={[styles.grid, styles.justifyContent]}>
+                <View><Paragraph style={[styles.paragraph]}>Extra Charges On
+                    ({toCurrency(!loading ? vouchersubtotaldisplay - (voucherinlinediscountdisplay + extrachargeboforetaxDisplay) : '0')})</Paragraph></View>
                 <View>
                     <Paragraph
                         style={[styles.paragraph, styles.bold]}>{toCurrency(extrachargeboforetaxDisplay)}</Paragraph>
@@ -72,15 +80,13 @@ const Index = ({vouchersubtotaldisplay, globaltax,adjustmentamount, voucherround
             {/*</View>*/}
 
 
-            {Boolean(vouchertotaldiscountamountdisplay) &&    <View style={[styles.grid, styles.justifyContent]}>
+            {Boolean(vouchertotaldiscountamountdisplay) && <View style={[styles.grid, styles.justifyContent]}>
                 <View><Paragraph style={[styles.paragraph]}>Discount</Paragraph></View>
                 <View>
                     <Paragraph
                         style={[styles.paragraph, styles.bold]}>{toCurrency(vouchertotaldiscountamountdisplay || '0')}</Paragraph>
                 </View>
             </View>}
-
-
 
 
             {
@@ -99,8 +105,9 @@ const Index = ({vouchersubtotaldisplay, globaltax,adjustmentamount, voucherround
             }
 
 
-            {Boolean(extrachargeafterdisplay) &&   <View style={[styles.grid, styles.justifyContent]}>
-                <View><Paragraph style={[styles.paragraph]}>Extra Charges On ({toCurrency(!loading ? totalwithoutroundoffdisplay - extrachargeafterdisplay : '0')})</Paragraph></View>
+            {Boolean(extrachargeafterdisplay) && <View style={[styles.grid, styles.justifyContent]}>
+                <View><Paragraph style={[styles.paragraph]}>Extra Charges On
+                    ({toCurrency(!loading ? totalwithoutroundoffdisplay - extrachargeafterdisplay : '0')})</Paragraph></View>
                 <View>
                     <Paragraph
                         style={[styles.paragraph, styles.bold]}>{toCurrency(extrachargeafterdisplay)}</Paragraph>
@@ -108,8 +115,7 @@ const Index = ({vouchersubtotaldisplay, globaltax,adjustmentamount, voucherround
             </View>}
 
 
-
-            {Boolean(adjustmentamount) &&  <View style={[styles.grid, styles.justifyContent]}>
+            {Boolean(adjustmentamount) && <View style={[styles.grid, styles.justifyContent]}>
                 <View><Paragraph style={[styles.paragraph]}>Adjustment</Paragraph></View>
                 <View>
                     <Paragraph
@@ -132,13 +138,13 @@ const mapStateToProps = (state: any) => ({
     vouchersubtotaldisplay: state.cartData.vouchersubtotaldisplay,
     extrachargeboforetaxDisplay: state.cartData.extrachargeboforetaxDisplay,
     totalwithoutroundoffdisplay: state.cartData.totalwithoutroundoffdisplay,
-    extrachargeafterdisplay:state.cartData.extrachargeafterdisplay,
+    extrachargeafterdisplay: state.cartData.extrachargeafterdisplay,
     globaltax: state.cartData.globaltax,
-    adjustmentamount:state.cartData.adjustmentamount,
+    adjustmentamount: state.cartData.adjustmentamount,
     voucherroundoffdisplay: state.cartData.voucherroundoffdisplay,
-    voucherglobaldiscountdisplay:state.cartData.voucherglobaldiscountdisplay,
-    voucherinlinediscountdisplay:state.cartData.voucherinlinediscountdisplay,
-    vouchertotaldiscountamountdisplay:state.cartData.vouchertotaldiscountamountdisplay,
+    voucherglobaldiscountdisplay: state.cartData.voucherglobaldiscountdisplay,
+    voucherinlinediscountdisplay: state.cartData.voucherinlinediscountdisplay,
+    vouchertotaldiscountamountdisplay: state.cartData.vouchertotaldiscountamountdisplay,
     loading: state.component.loading
 })
 

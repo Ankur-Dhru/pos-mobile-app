@@ -6,7 +6,7 @@ import {
     base64Encode,
     dateFormat,
     getDateWithFormat,
-    getOrders,
+    getOrders, prelog,
     printInvoice,
     toCurrency
 } from "../../libs/function";
@@ -160,6 +160,11 @@ const SalesReport = ({ordersData,navigation}: any) => {
                     <View style={[styles.grid, styles.noWrap, styles.top]}>
                         <View>
                             <Paragraph style={[styles.paragraph, styles.bold]}>{name}</Paragraph>
+                            {
+                                item?.receipt?.map((rec:any)=>{
+                                    return <Text  style={[styles.paragraph, styles.text_xs]}>{rec.payment} : {toCurrency(rec.amount)}</Text>
+                                })
+                            }
                             <Paragraph style={[styles.paragraph, styles.text_xs]}>{moment(item.localdatetime).format(dateFormat(true))}</Paragraph>
                         </View>
                     </View>

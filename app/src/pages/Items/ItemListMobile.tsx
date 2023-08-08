@@ -5,7 +5,7 @@ import {FlatList, Text, View} from "react-native";
 import {connect} from "react-redux";
 
 import {styles} from "../../theme";
-import {clone} from "../../libs/function";
+import {clone, prelog} from "../../libs/function";
 import {Card} from "react-native-paper";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 import {AddItem, ItemView} from "./ItemListTablet";
@@ -61,7 +61,7 @@ const Index = (props: any) => {
     const updateItems = (items: any) => {
         return items?.map((i: any) => {
             const find = invoiceitems.filter((item:any)=>{
-                return item?.pax === currentpax
+                return item?.pax === currentpax || !Boolean(item?.pax)
             }).filter((ii: any) => {
                 return ((+i.itemid === +ii.itemid) && Boolean(ii.added));
             })
@@ -164,7 +164,7 @@ const Index = (props: any) => {
                             onEndReachedThreshold={0.5}*/
 
                             ListFooterComponent={() => {
-                                return <View style={{height: 100}}></View>
+                                return <View style={{height: 200}}></View>
                             }}
                             ListEmptyComponent={<View>
                                 <View style={[styles.p_6]}>

@@ -6,7 +6,7 @@ import {
     dateFormat,
     errorAlert,
     getTempOrders, groupBy,
-    isEmpty,
+    isEmpty, prelog,
     saveTempLocalOrder,
     toCurrency
 } from "../../libs/function";
@@ -25,9 +25,16 @@ import {styles} from "../../theme";
 
 import {connect, useDispatch} from "react-redux";
 import ProIcon from "../../components/ProIcon";
-import {refreshCartData} from "../../redux-store/reducer/cart-data";
+import {refreshCartData, updateCartField} from "../../redux-store/reducer/cart-data";
 import {useIsFocused, useNavigation} from "@react-navigation/native";
-import {hideLoader, setAlert, setBottomSheet, setDialog, showLoader} from "../../redux-store/reducer/component";
+import {
+    hideLoader,
+    setAlert,
+    setBottomSheet,
+    setDialog,
+    setModal,
+    showLoader
+} from "../../redux-store/reducer/component";
 import ClientAndSource from "../Cart/ClientAndSource";
 import moment from "moment";
 import {setSelected} from "../../redux-store/reducer/selected-data";
@@ -146,26 +153,48 @@ const Index = ({tableorders}: any) => {
 
         return new Promise(async (resolve) => {
             let newtables = getOriginalTablesData();
+
             let newothertables: any = [];
 
             await getTempOrders().then(async (tableorders: any) => {
 
                 Object.values(tableorders).map((table: any) => {
                     let findTableIndex = tables?.findIndex((t: any) => t.tableid == table.tableid);
+
                     if (findTableIndex != -1) {
-                        newtables[findTableIndex] = table;
+                        newtables[findTableIndex] = {
+                            ...newtables[findTableIndex],
+                            orders : {...newtables[findTableIndex]?.orders,[table.tableorderid]:table},
+                            lasttableorderid:table?.tableorderid,
+                        }
+
+                        const orderids = Object.keys(newtables[findTableIndex]?.orders);
+                        if(orderids?.length > 1){
+                            let splittotal = 0;
+                            let paxtotal = 0;
+                            Object.values(newtables[findTableIndex]?.orders).map((item:any)=>{
+                                splittotal += +item.vouchertotaldisplay;
+                                paxtotal += +item.pax;
+                            })
+
+                            newtables[findTableIndex] = {
+                                ...newtables[findTableIndex],
+                                split:true,
+                                paxtotal:paxtotal,
+                                splittotal:splittotal
+                            }
+                        }
+
                     } else {
                         newothertables.push(table)
                     }
+
                 });
+
                 newtables = newtables.concat(newothertables);
-
                 await setTables(newtables);
-
                 setRefreshing(false);
-
                 resolve(newtables)
-
             })
         })
 
@@ -223,8 +252,9 @@ const Index = ({tableorders}: any) => {
         const sameStaff = ((Boolean(tabledetails?.staffid) && (tabledetails?.staffid === adminid)) || (!Boolean(tabledetails?.staffid)))
 
         if ((accessMultipleDevice && sameStaff) || !accessMultipleDevice) {
-            if ((Boolean(urls.localserver) && Boolean(tabledetails?.tableorderid))) {
 
+
+            if ((Boolean(urls.localserver) && Boolean(tabledetails?.tableorderid))) {
 
                 await apiService({
                     method: METHOD.GET,
@@ -259,6 +289,51 @@ const Index = ({tableorders}: any) => {
     }
 
 
+    const getSplitTables = async (orders:any) => {
+
+        let Component = () => {
+            return (
+                <View>
+                    <View style={[styles.grid]}>
+                        {
+                            Object.values(orders).map((item:any,index:any)=>{
+                                return <Item shifttable={shifttable}
+                                             shiftingFromtable={shiftingFromtable}
+                                             setShiftingFromtable={setShiftingFromtable}
+                                             shiftingTotable={shiftingTotable}
+                                             setShiftingTotable={setShiftingTotable}
+                                             splittable={splittable}
+                                             getOrder={getOrder}
+                                             resetTables={resetTables} item={item}
+                                             key={index}/>
+                            })
+                        }
+                    </View>
+
+
+                    <View style={[styles.mt_5, styles.grid, styles.justifyContent]}>
+                        <Button more={{color: 'black', backgroundColor: '#eee'}}
+                                onPress={() => {
+                                    dispatch(setDialog({visible: false}))
+                                }}> Close
+                        </Button>
+
+                    </View>
+
+                </View>
+            )
+        }
+
+
+        dispatch(setDialog({
+            visible: true,
+            title: "Split Tables",
+            hidecancel: true,
+            component: () => <Component/>
+        }))
+    }
+
+
     const splitTable = (tabledetails:any) => {
         dispatch(setDialog({
             visible: true,
@@ -276,7 +351,9 @@ const Index = ({tableorders}: any) => {
                 resetTables,
                 setShiftingFromtable,
                 shiftingFromtable,
-            } = props
+            } = props;
+
+            item = Boolean(item?.orders) ? {...item?.orders[item.lasttableorderid],...item} : item
 
             const shiftFrom = (tableorderid: any,tableid:any) => {
                 crashlytics().log('shiftFrom');
@@ -339,28 +416,30 @@ const Index = ({tableorders}: any) => {
             const sameStaff = ((Boolean(item?.staffid) && (item?.staffid === adminid)) || (!Boolean(item?.staffid)))
 
 
+
             return (
                 <Card style={[styles.card, styles.m_1, styles.mb_2, {
                     marginTop: 0,
                     width: oriantation === 'portrait' ? '45%' : '24%',
-                    backgroundColor: splittable ?  styles.secondary.color : Boolean(item?.printcounter) ? styles.yellow.color : Boolean(item.clientname) ? styles.secondary.color : styles.light.color,
+                    backgroundColor: item.split? styles.yellow.color : splittable ?  styles.secondary.color : Boolean(item?.printcounter) ? styles.yellow.color : Boolean(item.clientname) ? styles.secondary.color : styles.light.color,
                     borderRadius: 5,
                 }, styles.flexGrow,]} key={item.tableid}>
                     {<TouchableOpacity
                         style={{minHeight: 120}}
                         onPress={() => {
                             current.table = {invoiceitems: [], kots: [], ...item};
-                            splittable ? splitTable(current.table) : !shifttable ? setTableOrderDetail(current.table) : Boolean(shifting) ? shiftTo(props) :  shiftFrom(item.tableorderid,item.tableid)
+                            item.split? getSplitTables(current.table.orders) : splittable ? splitTable(current.table) : !shifttable ? setTableOrderDetail(current.table) : Boolean(shifting) ? shiftTo(props) :  shiftFrom(item.tableorderid,item.tableid)
                         }}>
                         {((shiftstart || shifting) || !shifttable) && <View style={[styles.p_4]}>
                             <View style={[styles.grid, styles.mb_3]}>
                                 <View
                                     style={[styles.badge, styles.px_5, {backgroundColor: 'black'}]}>
                                     <Text
-                                        style={[styles.paragraph, styles.text_xs, {color: 'white'}]}>{item.tablename || 'Retail'} </Text></View></View>
+                                        style={[styles.paragraph, styles.text_xs, {color: 'white'}]}>{`${item.tablename} ${item?.split ? '- split' : ''}` || 'Retail'} </Text></View></View>
                             {Boolean(item.vouchertotaldisplay) && <>
                                 <Paragraph><ProIcon align={'left'} name={'user'} action_type={'text'}
-                                                    size={13}/> {item.paxes} x {item.clientname}</Paragraph>
+                                                    size={13}/> {item.paxtotal || item.paxes} x {item.clientname}  </Paragraph>
+
 
                                 {Boolean(item?.advanceorder?.date) && <>
                                     <Paragraph style={[styles.paragraph, styles.text_xs]}>Delivery on </Paragraph>
@@ -371,7 +450,7 @@ const Index = ({tableorders}: any) => {
 
                                 {((accessMultipleDevice && sameStaff) || !accessMultipleDevice) &&   <View style={[styles.mt_3]}>
                                     <Paragraph
-                                        style={[styles.paragraph, styles.bold, styles.text_lg, {color: 'black'}]}>{toCurrency(item.vouchertotaldisplay)}</Paragraph>
+                                        style={[styles.paragraph, styles.bold, styles.text_lg, {color: 'black'}]}>{toCurrency(item?.splittotal || item.vouchertotaldisplay)}</Paragraph>
                                 </View>}
 
                             </>}
@@ -388,7 +467,7 @@ const Index = ({tableorders}: any) => {
 
                         </View>}
 
-                        {/*{item.ordertype === 'tableorder'  && <TableMenu data={item} setTableOrderDetail={setTableOrderDetail}/>}*/}
+                        {(item.ordertype === 'tableorder' && (item?.vouchertotaldisplay || item.split))  && <TableMenu data={{...item,invoiceitems: [], kots: [],tableorderid:''}} setTableOrderDetail={setTableOrderDetail}  />}
 
 
                     </TouchableOpacity>}

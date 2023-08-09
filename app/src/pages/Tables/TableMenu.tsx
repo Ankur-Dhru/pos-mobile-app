@@ -12,14 +12,12 @@ const Index = ({data,setTableOrderDetail}:any) => {
     const closeMenu = () => setVisible(false);
 
     const splitTable = () => {
-        setTableOrderDetail({invoiceitems: [], kots: [], ...data})
+        setTableOrderDetail(data)
         closeMenu()
     }
 
     return (
-        <View
-            style={[styles.absolute,styles.p_3,{right:0}]}
-            >
+        <View style={[styles.absolute,styles.p_3,{right:0}]}>
             <Menu
                 visible={visible}
                 onDismiss={closeMenu}

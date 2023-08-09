@@ -56,7 +56,7 @@ const Index = (props: any) => {
 
         crashlytics().log('cart useffect');
 
-        const voucherDataJson: any = voucherData(tabledetails.vouchertypeid?tabledetails.vouchertypeid:VOUCHER.INVOICE, false);
+        const voucherDataJson: any = voucherData(tabledetails?.vouchertypeid?tabledetails.vouchertypeid:VOUCHER.INVOICE, false);
 
         const {kots,numOfKOt}:any = tabledetails || {}
         if(kots?.length > 0 || numOfKOt > 0){
@@ -67,7 +67,6 @@ const Index = (props: any) => {
             dispatch(refreshCartData({...tabledetails, ...voucherDataJson}));
         }
 
-        prelog(tabledetails.invoiceitems)
 
             if (tabledetails?.printcounter && !device.tablet) {
                 navigation.navigate('DetailViewNavigator')

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {FlatList, Text, View} from "react-native";
 import {Caption, Card, Paragraph} from "react-native-paper"
-import {appLog, dateFormat, groupBy, objToArray, printDayEndReport, toCurrency} from "../../libs/function";
+import {appLog, dateFormat, groupBy, objToArray, prelog, printDayEndReport, toCurrency} from "../../libs/function";
 import Container from "../../components/Container";
 import {styles} from "../../theme";
 import {ACTIONS, ItemDivider, localredux, METHOD, urls} from "../../libs/static";
@@ -55,6 +55,7 @@ const Index = ({navigation}: any) => {
             other: {url: urls.posUrl},
         }).then((response: any) => {
 
+            prelog(response)
 
             const {info, data}: any = response;
 
@@ -211,8 +212,8 @@ const Index = ({navigation}: any) => {
             </Card>
         </View>
 
-        <KeyboardScroll>
 
+        <KeyboardScroll>
             {
                 Boolean(data.groupbyorder) && Object.keys(data.groupbyorder).map((vouchertype:any)=>{
                     const orders = data.groupbyorder[vouchertype];

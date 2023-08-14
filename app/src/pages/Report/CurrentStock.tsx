@@ -7,23 +7,18 @@ import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {ACTIONS, localredux, METHOD, urls} from "../../libs/static";
 import apiService from "../../libs/api-service";
-import InputField from "../../components/InputField";
-import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 
 
-const CurrentStock = ({navigation}: any) => {
+const CurrentStock = (props: any) => {
 
+    const {route} = props;
+
+    const {itemid,itemname} = route?.params?.item;
 
     const {workspace}: any = localredux.initData;
     const {token}: any = localredux.authData;
-    const dispatch = useDispatch()
-
-    const [items, setItems] = useState<any>([]);
-
-    let [itemid, setItemid]: any = useState('');
 
     const [data, setData]: any = useState({column: {}, data: [], summary: {}})
-
 
     const getStock = (itemid: any) => {
         if (Boolean(itemid)) {
@@ -46,20 +41,6 @@ const CurrentStock = ({navigation}: any) => {
         getStock(itemid)
     }, [itemid])
 
-    useEffect(() => {
-        getItemsByWhere({}).then((items: any) => {
-            let item_options = items.map((item: any) => {
-                return {label:`${item.itemname} ${item.uniqueproductcode?`(${item.uniqueproductcode})`:''}`  , value: item.itemid}
-            })
-            setItems(item_options)
-        });
-    }, [])
-
-
-    if (!Boolean(items.length)) {
-        return <></>
-    }
-
 
     const {info, title, tabledata}: any = data?.reportheader || {}
     const stocks = tabledata?.data;
@@ -74,57 +55,36 @@ const CurrentStock = ({navigation}: any) => {
                 <Card.Content style={[styles.cardContent]}>
 
 
-                    <>
-                        <InputField
-                            label={'Select Item'}
-                            mode={'flat'}
-                            list={items}
-                            value={''}
-                            selectedValue={''}
-                            displaytype={'pagelist'}
-                            inputtype={'dropdown'}
-                            listtype={'other'}
-                            onChange={(value: any) => {
-                                setItemid(value)
-                            }}>
-                        </InputField>
-
-                    </>
-
                     {Boolean(info) && <>
                         <View>
-                            {/*<Paragraph style={[styles.paragraph,styles.bold]}>{title}</Paragraph>*/}
+                            <Paragraph style={[styles.paragraph,styles.bold]}>{itemname}</Paragraph>
                             <Paragraph style={[styles.paragraph, styles.mb_3, styles.muted]}>{info}</Paragraph>
                         </View>
-                        {
-                            stocks.map((stock: any) => {
-                                return (
-                                    <View style={[styles.mb_5, styles.border, styles.p_5, {borderRadius: 5}]}>
-                                        <Caption style={[styles.caption]}>Location : {stock.location}</Caption>
-                                        <View style={[styles.grid, styles.justifyContent]}>
-                                            <Paragraph>{columns['availableqty'].title}</Paragraph>
-                                            <Paragraph> {stock.availableqty} </Paragraph>
-                                        </View>
+                        {stocks.map((stock: any) => {
+                            return (<View style={[styles.mb_5, styles.border, styles.p_5, {borderRadius: 5}]}>
+                                <Caption style={[styles.caption]}>Location : {stock.location}</Caption>
+                                <View style={[styles.grid, styles.justifyContent]}>
+                                    <Paragraph>{columns['availableqty'].title}</Paragraph>
+                                    <Paragraph> {stock.availableqty} </Paragraph>
+                                </View>
 
-                                        <View style={[styles.grid, styles.justifyContent]}>
-                                            <Paragraph>{columns['committedqty'].title}</Paragraph>
-                                            <Paragraph> {stock.committedqty} </Paragraph>
-                                        </View>
+                                <View style={[styles.grid, styles.justifyContent]}>
+                                    <Paragraph>{columns['committedqty'].title}</Paragraph>
+                                    <Paragraph> {stock.committedqty} </Paragraph>
+                                </View>
 
-                                        <View style={[styles.grid, styles.justifyContent]}>
-                                            <Paragraph>{columns['avgvalue'].title}</Paragraph>
-                                            <Paragraph> {toCurrency(stock.avgvalue || '0')} </Paragraph>
-                                        </View>
+                                <View style={[styles.grid, styles.justifyContent]}>
+                                    <Paragraph>{columns['avgvalue'].title}</Paragraph>
+                                    <Paragraph> {toCurrency(stock.avgvalue || '0')} </Paragraph>
+                                </View>
 
-                                        <View style={[styles.grid, styles.justifyContent]}>
-                                            <Paragraph>{columns['stockvalue'].title}</Paragraph>
-                                            <Paragraph> {toCurrency(stock.stockvalue || '0')} </Paragraph>
-                                        </View>
+                                <View style={[styles.grid, styles.justifyContent]}>
+                                    <Paragraph>{columns['stockvalue'].title}</Paragraph>
+                                    <Paragraph> {toCurrency(stock.stockvalue || '0')} </Paragraph>
+                                </View>
 
-                                    </View>
-                                )
-                            })
-                        }
+                            </View>)
+                        })}
 
 
                         <View style={[styles.mb_5, styles.border, styles.p_5, {borderRadius: 5}]}>
@@ -165,9 +125,7 @@ const CurrentStock = ({navigation}: any) => {
 }
 
 
-const mapStateToProps = (state: any) => ({
-    ordersData: Object.values(state?.ordersData).reverse() || [],
-})
+const mapStateToProps = (state: any) => ({})
 
 export default connect(mapStateToProps)(CurrentStock);
 

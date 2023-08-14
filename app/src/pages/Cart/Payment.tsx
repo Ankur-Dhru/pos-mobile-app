@@ -91,7 +91,7 @@ const Index = ({
     let {cartData, cartData: {invoiceitems}} = store.getState()
 
 
-    const [vouchertotaldisplay,setVouchertotaldisplay] = useState(cartData.vouchertotaldisplay)
+    const [vouchertotaldisplay,setVouchertotaldisplay] = useState(cartData?.vouchertotaldisplay - cartData?.paidamount)
     const [paxwise, setPaxwise]:any = useState({})
 
     const {paymentgateway}: any = localredux.initData;
@@ -139,11 +139,11 @@ const Index = ({
             const find = payment.find((pay: any) => pay.paymentmethod === key);
             let item: any = {label: b.value, value: key, type: b.type, paymentby: b.value, paymentmethod: key};
             if (!isEmpty(find)) {
-                item.paymentAmount = find?.paymentAmount || 0
+                item.paymentAmount = find?.paymentAmount   || 0
             }
 
             if (defaultpaymentgateway === key) {
-                item.paymentAmount = vouchertotaldisplay || 0
+                item.paymentAmount = vouchertotaldisplay  || 0
             }
 
             if(currentpax !== 'all') {
@@ -195,11 +195,10 @@ const Index = ({
 
 
     useEffect(()=>{
-        let total = cartData.vouchertotaldisplay
+        let total = cartData.vouchertotaldisplay - paidamount
         if(currentpax !=='all') {
             total = paxwise[currentpax]?.vouchertotaldisplay
         }
-
         setVouchertotaldisplay(total)
     },[currentpax])
 
@@ -402,7 +401,7 @@ const Index = ({
                     <View style={[styles.grid, styles.justifyContent, styles.p_5, styles.mt_5]}>
                         <Paragraph style={[styles.paragraph, styles.bold, styles.text_lg]}>{"Total"} </Paragraph>
                         <Paragraph
-                            style={[styles.paragraph, styles.bold, styles.text_lg]}> {toCurrency(vouchertotaldisplay)}</Paragraph>
+                            style={[styles.paragraph, styles.bold, styles.text_lg]}> {toCurrency(cartData.vouchertotaldisplay)}</Paragraph>
                     </View>
 
 

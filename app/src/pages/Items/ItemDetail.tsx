@@ -16,6 +16,8 @@ import ToggleButtons from "../../components/ToggleButton";
 import InputField from "../../components/InputField";
 import store from "../../redux-store/store";
 import {updateCartItem} from "./AddButton";
+import {Field} from "react-final-form";
+import {required} from "../../libs/static";
 
 const {v4: uuid} = require('uuid')
 
@@ -28,6 +30,7 @@ const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) =>
 
 
     const {cartData,cartData:{invoiceitems}} = store.getState()
+    const totaloax = cartData?.pax;
 
     const selectItem = async () => {
 
@@ -145,6 +148,24 @@ const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) =>
 
                 {isRestaurant() && <View>
                     <View style={[styles.mt_5, styles.px_5]}>
+
+                        {/*<InputField
+                            editmode={true}
+                            label={'Pax Number'}
+                            mode={'flat'}
+                            list={Array.from(Array(totaloax), (e, i) => {
+                                return {label:i+1,value:i+1}
+                            })}
+                            value={pax ? pax + '' : ''}
+                            selectedValue={pax ? pax + '' : ''}
+                            displaytype={'pagelist'}
+                            inputtype={'dropdown'}
+                            listtype={'other'}
+                            onChange={(value: any) => {
+                                updateProduct({pax: ''+value})
+                            }}>
+                        </InputField>*/}
+
                         <InputBox
                             defaultValue={pax ? pax + '' : ''}
                             label={'Pax'}

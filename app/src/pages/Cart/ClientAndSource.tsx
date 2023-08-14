@@ -219,7 +219,7 @@ const DeliveryOn = memo(({tabledetails}:any) => {
                                 }}
                             />
                         </View>
-                        <View style={[styles.flexGrow, {marginRight: 12}]}>
+                        <View style={[styles.flexGrow]}>
                             <InputField
                                 label={"Time"}
                                 displaytype={'bottomlist'}
@@ -245,6 +245,8 @@ const DeliveryOn = memo(({tabledetails}:any) => {
                             />
                         </View>
                     </View>
+
+
 
                 </Card.Content>
             </Card>
@@ -306,8 +308,6 @@ const ClientInformation = memo(({tabledetails}:any) => {
     useEffect(()=>{
         globalTable.selectedClient = selectedClient;
     },[selectedClient])
-
-    appLog('selectedClient',selectedClient)
 
     return <View   style={[styles.flex,styles.px_3]}><ScrollView>
         <Card style={[styles.card]}>

@@ -510,12 +510,18 @@ export const selectItemObject = (label: string, value: string | number, rank: nu
     rank, ...otherData
 })
 
-export const CheckConnectivity = () => {
+export const CheckConnectivity =async () => {
     crashlytics().log('CheckConnectivity');
-    NetInfo.addEventListener((networkState: any) => {
-        //store.dispatch(setConnection({internet: networkState.isConnected}));
-        store.dispatch(setSettings({internet: networkState.isConnected}))
-    });
+
+    return new Promise<any>(async (resolve) => {
+        NetInfo.addEventListener(async (networkState: any) => {
+            //store.dispatch(setConnection({internet: networkState.isConnected}));
+            const conne:any = Boolean((networkState.isConnected && networkState.isInternetReachable))
+
+            await store.dispatch(setSettings({internet: conne}))
+            resolve(conne)
+        });
+    })
 };
 
 export const syncData = async (loader = true, synctype = '') => {
@@ -2848,30 +2854,42 @@ export const printDayEndReport = ({date: date, data: data}: any) => {
 
 export const intervalInvoice = () => {
     let interval: any = null;
+    CheckConnectivity().then(()=>{
 
-    const syncinvoiceintervaltime: any = store.getState().localSettings?.syncinvoiceintervaltime
-    console.log('======================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================intervalInvoice', syncinvoiceintervaltime)
+    })
 
-    CheckConnectivity()
-    useEffect(() => {
-        if (!interval) {
-            interval = setInterval(() => {
-                if (Boolean(db?.name)) {
-                    getOrders().then((orders: any) => {
-                        if (!isEmpty(orders)) {
-                            let invoice: any = Object.values(orders)[0]
-                            appLog('get new order for sync')
-                            syncInvoice(invoice).then()
+    retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
+        const {syncinvoiceintervaltime} = data
+
+
+            if (!interval) {
+                interval = setInterval(() => {
+                    if (Boolean(db?.name)) {
+                        if(data) {
+                            CheckConnectivity().then((connection)=>{
+
+                                getOrders().then((orders: any) => {
+                                    if (!isEmpty(orders)) {
+                                        let invoice: any = Object.values(orders)[0]
+
+                                        connection && syncInvoice(invoice).then()
+                                    }
+                                })
+                            })
                         }
-                    })
-                }
-            }, syncinvoiceintervaltime || 300000);
-        }
-        return () => {
-            clearInterval(interval);
-            interval = null;
-        };
-    }, []);
+                    }
+                }, +syncinvoiceintervaltime || 30000);
+            }
+            return () => {
+                clearInterval(interval);
+                interval = null;
+            };
+
+
+
+
+    })
+
 }
 
 
@@ -3204,7 +3222,8 @@ export const saveServerSettings = (key: string, settingdata: any) => {
     })
 }
 
-export const prelog = (data:any) => {
+export const prelog = (title:any,data:any) => {
+    console.log(`=====================${title}=====================`)
     console.log(JSON.stringify(data,0,1))
-    console.log('---------------------------------------------------------')
+    console.log(`==================================================`)
 }

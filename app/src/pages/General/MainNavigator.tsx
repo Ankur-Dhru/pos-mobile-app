@@ -88,6 +88,7 @@ import ChangeWhatsapp from "../Setup/ChangeWhatsapp";
 import ItemWiseSales from "../Report/ItemWiseSales";
 import AddEditSalesReturn from "../SalesReturn/AddEditSalesReturn";
 import SalesReturnReport from "../Report/SalesReturnReport";
+import StockItemsList from "../Report/StockItemsList";
 
 
 const screenOptions = {...screenOptionStyle};
@@ -99,9 +100,7 @@ const Stack = createNativeStackNavigator();
 
 const MainStackNavigator = () => {
 
-
     intervalInvoice();
-
 
     return (
         <Stack.Navigator
@@ -285,6 +284,7 @@ const ProfileSettingsNavigator = (props: any) => {
             <Stack.Screen name={'SalesReturnReport'} component={SalesReturnReport} options={{headerTitle: 'Sales Return Report'}}/>
             <Stack.Screen name={'DayEndReport'} component={DayEndReport} options={{headerTitle: 'Day End Report'}}/>
             <Stack.Screen name={'CurrentStock'} component={CurrentStock} options={{headerTitle: 'Current Stock'}}/>
+            <Stack.Screen name={'StockItemsList'} component={StockItemsList} options={{headerTitle: 'Items'}}/>
             <Stack.Screen name={'ItemWiseSales'} component={ItemWiseSales} options={{headerTitle: 'Item Wise Sales'}}/>
 
 

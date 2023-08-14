@@ -2,6 +2,7 @@ import {View} from "react-native";
 import {Text} from "react-native-paper";
 import {connect, useDispatch} from "react-redux";
 import {styles} from "../../theme";
+import {appLog} from "../../libs/function";
 
 const Index = ({internet}: any) => {
 

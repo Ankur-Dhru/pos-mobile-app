@@ -46,7 +46,7 @@ const ProfileSettings = () => {
     const itemcategoryaccess = getRoleAccess('Item Category')
     const expenseaccess = getRoleAccess('Expenses')
     const paymentreceive = getRoleAccess('Receive Payment')
-    const salesreturn = getRoleAccess('Sales Return')
+    const creditnotes = getRoleAccess('Credit Notes')
 
 
     const {
@@ -235,7 +235,7 @@ const ProfileSettings = () => {
                                         </>}
 
 
-                                        {<><List.Item
+                                        {(!Boolean(creditnotes) || creditnotes?.add) && <><List.Item
                                             style={[styles.listitem]}
                                             title={'Sales Return'}
                                             onPress={async () => {
@@ -244,7 +244,6 @@ const ProfileSettings = () => {
                                             left={() => <List.Icon icon="currency-inr"/>}
                                             right={()=><List.Icon icon="plus"/>}
                                         />
-
                                             <ItemDivider/>
                                         </>}
 
@@ -355,7 +354,7 @@ const ProfileSettings = () => {
                                             style={[styles.listitem]}
                                             title={'Current Stocks'}
                                             onPress={() => {
-                                                navigation.navigate("CurrentStock");
+                                                navigation.navigate("StockItemsList");
                                             }}
                                             left={() => <List.Icon icon="inbox-multiple"/>}
                                             right={() => <List.Icon icon="chevron-right"/>}

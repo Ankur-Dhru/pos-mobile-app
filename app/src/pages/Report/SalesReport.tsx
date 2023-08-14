@@ -1,14 +1,14 @@
-import React, {useEffect, useState} from "react";
-import {FlatList, Text, TouchableOpacity, View} from "react-native";
+import React, {useEffect, useRef, useState} from "react";
+import {ActivityIndicator, FlatList, Text, TouchableOpacity, View} from "react-native";
 import {Caption, Card, Paragraph} from "react-native-paper"
 import {
     appLog, base64Decode,
-    base64Encode,
+    base64Encode, CheckConnectivity,
     dateFormat,
     getDateWithFormat,
     getOrders, prelog,
     printInvoice,
-    toCurrency
+    toCurrency, updateComponent
 } from "../../libs/function";
 import Container from "../../components/Container";
 import {styles} from "../../theme";
@@ -20,7 +20,7 @@ import moment from "moment";
 import ProIcon from "../../components/ProIcon";
 import PageLoader from "../../components/PageLoader";
 
-
+const offset = 10;
 
 const SalesReport = ({ordersData,navigation}: any) => {
 
@@ -30,12 +30,14 @@ const SalesReport = ({ordersData,navigation}: any) => {
 
     const {workspace}: any = localredux.initData;
     const {token}: any = localredux.authData;
-    const dispatch = useDispatch()
 
     const [data, setData] = useState<any>([]);
     const [loader,setLoader] = useState(false);
     const [unsynced,setUnsynced] = useState(false);
     const [localorder,setLocalorder] = useState(ordersData);
+    const [take,setTake] = useState(offset);
+
+    let loadmoreRef:any = useRef()
 
 
     useEffect(() => {
@@ -45,27 +47,46 @@ const SalesReport = ({ordersData,navigation}: any) => {
                 setLocalorder(Object.values(orders).reverse())
             }
         })
+        getData()
+    }, [ordersData?.length]) //ordersData
 
 
-        apiService({
-            method: METHOD.GET,
-            action: ACTIONS.REPORT_SALES,
-            workspace: workspace,
-            token: token,
-            queryString: {terminalid: licenseData?.data?.terminal_id,vouchertypeid: VOUCHER.INVOICE},
-            hideLoader: true,
-            hidealert: true,
-            other: {url: urls.posUrl},
-        }).then((response: any) => {
+    const getData = () => {
+        CheckConnectivity().then((connection)=>{
+            if(connection) {
+                apiService({
+                    method: METHOD.GET,
+                    action: ACTIONS.REPORT_SALES,
+                    workspace: workspace,
+                    token: token,
+                    queryString: {
+                        terminalid: licenseData?.data?.terminal_id,
+                        vouchertypeid: VOUCHER.INVOICE,
+                        take: offset,
+                        skip: take - offset
+                    },
+                    hideLoader: true,
+                    hidealert: true,
+                    other: {url: urls.posUrl},
+                }).then((response: any) => {
 
-            setData(Object.values(response?.data).reverse())
-            setLoader(true)
-        }).catch(()=>{
-            setLoader(true)
+                    if (!Boolean(response?.data)) {
+                        updateComponent(loadmoreRef, 'display', 'none')
+                    } else {
+                        setTake(take + offset)
+                    }
+                    setData([...data, ...Object.values(response?.data).reverse()])
+                    setLoader(true)
+                }).catch(() => {
+                    setLoader(true)
+                })
+            }
+            else{
+                updateComponent(loadmoreRef, 'display', 'none')
+                setLoader(true);
+            }
         })
-    }, []) //ordersData
-
-
+    }
 
 
     const printPreview = async (invoice:any) => {
@@ -126,6 +147,23 @@ const SalesReport = ({ordersData,navigation}: any) => {
             }
         });
     }
+
+    const renderFooter = () => {
+
+        if(!data?.length){
+            return <></>
+        }
+
+        return (
+            <View   ref={loadmoreRef}>
+                <TouchableOpacity
+                    onPress={getData}
+                    style={[styles.center]}>
+                    <Paragraph style={[styles.center,{textAlign:'center'}]}>Load More</Paragraph>
+                </TouchableOpacity>
+            </View>
+        );
+    };
 
     if (!loader) {
         return <PageLoader/>
@@ -227,6 +265,7 @@ const SalesReport = ({ordersData,navigation}: any) => {
                     </View>}
 
                     ItemSeparatorComponent={ItemDivider}
+                    ListFooterComponent={!unsynced ? renderFooter : <></>}
                 />}
 
             </Card.Content>

@@ -25,9 +25,9 @@ const AddEditSalesReturn = (props: any) => {
     const dispatch = useDispatch()
 
     let initdata: any = {
-        "referencetype": "",
-        "clientid": "",
-        "paymentmethod": "",
+        "referencetype": "b65254c6-d78b-4693-b062-4e4a91410983",
+        "clientid": "1",
+        "paymentmethod": "c02fc4ca-8d89-4c91-bd66-2dd29bc34e43",
         "referenceid": "",
         currency: getDefaultCurrency(),
         localdatetime: moment().format("YYYY-MM-DD HH:mm:ss"),
@@ -68,43 +68,61 @@ const AddEditSalesReturn = (props: any) => {
 
     const handleSubmit = async (values: any) => {
 
-
         const {workspace}: any = localredux.initData;
         const {token}: any = localredux.authData;
 
-        await apiService({
-            method: METHOD.GET,
-            action: ACTIONS.INVOICE,
-            queryString: {voucherdisplayid: values.referenceid, vouchertypeid: VOUCHER.INVOICE},
-            workspace: workspace,
-            token: token,
-            other: {url: urls.posUrl},
-        }).then(async (result) => {
-            if (result.status === STATUS.SUCCESS) {
+        let invoicedetail: any = {
+            invoiceitems: [],
+            voucherid: '',
+            voucherdisplayid: '',
+            payments: [],
+            vouchertypeid: VOUCHER.SALESRETURN, ...values,
+        };
+
+        if (values?.referenceid) {
+            await apiService({
+                method: METHOD.GET,
+                action: ACTIONS.INVOICE,
+                queryString: {voucherdisplayid: values?.referenceid, vouchertypeid: VOUCHER.INVOICE},
+                workspace: workspace,
+                token: token,
+                other: {url: urls.posUrl},
+            }).then(async (result) => {
+
+                if (result.status === STATUS.SUCCESS) {
 
 
-                let invoicedetail:any = result.data?.result;
+                    invoicedetail = result.data?.result;
 
-                const voucheritems: any = invoicedetail?.voucheritems;
+                    const voucheritems: any = invoicedetail?.voucheritems;
 
-                invoicedetail = {
-                    ...invoicedetail,
-                    clientname:invoicedetail.client,
-                    invoiceitems: Boolean(voucheritems) ? Object.values(voucheritems)?.map((item: any) => {
-                        return {...item,productqnt:+item.productqnt,...item.itemdetail,  change: true,added:true}
-                    }) : [],
-                    voucherid:'',
-                    voucherdisplayid:'',
-                    vouchertypeid:VOUCHER.SALESRETURN,
-                    payments:[],
-                    ...values
+                    invoicedetail = {
+                        ...invoicedetail,
+                        clientname: invoicedetail.client,
+                        invoiceitems: Boolean(voucheritems) ? Object.values(voucheritems)?.map((item: any) => {
+                            return {
+                                ...item,
+                                productqnt: +item.productqnt, ...item.itemdetail,
+                                change: true,
+                                added: true
+                            }
+                        }) : [],
+                        voucherid: '',
+                        voucherdisplayid: '',
+                        payments: [],
+                        vouchertypeid: VOUCHER.SALESRETURN, ...values
+                    }
+
                 }
 
-                navigation.navigate('CartStackNavigator', invoicedetail);
-            } else {
-                errorAlert(result.message)
-            }
-        });
+                navigation.push('CartStackNavigator', invoicedetail);
+
+            });
+        } else {
+            navigation.push('CartStackNavigator', invoicedetail);
+        }
+
+
     }
 
     const getInvoicesbyClient = async (clientid: any) => {
@@ -122,7 +140,7 @@ const AddEditSalesReturn = (props: any) => {
 
             dispatch(hideLoader())
             if (result.status === STATUS.SUCCESS) {
-                setInvoices(Object.values({...result.data.pendinginvoice,...result.data.invoices}))
+                setInvoices(Object.values({...result.data.pendinginvoice, ...result.data.invoices}))
             } else {
                 errorAlert(result.message)
             }
@@ -140,8 +158,7 @@ const AddEditSalesReturn = (props: any) => {
             <Form
                 onSubmit={handleSubmit}
                 initialValues={{...initdata}}
-                render={({handleSubmit, submitting, values, ...more}: any) => (
-                    <>
+                render={({handleSubmit, submitting, values, ...more}: any) => (<>
 
                         <View style={[styles.middle,]}>
                             <View style={[styles.middleForm, {maxWidth: 400}]}>
@@ -156,9 +173,8 @@ const AddEditSalesReturn = (props: any) => {
 
                                                     <View>
 
-                                                        <Field name="clientid" validate={required}>
-                                                            {props => (
-                                                                <InputField
+                                                        <Field name="clientid">
+                                                            {props => (<InputField
                                                                     {...props}
                                                                     label={'Client'}
                                                                     mode={'flat'}
@@ -179,8 +195,7 @@ const AddEditSalesReturn = (props: any) => {
                                                                         })
                                                                     }}
                                                                 >
-                                                                </InputField>
-                                                            )}
+                                                                </InputField>)}
                                                         </Field>
                                                     </View>
 
@@ -188,8 +203,7 @@ const AddEditSalesReturn = (props: any) => {
                                                     <View>
 
                                                         <Field name="referenceid">
-                                                            {props => (
-                                                                <InputField
+                                                            {props => (<InputField
                                                                     {...props}
                                                                     label={'Invoice'}
                                                                     mode={'flat'}
@@ -208,8 +222,7 @@ const AddEditSalesReturn = (props: any) => {
                                                                         props.input.onChange(value);
                                                                     }}
                                                                 >
-                                                                </InputField>
-                                                            )}
+                                                                </InputField>)}
                                                         </Field>
                                                     </View>
 
@@ -217,8 +230,7 @@ const AddEditSalesReturn = (props: any) => {
                                                     <View>
 
                                                         <Field name="referencetype">
-                                                            {props => (
-                                                                <InputField
+                                                            {props => (<InputField
                                                                     {...props}
                                                                     label={'Reason'}
                                                                     mode={'flat'}
@@ -232,16 +244,14 @@ const AddEditSalesReturn = (props: any) => {
                                                                         props.input.onChange(value);
                                                                     }}
                                                                 >
-                                                                </InputField>
-                                                            )}
+                                                                </InputField>)}
                                                         </Field>
                                                     </View>
 
 
                                                     <View>
-                                                        <Field name="paymentmethod"  >
-                                                            {props => (
-                                                                <InputField
+                                                        <Field name="paymentmethod">
+                                                            {props => (<InputField
                                                                     {...props}
                                                                     label={'Payment By'}
                                                                     mode={'flat'}
@@ -255,8 +265,7 @@ const AddEditSalesReturn = (props: any) => {
                                                                         props.input.onChange(value);
                                                                     }}
                                                                 >
-                                                                </InputField>
-                                                            )}
+                                                                </InputField>)}
                                                         </Field>
                                                     </View>
 
@@ -282,8 +291,7 @@ const AddEditSalesReturn = (props: any) => {
                             </View>
                         </View>
 
-                    </>
-                )}
+                    </>)}
             />
         </SafeAreaView>
     </Container>

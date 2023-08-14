@@ -313,6 +313,15 @@ export const maxValue = (max: any, label?: any) => (value: any) => {
         return message
     }
 }
+export const minValue = (min: any, label?: any) => (value: any) => {
+    if (value < min) {
+        let message = `minimum value is ${min}`
+        if (Boolean(label) && getType(label) === "string") {
+            message = `${label} ${message}`
+        }
+        return message
+    }
+}
 
 export const composeValidators = (...validators: any) => (value: any) =>
     validators.reduce((error: any, validator: any) => error || validator(value), undefined)

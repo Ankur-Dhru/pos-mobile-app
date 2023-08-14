@@ -22,6 +22,7 @@ import store from "../../redux-store/store";
 import ExtraCharges from "./ExtraCharges";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 import PaxesSelection from "../Items/PaxesSelection";
+import UpdateOrderInfo from "./UpdateOrderInfo";
 
 const Index = (props: any) => {
 
@@ -116,6 +117,13 @@ const Index = (props: any) => {
                             visible: true, height: '80%', component: () => <Adjustment/>
                         }))
                     }} title="Adjustment"/>}
+
+                    {/*{<Menu.Item onPress={async () => {
+                        closeMenu();
+                        await dispatch(setBottomSheet({
+                            visible: true, height: '80%', component: () => <UpdateOrderInfo/>
+                        }))
+                    }} title="Update basic info"/>}*/}
 
                 </Menu>
             </View>

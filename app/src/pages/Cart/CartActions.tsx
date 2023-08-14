@@ -41,6 +41,7 @@ const Index = ({
 
     let cartData = store.getState().cartData;
 
+
     const {settings:{cant_complete_remote_order}} = localredux.authData
 
     useEffect(() => {
@@ -102,7 +103,6 @@ const Index = ({
         }
     }
 
-    prelog(cartData)
 
     if(cartData.vouchertypeid === VOUCHER.SALESRETURN) {
         return <View style={[{

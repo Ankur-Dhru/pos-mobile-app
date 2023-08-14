@@ -8,13 +8,15 @@ import {
     appLog,
     connectToLocalServer,
     getDatabaseName,
-    getLocalSettings,
+    getLocalSettings, intervalInvoice,
     retrieveData,
 } from "../../libs/function";
 import moment from "moment/moment";
 
 
 import PageLoader from "../../components/PageLoader";
+import {setSettings} from "../../redux-store/reducer/local-settings-data";
+import {useDispatch} from "react-redux";
 
 
 
@@ -24,7 +26,7 @@ const Index = (props: any) => {
     const {navigation} = props
     device.navigation = navigation;
     const [loader,setLoader]:any = useState(false);
-
+    const dispatch = useDispatch()
 
     const isPortrait = () => {
         const dim = Dimensions.get('screen');
@@ -66,6 +68,7 @@ const Index = (props: any) => {
                         screen = 'PinStackNavigator';
                         /*await retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
                             await dispatch(setSettings(data));
+
                         })*/
                     }
                 }

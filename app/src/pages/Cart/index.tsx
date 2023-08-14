@@ -32,8 +32,6 @@ const Index = (props: any) => {
 
     const tabledetails: any = props?.route?.params;
 
-
-
     const {advancecartview,orderbypax,pax} = props;
 
 
@@ -56,7 +54,10 @@ const Index = (props: any) => {
 
         crashlytics().log('cart useffect');
 
+
         const voucherDataJson: any = voucherData(tabledetails?.vouchertypeid?tabledetails.vouchertypeid:VOUCHER.INVOICE, false);
+
+
 
         const {kots,numOfKOt}:any = tabledetails || {}
         if(kots?.length > 0 || numOfKOt > 0){
@@ -72,7 +73,7 @@ const Index = (props: any) => {
                 navigation.navigate('DetailViewNavigator')
             }
 
-            if (tabledetails?.invoiceitems.length === 0 && (tabledetails?.ordertype === 'tableorder')) {
+            if (tabledetails?.invoiceitems?.length === 0 && (tabledetails?.ordertype === 'tableorder')) {
 
                 if (!props.disabledpax) {
                     dispatch(setDialog({

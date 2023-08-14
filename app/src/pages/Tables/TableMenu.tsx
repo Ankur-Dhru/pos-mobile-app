@@ -12,7 +12,7 @@ const Index = ({data,setTableOrderDetail}:any) => {
     const closeMenu = () => setVisible(false);
 
     const splitTable = () => {
-        setTableOrderDetail(data)
+        setTableOrderDetail({...data,tablename : data.tablename + ' - ' + ((+data.splitnumber || 0) + 1)})
         closeMenu()
     }
 

@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {SafeAreaView, View} from "react-native";
-import {Card} from "react-native-paper";
+import {Card, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {Field, Form} from "react-final-form";
@@ -13,10 +13,20 @@ import {
     getDefaultCurrency,
     getRoleAccess,
     isEmpty,
-    nextFocus,
+    nextFocus, toCurrency,
     voucherData
 } from "../../libs/function";
-import {ACTIONS, localredux, METHOD, required, STATUS, urls, VOUCHER} from "../../libs/static";
+import {
+    ACTIONS,
+    composeValidators,
+    localredux, maxValue,
+    METHOD,
+    minValue,
+    required,
+    STATUS,
+    urls,
+    VOUCHER
+} from "../../libs/static";
 import {Button, Container} from "../../components";
 import KAccessoryView from "../../components/KAccessoryView";
 import apiService from "../../libs/api-service";
@@ -34,18 +44,34 @@ const AddEditPaymentReceived = (props: any) => {
 
     const navigation = useNavigation()
 
+    const {route,vouchertotaldisplay} = props;
+
+    const receiptCreated = route?.params?.receiptCreated;
+    const clientid = route?.params?.clientid;
+
 
     let initdata: any = {
         amount: '',
-        clientid: '',
-        gateway: '',
+        clientid: clientid || '',
+        gateway: 'c02fc4ca-8d89-4c91-bd66-2dd29bc34e43',
         currency:getDefaultCurrency(),
         localdatetime:moment().format("YYYY-MM-DD HH:mm:ss"),
         locationid: localredux.licenseData?.data?.location_id,
         vouchertypeid:VOUCHER.RECEIPT
     }
 
-    const {paymentgateway}: any = localredux.initData;
+
+
+    const {paymentgateway,location}: any = localredux.initData;
+    const minadvancepercentage = location[initdata?.locationid]?.minadvancepercentage;
+
+
+    let minamount = 0
+    if(minadvancepercentage) {
+        minamount = Math.round((vouchertotaldisplay * minadvancepercentage) / 100)
+    }
+
+
     const [loader, setLoader] = useState(true);
 
 
@@ -72,8 +98,11 @@ const AddEditPaymentReceived = (props: any) => {
 
 
     const handleSubmit = async (values: any) => {
+
+
         const {workspace}: any = localredux.initData;
         const {token}: any = localredux.authData;
+
 
         await apiService({
             method: METHOD.POST,
@@ -85,12 +114,17 @@ const AddEditPaymentReceived = (props: any) => {
         }).then(async (result) => {
             if (result.status === STATUS.SUCCESS) {
                 store.dispatch(setAlert({visible: true, message: result.message}))
+                Boolean(receiptCreated) && receiptCreated(result?.data?.data);
                 navigation.goBack()
             }
             else{
                 errorAlert(result.message)
             }
         });
+
+
+
+
     }
 
     const inputRef = [useRef(), useRef(), useRef(), useRef(), useRef(), useRef(), useRef(), useRef()]
@@ -120,7 +154,6 @@ const AddEditPaymentReceived = (props: any) => {
 
 
                                                     <View>
-
                                                         <Field name="clientid" validate={required}>
                                                             {props => (
                                                                 <InputField
@@ -149,12 +182,9 @@ const AddEditPaymentReceived = (props: any) => {
 
 
 
-
-
                                                     <View>
                                                         <View>
-
-                                                            <Field name="amount" validate={required}>
+                                                            <Field name="amount" validate={composeValidators(required, minValue(+minamount))}>
                                                                 {props => (
                                                                     <InputField
                                                                         {...props}
@@ -169,6 +199,7 @@ const AddEditPaymentReceived = (props: any) => {
                                                                     />
                                                                 )}
                                                             </Field>
+                                                            {Boolean(minamount) &&  <Paragraph style={[styles.mb_5]}>Min Amount to pay : {toCurrency(minamount)}</Paragraph>}
                                                         </View>
                                                     </View>
 
@@ -249,7 +280,9 @@ const AddEditPaymentReceived = (props: any) => {
     </Container>
 }
 
-const mapStateToProps = (state: any) => ({})
+const mapStateToProps = (state: any) => ({
+    vouchertotaldisplay:state.cartData?.vouchertotaldisplay
+})
 
 export default connect(mapStateToProps)(AddEditPaymentReceived);
 

@@ -171,11 +171,11 @@ const Index = () => {
                                                 divider={true}
                                                 displaytype={'bottomlist'}
                                                 inputtype={'dropdown'}
-                                                list={[{value: '600000', label: '60 Sec'}, {
-                                                    value: '300000',
+                                                list={[{value: '60000', label: '60 Sec'}, {
+                                                    value: '30000',
                                                     label: '30 Sec'
-                                                }, {value: '200000', label: '20 Sec'}, {
-                                                    value: '100000',
+                                                }, {value: '20000', label: '20 Sec'}, {
+                                                    value: '10000',
                                                     label: '10 Sec'
                                                 },]}
                                                 search={false}

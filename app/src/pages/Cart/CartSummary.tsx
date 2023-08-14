@@ -3,9 +3,9 @@ import {
     appLog,
     chevronRight,
     clone,
-    dateFormat,
+    dateFormat, generateKOT,
     groupBy,
-    isRestaurant,
+    isRestaurant, saveTempLocalOrder,
     toCurrency,
     updateComponent
 } from "../../libs/function";
@@ -17,15 +17,17 @@ import {itemTotalCalculation} from "../../libs/item-calculation";
 import {setCartData, setUpdateCart, updateCartField} from "../../redux-store/reducer/cart-data";
 import {ProIcon} from "../../components";
 import CartSummaryMore from "./CartSummaryMore";
-import {contentLoader} from "../../redux-store/reducer/component";
+import {contentLoader, hideLoader} from "../../redux-store/reducer/component";
 import store from "../../redux-store/store";
 import moment from "moment";
 import ClientAndSource from "./ClientAndSource";
 import {splitPaxwise} from "./Payment";
+import {useNavigation} from "@react-navigation/native";
+import {setTableOrders} from "../../redux-store/reducer/table-orders-data";
 
 
 
-const Index = ({advanceorder,commonkotnote,orderbypax,currentpax,vouchertotaldisplay, navigation}: any) => {
+const Index = ({advanceorder,commonkotnote,orderbypax,currentpax,vouchertotaldisplay,clientid,advance, navigation}: any) => {
 
     const dispatch = useDispatch()
     const moreSummaryRef: any = React.useRef();
@@ -81,6 +83,29 @@ const Index = ({advanceorder,commonkotnote,orderbypax,currentpax,vouchertotaldis
         }
     }
 
+    const receiptCreated = (response:any) => {
+
+
+        let cartData = store.getState().cartData;
+
+        cartData = {
+            ...cartData,
+            advance:{...cartData.advance,...response}
+        }
+
+        saveTempLocalOrder(cartData).then((order: any) => {
+            const paidamount = order?.advance?.vouchertotaldisplay || 0;
+            dispatch(updateCartField({advance:order.advance,paidamount:paidamount,credits: [{'pay': paidamount}]}))
+        })
+
+    }
+
+    const advancePayment = () => {
+        navigation.navigate("AddEditPaymentReceived",{receiptCreated:receiptCreated,clientid:clientid});
+    }
+
+
+    console.log('advance',advance)
 
     return (<>
 
@@ -104,7 +129,7 @@ const Index = ({advanceorder,commonkotnote,orderbypax,currentpax,vouchertotaldis
 
 
         {Boolean(advanceorder?.date) &&
-            <Card style={[styles.card,styles.border]}>
+            <Card style={[styles.card,styles.border,styles.mb_3,styles.m_3]}>
                 <Card.Content style={[styles.cardContent]}>
                     <TouchableOpacity
                           onPress={() => {
@@ -121,6 +146,18 @@ const Index = ({advanceorder,commonkotnote,orderbypax,currentpax,vouchertotaldis
                             </View>
                         </View>
                     </TouchableOpacity>
+
+
+                    <View style={[styles.mt_4]}>
+                        {!Boolean(advance?.vouchertotaldisplay) ? <TouchableOpacity
+                            onPress={() => { Boolean(vouchertotaldisplay) && advancePayment() }}
+                            style={[styles.p_5,{backgroundColor: styles.green.color, borderRadius: 5}]}>
+                            <View>
+                                <Paragraph style={[styles.paragraph,styles.bold,{color:'white',textAlign:'center'}]}>Advance Payment</Paragraph>
+                            </View>
+                        </TouchableOpacity> : <Paragraph>Advance Payment : {toCurrency(advance.vouchertotaldisplay)}</Paragraph>}
+                    </View>
+
                 </Card.Content>
             </Card>
         }
@@ -151,6 +188,8 @@ const mapStateToProps = (state: any) => ({
     commonkotnote:state.cartData?.commonkotnote,
     orderbypax:state.cartData?.orderbypax,
     currentpax:state.cartData?.currentpax,
+    clientid:state.cartData?.clientid,
+    advance:state.cartData?.advance,
     vouchertotaldisplay:state.cartData?.vouchertotaldisplay,
 })
 

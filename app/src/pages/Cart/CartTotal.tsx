@@ -40,6 +40,9 @@ const Index = ({vouchertotaldisplay, invoiceitems, theme: {colors}}: any) => {
                     </View>
                 </View>
             </TouchableOpacity>
+
+
+
         </View>
     )
 }

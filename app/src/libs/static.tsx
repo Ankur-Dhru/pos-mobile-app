@@ -145,6 +145,16 @@ export enum PRINTER {
     SALESRETURN = "2222"
 }
 
+export enum COUPON_TYPE {
+    COMBO    = 'combo',
+    DISCOUNT = 'discount',
+    GROUP = 'group'
+}
+
+export enum ITEM_TYPE {
+    ITEM    = 'items',
+    CATEGORY = 'category'
+}
 
 export const taxTypes: any = {
     exclusive: "Exclusive of Tax",

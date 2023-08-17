@@ -1,22 +1,12 @@
 import React, {memo, useEffect, useRef, useState} from "react";
 
-import {Image, Keyboard, ScrollView, TouchableOpacity, View} from "react-native";
+import {ScrollView, View} from "react-native";
 import Container from "../../components/Container";
-import ReactNativePinView from "react-native-pin-view"
 import {connect, useDispatch} from "react-redux";
-import {
-    appLog,
-    errorAlert,
-    getAddons,
-    getClients,
-    getTempOrders,
-    retrieveData,
-    storeData,
-    syncData
-} from "../../libs/function";
+import {errorAlert, getAddons, getClients, getTempOrders, prelog, retrieveData, syncData} from "../../libs/function";
 
-import {hideLoader, setAlert, setBottomSheet, showLoader} from "../../redux-store/reducer/component";
-import {Card, Paragraph, Text, withTheme} from "react-native-paper";
+import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
+import {Paragraph, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import moment from "moment/moment";
 import {db, device, localredux, METHOD, urls} from "../../libs/static";
@@ -25,19 +15,17 @@ import {setSettings} from "../../redux-store/reducer/local-settings-data";
 import {setGroupList} from "../../redux-store/reducer/group-list";
 import {setTableOrdersData} from "../../redux-store/reducer/table-orders-data";
 import apiService from "../../libs/api-service";
-import Icon from "react-native-fontawesome-pro";
 import {
     CodeField,
-    Cursor, isLastFilledCell,
+    Cursor,
+    isLastFilledCell,
     MaskSymbol,
     useBlurOnFulfill,
     useClearByFocusCell
 } from "react-native-confirmation-code-field";
 import Avatar from "../../components/Avatar";
 import Button from "../../components/Button";
-import HoldOrders from "../Cart/HoldOrders";
 import {getUniqueId} from "react-native-device-info";
-import analytics from "@react-native-firebase/analytics";
 import crashlytics from "@react-native-firebase/crashlytics";
 
 
@@ -46,13 +34,11 @@ const md5 = require('md5');
 
 const Index = (props: any) => {
 
-    let {route: {params}, navigation,syncDetail}: any = props;
+    let {route: {params}, navigation, syncDetail}: any = props;
 
     const dispatch = useDispatch()
 
     const pinView: any = useRef(null)
-
-    const [loader, setLoader] = useState(false)
 
     let isRestaurant = false;
 
@@ -73,8 +59,10 @@ const Index = (props: any) => {
 
                 localredux.initData = {...localredux.initData, ...initData};
 
+
+
                 localredux.licenseData = licenseData;
-                localredux.authData = {...authData,...params};
+                localredux.authData = {...authData, ...params};
 
                 localredux.localSettingsData = localSettingsData;
 
@@ -82,12 +70,12 @@ const Index = (props: any) => {
 
                 const {itemgroup}: any = localredux.initData;
 
-                let filterGroups:any = {}
+                let filterGroups: any = {}
 
                 if (Boolean(itemgroup)) {
 
-                    Object.keys(itemgroup).forEach((key)=>{
-                        if(itemgroup[key].itemgroupstatus == 1) {
+                    Object.keys(itemgroup).forEach((key) => {
+                        if (itemgroup[key].itemgroupstatus == 1) {
                             filterGroups[key] = itemgroup[key]
                         }
                     })
@@ -123,12 +111,12 @@ const Index = (props: any) => {
 
         }
 
-       /* const {workspace}: any = localredux.initData;
-        analytics().logEvent('workspace', {
-            name: workspace,
-        }).then(r => {
+        /* const {workspace}: any = localredux.initData;
+         analytics().logEvent('workspace', {
+             name: workspace,
+         }).then(r => {
 
-        })*/
+         })*/
 
         await dispatch(hideLoader())
         localredux.loginuserData = params;
@@ -146,7 +134,7 @@ const Index = (props: any) => {
     navigation.setOptions({headerShown: !params.onlyone || Boolean(urls.localserver)})
 
 
-    const [value, setValue]:any = useState("")
+    const [value, setValue]: any = useState("")
     const ref = useBlurOnFulfill({value, cellCount: 5});
     const [props1, getCellOnLayoutHandler] = useClearByFocusCell({
         value,
@@ -221,7 +209,7 @@ const Index = (props: any) => {
     }, [value]);
 
 
-    const renderCell = ({index, symbol, isFocused}:any) => {
+    const renderCell = ({index, symbol, isFocused}: any) => {
         let textChild = null;
 
         if (symbol) {
@@ -233,7 +221,7 @@ const Index = (props: any) => {
                 </MaskSymbol>
             );
         } else if (isFocused) {
-            textChild = <Cursor />;
+            textChild = <Cursor/>;
         }
 
         return (
@@ -246,23 +234,22 @@ const Index = (props: any) => {
         );
     };
 
-    return <Container    style={styles.bg_white}>
+    return <Container style={styles.bg_white}>
 
         <ScrollView>
 
-            <View style={[styles.h_100,styles.middle]}>
+            <View style={[styles.h_100, styles.middle]}>
 
 
-
-                <View style={{width:300,marginTop:20}}>
-
+                <View style={{width: 300, marginTop: 20}}>
 
 
                     <View style={[styles.middle]}>
 
-                        {<View  style={[styles.middle]}>
-                            <Avatar label={params.firstname+' '+params.lastname} value={1}  fontsize={30} size={60}/>
-                            <Paragraph style={[styles.paragraph,styles.bold,{textTransform:'capitalize'}]}>{params.firstname} {params.lastname}</Paragraph>
+                        {<View style={[styles.middle]}>
+                            <Avatar label={params.firstname + ' ' + params.lastname} value={1} fontsize={30} size={60}/>
+                            <Paragraph
+                                style={[styles.paragraph, styles.bold, {textTransform: 'capitalize'}]}>{params.firstname} {params.lastname}</Paragraph>
                         </View>}
 
                     </View>
@@ -283,24 +270,25 @@ const Index = (props: any) => {
                         />
                     </View>
 
-                    <View  style={[styles.middle]}>
-                    <Paragraph>{params.loginpin === 'b0baee9d279d34fa1dfd71aadb908c3f' &&
-                        <Text style={[styles.paragraph, styles.muted, styles.text_xs, {textAlign: 'center'}]}>default pin is 11111</Text>}</Paragraph>
+                    <View style={[styles.middle]}>
+                        <Paragraph>{params.loginpin === 'b0baee9d279d34fa1dfd71aadb908c3f' &&
+                            <Text style={[styles.paragraph, styles.muted, styles.text_xs, {textAlign: 'center'}]}>default
+                                pin is 11111</Text>}</Paragraph>
                     </View>
 
 
                 </View>
 
-                <View  style={[styles.p_6,styles.w_100,{maxWidth:320,marginTop:50,}]}>
+                <View style={[styles.p_6, styles.w_100, {maxWidth: 320, marginTop: 50,}]}>
 
                     {!Boolean(urls?.localserver) && <Button style={[styles.noshadow]}
-                            more={{
-                                backgroundColor: 'white',
-                                borderColor:styles.primary.color,
-                                borderWidth:1,
-                                color: styles.primary.color,
-                                height: 45,
-                            }} onPress={() => {
+                                                            more={{
+                                                                backgroundColor: 'white',
+                                                                borderColor: styles.primary.color,
+                                                                borderWidth: 1,
+                                                                color: styles.primary.color,
+                                                                height: 45,
+                                                            }} onPress={() => {
 
                         syncData().then()
                     }}
@@ -309,8 +297,7 @@ const Index = (props: any) => {
                 </View>
 
 
-
-        </View>
+            </View>
 
         </ScrollView>
 

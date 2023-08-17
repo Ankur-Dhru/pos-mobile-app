@@ -21,7 +21,7 @@ import {
     db,
     device,
     grecaptcharesponse,
-    isDevelopment,
+    isDevelopment, ITEM_TYPE,
     localredux,
     loginUrl,
     METHOD,
@@ -810,6 +810,16 @@ export const updateComponent = (ref: any, key: any, value: any) => {
 }
 
 export const errorAlert = (message: any, title?: any) => {
+    Alert.alert(
+        title || "Opps",
+        message,
+        [
+            {text: "OK"}
+        ]
+    );
+}
+
+export const AppToaster = ({message,title}:any) => {
     Alert.alert(
         title || "Opps",
         message,
@@ -3228,3 +3238,128 @@ export const prelog = (title:any,data:any) => {
     console.log(JSON.stringify(data,0,1))
     console.log(`==================================================`)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+export const isInward = (voucherType: string) => voucherType === 'inward';
+
+
+export const checkCriteria = (offerItems: any, invoiceitems: any, foundCoupon: any, from: 'buy' | 'get') => {
+
+    appLog("offerItems", offerItems)
+    appLog("invoiceitems", invoiceitems)
+    appLog("foundCoupon", foundCoupon)
+    appLog("from", from)
+
+    let totalAddedQuantity = 0;
+    let criteriaMatched    = false;
+
+    let checkOffer = offerItems.map((bItem:any)=>{
+        let itemAdded = invoiceitems?.some((iItem: any) => {
+            if(bItem?.type == ITEM_TYPE.ITEM) {
+                return bItem?.itemid == iItem?.productid && (+iItem?.productqnt >= +bItem?.qnt);
+            } else if(bItem?.type == ITEM_TYPE.CATEGORY) {
+                return bItem?.itemid == iItem?.itemgroupid && (+iItem?.productqnt >= +bItem?.qnt);
+            } else {
+                return false;
+            }
+        });
+
+        return {...bItem, itemAdded}
+    })
+
+
+    if (from == 'buy'){
+        if(foundCoupon?.data?.combinationtype == 'and'){
+            criteriaMatched = checkOffer.every((cf:any)=> Boolean(cf?.itemAdded))
+        } else {
+            criteriaMatched = checkOffer.some((cf:any)=> Boolean(cf?.itemAdded))
+        }
+    }else {
+        criteriaMatched = checkOffer.some((cf:any)=> Boolean(cf?.itemAdded))
+    }
+
+    if(criteriaMatched){
+        invoiceitems.forEach((iItem: any) => {
+            /**
+             * Some For combination type = OR
+             */
+            let itemAdded = offerItems?.some((bItem: any) => {
+                if(bItem?.type == ITEM_TYPE.ITEM) {
+                    return bItem?.itemid == iItem?.productid && (+iItem?.productqnt >= +bItem?.qnt);
+                } else if(bItem?.type == ITEM_TYPE.CATEGORY) {
+                    return bItem?.itemid == iItem?.itemgroupid && (+iItem?.productqnt >= +bItem?.qnt);
+                } else {
+                    return false;
+                }
+            });
+            if(itemAdded) {
+                criteriaMatched = true;
+                if(from == 'buy') {
+                    if(foundCoupon?.data?.minmumtype == 'items') {
+                        totalAddedQuantity += (+iItem?.productqnt);
+                    }
+                } else {
+                    totalAddedQuantity += (+iItem?.productqnt);
+                }
+            }
+        });
+        if(criteriaMatched) {
+            if(from == 'buy') {
+                criteriaMatched = totalAddedQuantity >= foundCoupon?.data?.minbuy;
+            } else {
+                criteriaMatched = totalAddedQuantity >= foundCoupon?.data?.anygetqnt;
+            }
+        }
+    }
+
+    return criteriaMatched;
+};
+
+
+export const findItem = (offerItems: any, iItem: any) => {
+    return offerItems?.find((bItem: any) => {
+        if(bItem?.type == ITEM_TYPE.ITEM) {
+            return bItem?.itemid == iItem?.productid && (+iItem?.productqnt >= +bItem?.qnt);
+        } else {
+            return bItem?.itemid == iItem?.itemgroupid && (+iItem?.productqnt >= +bItem?.qnt);
+        }
+    });
+};
+
+
+export const getDiscountValueAndTYpe = (foundItem:any, iItem:any, isInclusive: any)=>{
+    let discountType = "$",
+        discountvalue = 0
+    if([
+        'free',
+        'percentage'
+    ].some((type: string) => foundItem?.discountapplyby == type)) {
+        discountType = "%";
+        discountvalue = foundItem?.discountvalue
+    }else {
+        if(!isInclusive){
+            discountvalue = iItem?.productratedisplay - foundItem?.discountvalue
+        }else {
+            discountType = "%"
+            let value = getFloatValue((foundItem?.discountvalue * 100)/iItem?.productratedisplay, 2)
+            discountvalue = getFloatValue(100 - value)
+        }
+    }
+    return {
+        discountvalue,
+        discountType
+    }
+}
+
+

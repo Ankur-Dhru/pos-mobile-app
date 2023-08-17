@@ -103,7 +103,7 @@ const Index = (props: any) => {
     }
 
     navigation.setOptions({
-        headerTitle: `${type.departmentid === PRINTER.INVOICE ? 'Invoice' : type.departmentid === PRINTER.DAYENDREPORT ? 'Day end report' :'KOT'} Printer`
+        headerTitle: `${type.departmentid === PRINTER.INVOICE ? 'Invoice' : type.departmentid === PRINTER.DAYENDREPORT ? 'Day end report' : type.departmentid === PRINTER.SALESRETURN ? 'Sales Return' : 'KOT'} Printer`
     })
 
 

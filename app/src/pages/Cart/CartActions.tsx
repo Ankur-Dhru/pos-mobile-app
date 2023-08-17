@@ -91,7 +91,7 @@ const Index = ({
                 dispatch(hideLoader())
                 if (result.status === STATUS.SUCCESS) {
                     if (config?.print) {
-                        printInvoice({...cartData}).then(() => {});
+                        printInvoice({...cartData},PRINTER.SALESRETURN).then(() => {});
                     }
                     redirectTo(cartData,navigation)
                     dispatch(setAlert({visible: true, message: 'Order Save Successfully'}));

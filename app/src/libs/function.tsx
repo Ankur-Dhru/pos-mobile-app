@@ -575,6 +575,8 @@ export const syncData = async (loader = true, synctype = '') => {
                     other: {url: urls.posUrl},
                 }).then(async (response: any) => {
 
+
+
                     const {status, data, info: {type, start, result}} = response;
 
 
@@ -1878,7 +1880,7 @@ export const generateKOT = async (cancelkotprint?: any) => {
 }
 
 
-export const printInvoice = async (order?: any) => {
+export const printInvoice = async (order?: any,printtemplate?:any) => {
 
     crashlytics().log('printInvoice');
 
@@ -1904,7 +1906,6 @@ export const printInvoice = async (order?: any) => {
                     }
                     resolve(response?.message)
                 })
-
             })
         } else {
 
@@ -2145,7 +2146,7 @@ export const printInvoice = async (order?: any) => {
                 }
             }
 
-            let printer = PRINTERS[PRINTER.INVOICE];
+            let printer = PRINTERS[printtemplate || PRINTER.INVOICE];
             const upiid = printer?.upiid;
             const upiname = printer?.upiname;
 

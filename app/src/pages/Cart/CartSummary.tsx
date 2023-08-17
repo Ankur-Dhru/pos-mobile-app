@@ -104,9 +104,6 @@ const Index = ({advanceorder,commonkotnote,orderbypax,currentpax,vouchertotaldis
         navigation.navigate("AddEditPaymentReceived",{receiptCreated:receiptCreated,clientid:clientid});
     }
 
-
-    console.log('advance',advance)
-
     return (<>
 
         {isRestaurant() && Boolean(commonkotnote) &&

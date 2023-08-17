@@ -54,6 +54,12 @@ const TableCheckbox = ({item,updateTableInfo}: any) => {
     )
 }
 
+const today = moment().format('YYYY-MM-DD');
+const tomorrow = moment().add(1,'days').format('YYYY-MM-DD');
+const other = moment().add(2,'days').format('YYYY-MM-DD');
+
+const datePeriod = [{label:'Today',from:today,to:today},{label:'Tomorrow',from:tomorrow,to:tomorrow}];
+
 
 const Index = ({tableorders}: any) => {
 
@@ -160,9 +166,10 @@ const Index = ({tableorders}: any) => {
             await getTempOrders().then(async (tableorders: any) => {
 
                 Object.values(tableorders).map((table: any) => {
+
                     let findTableIndex = tables?.findIndex((t: any) => t.tableid == table.tableid);
 
-                    if (findTableIndex != -1) {
+                    if (findTableIndex != -1 && table.ordertype === 'tableorder') {
 
                         newtables[findTableIndex] = {
                             ...newtables[findTableIndex],
@@ -187,12 +194,15 @@ const Index = ({tableorders}: any) => {
 
 
                     } else {
+
                         newothertables.push(table)
                     }
 
                 });
 
                 newtables = newtables.concat(newothertables);
+
+
                 await setTables(newtables);
                 setRefreshing(false);
                 resolve(newtables)
@@ -479,11 +489,15 @@ const Index = ({tableorders}: any) => {
                         </Paragraph>
 
 
+
+
                         {Boolean(item?.advanceorder?.date) && <>
                             <Paragraph style={[styles.paragraph, styles.text_xs]}>Delivery on </Paragraph>
                             <Paragraph
-                                style={[styles.paragraph]}>{moment(item?.advanceorder.date).format(dateFormat())} {moment(item?.advanceorder.time).format('HH:mm')}</Paragraph>
+                                style={[styles.paragraph]}>{moment(item?.advanceorder.date).format(dateFormat())} {moment(item?.advanceorder.time).format('HH:mm')} </Paragraph>
                         </>}
+
+
 
 
                         {((accessMultipleDevice && sameStaff) || !accessMultipleDevice) &&
@@ -509,7 +523,7 @@ const Index = ({tableorders}: any) => {
 
                 </View>}
 
-                {(item.ordertype === 'tableorder' && ((item?.vouchertotaldisplay || item.split)) && !splitdetailtables) && !Boolean(item.printcounter) && !Boolean(item.vouchertotaldisplay) &&
+                {(item.ordertype === 'tableorder' && ((item?.vouchertotaldisplay || item.split)) && !splitdetailtables) && !Boolean(item.printcounter)  && // !Boolean(item.vouchertotaldisplay) &&
                     <TableMenu
                         data={{
                             "area": item.area,
@@ -736,10 +750,32 @@ const Index = ({tableorders}: any) => {
             }
             return true
         }), 'area');
+
+
         let data: any = []
         Object.keys(floors).map((key: any) => {
-            data.push({title: key, data: floors[key]})
+            if(key === 'Advance Order'){
+                const todaysorder = floors[key].filter((data3:any)=>{
+                    return data3.advanceorder.date === today
+                })
+                todaysorder?.length && data.push({title: "Today's Advance Order", data: todaysorder})
+
+                const tomorrowsorder = floors[key].filter((data3:any)=>{
+                    return data3.advanceorder.date === tomorrow
+                })
+                tomorrowsorder?.length && data.push({title: "Tomorrow's Advance Order", data: tomorrowsorder})
+
+                const othersorder = floors[key].filter((data3:any)=>{
+                    return data3.advanceorder.date !== tomorrow && data3.advanceorder.date !== today
+                })
+                othersorder?.length && data.push({title: "After Tomorrow's Advance Order", data: othersorder})
+
+            }
+            else {
+                data.push({title: key, data: floors[key]})
+            }
         })
+
 
 
         return (<View style={[styles.px_2, styles.flex, styles.h_100]}>

@@ -1,19 +1,11 @@
 import React, {useEffect, useState} from "react";
-import {
-    appLog,
-    cancelOrder, errorAlert,
-    getLocalSettings,
-    getTempOrders,
-    isRestaurant, prelog, saveLocalSettings,
-    saveTempLocalOrder,
-    voucherData
-} from "../../libs/function";
+import {getLocalSettings, isRestaurant, saveLocalSettings, saveTempLocalOrder, voucherData} from "../../libs/function";
 import Cart from "./Cart";
-import {device, localredux, METHOD, PRODUCTCATEGORY, STATUS, urls, VOUCHER} from "../../libs/static";
+import {device, localredux, PRODUCTCATEGORY, VOUCHER} from "../../libs/static";
 import {connect, useDispatch} from "react-redux";
-import {Appbar, Menu, withTheme} from "react-native-paper";
+import {Appbar, Menu} from "react-native-paper";
 import {setSelected} from "../../redux-store/reducer/selected-data";
-import {refreshCartData, setCartData, updateCartField} from "../../redux-store/reducer/cart-data";
+import {refreshCartData, updateCartField} from "../../redux-store/reducer/cart-data";
 import {useNavigation} from "@react-navigation/native";
 import PageLoader from "../../components/PageLoader";
 
@@ -23,8 +15,6 @@ import {setBottomSheet, setDialog} from "../../redux-store/reducer/component";
 import Paxes from "../Tables/Paxes";
 import {setTableOrders} from "../../redux-store/reducer/table-orders-data";
 import HoldOrders from "./HoldOrders";
-import {ProIcon} from "../../components";
-import {TouchableOpacity} from "react-native";
 import crashlytics from "@react-native-firebase/crashlytics";
 
 
@@ -32,7 +22,7 @@ const Index = (props: any) => {
 
     const tabledetails: any = props?.route?.params;
 
-    const {advancecartview,orderbypax,pax} = props;
+    const {advancecartview, orderbypax, pax} = props;
 
 
     const mainproductgroupid = localredux.localSettingsData?.currentLocation?.mainproductgroupid || PRODUCTCATEGORY.DEFAULT
@@ -45,7 +35,7 @@ const Index = (props: any) => {
     const closeMenu = () => setVisible(false);
 
     const [loaded, setLoaded] = useState(false)
-    const [gridView,setGridView] = useState(true)
+    const [gridView, setGridView] = useState(true)
 
     device.tablet = Boolean(advancecartview)
 
@@ -54,39 +44,35 @@ const Index = (props: any) => {
 
         crashlytics().log('cart useffect');
 
+        const voucherDataJson: any = voucherData(tabledetails?.vouchertypeid ? tabledetails.vouchertypeid : VOUCHER.INVOICE, false);
 
-        const voucherDataJson: any = voucherData(tabledetails?.vouchertypeid?tabledetails.vouchertypeid:VOUCHER.INVOICE, false);
-
-
-
-        const {kots,numOfKOt}:any = tabledetails || {}
-        if(kots?.length > 0 || numOfKOt > 0){
-            let {staffid,staffname,...others}:any = voucherDataJson
+        const {kots, numOfKOt}: any = tabledetails || {}
+        if (kots?.length > 0 || numOfKOt > 0) {
+            let {staffid, staffname, ...others}: any = voucherDataJson
             dispatch(refreshCartData({...tabledetails, ...others}));
-        }
-        else{
+        } else {
             dispatch(refreshCartData({...tabledetails, ...voucherDataJson}));
         }
 
 
-            if (tabledetails?.printcounter && !device.tablet) {
-                navigation.navigate('DetailViewNavigator')
+        if (tabledetails?.printcounter && !device.tablet) {
+            navigation.navigate('DetailViewNavigator')
+        }
+
+        if (tabledetails?.invoiceitems?.length === 0 && (tabledetails?.ordertype === 'tableorder')) {
+
+            if (!props.disabledpax) {
+                dispatch(setDialog({
+                    visible: true,
+                    title: "Paxes",
+                    hidecancel: true,
+                    component: () => <Paxes/>
+                }))
             }
 
-            if (tabledetails?.invoiceitems?.length === 0 && (tabledetails?.ordertype === 'tableorder')) {
+        }
 
-                if (!props.disabledpax) {
-                    dispatch(setDialog({
-                        visible: true,
-                        title: "Paxes",
-                        hidecancel: true,
-                        component: () => <Paxes/>
-                    }))
-                }
-
-            }
-
-        getLocalSettings(`gridview-${localredux.authData.adminid}`).then((data:any)=>{
+        getLocalSettings(`gridview-${localredux.authData.adminid}`).then((data: any) => {
             setGridView(data)
         })
         dispatch(setSelected({value: [mainproductgroupid], field: 'group'}))
@@ -99,9 +85,9 @@ const Index = (props: any) => {
             navigation.addListener('beforeRemove', (e) => {
                 if ((e.data?.action?.type === 'POP') || (e.data?.action?.type === 'GO_BACK')) {
                     e.preventDefault();
-                    const {cartData:{ordertype,invoiceitems}}: any = store.getState();
-                    if(ordertype !== 'qsr') {
-                        if(Boolean(invoiceitems.length)) {
+                    const {cartData: {ordertype, invoiceitems}}: any = store.getState();
+                    if (ordertype !== 'qsr') {
+                        if (Boolean(invoiceitems.length)) {
                             saveTempLocalOrder().then((order: any) => {
                                 dispatch(setTableOrders(order))
                             })
@@ -112,10 +98,6 @@ const Index = (props: any) => {
             }),
         [navigation]
     );
-
-
-
-
 
 
     useEffect(() => {
@@ -136,19 +118,19 @@ const Index = (props: any) => {
 
     if (!isRestaurant()) {
         navigation.setOptions({
-            headerLeft: () =>  <Appbar.Action icon="menu" onPress={() => navigation.navigate('ProfileSettingsNavigator')}/>
+            headerLeft: () => <Appbar.Action icon="menu"
+                                             onPress={() => navigation.navigate('ProfileSettingsNavigator')}/>
         })
     }
 
 
     if (!device.tablet) {
         navigation.setOptions({
-            headerRight: () =><>
+            headerRight: () => <>
 
                 <Appbar.Action icon={'magnify'} onPress={() => {
-                navigation.navigate('SearchItem')
-            }}/>
-
+                    navigation.navigate('SearchItem')
+                }}/>
 
 
                 {<Menu
@@ -163,16 +145,13 @@ const Index = (props: any) => {
                         let view = !gridView;
                         saveLocalSettings(`gridview-${localredux?.authData?.adminid}`, view).then();
                         setGridView(view)
-                    }} title={!gridView?'grid View':'list View'}/>
+                    }} title={!gridView ? 'grid View' : 'list View'}/>
 
 
-
-                    {pax>1 && isRestaurant() && <Menu.Item onPress={async () => {
+                    {pax > 1 && isRestaurant() && <Menu.Item onPress={async () => {
                         closeMenu()
-                        dispatch(updateCartField({orderbypax:!orderbypax}))
-                    }} title={`${orderbypax?'Disabled':'Enable'} by Pax`}/>}
-
-
+                        dispatch(updateCartField({orderbypax: !orderbypax}))
+                    }} title={`${orderbypax ? 'Disabled' : 'Enable'} by Pax`}/>}
 
 
                     {!isRestaurant() && <Menu.Item onPress={async () => {
@@ -190,7 +169,7 @@ const Index = (props: any) => {
     }
 
 
-    return    <Cart tabledetails={tabledetails} gridView={gridView}/>
+    return <Cart tabledetails={tabledetails} gridView={gridView}/>
 
 }
 
@@ -198,8 +177,8 @@ const Index = (props: any) => {
 const mapStateToProps = (state: any) => ({
     disabledpax: state.localSettings?.disabledpax,
     advancecartview: state.localSettings?.advancecartview,
-    orderbypax:state.cartData.orderbypax,
-    pax:state.cartData.pax,
+    orderbypax: state.cartData.orderbypax,
+    pax: state.cartData.pax,
 })
 
 export default connect(mapStateToProps)(Index);

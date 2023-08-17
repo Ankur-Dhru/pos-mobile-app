@@ -142,6 +142,7 @@ export enum PAYMENTGATEWAY {
 export enum PRINTER {
     INVOICE = "0000",
     DAYENDREPORT = "1111",
+    SALESRETURN = "2222"
 }
 
 

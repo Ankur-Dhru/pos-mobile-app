@@ -1233,6 +1233,37 @@ export const objToArray = (data: any) => {
 };
 
 
+export const totalOrderQnt = (invoiceitems:any) => {
+    let totalqnt = 0;
+    invoiceitems.filter((item:any)=>{
+        return item?.treatitem !== 'charges'
+    }).map((item: any) => {
+        totalqnt += +item.productqnt
+    })
+    return totalqnt
+}
+
+
+export const resetDiscount = async () => {
+
+
+    let cartData: any = store.getState().cartData
+
+    cartData = {
+        ...cartData,
+        updatecart: true,
+        discountdetail: '',
+        coupons: '',
+        combocoupon: false,
+        invoiceitems: cartData.invoiceitems.map((item: any) => {
+            return  {...item, productdiscountvalue: 0, productdiscounttype: '',change: true}
+        })
+    }
+
+    await store.dispatch(setCartData(clone(cartData)));
+}
+
+
 export const removeItem = async (unique: any) => {
     crashlytics().log('removeItem');
     const invoiceitems: any = store.getState().cartData.invoiceitems || {}
@@ -1240,6 +1271,8 @@ export const removeItem = async (unique: any) => {
     try {
         const filtered = invoiceitems?.filter((item: any) => {
             return item.key !== unique
+        }).map((item:any)=>{
+            return {...item,productdiscountvalue: 0, productdiscounttype: ''}
         })
 
         if (Boolean(filtered?.length > 0)) {
@@ -1259,7 +1292,7 @@ export const removeItem = async (unique: any) => {
             }).length
 
             if (totalitems === 0) {
-                store.dispatch(updateCartField({invoiceitems: [], vouchertotaldisplay: 0}))
+                store.dispatch(updateCartField({invoiceitems: [], vouchertotaldisplay: 0,discounttype:'',coupons:[],discountdetail:''}))
             }
 
         }, 500)
@@ -3256,15 +3289,11 @@ export const isInward = (voucherType: string) => voucherType === 'inward';
 
 export const checkCriteria = (offerItems: any, invoiceitems: any, foundCoupon: any, from: 'buy' | 'get') => {
 
-    appLog("offerItems", offerItems)
-    appLog("invoiceitems", invoiceitems)
-    appLog("foundCoupon", foundCoupon)
-    appLog("from", from)
 
     let totalAddedQuantity = 0;
     let criteriaMatched    = false;
 
-    let checkOffer = offerItems.map((bItem:any)=>{
+    let checkOffer = offerItems.map((bItem: any) => {
         let itemAdded = invoiceitems?.some((iItem: any) => {
             if(bItem?.type == ITEM_TYPE.ITEM) {
                 return bItem?.itemid == iItem?.productid && (+iItem?.productqnt >= +bItem?.qnt);
@@ -3275,21 +3304,22 @@ export const checkCriteria = (offerItems: any, invoiceitems: any, foundCoupon: a
             }
         });
 
-        return {...bItem, itemAdded}
-    })
+        return { ...bItem, itemAdded };
+    });
 
 
-    if (from == 'buy'){
-        if(foundCoupon?.data?.combinationtype == 'and'){
-            criteriaMatched = checkOffer.every((cf:any)=> Boolean(cf?.itemAdded))
+    if(from == 'buy') {
+        if(foundCoupon?.data?.combinationtype == 'and') {
+            criteriaMatched = checkOffer.every((cf: any) => Boolean(cf?.itemAdded));
         } else {
-            criteriaMatched = checkOffer.some((cf:any)=> Boolean(cf?.itemAdded))
+            criteriaMatched = checkOffer.some((cf: any) => Boolean(cf?.itemAdded));
         }
-    }else {
-        criteriaMatched = checkOffer.some((cf:any)=> Boolean(cf?.itemAdded))
+    } else {
+        criteriaMatched = checkOffer.some((cf: any) => Boolean(cf?.itemAdded));
     }
 
-    if(criteriaMatched){
+
+    if(criteriaMatched) {
         invoiceitems.forEach((iItem: any) => {
             /**
              * Some For combination type = OR
@@ -3298,7 +3328,15 @@ export const checkCriteria = (offerItems: any, invoiceitems: any, foundCoupon: a
                 if(bItem?.type == ITEM_TYPE.ITEM) {
                     return bItem?.itemid == iItem?.productid && (+iItem?.productqnt >= +bItem?.qnt);
                 } else if(bItem?.type == ITEM_TYPE.CATEGORY) {
-                    return bItem?.itemid == iItem?.itemgroupid && (+iItem?.productqnt >= +bItem?.qnt);
+                    if(bItem?.itemid == iItem?.itemgroupid && (+iItem?.productqnt >= +bItem?.qnt)) {
+                        if(!isEmpty(bItem?.subitems)) {
+                            return bItem?.subitems?.some((sitem: any) => sitem?.itemid == iItem?.productid);
+                        }
+                        return true;
+                    }
+
+
+                    return false;
                 } else {
                     return false;
                 }
@@ -3332,34 +3370,219 @@ export const findItem = (offerItems: any, iItem: any) => {
         if(bItem?.type == ITEM_TYPE.ITEM) {
             return bItem?.itemid == iItem?.productid && (+iItem?.productqnt >= +bItem?.qnt);
         } else {
-            return bItem?.itemid == iItem?.itemgroupid && (+iItem?.productqnt >= +bItem?.qnt);
+            if(bItem?.itemid == iItem?.itemgroupid && (+iItem?.productqnt >= +bItem?.qnt)) {
+                if(!isEmpty(bItem?.subitems)) {
+                    return bItem?.subitems?.some((sitem: any) => sitem?.itemid == iItem?.productid);
+                }
+                return true;
+            }
+
+            return false;
         }
     });
 };
 
 
-export const getDiscountValueAndTYpe = (foundItem:any, iItem:any, isInclusive: any)=>{
-    let discountType = "$",
-        discountvalue = 0
+export const getDiscountValueAndTYpe = (foundItem: any, iItem: any, isInclusive: any) => {
+    let discountType  = '$',
+        discountvalue = 0;
     if([
         'free',
         'percentage'
     ].some((type: string) => foundItem?.discountapplyby == type)) {
-        discountType = "%";
-        discountvalue = foundItem?.discountvalue
-    }else {
-        if(!isInclusive){
-            discountvalue = iItem?.productratedisplay - foundItem?.discountvalue
-        }else {
-            discountType = "%"
-            let value = getFloatValue((foundItem?.discountvalue * 100)/iItem?.productratedisplay, 2)
-            discountvalue = getFloatValue(100 - value)
+        discountType  = '%';
+        discountvalue = foundItem?.discountvalue;
+    } else {
+        if(!isInclusive) {
+            discountvalue = iItem?.productratedisplay - foundItem?.discountvalue;
+        } else {
+            discountType  = '%';
+            let value     = getFloatValue((foundItem?.discountvalue * 100) / iItem?.productratedisplay, 2);
+            discountvalue = getFloatValue(100 - value);
         }
     }
     return {
         discountvalue,
         discountType
-    }
-}
+    };
+};
 
+
+export const findItemNew = (offerItems: any, iItem: any) => {
+    return offerItems?.find((bItem: any) => {
+        if(bItem?.type == ITEM_TYPE.ITEM) {
+            return bItem?.itemid == iItem?.productid;
+        } else {
+            if(bItem?.itemid == iItem?.itemgroupid) {
+                if(!isEmpty(bItem?.subitems)) {
+                    return bItem?.subitems?.some((sitem: any) => sitem?.itemid == iItem?.productid);
+                }
+                return true;
+            }
+            return false;
+        }
+    });
+};
+
+export const getComboFlagData = (coupon: any, invoiceitems: any) => {
+
+    const checkOfferMatch = (type: any, combination: any, totalQnt: any, offerItems: any, invoiceItems: any) => {
+        return new Promise((resolve) => {
+            let offerMatch        = false;
+            let cloneInvoiceItems = clone(invoiceItems);
+            if(type == 'items') {
+
+                /**
+                 *  Check Combination
+                 */
+                if(combination == 'and') {
+                    offerMatch = offerItems?.every((offerItem: any) => {
+                        if(offerItem?.type == ITEM_TYPE.ITEM) {
+                            return cloneInvoiceItems?.filter((invItem: any) => !Boolean(invItem?.comboflag)).some((invItem: any) => invItem.productid == offerItem?.itemid);
+                        } else {
+                            if(cloneInvoiceItems?.filter((invItem: any) => !Boolean(invItem?.comboflag)).some((invItem: any) => invItem.itemgroupid == offerItem?.itemid)) {
+                                if(!isEmpty(offerItem?.subitems)) {
+                                    return offerItem?.subitems?.some((sbOfferItem: any) => {
+                                        return cloneInvoiceItems?.filter((invItem: any) => !Boolean(invItem?.comboflag)).some((invItem: any) => invItem.productid == sbOfferItem?.itemid);
+                                    });
+                                }
+                                return true;
+                            }
+                            return false;
+                        }
+                    });
+                } else {
+                    offerMatch = offerItems?.some((offerItem: any) => {
+                        if(offerItem?.type == ITEM_TYPE.ITEM) {
+                            return cloneInvoiceItems?.filter((invItem: any) => !Boolean(invItem?.comboflag)).some((invItem: any) => invItem.productid == offerItem?.itemid);
+                        } else {
+                            if(cloneInvoiceItems?.filter((invItem: any) => !Boolean(invItem?.comboflag)).some((invItem: any) => invItem.itemgroupid == offerItem?.itemid)) {
+                                if(!isEmpty(offerItem?.subitems)) {
+                                    return offerItem?.subitems?.some((sbOfferItem: any) => {
+                                        return cloneInvoiceItems?.filter((invItem: any) => !Boolean(invItem?.comboflag)).some((invItem: any) => invItem.productid == sbOfferItem?.itemid);
+                                    });
+                                }
+                                return true;
+                            }
+                            return false;
+                        }
+                    });
+                }
+
+
+                if(offerMatch) {
+                    /**
+                     * Check Total Quantity and item level Quantity
+                     */
+                    let requiredQuantity = totalQnt, totalQuantity = 0;
+
+                    offerItems?.forEach((offerItem: any) => {
+                        let offerQuantity = offerItem.qnt, itemsQuantity = 0;
+                        if(offerItem?.type == ITEM_TYPE.ITEM) {
+                            itemsQuantity = cloneInvoiceItems?.filter((invItem: any) => invItem.productid == offerItem?.itemid && !Boolean(invItem?.comboflag)).reduce((accumulator, currentObject) => {
+                                return accumulator + currentObject.productqnt;
+                            }, 0);
+                        } else {
+                            if(!isEmpty(offerItem?.subitems)) {
+                                offerItem?.subitems.forEach((sbOfferItem: any) => {
+                                    let sbQuantity = cloneInvoiceItems?.filter((invItem: any) => invItem.productid == sbOfferItem?.itemid && !Boolean(invItem?.comboflag)).reduce((accumulator, currentObject) => {
+                                        return accumulator + currentObject.productqnt;
+                                    }, 0);
+                                    itemsQuantity += sbQuantity;
+                                });
+                            } else {
+                                itemsQuantity = cloneInvoiceItems?.filter((invItem: any) => invItem.itemgroupid == offerItem?.itemid && !Boolean(invItem?.comboflag)).reduce((accumulator, currentObject) => {
+                                    return accumulator + currentObject.productqnt;
+                                }, 0);
+                            }
+                        }
+
+                        totalQuantity += itemsQuantity;
+                        if(combination == 'and') {
+                            if(itemsQuantity < offerQuantity) {
+                                offerMatch = false;
+                            }
+                        }
+                    });
+                    if(totalQuantity < requiredQuantity) {
+                        offerMatch = false;
+                    }
+
+                    if(offerMatch) {
+                        let requiredQuantity = totalQnt, itemQuantity = 0, leftTotalQuantity = totalQnt;
+                        offerItems?.forEach((offerItem: any) => {
+
+                            if(itemQuantity < requiredQuantity) {
+                                let leftQuantity = offerItem.qnt;
+                                if(offerItem?.type == ITEM_TYPE.ITEM) {
+                                    cloneInvoiceItems = cloneInvoiceItems.map((invItem: any) => {
+                                        if(invItem.productid == offerItem.itemid && (combination == 'and' ? leftQuantity > 0 : leftTotalQuantity > 0) && !Boolean(invItem?.comboflag)) {
+                                            leftQuantity--;
+                                            leftTotalQuantity--;
+                                            itemQuantity++;
+                                            invItem.comboflag = true;
+                                        }
+                                        return invItem;
+                                    });
+                                } else {
+                                    cloneInvoiceItems = cloneInvoiceItems.map((invItem: any) => {
+                                        if(!isEmpty(offerItem?.subitems)) {
+                                            offerItem?.subitems.forEach((sbOfferItem: any) => {
+                                                if(invItem.productid == sbOfferItem.itemid && (combination == 'and' ? leftQuantity > 0 : leftTotalQuantity > 0) && !Boolean(invItem?.comboflag)) {
+                                                    leftQuantity--;
+                                                    leftTotalQuantity--;
+                                                    itemQuantity++;
+                                                    invItem.comboflag = true;
+                                                }
+                                            });
+                                        } else {
+                                            if(invItem.itemgroupid == offerItem.itemid && (combination == 'and' ? leftQuantity > 0 : leftTotalQuantity > 0) && !Boolean(invItem?.comboflag)) {
+                                                leftQuantity--;
+                                                leftTotalQuantity--;
+                                                itemQuantity++;
+                                                invItem.comboflag = true;
+                                            }
+                                        }
+                                        return invItem;
+                                    });
+                                }
+                            }
+
+                        });
+                    }
+                }
+            }
+            resolve({ offerMatch, invoiceItems: cloneInvoiceItems });
+        });
+    };
+
+    return new Promise(async(resolve) => {
+
+        const couponData    = coupon?.data;
+        let buyOfferMatched = false, getOfferMatched = false;
+
+        let combination = couponData?.buyitems?.length > 1 ? couponData?.combinationtype : 'or';
+
+        const checkBuyOfferMatched: any = await checkOfferMatch(couponData?.minmumtype, combination, couponData?.minbuy, couponData?.buyitems, invoiceitems);
+        buyOfferMatched                 = checkBuyOfferMatched.offerMatch;
+        if(buyOfferMatched) {
+            invoiceitems = checkBuyOfferMatched.invoiceItems;
+            if(!isEmpty(couponData?.getitems)) {
+                const checkGetOfferMatched: any = await checkOfferMatch('items', 'or', couponData?.anygetqnt, couponData?.getitems, invoiceitems);
+                getOfferMatched                 = checkGetOfferMatched.offerMatch;
+                if(getOfferMatched) {
+                    invoiceitems = checkGetOfferMatched.invoiceItems;
+                }
+            } else {
+                getOfferMatched = true;
+            }
+        }
+
+        resolve({
+            buyOfferMatched,
+            getOfferMatched,
+            invoiceitems
+        });
+    });
+};
 

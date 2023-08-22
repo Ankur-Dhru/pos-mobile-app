@@ -8,14 +8,14 @@ import Item from "../Cart/Item";
 import Kot from "../Cart/Kot";
 import {styles} from "../../theme";
 import {Card, Paragraph, Text} from "react-native-paper";
-import {appLog, isRestaurant, updateComponent} from "../../libs/function";
+import {appLog, isRestaurant, resetDiscount, updateComponent} from "../../libs/function";
 import {ItemDivider} from "../../libs/static";
 import ToggleButtons from "../../components/ToggleButton";
 
 const Index = (props: any) => {
 
 
-    let {invoiceitems,kots,currentpax,orderbypax} = props;
+    let {invoiceitems,totalqnt,kots,currentpax,orderbypax,discountdetail} = props;
 
     const hasrestaurant = isRestaurant();
 
@@ -29,6 +29,9 @@ const Index = (props: any) => {
         updateComponent(kotListRef,'display','none')
     },[])
 
+    useEffect(()=>{
+        resetDiscount().then()
+    },[totalqnt])
 
     useLayoutEffect(() => {
         if(firstRenderRef?.current) {
@@ -46,7 +49,7 @@ const Index = (props: any) => {
 
 
 
-    const renderItem = useCallback(({item, index}: any) => <Item item={item} orderbypax={orderbypax} key={item.key} hasLast={invoiceitems.length === index+1} isRestaurant={hasrestaurant}   index={index}/>, [currentpax]);
+    const renderItem = useCallback(({item, index}: any) => <Item item={item} orderbypax={orderbypax} hasdiscount={discountdetail}  key={item.key} hasLast={invoiceitems.length === index+1} isRestaurant={hasrestaurant}   index={index}/>, [currentpax]);
     const renderKot = useCallback(({item, index}: any) => <Kot kot={item} orderbypax={orderbypax} hasLast={kots.length === index+1} key={item.key} />, []);
 
     const onButtonToggle = (value:any) => {
@@ -127,7 +130,9 @@ const mapStateToProps = (state: any) => ({
     invoiceitems: state.cartData.invoiceitems,
     kots: state.cartData.kots,
     currentpax:state.cartData.currentpax,
-    orderbypax:state.cartData.orderbypax
+    orderbypax:state.cartData.orderbypax,
+    totalqnt: state.cartData.totalqnt,
+    discountdetail: Boolean(state.cartData.discountdetail)
 })
 
 export default connect(mapStateToProps)(Index);

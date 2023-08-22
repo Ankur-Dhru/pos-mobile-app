@@ -9,7 +9,7 @@ import KeyboardScroll from "../../components/KeyboardScroll";
 import {setBottomSheet} from "../../redux-store/reducer/component";
 import TagsNotes from "./TagsNotes";
 import Addons from "./Addons";
-import {changeCartItem, setCartItems, setUpdateCart} from "../../redux-store/reducer/cart-data";
+import {changeCartItem, setCartData, setCartItems, setUpdateCart} from "../../redux-store/reducer/cart-data";
 import Qnt from "./Qnt";
 import InputBox from "../../components/InputBox";
 import ToggleButtons from "../../components/ToggleButton";
@@ -18,6 +18,7 @@ import store from "../../redux-store/store";
 import {updateCartItem} from "./AddButton";
 import {Field} from "react-final-form";
 import {required} from "../../libs/static";
+import {itemTotalCalculation} from "../../libs/item-calculation";
 
 const {v4: uuid} = require('uuid')
 
@@ -29,7 +30,7 @@ const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) =>
     const {pricing, description, productrate,pax, itemname, groupname,productdiscounttype,productdiscountvalue} = itemDetail;
 
 
-    const {cartData,cartData:{invoiceitems}} = store.getState()
+    let {cartData,cartData:{invoiceitems}} = store.getState()
     const totaloax = cartData?.pax;
 
     const selectItem = async () => {
@@ -43,10 +44,7 @@ const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) =>
 
             let index =  invoiceitems.map(function(o:any) { return o.key; }).indexOf(itemDetail.key);
 
-            dispatch(changeCartItem({
-                itemIndex: index, item: clone(product)
-            }));
-
+            dispatch(changeCartItem({itemIndex: index, item: clone(product)}));
 
         } else {
 
@@ -182,7 +180,6 @@ const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) =>
                 <View style={[styles.mt_5, styles.px_5]}>
 
                     {!isInclusive && <>
-
                         <ToggleButtons
                         width={'50%'}
                         default={productdiscounttype}
@@ -203,7 +200,6 @@ const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) =>
                             }}
                         />
                     </View>
-
 
                 </View>
 

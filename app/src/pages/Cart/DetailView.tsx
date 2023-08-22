@@ -22,7 +22,6 @@ import store from "../../redux-store/store";
 import ExtraCharges from "./ExtraCharges";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 import PaxesSelection from "../Items/PaxesSelection";
-import UpdateOrderInfo from "./UpdateOrderInfo";
 
 const Index = (props: any) => {
 

@@ -117,7 +117,6 @@ export const updateCartItem = async (values: any, action: any) => {
             }
         }
 
-
         let finditem = {
             ...filtered[0],
             ...values,
@@ -126,9 +125,7 @@ export const updateCartItem = async (values: any, action: any) => {
         }
 
         if (values.productqnt <= 0) {
-            removeItem(values.key).then(() => {
-
-            });
+            removeItem(values.key).then(() => {});
         } else {
             store.dispatch(changeCartItem({itemIndex: index, item: finditem,itemUpdate:true}));
         }

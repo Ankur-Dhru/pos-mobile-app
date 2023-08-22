@@ -1,5 +1,13 @@
 import {createSlice} from '@reduxjs/toolkit'
-import {appLog, clone, getPricingTemplate, isEmpty, voucherData, voucherTotal} from "../../libs/function";
+import {
+    appLog,
+    clone,
+    getPricingTemplate,
+    isEmpty,
+    totalOrderQnt,
+    voucherData,
+    voucherTotal
+} from "../../libs/function";
 import {current, defaultclient, VOUCHER} from "../../libs/static";
 import {v4 as uuid} from "uuid";
 
@@ -72,10 +80,12 @@ export const cartData = createSlice({
                 ...state?.invoiceitems,
                 action.payload
             ];
+
             return {
                 ...state,
                 invoiceitems,
                 vouchertotaldisplay: voucherTotal(invoiceitems,state.vouchertaxtype),
+                totalqnt:totalOrderQnt(invoiceitems)
             }
         },
 
@@ -83,8 +93,9 @@ export const cartData = createSlice({
 
             const {itemIndex, item} = action.payload;
             state.invoiceitems[itemIndex] = clone({...state.invoiceitems[itemIndex], ...item});
-            state.vouchertotaldisplay = voucherTotal(state.invoiceitems,state.vouchertaxtype),
-                state.updatecart = true;
+            state.vouchertotaldisplay = voucherTotal(state.invoiceitems,state.vouchertaxtype);
+            state.totalqnt = totalOrderQnt(state.invoiceitems);
+            state.updatecart = true;
             return state
         },
         updateCartItems: (state: any, action) => {
@@ -93,6 +104,7 @@ export const cartData = createSlice({
                 ...state,
                 invoiceitems: action.payload,
                 vouchertotaldisplay: voucherTotal(action.payload,state.vouchertaxtype),
+                totalqnt:totalOrderQnt(action.payload),
                 updatecart: true
             }
         },
@@ -121,17 +133,16 @@ export const cartData = createSlice({
             }
         },
         deleteCartItem: (state: any) => {
-
             const selectedindex = state?.selectedindex;
             state.invoiceitems.splice(selectedindex, 1);
             state.updatecart = true;
+            state.totalqnt = totalOrderQnt(state.invoiceitems);
             if (selectedindex === state.invoiceitems.length) {
                 state.selectedindex = selectedindex - 1
             }
             return state
         },
         setUpdateCart: (state: any) => {
-
             return {
                 ...state,
                 updatecart: !state.updatecart

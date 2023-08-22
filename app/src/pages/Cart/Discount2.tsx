@@ -56,7 +56,7 @@ const Index = ({cartData, grouplist}: any) => {
 
 
     useEffect(()=>{
-        Boolean(discountdetail) && setDiscount(discountdetail)
+       Boolean(discountdetail) && setDiscount(discountdetail)
     },[discountdetail])
 
 
@@ -66,38 +66,38 @@ const Index = ({cartData, grouplist}: any) => {
 
     const handleSubmit = async (values: any) => {
 
-        await removeDiscount().then()
+            await removeDiscount().then()
 
 
-        const {groups, all, selected}: any = values;
+            const {groups, all, selected}: any = values;
 
-        cartData = {
-            ...cartData, //globaldiscountvalue: isInclusive ? 0 :  discount,
-            globaldiscountvalue: isInclusive ? 0 : selected === 'all' ? all.productdiscountvalue : 0,
-            discounttype: selected === 'all' ? all.productdiscounttype : '%',
-            updatecart: true,
-            discountdetail: values,
-            coupons: couponList,
-            combocoupon: Boolean(discounteditems?.length),
-            invoiceitems: Boolean(discounteditems?.length)? discounteditems : cartData.invoiceitems.map((item: any) => {
-                item = {...item, productdiscountvalue: 0, productdiscounttype: ''}
+            cartData = {
+                ...cartData, //globaldiscountvalue: isInclusive ? 0 :  discount,
+                globaldiscountvalue: isInclusive ? 0 : selected === 'all' ? all.productdiscountvalue : 0,
+                discounttype: selected === 'all' ? all.productdiscounttype : '%',
+                updatecart: true,
+                discountdetail: values,
+                coupons: couponList,
+                combocoupon: Boolean(discounteditems?.length),
+                invoiceitems: Boolean(discounteditems?.length)? discounteditems : cartData.invoiceitems.map((item: any) => {
+                    item = {...item, productdiscountvalue: 0, productdiscounttype: ''}
 
-                if (isInclusive || (Boolean(selected === 'groups') && Boolean(groups[item.itemgroupid].productdiscountvalue))) {
-                    item = {
-                        ...item,
-                        productdiscountvalue: selected === 'all' ? all.productdiscountvalue : groups[item.itemgroupid].productdiscountvalue,
-                        productdiscounttype: selected === 'all' ? all.productdiscounttype : '%',
+                    if (isInclusive || (Boolean(selected === 'groups') && Boolean(groups[item.itemgroupid].productdiscountvalue))) {
+                        item = {
+                            ...item,
+                            productdiscountvalue: selected === 'all' ? all.productdiscountvalue : groups[item.itemgroupid].productdiscountvalue,
+                            productdiscounttype: selected === 'all' ? all.productdiscounttype : '%',
+                        }
                     }
-                }
-                return {...item, change: true}
-            })
-        }
+                    return {...item, change: true}
+                })
+            }
 
-        let data = await itemTotalCalculation(clone(cartData), undefined, undefined, undefined, undefined, 2, 2, false, false);
+            let data = await itemTotalCalculation(clone(cartData), undefined, undefined, undefined, undefined, 2, 2, false, false);
 
 
-        await dispatch(setCartData(clone(data)));
-        await dispatch(setUpdateCart());
+            await dispatch(setCartData(clone(data)));
+            await dispatch(setUpdateCart());
 
         dispatch(setBottomSheet({visible: false}))
 
@@ -291,14 +291,11 @@ const Index = ({cartData, grouplist}: any) => {
                                 let validMatched = true;
                                 let appliedOnce = false
                                 let comboCoupon = foundCoupon
-
+                                let newInvoiceItems: any = [];
 
                                 do {
                                     counter++;
-
-                                    console.log('counter',counter)
-
-                                    if(counter == 5) {
+                                    if(counter == 10) {
                                         validMatched = false;
                                     }
 
@@ -314,7 +311,7 @@ const Index = ({cartData, grouplist}: any) => {
 
                                     if(data?.buyOfferMatched && data?.getOfferMatched) {
                                         invoiceitems = data.invoiceitems;
-                                        let newInvoiceItems: any = [];
+
                                         appliedOnce = true;
 
 
@@ -567,8 +564,7 @@ const Index = ({cartData, grouplist}: any) => {
 
 
                                         invoiceitems = clone(newInvoiceItems);
-                                        setDiscounteditems(newInvoiceItems)
-                                        dispatch(setCartData({ invoiceitems: newInvoiceItems, updatecart: true, combocoupon: true }));
+
 
 
                                     } else {
@@ -577,7 +573,6 @@ const Index = ({cartData, grouplist}: any) => {
 
 
                                 } while(validMatched);
-
 
 
                                 if(appliedOnce) {
@@ -595,9 +590,29 @@ const Index = ({cartData, grouplist}: any) => {
                                     all:{...discount.all,coupon:'',productdiscountvalue:'0'}
                                 }
                                 setDiscount(discount)
-
+                                setDiscounteditems(newInvoiceItems)
                                 setMorecoupon(false)
 
+                                dispatch(setCartData({ invoiceitems: newInvoiceItems, updatecart: true, combocoupon: true }));
+
+
+
+
+
+
+
+
+
+
+
+                                    /*discount = {
+                                        ...discount,
+                                        coupontype:'combo',
+                                        all:{...discount.all,coupon:'',productdiscountvalue:'0'}
+                                    }
+                                    setDiscount(discount)
+                                    setDiscounteditems(newInvoiceItems)
+                                    setMorecoupon(false)*/
 
 
 
@@ -700,61 +715,60 @@ const Index = ({cartData, grouplist}: any) => {
 
                             {(selected === 'all') && <>
 
-                                <View>
-                                    {(!Boolean(couponList.length) || morecoupon) && !Boolean(+values.all.productdiscountvalue)  && <View style={[styles.mt_5,styles.grid,styles.justifyContent,styles.top]}>
-                                        <View style={[styles.w_auto]}>
-                                            <Field name="all.coupon">
-                                                {props => (<InputField
-                                                    {...props}
-                                                    value={props.input.value}
-                                                    label={`Coupon Code`}
-                                                    autoFocus={false}
-                                                    autoCapitalize='none'
-                                                    inputtype={'textbox'}
-                                                    onChange={(value: any) => {
-                                                        props.input.onChange(value);
-                                                    }}
-                                                />)}
-                                            </Field>
-                                        </View>
+                               <View>
+                                        {(!Boolean(couponList.length) || morecoupon) && !Boolean(+values.all.productdiscountvalue)  && <View style={[styles.mt_5,styles.grid,styles.justifyContent,styles.top]}>
+                                            <View style={[styles.w_auto]}>
+                                                <Field name="all.coupon">
+                                                    {props => (<InputField
+                                                        {...props}
+                                                        value={props.input.value}
+                                                        label={`Coupon Code`}
+                                                        autoFocus={false}
+                                                        inputtype={'textbox'}
+                                                        onChange={(value: any) => {
+                                                            props.input.onChange(value);
+                                                        }}
+                                                    />)}
+                                                </Field>
+                                            </View>
 
-                                        <View style={[styles.ml_2,{paddingTop:7}]}>
-                                            <Button  more={{
-                                                height: 55,
-                                                borderRadius: 5,
+                                            <View style={[styles.ml_2,{paddingTop:7}]}>
+                                                <Button  more={{
+                                                    height: 55,
+                                                    borderRadius: 5,
 
-                                            }}  onPress={()=>{
-                                                Boolean(values.all?.coupon) && couponCodeProcess(values.all.coupon)
-                                            }}>
-                                                Add
-                                            </Button>
-                                        </View>
-
-                                    </View>}
-
-                                    <View>
-
-                                        {Boolean(couponList?.length) && <View style={[styles.border,styles.px_5,styles.mt_5,styles.mb_5,{borderRadius:10}]}>
-                                            <Caption style={[styles.py_3]}>Applied Coupon(s)</Caption>
-                                            {
-                                                couponList.map((coupon:any,index:any)=>{
-                                                    return <View key={index} style={[styles.justifyContent,styles.py_5]}>
-                                                        <Paragraph>{coupon.name}</Paragraph>
-                                                        <Paragraph>{coupon.amount} {coupon.discounttype === 'percentage'?'%':getDefaultCurrency()}</Paragraph>
-                                                        {/*<TouchableOpacity onPress={()=>{
-                                                                removeDiscount(index)
-                                                            }}><Paragraph style={[styles.red]}>X</Paragraph></TouchableOpacity>*/}
-                                                    </View>
-                                                })
-                                            }
+                                                }}  onPress={()=>{
+                                                   Boolean(values.all?.coupon) && couponCodeProcess(values.all.coupon)
+                                                }}>
+                                                    Add
+                                                </Button>
+                                            </View>
 
                                         </View>}
 
+                                        <View>
+
+                                            {Boolean(couponList?.length) && <View style={[styles.border,styles.px_5,styles.mt_5,styles.mb_5,{borderRadius:10}]}>
+                                                <Caption style={[styles.py_3]}>Applied Coupon(s)</Caption>
+                                                {
+                                                    couponList.map((coupon:any,index:any)=>{
+                                                        return <View key={index} style={[styles.justifyContent,styles.py_5]}>
+                                                            <Paragraph>{coupon.name}</Paragraph>
+                                                            <Paragraph>{coupon.amount} {coupon.discounttype === 'percentage'?'%':getDefaultCurrency()}</Paragraph>
+                                                            {/*<TouchableOpacity onPress={()=>{
+                                                                removeDiscount(index)
+                                                            }}><Paragraph style={[styles.red]}>X</Paragraph></TouchableOpacity>*/}
+                                                        </View>
+                                                    })
+                                                }
+
+                                            </View>}
+
+
+                                        </View>
+
 
                                     </View>
-
-
-                                </View>
 
                                 {Boolean(couponList?.length) && <View style={[styles.flex,styles.justifyContent]}>
 

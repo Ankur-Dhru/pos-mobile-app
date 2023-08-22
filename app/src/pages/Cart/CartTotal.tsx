@@ -7,17 +7,11 @@ import {connect} from "react-redux";
 import {useNavigation} from "@react-navigation/native";
 import {ProIcon} from "../../components";
 
-const Index = ({vouchertotaldisplay, invoiceitems, theme: {colors}}: any) => {
+const Index = ({vouchertotaldisplay,totalqnt, theme: {colors}}: any) => {
 
     const navigation = useNavigation();
 
-    let totalqnt = 0
 
-    invoiceitems.filter((item:any)=>{
-        return item?.treatitem !== 'charges'
-    }).map((item: any) => {
-        totalqnt += +item.productqnt
-    })
 
     if (!Boolean(totalqnt)) {
         return <></>
@@ -49,7 +43,7 @@ const Index = ({vouchertotaldisplay, invoiceitems, theme: {colors}}: any) => {
 
 const mapStateToProps = (state: any) => ({
     vouchertotaldisplay: state.cartData.vouchertotaldisplay,
-    invoiceitems: state.cartData.invoiceitems,
+    totalqnt:state.cartData.totalqnt
 })
 
 export default connect(mapStateToProps)(withTheme(memo(Index)));

@@ -117,7 +117,7 @@ export const ItemView = memo(({item,displayType,search,currentpax}:any)=>{
                     }
 
                     if(((Boolean(item?.productqnt) && !hasKot) && (currentpax === item?.pax || (!Boolean(item?.pax))))){
-                        return <View><AddButton item={item}  /></View>
+                        return <View>{!Boolean(+item.productdiscountvalue)  && <AddButton item={item}  />}</View>
                     }
                     else if(Boolean(imagepath)){
                         return <View style={{width:50}}><Image

@@ -1252,11 +1252,11 @@ export const resetDiscount = async () => {
     cartData = {
         ...cartData,
         updatecart: true,
-        discountdetail: '',
         coupons: '',
         combocoupon: false,
+        vouchertotaldiscountamountdisplay:'',
         invoiceitems: cartData.invoiceitems.map((item: any) => {
-            return  {...item, productdiscountvalue: 0, productdiscounttype: '',change: true}
+            return  {...item, productdiscountvalue: 0, change: true}
         })
     }
 

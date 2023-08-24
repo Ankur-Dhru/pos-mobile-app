@@ -367,6 +367,7 @@ export const itemTotalCalculation = (
                     if(filterItems(item)) {
 
 
+
                         if (vouchertaxtype === "inclusive" &&
                             !isDiscountAfterTax) {
                             item = newItemCalculation("inclusive", item, total.totalAmountForDiscountDisplay, total.totalAmountForDiscount, globaldiscountvalue, discounttype, vouchertaxtype, currentDecimalPlace, companyDecimalPlace, isDiscountAfterTax);

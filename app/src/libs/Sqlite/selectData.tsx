@@ -248,7 +248,7 @@ export const getClientsByWhere = async ({displayname,phone,search,clienttype,sta
     }
 }
 
-export const getTempOrdersByWhere = async () => {
+export const getTempOrdersByWhere = async ({tableorderid,all}:any) => {
 
     return new Promise<any>(async (resolve, reject)=>{
 
@@ -279,9 +279,13 @@ export const getTempOrdersByWhere = async () => {
                 await db.transaction(function (txn: any) {
 
                     let where = ' 1 = 1 ';
+                    if (Boolean(tableorderid)) {
+                        where += ` and (tableorderid = '${tableorderid}') `;
+                    }
                     const query = `SELECT *
                                    FROM ${TABLE.TEMPORDER}
                                    where ${where}`;
+
                     txn.executeSql(
                         query,
                         [],

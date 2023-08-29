@@ -2,7 +2,6 @@ import * as React from 'react';
 import {Checkbox, Divider, Paragraph, Text} from 'react-native-paper';
 import {TouchableOpacity, View} from "react-native";
 import {styles} from "../../theme";
-import {appLog} from "../../libs/function";
 
 const CheckBox = (props:any) => {
     const {editmode=true, description,disabled}:any = props;
@@ -20,13 +19,12 @@ const CheckBox = (props:any) => {
                     mode={'android'}
                     position={'leading'}
                     label={props.label}
-                    labelStyle={{textTransform:'capitalize'}}
+                    labelStyle={{textTransform:'capitalize',fontSize:12}}
                     disabled={!editmode}
                     status={(checked) ? 'checked' : 'unchecked'}
                     {...props}
                 />
                 {/*<Paragraph>{props.label}</Paragraph>*/}
-
             </TouchableOpacity>
             {Boolean(description) && <Text style={[styles.paragraph]}><Text>{description} </Text></Text>}
         </View>

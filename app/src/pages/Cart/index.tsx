@@ -1,5 +1,12 @@
 import React, {useEffect, useState} from "react";
-import {getLocalSettings, isRestaurant, saveLocalSettings, saveTempLocalOrder, voucherData} from "../../libs/function";
+import {
+    getLocalSettings,
+    isRestaurant,
+    prelog,
+    saveLocalSettings,
+    saveTempLocalOrder,
+    voucherData
+} from "../../libs/function";
 import Cart from "./Cart";
 import {device, localredux, PRODUCTCATEGORY, VOUCHER} from "../../libs/static";
 import {connect, useDispatch} from "react-redux";
@@ -162,6 +169,13 @@ const Index = (props: any) => {
                             component: () => <HoldOrders/>
                         }))
                     }} title="Holding Orders"/>}
+
+                    {isRestaurant() && <Menu.Item onPress={async () => {
+                        closeMenu();
+                        navigation?.navigate('UpdateOrderInfo')
+                    }} title="Update basic info"/>}
+
+
                 </Menu>}
 
             </>

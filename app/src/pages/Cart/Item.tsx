@@ -17,6 +17,9 @@ import ToggleButtons from "../../components/ToggleButton";
 import {Field} from "react-final-form";
 import InputField from "../../components/InputField";
 
+
+const couponcolors = ['#B15D3C','#60EA64','#EB1AEF','#6F7284','#C5E9B0']
+
 const Index = memo((props: any) => {
 
     const {item, index,orderbypax,hasdiscount,  theme: {colors}, isRestaurant,hasLast,length} = props;
@@ -33,15 +36,11 @@ const Index = memo((props: any) => {
             }))
         }
         else{
-
             let {kots}: any = store.getState().cartData;
-
             const  findkot = kots.filter(function (kot: any) {
                 return kot.kotid === item.kotid
             });
-
             device.navigation?.navigate('KOTDetail',{kotdetail:findkot[0]})
-
         }
     }
 
@@ -53,7 +52,6 @@ const Index = memo((props: any) => {
     if(!Boolean(item)){
         return <></>
     }
-
 
     return (
 
@@ -80,8 +78,7 @@ const Index = memo((props: any) => {
 
                                     <Paragraph
                                         style={[styles.paragraph,  styles.bold,styles.ml_1,  {textTransform:'capitalize'}]}
-                                        numberOfLines={2}>{index + 1}) {item?.itemname || item?.productdisplayname} {(item.pax !== 'all' && orderbypax)?`(#pax ${item.pax})`: ''} {Boolean(+item.productdiscountvalue) &&  <Text style={[styles.muted, styles.text_xs, {fontStyle: 'italic',color:'orange'}]}>(-{item.productdiscountvalue}{item.productdiscounttype} less)</Text>}  </Paragraph>
-
+                                        numberOfLines={2}>{index + 1}) {item?.itemname || item?.productdisplayname} {(item.pax !== 'all' && orderbypax)?`(#pax ${item.pax})`: ''} </Paragraph>
 
 
                                     <View style={[styles.ml_1]}>
@@ -166,13 +163,13 @@ const Index = memo((props: any) => {
                                                     <Paragraph
                                                         style={[styles.paragraph, styles.text_xs, styles.textRight]}>
                                                          <Text style={Boolean(+item.productdiscountvalue) && {
-                                                             // textDecorationLine: 'line-through',
-                                                             // color: styles.red.color
+                                                              // textDecorationLine: 'line-through',
+                                                              // color: styles.red.color
                                                          }}>{toCurrency((item.productratedisplay * item.productqnt) || '0')}</Text>
-                                                        {/*{Boolean(+item.productdiscountvalue) &&  <Text*/}
-                                                        {/*    style={[styles.paragraph, styles.text_xs, styles.textRight]}>*/}
-                                                        {/*    {toCurrency((item.productdiscountamountdisplay)  || '0')}*/}
-                                                        {/*</Text>}*/}
+                                                        {/*{Boolean(+item.productdiscountvalue) &&  <Text
+                                                            style={[styles.paragraph, styles.text_xs, styles.textRight]}>
+                                                            {toCurrency((item.productratedisplay * item.productqnt) - item.productdiscountvalue)  || '0'}
+                                                        </Text>}*/}
                                                     </Paragraph>
 
 
@@ -219,6 +216,12 @@ const Index = memo((props: any) => {
                                             </View>
 
                                         </View>
+
+                                        {Boolean(+item.productdiscountvalue) && <Paragraph>
+                                            <Text style={[styles.muted, styles.text_xs, {fontStyle: 'italic',color:couponcolors[item.couponindex]}]}>{item.productdiscountvalue}{item.productdiscounttype} Discount </Text>
+                                        </Paragraph>}
+
+
 
                                     </View>
 

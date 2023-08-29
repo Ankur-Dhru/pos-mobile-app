@@ -1193,7 +1193,7 @@ export const getLocalSettings = async (key: any) => {
 export const setAPIUrl = (betamode: any) => {
     let apiUrl = isDevelopment ? ".api.dhru.io" : ".api.dhru.com";
     if (betamode) {
-        apiUrl = ".api.dhru.net";
+        apiUrl = ".api.dhru.io";
     }
     urls.posUrl = `${apiUrl}/pos/v1/`;
     urls.adminUrl = `${apiUrl}/admin/v1/`;
@@ -2517,11 +2517,10 @@ export const getAddons = async (refresh = false) => {
 
 export const getTempOrders = (refresh = false) => {
     return new Promise((resolve) => {
-        getTempOrdersByWhere().then((orders: any) => {
+        getTempOrdersByWhere({all:true}).then((orders: any) => {
             resolve(orders)
         });
     })
-
 }
 
 export const getOrders = (refresh = false) => {

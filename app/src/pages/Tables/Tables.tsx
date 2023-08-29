@@ -2,13 +2,16 @@ import {current, localredux, METHOD, urls, VOUCHER} from "../../libs/static";
 import React, {memo, useCallback, useEffect, useState} from "react";
 import {
     clone,
-    dateFormat, deleteTempLocalOrder,
-    errorAlert, findObject,
+    dateFormat,
+    deleteTempLocalOrder,
+    errorAlert,
     getTempOrders,
     groupBy,
-    isEmpty, prelog,
+    isEmpty,
+    isRestaurant,
     saveTempLocalOrder,
-    toCurrency, voucherData
+    toCurrency,
+    voucherData
 } from "../../libs/function";
 import {Dimensions, FlatList, RefreshControl, ScrollView, Text, TouchableOpacity, View} from "react-native";
 import {Appbar, Caption, Card, FAB, List, Menu, Paragraph, withTheme} from "react-native-paper";
@@ -35,30 +38,90 @@ import {deleteOrder, setTableOrders} from "../../redux-store/reducer/table-order
 let interval: any = ''
 
 
-const TableCheckbox = ({item,updateTableInfo}: any) => {
+const TableCheckbox = ({item, updateTableInfo}: any) => {
 
-    const [selected,setSelected] = useState(item.selected);
+    const [selected, setSelected] = useState(item.selected);
 
-    return (
-        <View style={[styles.absolute,{width: 30,bottom:5,right:5}]}>
-            {<TouchableOpacity onPress={() => {
-                item.selected = !selected
-                setSelected(!selected);
-                updateTableInfo(item,item.tableorderid)
-            }}>
-                {Boolean(selected) ?
-                    <ProIcon name={'circle-check'} color={styles.green.color}></ProIcon> :
-                    <ProIcon name={'circle'}></ProIcon>}
-            </TouchableOpacity>}
-        </View>
-    )
+    return (<View style={[styles.absolute, {width: 30, bottom: 5, right: 5}]}>
+        {<TouchableOpacity onPress={() => {
+            item.selected = !selected
+            setSelected(!selected);
+            updateTableInfo(item, item.tableorderid)
+        }}>
+            {Boolean(selected) ? <ProIcon name={'circle-check'} color={styles.green.color}></ProIcon> :
+                <ProIcon name={'circle'}></ProIcon>}
+        </TouchableOpacity>}
+    </View>)
 }
 
 const today = moment().format('YYYY-MM-DD');
-const tomorrow = moment().add(1,'days').format('YYYY-MM-DD');
-const other = moment().add(2,'days').format('YYYY-MM-DD');
+const tomorrow = moment().add(1, 'days').format('YYYY-MM-DD');
+const other = moment().add(2, 'days').format('YYYY-MM-DD');
 
-const datePeriod = [{label:'Today',from:today,to:today},{label:'Tomorrow',from:tomorrow,to:tomorrow}];
+const datePeriod = [{label: 'Today', from: today, to: today}, {label: 'Tomorrow', from: tomorrow, to: tomorrow}];
+
+
+export const getOriginalTablesData = () => {
+    const {currentLocation} = localredux.localSettingsData;
+    let tables;
+    tables = currentLocation?.tables?.map((t: any) => ({
+        ...t, ordertype: 'tableorder'
+    }))
+    return tables
+}
+
+
+export const getOrderFromTable = (tables: any) => {
+
+    return new Promise(async (resolve) => {
+        let newtables = getOriginalTablesData();
+
+        let newothertables: any = [];
+
+        await getTempOrders().then(async (tableorders: any) => {
+
+            Object.values(tableorders).map((table: any) => {
+
+                let findTableIndex = tables?.findIndex((t: any) => t.tableid == table.tableid);
+
+                if (findTableIndex !== -1 && table.ordertype === 'tableorder') {
+
+                    newtables[findTableIndex] = {
+                        ...newtables[findTableIndex],
+                        orders: {
+                            ...newtables[findTableIndex]?.orders,
+                            [table.tableorderid]: {...table, orders: ''}
+                        },
+                        lasttableorderid: table?.tableorderid,
+                    }
+
+                    const orderids = Object.keys(newtables[findTableIndex]?.orders);
+
+                    if (orderids?.length > 1) {
+                        let splittotal = 0;
+                        let paxtotal = 0;
+                        Object.values(newtables[findTableIndex]?.orders).map((item: any) => {
+                            splittotal += +item.vouchertotaldisplay;
+                            paxtotal += +item.pax || 1;
+                        })
+
+                        newtables[findTableIndex] = {
+                            ...newtables[findTableIndex], split: true, paxtotal: paxtotal, splittotal: splittotal
+                        }
+                    }
+
+                } else {
+                    newothertables.push(table)
+                }
+
+            });
+            newtables = newtables.concat(newothertables);
+            resolve(newtables)
+        })
+    })
+
+
+}
 
 
 const Index = ({tableorders}: any) => {
@@ -83,15 +146,6 @@ const Index = ({tableorders}: any) => {
     const [shiftingTotable, setShiftingTotable] = useState<any>();
 
 
-    const getOriginalTablesData = () => {
-        const {currentLocation} = localredux.localSettingsData;
-        let tables;
-        tables = currentLocation?.tables?.map((t: any) => ({
-            ...t, ordertype: 'tableorder'
-        }))
-        return tables
-    }
-
     const [tables, setTables] = useState((isEmpty(currentLocation?.tables) ? [] : getOriginalTablesData()) || []);
 
     let areas = Object.keys(groupBy(tables.filter((table: any) => {
@@ -114,7 +168,8 @@ const Index = ({tableorders}: any) => {
                     })
                 }, 15000);
             }
-            getOrder().then(() => {})
+            getOrder().then(() => {
+            })
             return () => {
                 clearInterval(interval);
                 interval = null;
@@ -156,71 +211,18 @@ const Index = ({tableorders}: any) => {
     }
 
 
-    const getOrder = () => {
-
-        return new Promise(async (resolve) => {
-            let newtables = getOriginalTablesData();
-
-            let newothertables: any = [];
-
-            await getTempOrders().then(async (tableorders: any) => {
-
-                Object.values(tableorders).map((table: any) => {
-
-                    let findTableIndex = tables?.findIndex((t: any) => t.tableid == table.tableid);
-
-                    if (findTableIndex != -1 && table.ordertype === 'tableorder') {
-
-                        newtables[findTableIndex] = {
-                            ...newtables[findTableIndex],
-                            orders: {...newtables[findTableIndex]?.orders, [table.tableorderid]: table},
-                            lasttableorderid: table?.tableorderid,
-                        }
-
-                        const orderids = Object.keys(newtables[findTableIndex]?.orders);
-
-                        if (orderids?.length > 1) {
-                            let splittotal = 0;
-                            let paxtotal = 0;
-                            Object.values(newtables[findTableIndex]?.orders).map((item: any) => {
-                                splittotal += +item.vouchertotaldisplay;
-                                paxtotal += +item.pax || 1;
-                            })
-
-                            newtables[findTableIndex] = {
-                                ...newtables[findTableIndex], split: true, paxtotal: paxtotal, splittotal: splittotal
-                            }
-                        }
-
-
-                    } else {
-
-                        newothertables.push(table)
-                    }
-
-                });
-
-                newtables = newtables.concat(newothertables);
-
-
-                await setTables(newtables);
-                setRefreshing(false);
-                resolve(newtables)
-            })
+    const getOrder = async () => {
+        await getOrderFromTable(tables).then((newtables) => {
+            setTables(newtables);
+            setRefreshing(false);
         })
-
-
     }
 
 
     const setOrderSetting = (title: any, ordertype: any) => {
 
         current.table = {
-            'tablename': ordertype.label,
-            area: ordertype.label,
-            ordertype: ordertype.value,
-            invoiceitems: [],
-            kots: []
+            'tablename': ordertype.label, area: ordertype.label, ordertype: ordertype.value, invoiceitems: [], kots: []
         };
 
 
@@ -300,39 +302,47 @@ const Index = ({tableorders}: any) => {
     }
 
 
-    const updateTableInfo = (item:any,tableorderid:any) => {
+    const updateTableInfo = (item: any, tableorderid: any) => {
         tableorders[tableorderid] = item;
     }
 
     const mergeTables = async () => {
-        let mergeitems:any = [];
-        let mergekots:any = []
-        let selectedorders:any = []
+        let mergeitems: any = [];
+        let mergekots: any = []
+        let selectedorders: any = []
         let totalpax = 0;
         let orderbyp = false;
-        Object.keys(tableorders).map((key:any)=>{
-            const {selected,invoiceitems,kots,pax,orderbypax} = tableorders[key];
-            if(Boolean(selected)){
+        Object.keys(tableorders).map((key: any) => {
+            const {selected, invoiceitems, kots, pax, orderbypax} = tableorders[key];
+            if (Boolean(selected)) {
                 selectedorders.push(key);
                 totalpax += +pax || 0;
-                invoiceitems.map((item:any)=>{
+                invoiceitems.map((item: any) => {
                     mergeitems.push(item)
                 })
-                kots.map((item:any)=>{
+                kots.map((item: any) => {
                     mergekots.push(item)
                 })
             }
-            if(orderbypax){
+            if (orderbypax) {
                 orderbyp = orderbypax
             }
         })
 
 
-       const voucherDataJson: any = voucherData(VOUCHER.INVOICE, false);
+        const voucherDataJson: any = voucherData(VOUCHER.INVOICE, false);
 
-       const mergeOrder = {...tableorders[selectedorders[0]],invoiceitems:mergeitems,kots:mergekots, ...voucherDataJson,tableorderid:'',selected:false,pax:totalpax,orderbypax:orderbyp}
+        const mergeOrder = {
+            ...tableorders[selectedorders[0]],
+            invoiceitems: mergeitems,
+            kots: mergekots, ...voucherDataJson,
+            tableorderid: '',
+            selected: false,
+            pax: totalpax,
+            orderbypax: orderbyp
+        }
 
-       const cartData =  await itemTotalCalculation({
+        const cartData = await itemTotalCalculation({
             ...mergeOrder,
         }, undefined, undefined, undefined, undefined, 2, 2, false, false);
 
@@ -344,7 +354,7 @@ const Index = ({tableorders}: any) => {
                 })
             }
             dispatch(setTableOrders(order))
-            dispatch(setDialog({visible:false}))
+            dispatch(setDialog({visible: false}))
         })
 
     }
@@ -482,13 +492,11 @@ const Index = ({tableorders}: any) => {
                         <View
                             style={[styles.badge, styles.px_5, {backgroundColor: 'black'}]}>
                             <Text
-                                style={[styles.paragraph, styles.text_xs, {color: 'white'}]}>{`${item.tablename} ${item?.split ? '- split' : (splitdetailtables && !item.splitnumber)  ? ' - 1' : ''}` || 'Retail'} </Text></View></View>
+                                style={[styles.paragraph, styles.text_xs, {color: 'white'}]}>{`${item.tablename} ${item?.split ? '- split' : (splitdetailtables && !item.splitnumber) ? ' - 1' : ''}` || 'Retail'} </Text></View></View>
                     {Boolean(item.vouchertotaldisplay) && <>
                         <Paragraph><ProIcon align={'left'} name={'user'} action_type={'text'}
                                             size={13}/>{` ${item?.paxtotal || item?.pax || 1} ${!Boolean(item.paxtotal) ? `x ${item.clientname}` : ''}`}
                         </Paragraph>
-
-
 
 
                         {Boolean(item?.advanceorder?.date) && <>
@@ -498,13 +506,10 @@ const Index = ({tableorders}: any) => {
                         </>}
 
 
-
-
-                        {((accessMultipleDevice && sameStaff) || !accessMultipleDevice) &&
-                            <View style={[styles.mt_3]}>
-                                <Paragraph
-                                    style={[styles.paragraph, styles.bold, styles.text_lg, {color: 'black'}]}>{toCurrency(item?.splittotal || item.vouchertotaldisplay)}</Paragraph>
-                            </View>}
+                        {((accessMultipleDevice && sameStaff) || !accessMultipleDevice) && <View style={[styles.mt_3]}>
+                            <Paragraph
+                                style={[styles.paragraph, styles.bold, styles.text_lg, {color: 'black'}]}>{toCurrency(item?.splittotal || item.vouchertotaldisplay)}</Paragraph>
+                        </View>}
 
                     </>}
 
@@ -519,11 +524,12 @@ const Index = ({tableorders}: any) => {
                         <Paragraph style={[styles.paragraph, styles.text_xs]}>{item.staffname}</Paragraph>}
 
 
-                    {splitdetailtables && !Boolean(item?.printcounter) && !Boolean(item?.voucherdiscountdisplay) &&  <TableCheckbox item={item} updateTableInfo={updateTableInfo}/>}
+                    {splitdetailtables && !Boolean(item?.printcounter) && !Boolean(item?.voucherdiscountdisplay) &&
+                        <TableCheckbox item={item} updateTableInfo={updateTableInfo}/>}
 
                 </View>}
 
-                {(item.ordertype === 'tableorder' && ((item?.vouchertotaldisplay || item.split)) && !splitdetailtables) && !Boolean(item.printcounter)  && // !Boolean(item.vouchertotaldisplay) &&
+                {(item.ordertype === 'tableorder' && ((item?.vouchertotaldisplay || item.split)) && !splitdetailtables) && !Boolean(item.printcounter) && // !Boolean(item.vouchertotaldisplay) &&
                     <TableMenu
                         data={{
                             "area": item.area,
@@ -535,7 +541,8 @@ const Index = ({tableorders}: any) => {
                             invoiceitems: [],
                             splitnumber: Boolean(item?.orders) ? Object.keys(item?.orders)?.length : 0,
                             kots: [],
-                            tableorderid: ''
+                            tableorderid:'',
+                            tableoderidforswitch:item.tableorderid
                         }} setTableOrderDetail={setTableOrderDetail}/>}
 
 
@@ -590,6 +597,11 @@ const Index = ({tableorders}: any) => {
 
                         {!Boolean(urls.localserver) &&
                             <Menu.Item onPress={onClickReserveTable} title="Reserved Tables"/>}
+
+                        {/*{isRestaurant() && <Menu.Item onPress={async () => {
+                            closeMenu();
+                            navigation?.navigate('SwitchItems')
+                        }} title="Switch Items"/>}*/}
 
 
                         <Menu.Item onPress={() => {
@@ -754,28 +766,26 @@ const Index = ({tableorders}: any) => {
 
         let data: any = []
         Object.keys(floors).map((key: any) => {
-            if(key === 'Advance Order'){
-                const todaysorder = floors[key].filter((data3:any)=>{
+            if (key === 'Advance Order') {
+                const todaysorder = floors[key].filter((data3: any) => {
                     return data3.advanceorder.date === today
                 })
                 todaysorder?.length && data.push({title: "Today's Advance Order", data: todaysorder})
 
-                const tomorrowsorder = floors[key].filter((data3:any)=>{
+                const tomorrowsorder = floors[key].filter((data3: any) => {
                     return data3.advanceorder.date === tomorrow
                 })
                 tomorrowsorder?.length && data.push({title: "Tomorrow's Advance Order", data: tomorrowsorder})
 
-                const othersorder = floors[key].filter((data3:any)=>{
+                const othersorder = floors[key].filter((data3: any) => {
                     return data3.advanceorder.date !== tomorrow && data3.advanceorder.date !== today
                 })
                 othersorder?.length && data.push({title: "After Tomorrow's Advance Order", data: othersorder})
 
-            }
-            else {
+            } else {
                 data.push({title: key, data: floors[key]})
             }
         })
-
 
 
         return (<View style={[styles.px_2, styles.flex, styles.h_100]}>
@@ -988,8 +998,7 @@ const Index = ({tableorders}: any) => {
 }
 
 const mapStateToProps = (state: any) => ({
-    ordertype: state.selectedData.ordertype,
-    tableorders: state.tableOrdersData
+    ordertype: state.selectedData.ordertype, tableorders: state.tableOrdersData
 })
 
 export default connect(mapStateToProps)(withTheme(Index));

@@ -89,6 +89,8 @@ import ItemWiseSales from "../Report/ItemWiseSales";
 import AddEditSalesReturn from "../SalesReturn/AddEditSalesReturn";
 import SalesReturnReport from "../Report/SalesReturnReport";
 import StockItemsList from "../Report/StockItemsList";
+import UpdateOrderInfo from "../Cart/UpdateOrderInfo";
+import SwitchItems from "../Cart/SwitchItems";
 
 
 const screenOptions = {...screenOptionStyle};
@@ -239,6 +241,12 @@ const ClientAreaStackNavigator = (props: any) => {
             <Stack.Screen name={'KOTDetail'} component={KOTDetail} options={{headerTitle: 'KOT Detail'}}/>
 
             <Stack.Screen name={'Payment'} component={Payment} options={{headerTitle: 'Payment'}}/>
+
+            <Stack.Screen name={'UpdateOrderInfo'} component={UpdateOrderInfo} options={{headerTitle: 'Update Info'}}/>
+
+            <Stack.Screen name={'SwitchItems'} component={SwitchItems} options={{headerTitle: 'Move Items'}}/>
+
+
 
             <Stack.Screen name={'CancelReason'} component={CancelReason}
                           options={{  headerTitle: 'Cancel Reason'}}/>

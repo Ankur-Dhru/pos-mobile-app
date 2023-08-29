@@ -28,14 +28,13 @@ import {getProductData, itemTotalCalculation} from "../../libs/item-calculation"
 import moment from "moment/moment";
 import {v4} from "uuid";
 
-
 const Index = ({cartData, grouplist}: any) => {
 
     const dispatch = useDispatch();
 
-    const {discountdetail, orderbypax, invoiceitems,  vouchertotaldiscountamountdisplay} = cartData
+    const {discountdetail, orderbypax, invoiceitems,  vouchertotaldiscountamountdisplay,coupons} = cartData
 
-    const [couponList, setCouponList] = useState([...cartData?.coupons] || []);
+    const [couponList, setCouponList] = useState([...coupons] || []);
     const [morecoupon,setMorecoupon] = useState(false)
     const [discounteditems, setDiscounteditems]: any = useState(invoiceitems);
 
@@ -289,6 +288,14 @@ const Index = ({cartData, grouplist}: any) => {
                                                             subSoundItem = foundItem?.subitems.find((sitem: any) => sitem?.itemid == iItem?.productid);
                                                         }
 
+                                                        if(!Boolean(iItem?.couponname)) {
+                                                            iItem = {
+                                                                ...iItem,
+                                                                couponname: coupon,
+                                                                couponindex:couponList?.length || 0
+                                                            }
+                                                        }
+
                                                         if (applyOnBuyItems) {
 
                                                             if (!isEmpty(foundItem) && leftQuantity > 0 && (Boolean((+foundItem?.discountvalue) > 0) || Boolean((+subSoundItem?.discountvalue) > 0))) {
@@ -390,6 +397,11 @@ const Index = ({cartData, grouplist}: any) => {
                                                     let position: number = 0;
 
                                                     invoiceitems.forEach((iItem: any) => {
+
+
+
+
+
                                                         if (!isEmpty(newInvoiceItems)) {
                                                             let allitems = clone(newInvoiceItems?.filter((item: any) => !Boolean(item?.combokey)));
                                                             let lastItem = allitems[allitems.length - 1];
@@ -397,6 +409,15 @@ const Index = ({cartData, grouplist}: any) => {
                                                         }
                                                         position = position + 1;
                                                         if (Boolean(iItem?.comboflag) && !Boolean(iItem?.couponApplied)) {
+
+                                                            if(!Boolean(iItem?.couponname)) {
+                                                                iItem = {
+                                                                    ...iItem,
+                                                                    couponname: coupon,
+                                                                    couponindex:couponList?.length || 0
+                                                                }
+                                                            }
+
                                                             let foundItem = findItemNew(getitems, iItem);
                                                             if (!isEmpty(foundItem) && leftQuantity > 0 && (+foundItem?.discountvalue) > 0) {
                                                                 if (leftQuantity >= iItem?.productqnt) {
@@ -485,7 +506,7 @@ const Index = ({cartData, grouplist}: any) => {
                                         if (appliedOnce) {
                                             couponList.push({name: coupon});
                                             appliedcoupons = couponList
-                                            //setCouponList(clone(couponList));
+                                            setCouponList(clone(couponList));
                                         } else {
                                             AppToaster({
                                                 message: `Coupon not applicable`
@@ -539,7 +560,7 @@ const Index = ({cartData, grouplist}: any) => {
                                             passamount += (+c.amount);
                                         });
 
-                                        //setCouponList(clone(cpn));
+                                        setCouponList(clone(cpn));
                                         appliedcoupons = clone(cpn)
 
                                         values = {
@@ -681,7 +702,28 @@ const Index = ({cartData, grouplist}: any) => {
                                 </View>}
 
                             {(selected === 'coupons') && <View>
-                                    {(!Boolean(couponList?.length) || morecoupon)   &&
+
+                                {(Boolean(couponList?.length)) && <View style={[styles.mb_5]}>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            setMorecoupon(true)
+                                        }}
+                                        style={[{
+                                            height:30
+                                        }]}>
+                                        <View
+                                            style={[ styles.middle, styles.right,styles.mt_5, styles.w_100, styles.h_100]}>
+                                            <View>
+                                                <Paragraph
+                                                    style={[styles.paragraph, styles.bold]}>Add More coupon</Paragraph>
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
+                                </View>}
+
+
+
+                                {(!Boolean(couponList?.length) || morecoupon)   &&
                                         <View style={[styles.mt_5]}>
                                             <View>
                                                 <Field name="coupons.coupon">
@@ -703,8 +745,10 @@ const Index = ({cartData, grouplist}: any) => {
                                         </View>}
 
                                     {Boolean(couponList?.length) && <View>
+
+
                                         <View
-                                            style={[styles.border, styles.px_5, styles.mt_5, styles.mb_5, {borderRadius: 10}]}>
+                                            style={[styles.border, styles.px_5, styles.mt_3, styles.mb_5, {borderRadius: 10}]}>
                                             <Caption style={[styles.py_3]}>Applied Coupon(s)</Caption>
                                             {couponList.map((coupon: any, index: any) => {
                                                 return <View key={index} style={[styles.justifyContent, styles.py_5]}>
@@ -716,21 +760,7 @@ const Index = ({cartData, grouplist}: any) => {
                                         </View>
 
 
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                setMorecoupon(true)
-                                            }}
-                                            style={[{
-                                                height:30
-                                            }]}>
-                                            <View
-                                                style={[ styles.middle, styles.right, styles.w_100, styles.h_100]}>
-                                                <View>
-                                                    <Paragraph
-                                                        style={[styles.paragraph, styles.bold]}>Add More coupon</Paragraph>
-                                                </View>
-                                            </View>
-                                        </TouchableOpacity>
+
 
 
                                     </View>}

@@ -81,6 +81,7 @@ const Index = (props:any) => {
                 </html>`;
 
 
+
     const handleConnectSelectedPrinter = async () => {
         const connect = async () => {
             await Printer.init();
@@ -233,8 +234,8 @@ const Index = (props:any) => {
 
     const webviewwidth = +printer.webviewwidth
 
-
     if (height === 0) {
+
         return <View style={[styles.h_100,   styles.middle,{backgroundColor:styles.light.color}]}>
 
             <View style={[styles.h_100, {width: webviewwidth}]}>

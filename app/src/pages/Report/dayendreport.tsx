@@ -55,7 +55,6 @@ const Index = ({navigation}: any) => {
             other: {url: urls.posUrl},
         }).then((response: any) => {
 
-            prelog(response)
 
             const {info, data}: any = response;
 

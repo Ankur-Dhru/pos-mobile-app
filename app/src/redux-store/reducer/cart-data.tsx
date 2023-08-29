@@ -30,7 +30,7 @@ import {v4 as uuid} from "uuid";
 
 
 
-let intialState: any = {
+export let intialState: any = {
     updatecart: false,
     globaltax: [],
     clientid: defaultclient.clientid,
@@ -55,6 +55,7 @@ let intialState: any = {
     isPaymentReceived: false,
     selectedindex: [],
     kots: [],
+    coupons:[],
     ordersource: "POS",
     vouchersubtotaldisplay:0,
     vouchertotaldisplay:0,

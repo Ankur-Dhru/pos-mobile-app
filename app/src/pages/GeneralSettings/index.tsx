@@ -25,11 +25,11 @@ const Index = () => {
 
     let [initdata, setInitdata]: any = useState({
         disabledDefaultSourceHomeDelivery: false,
-        syncinvoiceintervaltime: 300000,
-        disablesyncinvoicesrealtime: false,
+        syncinvoiceintervaltime: 30000,
+        disablesyncinvoicesrealtime: true,
         disabledDefaultSourceTakeAway: false,
         betamode: false,
-        disabledpax: false,
+        disabledpax: true,
         kotongenerateinvoice: 'Enable',
         advancecartview: false,
         terminalname: terminal_name

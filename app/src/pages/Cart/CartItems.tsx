@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useLayoutEffect, useRef, useState} from "react";
 
-import {FlatList, View} from "react-native";
+import {Alert, FlatList, View} from "react-native";
 
 import {connect} from "react-redux";
 
@@ -8,14 +8,16 @@ import Item from "../Cart/Item";
 import Kot from "../Cart/Kot";
 import {styles} from "../../theme";
 import {Card, Paragraph, Text} from "react-native-paper";
-import {appLog, isRestaurant, resetDiscount, updateComponent} from "../../libs/function";
+import {appLog, findObject, isRestaurant, prelog, resetDiscount, updateComponent} from "../../libs/function";
 import {ItemDivider} from "../../libs/static";
 import ToggleButtons from "../../components/ToggleButton";
+import store from "../../redux-store/store";
 
 const Index = (props: any) => {
 
 
-    let {invoiceitems,totalqnt,kots,currentpax,orderbypax,discountdetail} = props;
+    let {invoiceitems,totalqnt,kots,currentpax,orderbypax,discountdetail,vouchertotaldiscountamountdisplay} = props;
+
 
     const hasrestaurant = isRestaurant();
 
@@ -30,7 +32,15 @@ const Index = (props: any) => {
     },[])
 
     useEffect(()=>{
-        resetDiscount().then()
+        if(Boolean(vouchertotaldiscountamountdisplay)){
+            Alert.alert(
+                "Alert",
+                'Discount coupons will be reset',
+                [
+                    {text: "OK", onPress: () => resetDiscount().then()}
+                ]
+            );
+        }
     },[totalqnt])
 
     useLayoutEffect(() => {
@@ -49,7 +59,7 @@ const Index = (props: any) => {
 
 
 
-    const renderItem = useCallback(({item, index}: any) => <Item item={item} orderbypax={orderbypax} hasdiscount={discountdetail}  key={item.key} hasLast={invoiceitems.length === index+1} isRestaurant={hasrestaurant}   index={index}/>, [currentpax]);
+    const renderItem = useCallback(({item, index}: any) => <Item item={item}   orderbypax={orderbypax} hasdiscount={discountdetail}  key={item.key} hasLast={invoiceitems.length === index+1} isRestaurant={hasrestaurant}   index={index}/>, [currentpax]);
     const renderKot = useCallback(({item, index}: any) => <Kot kot={item} orderbypax={orderbypax} hasLast={kots.length === index+1} key={item.key} />, []);
 
     const onButtonToggle = (value:any) => {
@@ -132,6 +142,7 @@ const mapStateToProps = (state: any) => ({
     currentpax:state.cartData.currentpax,
     orderbypax:state.cartData.orderbypax,
     totalqnt: state.cartData.totalqnt,
+    vouchertotaldiscountamountdisplay:state.cartData.vouchertotaldiscountamountdisplay,
     discountdetail: Boolean(state.cartData.discountdetail)
 })
 

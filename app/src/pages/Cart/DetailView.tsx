@@ -117,12 +117,6 @@ const Index = (props: any) => {
                         }))
                     }} title="Adjustment"/>}
 
-                    {/*{<Menu.Item onPress={async () => {
-                        closeMenu();
-                        await dispatch(setBottomSheet({
-                            visible: true, height: '80%', component: () => <UpdateOrderInfo/>
-                        }))
-                    }} title="Update basic info"/>}*/}
 
                 </Menu>
             </View>

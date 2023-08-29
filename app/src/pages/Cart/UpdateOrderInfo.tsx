@@ -1,105 +1,161 @@
-import React, {useEffect, useState} from 'react';
-import {ScrollView, TouchableOpacity, View,} from 'react-native';
+import React from 'react';
+import {SafeAreaView, ScrollView, View,} from 'react-native';
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
-import {Caption, Paragraph, TextInput as TI} from "react-native-paper";
+import {Card} from "react-native-paper";
 
-import {clone, getCurrencySign, groupBy, saveLocalSettings} from "../../libs/function";
-import {setBottomSheet} from "../../redux-store/reducer/component";
-import {setCartData, setUpdateCart} from "../../redux-store/reducer/cart-data";
+import {clone} from "../../libs/function";
+import {setCartData} from "../../redux-store/reducer/cart-data";
 import {Field, Form} from "react-final-form";
 import InputField from "../../components/InputField";
-import {required} from "../../libs/static";
+import {localredux} from "../../libs/static";
 import KAccessoryView from "../../components/KAccessoryView";
-import ToggleButtons from "../../components/ToggleButton";
-import {itemTotalCalculation} from "../../libs/item-calculation";
+import {Button, Container} from "../../components";
+import {getOriginalTablesData} from "../Tables/Tables";
+import {useNavigation} from "@react-navigation/native";
 
 
 const Index = ({cartData}: any) => {
 
     const dispatch = useDispatch();
+    const navigation = useNavigation()
 
-    const {discountdetail,orderbypax} = cartData
+    const {tableid, ordertype, source,tablename} = cartData
 
+    const initdata: any = {
+        tableid: tableid,
+        source: source,
+        ordertype: ordertype
+    }
 
     const handleSubmit = async (values: any) => {
 
+        let tabletypename = tablename;
+        if(values.ordertype !== 'tableorder'){
+            tabletypename = values.source
+        }
 
         cartData = {
             ...cartData,
-
             updatecart: true,
-
+            ...values,
+            tablename:tabletypename,
         }
-
-        let data = await itemTotalCalculation(clone(cartData), undefined, undefined, undefined, undefined, 2, 2, false, false);
-
-        await dispatch(setCartData(clone(data)));
-        await dispatch(setUpdateCart());
-
-        dispatch(setBottomSheet({visible: false}))
-
-    }
-
-    const onButtonToggle = () => {
-
+        await dispatch(setCartData(clone(cartData)));
+        navigation.goBack();
+        setTimeout(()=>{
+            navigation.goBack();
+        },500)
     }
 
 
+    return (
+        <Container style={styles.bg_white}>
+            <SafeAreaView>
+                <Form
+                    onSubmit={handleSubmit}
+                    initialValues={{...initdata}}
+                    render={({handleSubmit, submitting, values, form, ...more}: any) => (
+                        <View style={[styles.middle]}>
+                            <View style={[styles.middleForm, {maxWidth: 400}]}>
+                                <ScrollView>
+                                    <>
+                                        <Card style={[styles.card]}>
+                                            <Card.Content style={[styles.cardContent]}>
 
-    return (<View style={[styles.w_100, styles.p_6]}>
+                                                <Field name="ordertype">
+                                                    {props => (
+                                                        <InputField
+                                                            label={'Order Type'}
+                                                            divider={true}
+                                                            displaytype={'pagelist'}
+                                                            inputtype={'dropdown'}
+                                                            list={[
+                                                                {'label': 'Takeaway', value: 'takeaway'},
+                                                                {'label': 'Home Delivery', value: 'homedelivery'},
+                                                                {'label': 'Table Order', value: 'tableorder'}]}
+                                                            search={false}
+                                                            listtype={'other'}
+                                                            selectedValue={props.input.value}
+                                                            onChange={(value: any) => {
+                                                                props.input.onChange(value);
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Field>
 
-        <Form
-            onSubmit={handleSubmit}
-            initialValues={{}}
-            render={({handleSubmit, submitting, form, values, ...more}: any) => {
 
-                const {all,groups,selected} = values
+                                                {values.ordertype === 'tableorder' && <Field name="tableid">
+                                                    {props => (
+                                                        <InputField
+                                                            label={'Tables'}
+                                                            divider={true}
+                                                            displaytype={'pagelist'}
+                                                            inputtype={'dropdown'}
+                                                            list={getOriginalTablesData().map((table: any) => {
+                                                                return {label: table.tablename, value: table.tableid}
+                                                            })}
+                                                            search={false}
+                                                            listtype={'other'}
+                                                            selectedValue={props.input.value}
+                                                            onChange={(value: any) => {
+                                                                props.input.onChange(value);
+                                                            }}
+                                                        />
+                                                    )}
+                                                </Field>}
 
-                return (<View style={[styles.middle]}>
-                    <View style={[styles.middleForm, {maxWidth: 400}]}>
+
+                                                {(values.ordertype === 'takeaway' || values.ordertype === 'homedelivery') &&
+                                                    <Field name="source">
+                                                        {props => (
+                                                            <InputField
+                                                                label={'Sources'}
+                                                                divider={true}
+                                                                displaytype={'pagelist'}
+                                                                inputtype={'dropdown'}
+                                                                list={Object.values(localredux?.initData?.sources).map((source: any, index: any) => {
+                                                                    return {label: source, value: source}
+                                                                })}
+                                                                search={false}
+                                                                listtype={'other'}
+                                                                selectedValue={props.input.value}
+                                                                onChange={(value: any) => {
+                                                                    props.input.onChange(value);
+                                                                }}
+                                                            />
+                                                        )}
+                                                    </Field>}
 
 
-                        <ScrollView>
-                            <Caption style={[styles.caption]}>Update Basic Info</Caption>
-                        </ScrollView>
+                                            </Card.Content>
+                                        </Card>
+
+                                    </>
+
+                                </ScrollView>
 
 
-                        <KAccessoryView>
-                            <View style={[styles.submitbutton]}>
-                                <View>
+                                <KAccessoryView>
 
-                                    <TouchableOpacity
-                                        onPress={() => {
+                                    <View style={[styles.submitbutton]}>
+                                        <Button more={{color: 'white'}} disable={more.invalid}
+                                                secondbutton={more.invalid} onPress={() => {
                                             handleSubmit(values)
-                                        }}
-                                        style={[{
-                                            backgroundColor: styles.secondary.color,
-                                            borderRadius: 7,
-                                            height: 50,
-                                            marginTop: 20
-                                        }]}>
-                                        <View
-                                            style={[styles.grid, styles.noWrap, styles.middle, styles.center, styles.w_100, styles.h_100]}>
-                                            <View>
-                                                <Paragraph style={[styles.paragraph, styles.bold]}>Update</Paragraph>
-                                            </View>
-                                        </View>
-                                    </TouchableOpacity>
+                                        }}> Update </Button>
+                                    </View>
 
-                                </View>
+                                </KAccessoryView>
+
                             </View>
-                        </KAccessoryView>
+                        </View>
+                    )}
+                >
 
-                    </View>
-
-                </View>)
-            }}
-        >
-        </Form>
-
-    </View>)
-
+                </Form>
+            </SafeAreaView>
+        </Container>
+    )
 
 }
 

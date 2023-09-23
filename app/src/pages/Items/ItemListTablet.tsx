@@ -18,7 +18,7 @@ import {
     clone,
     getItemImage,
     getPricingTemplate,
-    isRestaurant,
+    isRestaurant, prelog,
     selectItem,
     toCurrency
 } from "../../libs/function";
@@ -64,6 +64,7 @@ export const AddItem = ({navigation,search}: any) => {
 
 export const ItemView = memo(({item,displayType,search,currentpax}:any)=>{
 
+
     let pricingTemplate = getPricingTemplate();
     const {veg} = item;
     const pricingtype = item?.pricing?.type;
@@ -75,13 +76,10 @@ export const ItemView = memo(({item,displayType,search,currentpax}:any)=>{
 
     const navigation = device.navigation
 
-    //const navigation = useNavigation();
-
     if(displayType === 'flatlist') {
-        return <>
+        return <View key={item.itemid || item.comboid}>
             <List.Item
                 style={[styles.listitem,{paddingTop:5}]}
-                key={item.itemid || item.comboid}
                 title={item.itemname }
                 titleStyle={[styles.bold,{textTransform: 'capitalize'}]}
                 titleNumberOfLines={2}
@@ -103,13 +101,17 @@ export const ItemView = memo(({item,displayType,search,currentpax}:any)=>{
                 }}
                 onPress={() => {
 
-                    ((!Boolean(item?.productqnt) && !hasKot) || (currentpax !== item?.pax)) && selectItem(item).then();
+                    if(Boolean(item?.trackinventory) && item.inventorytype === 'specificidentification') {
+                        navigation.navigate('ScanSerialno');
+                    }
+                    else if((!Boolean(item?.productqnt) && !hasKot) || (currentpax !== item?.pax)) {
+                        selectItem(item).then();
+                    }
                     if(search) {
                         navigation.goBack()
                     }
                 }}
                 /*left={() => <View style={{marginTop:5}}><Avatar label={item.itemname} value={item.itemid || item.comboid} fontsize={14} size={40}/></View>}*/
-
                 right={() => {
 
                     if(item.comboid){
@@ -128,11 +130,11 @@ export const ItemView = memo(({item,displayType,search,currentpax}:any)=>{
                     // return  <List.Icon icon="plus" style={{height:35,width:35,margin:0}} />
                 }}
             />
-        </>
+        </View>
     }
     else{
 
-            return <View  style={[styles.flexGrow,styles.relative,styles.h_100,   styles.middle, {
+            return <View key={item.itemid || item.comboid} style={[styles.flexGrow,styles.relative,styles.h_100,   styles.middle, {
                 width: 115,
                 maxWidth:160,
                 borderColor:'white',
@@ -204,7 +206,7 @@ export const ItemView = memo(({item,displayType,search,currentpax}:any)=>{
 
 },(r1,r2)=>{
 
-    return ((r1.item.productqnt === r2.item.productqnt) && (r1.item.itemid === r2.item.itemid) && (r1.currentpax === r2.currentpax));
+    return ((r1.item.productqnt === r2.item.productqnt) && (r1.item.itemid === r2.item.itemid) && (r1.currentpax === r2.currentpax) && (r1.item.pricing === r2.item.pricing));
 })
 
 

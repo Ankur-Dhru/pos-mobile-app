@@ -7,7 +7,6 @@ import {connect} from "react-redux";
 import Avatar from "../../components/Avatar";
 import {useNavigation} from "@react-navigation/native";
 import {ProIcon} from "../../components";
-import {device} from "../../libs/static";
 
 
 const Index = ({clientdetail,clientid,clientname,commonkotnote,vouchernotes,vehicleno}: any) => {
@@ -15,7 +14,7 @@ const Index = ({clientdetail,clientid,clientname,commonkotnote,vouchernotes,vehi
 
     const navigation = useNavigation()
 
-    return <Card style={[styles.card,  {minWidth:250,padding:5,paddingHorizontal:device.tablet?7:15}]} onPress={() => {
+    return <Card style={[styles.card,styles.mb_3,  {minWidth:250,padding:5, backgroundColor:'#eee'}]} onPress={() => {
         navigation.navigate('ClientList');
     }}>
         <View style={[styles.grid,styles.middle]}>

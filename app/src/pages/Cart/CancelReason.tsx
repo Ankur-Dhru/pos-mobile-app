@@ -275,7 +275,7 @@ const Index = (props: any) => {
 
 
                             <View style={[styles.submitbutton]}>
-                                <Button onPress={() => {
+                                <Button more={{color: 'white', backgroundColor: styles.red.color}} onPress={() => {
                                     handleSubmit(values)
                                 }}>Cancel {type === 'ticketcancelreason' ? 'KOT' : 'Order'}</Button>
                             </View>

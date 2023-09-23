@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {Paragraph, ToggleButton} from 'react-native-paper';
 import {useEffect} from "react";
+import {styles} from "../../theme";
 
 
 
@@ -15,7 +16,7 @@ const ToggleButtons = (props:any) => {
         <ToggleButton.Row  onValueChange={value => value && setSelectedValue(value)} value={selectedValue}>
             {
                 props?.btns?.map(({label,value}:any)=>{
-                    return <ToggleButton   style={{height:40,width:props.width,borderColor:'#ddd',backgroundColor:selectedValue === value?'#eee':'transparent'}} disabled={props.disabled} icon={()=> <Paragraph style={{fontWeight:selectedValue === value?'bold':'normal'}}>{label}</Paragraph>} value={value} />
+                    return <ToggleButton   style={{height:40,width:props.width,borderColor:'transparent',backgroundColor:selectedValue === value?styles.secondary.color:styles.secondary2.color}} disabled={props.disabled} icon={()=> <Paragraph style={{fontWeight:selectedValue === value?'bold':'normal',color:selectedValue === value?'black':'black'}}>{label}</Paragraph>} value={value} />
                 })
             }
         </ToggleButton.Row>

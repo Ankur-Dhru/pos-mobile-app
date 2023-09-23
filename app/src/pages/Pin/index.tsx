@@ -1,9 +1,18 @@
 import React, {memo, useEffect, useRef, useState} from "react";
 
-import {ScrollView, View} from "react-native";
+import {Platform, ScrollView, View} from "react-native";
 import Container from "../../components/Container";
 import {connect, useDispatch} from "react-redux";
-import {errorAlert, getAddons, getClients, getTempOrders, prelog, retrieveData, syncData} from "../../libs/function";
+import {
+    appLog,
+    errorAlert,
+    getAddons,
+    getClients,
+    getTempOrders,
+    prelog,
+    retrieveData,
+    syncData
+} from "../../libs/function";
 
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
 import {Paragraph, Text, withTheme} from "react-native-paper";
@@ -38,7 +47,6 @@ const Index = (props: any) => {
 
     const dispatch = useDispatch()
 
-    const pinView: any = useRef(null)
 
     let isRestaurant = false;
 
@@ -59,9 +67,8 @@ const Index = (props: any) => {
 
                 localredux.initData = {...localredux.initData, ...initData};
 
-
-
                 localredux.licenseData = licenseData;
+
                 localredux.authData = {...authData, ...params};
 
                 localredux.localSettingsData = localSettingsData;
@@ -73,14 +80,18 @@ const Index = (props: any) => {
                 let filterGroups: any = {}
 
                 if (Boolean(itemgroup)) {
-
                     Object.keys(itemgroup).forEach((key) => {
                         if (itemgroup[key].itemgroupstatus == 1) {
                             filterGroups[key] = itemgroup[key]
                         }
                     })
-
                 }
+
+                localredux.localSettingsData.currentLocation ={
+                    ...localredux.localSettingsData.currentLocation,
+                    sellbyserial:true
+                }
+
 
                 await dispatch(setGroupList(filterGroups))
 
@@ -105,6 +116,15 @@ const Index = (props: any) => {
                     device.uniqueid = deviceid
                 })
 
+
+                /*if(Platform.OS !== 'ios') {
+                    try {
+                        console.log('sync start')
+                        BackgroundService.start(backgroundSync, options).then(r => {});
+                    } catch (e) {
+                        appLog('Error', e);
+                    }
+                }*/
                 //await getOrders().then();
 
             }
@@ -121,6 +141,11 @@ const Index = (props: any) => {
         await dispatch(hideLoader())
         localredux.loginuserData = params;
 
+
+
+
+
+
         if ((isRestaurant && Boolean(urls.localserver)) || !Boolean(urls.localserver)) {
             await navigation.replace('ClientAreaStackNavigator');
         } else {
@@ -129,9 +154,15 @@ const Index = (props: any) => {
             navigation.replace('SetupStackNavigator')
         }
 
+
+
+
     }
 
-    navigation.setOptions({headerShown: !params.onlyone || Boolean(urls.localserver)})
+    useEffect(()=>{
+        navigation.setOptions({headerShown: !params.onlyone || Boolean(urls.localserver)})
+    },[])
+
 
 
     const [value, setValue]: any = useState("")
@@ -192,18 +223,19 @@ const Index = (props: any) => {
                                     localSettingsData: localSettingsData
                                 })
                             }
+
+
                         })
                     } else {
                         await retrieveData(db.name).then(async (data: any) => {
                             setData(data).then()
                         })
                     }
-
                 } else {
                     dispatch(setAlert({visible: true, message: 'Wrong Pin'}));
-                    pinView.current.clearAll()
+                    setValue('');
+                    //pinView.current.focus()
                 }
-
             }
         }, 200)
     }, [value]);
@@ -309,6 +341,6 @@ const mapStateToProps = (state: any) => ({
     syncDetail: state.syncDetail
 })
 
-export default connect(mapStateToProps)(withTheme(memo(Index)));
+export default connect(mapStateToProps)(withTheme(Index));
 
 //

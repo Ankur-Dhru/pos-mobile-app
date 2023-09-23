@@ -41,6 +41,82 @@ const Index = (props: any) => {
                 setExtrachargesvisible(true)
             }
         })
+
+        navigation.setOptions({
+            headerRight: () => {
+                return <View>
+
+                    <Menu
+                        visible={visible}
+                        onDismiss={closeMenu}
+                        anchor={<Appbar.Action icon={'dots-vertical'} onPress={() => {
+                            openMenu()
+                        }}/>}>
+
+                        <DeleteButton
+                            options={['Yes', 'No']}
+                            title={'Cancel Order'}
+                            message={`Are you sure want to Cancel Order?`}
+                            render={() => {
+                                return (<Menu.Item title="Cancel Order"/>)
+                            }}
+                            onPress={(index: any) => {
+                                if (index === 0) {
+                                    closeMenu();
+
+                                    if (cancelorder) {
+                                        cancelOrder(navigation).then(r => {
+                                        })
+                                    } else {
+                                        Alert.alert("Alert", 'You do not have cancel Order permission', [{
+                                            text: "Cancel",
+                                            onPress: () => {
+                                            },
+                                            style: 'cancel'
+                                        }, {text: "Ask Permission", onPress: () => askPermission('cancelorder')}]);
+                                    }
+                                }
+                            }}
+                        />
+
+                        {!isRestaurant() && <Menu.Item onPress={async () => {
+                            closeMenu();
+                            await dispatch(setBottomSheet({
+                                visible: true, height: '50%', component: () => <HoldOrders/>
+                            }))
+                        }} title="Holding Orders"/>}
+
+
+                        {canapplydiscount && <Menu.Item onPress={async () => {
+                            closeMenu();
+                            await dispatch(setBottomSheet({
+                                visible: true, height: '80%', component: () => <Discount/>
+                            }))
+                        }} title="Discount"/>}
+
+
+                        {extrachargesvisible && <Menu.Item onPress={async () => {
+                            closeMenu();
+                            await dispatch(setBottomSheet({
+                                visible: true, height: '80%', component: () => <ExtraCharges/>
+                            }))
+                        }} title="Extra Charges"/>}
+
+
+                        {isadjustment && <Menu.Item onPress={async () => {
+                            closeMenu();
+                            await dispatch(setBottomSheet({
+                                visible: true, height: '80%', component: () => <Adjustment/>
+                            }))
+                        }} title="Adjustment"/>}
+
+
+                    </Menu>
+                </View>
+            }
+        })
+
+
     }, [])
 
     const {cancelorder, canapplydiscount}: any = localredux?.authData?.settings;
@@ -49,98 +125,28 @@ const Index = (props: any) => {
         navigation.navigate('AskPermission', {cancelOrder: cancelOrder, action: action})
     }
 
-    navigation.setOptions({
-        headerRight: () => {
-            return <View>
-
-                <Menu
-                    visible={visible}
-                    onDismiss={closeMenu}
-                    anchor={<Appbar.Action icon={'dots-vertical'} onPress={() => {
-                        openMenu()
-                    }}/>}>
-
-                    <DeleteButton
-                        options={['Yes', 'No']}
-                        title={'Cancel Order'}
-                        message={`Are you sure want to Cancel Order?`}
-                        render={() => {
-                            return (<Menu.Item title="Cancel Order"/>)
-                        }}
-                        onPress={(index: any) => {
-                            if (index === 0) {
-                                closeMenu();
-
-                                if (cancelorder) {
-                                    cancelOrder(navigation).then(r => {
-                                    })
-                                } else {
-                                    Alert.alert("Alert", 'You do not have cancel Order permission', [{
-                                        text: "Cancel",
-                                        onPress: () => {
-                                        },
-                                        style: 'cancel'
-                                    }, {text: "Ask Permission", onPress: () => askPermission('cancelorder')}]);
-                                }
-                            }
-                        }}
-                    />
-
-                    {!isRestaurant() && <Menu.Item onPress={async () => {
-                        closeMenu();
-                        await dispatch(setBottomSheet({
-                            visible: true, height: '50%', component: () => <HoldOrders/>
-                        }))
-                    }} title="Holding Orders"/>}
-
-
-                    {canapplydiscount && <Menu.Item onPress={async () => {
-                        closeMenu();
-                        await dispatch(setBottomSheet({
-                            visible: true, height: '80%', component: () => <Discount/>
-                        }))
-                    }} title="Discount"/>}
-
-
-                    {extrachargesvisible && <Menu.Item onPress={async () => {
-                        closeMenu();
-                        await dispatch(setBottomSheet({
-                            visible: true, height: '80%', component: () => <ExtraCharges/>
-                        }))
-                    }} title="Extra Charges"/>}
-
-
-                    {isadjustment && <Menu.Item onPress={async () => {
-                        closeMenu();
-                        await dispatch(setBottomSheet({
-                            visible: true, height: '80%', component: () => <Adjustment/>
-                        }))
-                    }} title="Adjustment"/>}
-
-
-                </Menu>
-            </View>
-        }
-    })
 
     let tablet: any;
     let mobile: any;
     if (device.tablet) {
         tablet = {paddingHorizontal: 5, paddingVertical: 5}
     } else {
-        mobile = {backgroundColor: styles.bg_light.backgroundColor, padding: 5}
+        mobile = {backgroundColor: styles.bg_light.backgroundColor, padding: 0}
     }
 
-    return <Container style={{padding: 0}}>
+
+
+    return <Container style={[styles.p_3]}>
         {!device.tablet && <ClientDetail/>}
         <View style={[styles.h_100, styles.flex, mobile]}>
-            <View style={[styles.bg_white, styles.flex, {borderRadius: 5}]}>
+            <View style={[styles.bg_white, styles.flex]}>
 
-                <View style={[styles.px_5,styles.py_3]}>
+
+                <View>
                     <PaxesSelection all={true}/>
                 </View>
 
-                <View style={[styles.cardContent, styles.h_100, styles.flex, tablet]}>
+                <View style={[ styles.h_100, styles.flex, tablet]}>
                     <CartItems/>
                 </View>
 

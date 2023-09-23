@@ -65,7 +65,7 @@ const Index = (props: any) => {
             printpreview:false,
             printoncancel: true,
             papercutmanual:false,
-            ...printers[type.departmentid]
+            ...printers[type.departmentid] || {...printers['0000'],template:''}
         }
     )
 
@@ -441,7 +441,7 @@ const Index = (props: any) => {
 
                                                     <View>
 
-                                                        <View>
+                                                        {/*<View>
                                                             <Field name="noofprint">
                                                                 {props => (
                                                                     <InputField
@@ -463,7 +463,7 @@ const Index = (props: any) => {
                                                                     </InputField>
                                                                 )}
                                                             </Field>
-                                                        </View>
+                                                        </View>*/}
 
                                                     </View>
 

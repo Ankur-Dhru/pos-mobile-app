@@ -1,18 +1,10 @@
 import React, {useEffect, useRef, useState} from "react";
-import {ActivityIndicator, FlatList, Text, TouchableOpacity, View} from "react-native";
-import {Caption, Card, Paragraph} from "react-native-paper"
-import {
-    appLog, base64Decode,
-    base64Encode, CheckConnectivity,
-    dateFormat,
-    getDateWithFormat,
-    getOrders, prelog,
-    printInvoice,
-    toCurrency, updateComponent
-} from "../../libs/function";
+import {FlatList, Text, TouchableOpacity, View} from "react-native";
+import {Card, Paragraph} from "react-native-paper"
+import {CheckConnectivity, dateFormat, getOrders, printInvoice, toCurrency, updateComponent} from "../../libs/function";
 import Container from "../../components/Container";
 import {styles} from "../../theme";
-import {connect, useDispatch} from "react-redux";
+import {connect} from "react-redux";
 import {ACTIONS, ItemDivider, localredux, METHOD, STATUS, urls, VOUCHER} from "../../libs/static";
 import apiService from "../../libs/api-service";
 
@@ -20,9 +12,9 @@ import moment from "moment";
 import ProIcon from "../../components/ProIcon";
 import PageLoader from "../../components/PageLoader";
 
-const offset = 10;
+const offset = 20;
 
-const SalesReport = ({ordersData,navigation}: any) => {
+const SalesReport = ({ordersData, navigation}: any) => {
 
     let {
         licenseData,
@@ -32,18 +24,18 @@ const SalesReport = ({ordersData,navigation}: any) => {
     const {token}: any = localredux.authData;
 
     const [data, setData] = useState<any>([]);
-    const [loader,setLoader] = useState(false);
-    const [unsynced,setUnsynced] = useState(false);
-    const [localorder,setLocalorder] = useState(ordersData);
-    const [take,setTake] = useState(offset);
+    const [loader, setLoader] = useState(false);
+    const [unsynced, setUnsynced] = useState(false);
+    const [localorder, setLocalorder] = useState(ordersData);
+    const [take, setTake] = useState(offset);
 
-    let loadmoreRef:any = useRef()
+    let loadmoreRef: any = useRef()
 
 
     useEffect(() => {
 
-        getOrders().then((orders:any)=>{
-            if(Boolean(orders)) {
+        getOrders().then((orders: any) => {
+            if (Boolean(orders)) {
                 setLocalorder(Object.values(orders).reverse())
             }
         })
@@ -52,8 +44,10 @@ const SalesReport = ({ordersData,navigation}: any) => {
 
 
     const getData = () => {
-        CheckConnectivity().then((connection)=>{
-            if(connection) {
+        CheckConnectivity().then((connection) => {
+            if (connection) {
+
+
                 apiService({
                     method: METHOD.GET,
                     action: ACTIONS.REPORT_SALES,
@@ -80,8 +74,7 @@ const SalesReport = ({ordersData,navigation}: any) => {
                 }).catch(() => {
                     setLoader(true)
                 })
-            }
-            else{
+            } else {
                 updateComponent(loadmoreRef, 'display', 'none')
                 setLoader(true);
             }
@@ -89,7 +82,7 @@ const SalesReport = ({ordersData,navigation}: any) => {
     }
 
 
-    const printPreview = async (invoice:any) => {
+    const printPreview = async (invoice: any) => {
 
 
         const {workspace}: any = localredux.initData;
@@ -98,20 +91,20 @@ const SalesReport = ({ordersData,navigation}: any) => {
         await apiService({
             method: METHOD.GET,
             action: ACTIONS.PRINTINVOICE,
-            queryString: {voucherid: invoice.voucherid,  terminalid: licenseData?.data?.terminal_id},
+            queryString: {voucherid: invoice.voucherid, terminalid: licenseData?.data?.terminal_id},
             workspace: workspace,
             token: token,
             other: {url: urls.posUrl},
         }).then(async (result) => {
 
             if (result.status === STATUS.SUCCESS) {
-                navigation.push('InvoicePreview',{data:result.data.data})
+                navigation.push('InvoicePreview', {data: result.data.data})
             }
 
         });
     }
 
-    const getOrderDetail = async (invoice: any,preview:any) => {
+    const getOrderDetail = async (invoice: any, preview: any) => {
 
         const {workspace}: any = localredux.initData;
         const {token}: any = localredux.authData;
@@ -126,21 +119,21 @@ const SalesReport = ({ordersData,navigation}: any) => {
         }).then(async (result) => {
 
             if (result.status === STATUS.SUCCESS) {
-                let data:any = result.data?.result;
+                let data: any = result.data?.result;
                 const {voucheritems, receipt}: any = data;
                 const payment = Boolean(receipt) ? Object.values(receipt)?.map((payment: any) => {
                     return {paymentAmount: payment.amount, paymentby: payment.payment}
                 }) : []
                 data = {
                     ...data,
-                    clientname:data.client,
+                    clientname: data.client,
                     invoiceitems: Object.values(voucheritems)?.map((item: any) => {
                         return {...item, change: true}
                     }),
                     payment: payment,
                 }
 
-                printInvoice(data).then((xmlData:any)=>{
+                printInvoice(data).then((xmlData: any) => {
 
                 })
 
@@ -150,16 +143,16 @@ const SalesReport = ({ordersData,navigation}: any) => {
 
     const renderFooter = () => {
 
-        if(!data?.length){
+        if (!data?.length) {
             return <></>
         }
 
         return (
-            <View   ref={loadmoreRef}>
+            <View ref={loadmoreRef}>
                 <TouchableOpacity
                     onPress={getData}
                     style={[styles.center]}>
-                    <Paragraph style={[styles.center,{textAlign:'center'}]}>Load More</Paragraph>
+                    <Paragraph style={[styles.center, {textAlign: 'center'}]}>Load More</Paragraph>
                 </TouchableOpacity>
             </View>
         );
@@ -170,8 +163,9 @@ const SalesReport = ({ordersData,navigation}: any) => {
     }
 
     navigation.setOptions({
-        headerRight:()=>{
-            return <TouchableOpacity onPress={()=>setUnsynced(!unsynced)}><Paragraph>{unsynced?'Synced':'Unsynced'}</Paragraph></TouchableOpacity>
+        headerRight: () => {
+            return <TouchableOpacity
+                onPress={() => setUnsynced(!unsynced)}><Paragraph>{unsynced ? 'Synced' : 'Unsynced'}</Paragraph></TouchableOpacity>
         }
     })
 
@@ -186,7 +180,7 @@ const SalesReport = ({ordersData,navigation}: any) => {
             name = `${item?.voucherprefix}${item?.voucherdisplayid}  ${item?.clientname} (${terminal_name}-${item?.posinvoice})`
         }
 
-        if(!Boolean(item.localdatetime)){
+        if (!Boolean(item.localdatetime)) {
             item.localdatetime = item.date
         }
 
@@ -199,18 +193,20 @@ const SalesReport = ({ordersData,navigation}: any) => {
                         <View>
                             <Paragraph style={[styles.paragraph, styles.bold]}>{name}</Paragraph>
                             {
-                                item?.receipt?.map((rec:any)=>{
-                                    return <Text  style={[styles.paragraph, styles.text_xs]}>{rec.payment} : {toCurrency(rec.amount)}</Text>
+                                item?.receipt?.map((rec: any) => {
+                                    return <Text
+                                        style={[styles.paragraph, styles.text_xs]}>{rec.payment} : {toCurrency(rec.amount)}</Text>
                                 })
                             }
-                            <Paragraph style={[styles.paragraph, styles.text_xs]}>{moment(item.localdatetime).format(dateFormat(true))}</Paragraph>
+                            <Paragraph
+                                style={[styles.paragraph, styles.text_xs]}>{moment(item.localdatetime).format(dateFormat(true))}</Paragraph>
                         </View>
                     </View>
                 </View>
 
                 <View style={{width: 50}}>
                     {Boolean(item?.voucherdisplayid) && <TouchableOpacity onPress={() => {
-                        Boolean(item?.voucherdisplayid) &&  printPreview(item).then()
+                        Boolean(item?.voucherdisplayid) && printPreview(item).then()
                     }}>
                         <ProIcon name={'eye'} type={'solid'} size={15}/>
                     </TouchableOpacity>}
@@ -218,14 +214,14 @@ const SalesReport = ({ordersData,navigation}: any) => {
 
                 <View style={{width: 50}}>
                     {Boolean(item?.voucherdisplayid) && <TouchableOpacity onPress={() => {
-                        Boolean(item?.voucherdisplayid) &&  getOrderDetail(item,false).then()
+                        Boolean(item?.voucherdisplayid) && getOrderDetail(item, false).then()
                     }}>
                         <ProIcon name={'print'} type={'solid'} size={15}/>
                     </TouchableOpacity>}
                 </View>
-                {<View style={{width: 100}}>
+                {<View style={{width: 80}}>
                     <Paragraph
-                        style={[styles.paragraph,styles.bold, {textAlign: 'right'}]}>{toCurrency(item?.vouchertotaldisplay)}</Paragraph>
+                        style={[styles.paragraph, styles.bold, {textAlign: 'right'}]}>{toCurrency(item?.vouchertotaldisplay)}</Paragraph>
                     {Boolean(item?.voucherdisplayid) ?
                         <Paragraph
                             style={[styles.paragraph, styles.text_xs, {
@@ -246,7 +242,6 @@ const SalesReport = ({ordersData,navigation}: any) => {
     }
 
 
-
     return <Container>
         <Card style={[styles.card]}>
             <Card.Content style={[styles.cardContent]}>
@@ -259,7 +254,8 @@ const SalesReport = ({ordersData,navigation}: any) => {
                     renderItem={renderItem}
                     ListEmptyComponent={<View>
                         <View style={[styles.p_6]}>
-                            <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>No any {unsynced?'unsynced':'synced'} items found</Text>
+                            <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>No
+                                any {unsynced ? 'unsynced' : 'synced'} items found</Text>
 
                         </View>
                     </View>}

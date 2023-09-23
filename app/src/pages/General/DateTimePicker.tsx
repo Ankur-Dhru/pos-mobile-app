@@ -24,7 +24,12 @@ const Index = (props: any) => {
         label,
     }: any = route?.params || {};
 
-    const [value, setValue]: any = useState()
+
+    const [value, setValue]: any = useState(defaultValue)
+
+    useEffect(()=>{
+        setValue(defaultValue)
+    },[defaultValue])
 
 
     const onChange = (value: any) => {
@@ -34,6 +39,7 @@ const Index = (props: any) => {
     navigation.setOptions({
         headerTitle: label
     })
+
 
 
     return (
@@ -59,7 +65,8 @@ const Index = (props: any) => {
                     </View>
                     <View style={[styles.w_auto, styles.ml_2]}>
                         <Button onPress={() => {
-                            onSelect(value);
+
+                            onSelect(value.value ? value : {value:value});
                             navigation.goBack();
                         }}> OK </Button>
                     </View>

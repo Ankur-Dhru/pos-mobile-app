@@ -4,7 +4,7 @@ import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {TouchableOpacity, View} from "react-native";
 import InputBox from "../../components/InputBox";
-import {appLog, clone, findObject} from "../../libs/function";
+import {appLog, clone, findObject, isEmpty} from "../../libs/function";
 import {localredux} from "../../libs/static";
 
 
@@ -38,32 +38,51 @@ const Index = ({tags,notes,itemtags,updateProduct}: any) => {
     return (
 
         <>
-            {Boolean(temptags?.length) && <View style={[styles.mt_5]}>
-                <Caption  style={[styles.ml_2]}>Tags</Caption>
 
-                <View style={[styles.grid,styles.borderBottom]}>
-                {
-                    temptags.map((tag: any, key: any) => {
-                        const {taggroupname} = tag;
-                        const selected = (selectedTag === key);
-                        {
-                            return (
-                                <TouchableOpacity  key={key} style={[styles.p_5]}  onPress={() =>  setSelectedTag(key) }><Text style={[!selected?styles.muted:styles.primary,styles.bold]}>{taggroupname}</Text></TouchableOpacity>
-                            )
-                        }
-                    })
-                }
+            <View style={[styles.mt_3]}>
+                <InputBox
+                    defaultValue={notes}
+                    label={'Notes'}
+                    autoFocus={false}
+                    onChange={(value:any) => {
+                        updateProduct({notes:value})
+                    }}
+                />
+            </View>
+
+
+
+            {!isEmpty(temptags) && <View style={[styles.mt_3]}>
+
+                <View style={[styles.flex,styles.justifyContent]}>
+
+                    <Caption style={[styles.caption,styles.mt_5]}>Tags</Caption>
+
+                    <View style={[styles.grid]}>
+                    {
+                        temptags?.map((tag: any, key: any) => {
+                            const {taggroupname} = tag;
+                            const selected = (selectedTag === key);
+                            {
+                                return (
+                                    <TouchableOpacity  key={key} style={[styles.p_3]}  onPress={() =>  setSelectedTag(key) }><Text style={[!selected?styles.muted:styles.primary,styles.bold]}>{taggroupname}</Text></TouchableOpacity>
+                                )
+                            }
+                        })
+                    }
+                    </View>
+
                 </View>
 
                 {
                     temptags?.map((tags: any, tagid: any) => {
                         {
                             return (
-                                <View key={tagid} style={[styles.ml_1]}>
+                                <View key={tagid}>
                                     {<View style={[styles.grid,{display:(selectedTag === tagid)?'flex':'none'}]}>
                                         {
                                            tags?.taglist?.map((tag: any, key: any) => {
-                                                return (<Chip key={key} style={[tag.selected?styles.bg_light_blue:styles.light.color,styles.m_2,styles.p_3]}     icon={tag.selected?'check':'stop'} onPress={() => {
+                                                return (<Chip key={key} style={[tag.selected?styles.bg_light_blue:styles.light.color,styles.m_1,styles.p_2]}     icon={tag.selected?'check':'stop'} onPress={() => {
                                                     tag.selected = !Boolean(tag?.selected)
                                                     setTempTags(clone(temptags))
                                                 }}><Paragraph style={[styles.p_5]}>{tag.name+''}</Paragraph></Chip>)
@@ -79,16 +98,6 @@ const Index = ({tags,notes,itemtags,updateProduct}: any) => {
             </View>}
 
 
-            <View style={[styles.mt_5,styles.px_5]}>
-                <InputBox
-                    defaultValue={notes}
-                    label={'Notes'}
-                    autoFocus={false}
-                    onChange={(value:any) => {
-                        updateProduct({notes:value})
-                    }}
-                />
-            </View>
 
 
         </>

@@ -186,7 +186,7 @@ export const getProductData = (product: any,
     let returnObject: any = {};
     try {
 
-        let {itemminqnt, pricing, purchasecost} = product;
+        let {itemminqnt, pricing, purchasecost,selling} = product;
         const {qntranges, price, type} = pricing;
 
         if (!pricingType) {
@@ -255,12 +255,20 @@ export const getProductData = (product: any,
             returnObject.productratedisplay = productratedisplay;
         }
 
+
+
         if (isInward) {
             if (!Boolean(purchasecost)) {
                 purchasecost = 0;
             }
             returnObject.productrate = purchasecost;
             returnObject.productratedisplay = currencyRate(clientCurrency) * purchasecost;
+        }
+        else{
+            if (Boolean(selling)) {
+                returnObject.productrate = selling;
+                returnObject.productratedisplay = currencyRate(clientCurrency) * selling;
+            }
         }
     } catch (e) {
         appLog('get produxct data', e)

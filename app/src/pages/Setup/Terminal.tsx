@@ -39,6 +39,7 @@ import KAccessoryView from "../../components/KAccessoryView"
 import {createTables} from "../../libs/Sqlite";
 
 import {getUniqueId} from 'react-native-device-info';
+import KeyboardScroll from "../../components/KeyboardScroll";
 
 
 let uniqueDeviceId = '';
@@ -202,7 +203,7 @@ const Terminal = (props: any) => {
                         <View style={[styles.middleForm, {maxWidth: 400,}]}>
 
 
-                            <ScrollView>
+                            <KeyboardScroll>
 
                                 <Card style={[styles.card]}>
                                     <Card.Content style={[styles.cardContent]}>
@@ -274,7 +275,7 @@ const Terminal = (props: any) => {
                                 </Card>
 
 
-                            </ScrollView>
+                            </KeyboardScroll>
 
 
                             <KAccessoryView>

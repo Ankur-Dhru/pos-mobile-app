@@ -47,19 +47,24 @@ const Index = (props: any) => {
                 store.dispatch(setDialog({visible: false}))
             })
         })
-
     }
+
+
+
+
+
+
 
     return (
         <>
-            <View style={[styles.grid,styles.noWrap,   styles.middle,styles.justifyContent, {
+            <View style={[styles.grid,styles.noWrap,  styles.middle,styles.justifyContent, {
                 width: '100%',
                 minWidth: 100,
                 maxWidth:160,
                 borderRadius: 5,
                 backgroundColor: styles.primary.color,
             }]}>
-                {<TouchableOpacity style={[styles.py_3,{width:35}]} onPress={() => {
+                {<TouchableOpacity style={[styles.py_2,{width:35}]} onPress={() => {
                     updateItem(item, 'remove').then(r => {
                     })
                 }}>
@@ -72,9 +77,10 @@ const Index = (props: any) => {
                         style={[{color: colors.secondary}]}
                     >{parseFloat(item?.productqnt?.toFixed(3) || 1)}</Paragraph>
                 </TouchableOpacity>
-                {<TouchableOpacity style={[styles.py_3,{width:35}]} onPress={() => {
-                    updateItem(item, 'add').then(r => {
-                    })
+                 {<TouchableOpacity style={[styles.py_2,{width:35}]} onPress={() => {
+                     if(item.inventorytype !== 'specificidentification') {
+                         updateItem(item, 'add').then(r => {})
+                     }
                 }}>
                     <ProIcon name={'plus'} color={colors.secondary} size={15}/>
                 </TouchableOpacity>}

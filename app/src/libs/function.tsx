@@ -21,7 +21,8 @@ import {
     db,
     device,
     grecaptcharesponse,
-    isDevelopment, ITEM_TYPE,
+    isDevelopment,
+    ITEM_TYPE,
     localredux,
     loginUrl,
     METHOD,
@@ -37,7 +38,7 @@ import {
 } from "./static";
 
 import {setSettings} from "../redux-store/reducer/local-settings-data";
-import React, {useEffect} from "react";
+import React from "react";
 import {Alert, Keyboard, PermissionsAndroid, Platform, Text} from "react-native";
 import {v4 as uuid} from "uuid";
 import SyncingInfo from "../pages/Pin/SyncingInfo";
@@ -74,7 +75,14 @@ import ImageEditor from "@react-native-community/image-editor";
 import ItemListCombo from "../pages/Items/ItemListCombo";
 import {createTables} from "./Sqlite";
 import crashlytics from "@react-native-firebase/crashlytics";
+import ScanItem from "../pages/Items/ScanItem";
+import ScanSerialno, {onRead} from "../pages/Items/ScanSerialno";
+import QRCodeScanner from "../components/QRCodeScanner";
+/*
+import BackgroundService from "react-native-background-actions";
+import {backgroundSync, options} from "../App";
 
+*/
 
 let NumberFormat = require('react-number-format');
 const getSymbolFromCurrency = require('currency-symbol-map')
@@ -674,6 +682,7 @@ export const syncData = async (loader = true, synctype = '') => {
                         await syncImages().then()
                         store.dispatch(setDialog({visible: false}))
                         loader && store.dispatch(setAlert({visible: true, message: 'Sync Successful'}))
+
                     }
 
                 })
@@ -802,7 +811,8 @@ export const toCurrency = (value: any, code?: any, decimal?: any) => {
 
 
 export const isRestaurant = () => {
-    return localredux?.localSettingsData?.isRestaurant
+
+    return localredux?.localSettingsData?.isRestaurant || localredux.licenseData.data?.locationtype === 'foodservices'
 }
 
 export const updateComponent = (ref: any, key: any, value: any) => {
@@ -922,6 +932,7 @@ export const setItemRowData = (data: any, pricingtemplate?: any) => {
             notes,
             hasAddon,
             mrp,
+            selling,
             key
         } = data;
 
@@ -938,6 +949,10 @@ export const setItemRowData = (data: any, pricingtemplate?: any) => {
             pricing.price[pricingTemplate][0] &&
             pricing.price[pricingTemplate]?.length > 0) {
             recurring = Object.keys(pricing.price[pricingTemplate][0])[0];
+        }
+
+        if(Boolean(selling)){
+
         }
 
 
@@ -1036,13 +1051,13 @@ export const saveTempLocalOrder = (order?: any, config?: any) => {
                 order.payment[0].paymentAmount = order.vouchertotaldisplay
             }*/
 
-            appLog('order', order.tablename)
 
             insertTempOrder(order).then((data: any) => {
                 if (Boolean(data)) {
                     store.dispatch(setCartData(data));
+
                 } else {
-                    store.dispatch(resetCart())
+                    //store.dispatch(resetCart())
                 }
                 resolve(data)
             })
@@ -1067,6 +1082,7 @@ export const deleteTempLocalOrder = (tableorderid?: any) => {
 
 export const saveLocalOrder = (order?: any) => {
 
+
     crashlytics().log('saveLocalOrder');
 
     return new Promise<any>(async (resolve) => {
@@ -1075,7 +1091,27 @@ export const saveLocalOrder = (order?: any) => {
             order = clone(store.getState().cartData)
         }
 
-        if (Boolean(urls.localserver)) {
+        if(order?.voucherid){
+            const {workspace}: any = localredux.initData;
+            const {token}: any = localredux.authData;
+
+
+            apiService({
+                method: METHOD.PUT,
+                action: ACTIONS.INVOICE,
+                body: order,
+                workspace: workspace,
+                token: token,
+                other: {url: urls.posUrl},
+            }).then((response: any) => {
+
+                if (Boolean(response?.data)) {
+                    store.dispatch(resetCart())
+                    resolve(response?.data)
+                }
+            })
+        }
+        else if (Boolean(urls.localserver)) {
 
             apiService({
                 method: METHOD.POST,
@@ -1113,6 +1149,8 @@ export const saveLocalOrder = (order?: any) => {
                 })
             }
 
+            prelog('order',order)
+
 
             ///////// CREATE LOCALORDER ID //////////
             if (!Boolean(order.invoice_display_number)) {
@@ -1136,15 +1174,15 @@ export const saveLocalOrder = (order?: any) => {
                     resolve(order)
                 });
 
-                const disablesyncinvoicesrealtime: any = store.getState().localSettings?.disablesyncinvoicesrealtime;
-                !disablesyncinvoicesrealtime && await syncInvoice(order).then()
+                const syncinvoicesrealtime: any = store.getState().localSettings?.syncinvoicesrealtime;
+
+                syncinvoicesrealtime && await syncInvoice({...order,savingmode:'realtime',version:'3.7.0'}).then();
+                   // await BackgroundService.start(backgroundSync, options).then(r => {});
             })
         }
-
     })
-
-
 }
+
 
 
 export const getDatabaseName = async () => {
@@ -1383,6 +1421,7 @@ export const selectItem = async (item: any) => {
 
     crashlytics().log('selectItem');
 
+
     const pricingtype = item?.pricing?.type;
 
     let pricingtemplate = getPricingTemplate()
@@ -1394,7 +1433,7 @@ export const selectItem = async (item: any) => {
 
     const currentpax = store.getState().cartData.currentpax;
 
-    const baseprice = (item?.pricing?.price[pricingtemplate] && item?.pricing?.price[pricingtemplate][0][pricingtype]?.baseprice) || item?.pricing?.price['default'][0][pricingtype]?.baseprice || 0;
+    const baseprice = item?.selling || (item?.pricing?.price[pricingtemplate] && item?.pricing?.price[pricingtemplate][0][pricingtype]?.baseprice) || item?.pricing?.price['default'][0][pricingtype]?.baseprice || 0;
 
     const setItemQnt = async (item: any) => {
 
@@ -1406,9 +1445,10 @@ export const selectItem = async (item: any) => {
                 ...item,
                 added: true,
                 key: uuid(),
-                pax:currentpax === 'all'?1:currentpax,
-                deviceid: device.uniqueid
+                pax: (currentpax === 'all' && isRestaurant()) ?1:currentpax,
+                deviceid: device.uniqueid,
             }
+
 
             let start = moment();
 
@@ -1439,6 +1479,7 @@ export const selectItem = async (item: any) => {
 
             } else {
 
+
                 const itemRowData: any = setItemRowData(item);
                 item = {
                     ...item,
@@ -1460,9 +1501,10 @@ export const selectItem = async (item: any) => {
 
     const {defaultAmountOpen, defaultOpenUnitType}: any = store.getState()?.localSettings || {};
 
-    const directQnt = arraySome(defaultAmountOpen, item.salesunit) && defaultOpenUnitType
+    const directQnt = arraySome(defaultAmountOpen, item.salesunit) && defaultOpenUnitType;
 
-    if (Boolean(item?.comboid)) {
+
+     if (Boolean(item?.comboid)) {
         store.dispatch(setBottomSheet({
             visible: true,
             hidecancel: true,
@@ -2532,6 +2574,12 @@ export const getOrders = (refresh = false) => {
 }
 
 
+
+
+
+
+
+
 export const gePhonebook = async (force?: any) => {
 
     const synccontact: any = store.getState()?.localSettings?.synccontact;
@@ -2648,6 +2696,22 @@ export const syncInvoice = async (invoiceData: any) => {
 
             saveLocalSettings({sync_in_process: true})
 
+            const utcDate = moment().format("YYYY-MM-DD HH:mm:ss");
+            let date = getDateWithFormat(utcDate, "YYYY-MM-DD");
+            let vouchercreatetime = getDateWithFormat(utcDate, 'HH:mm:ss');
+            let local = utcDate;
+
+            invoiceData = {
+                ...invoiceData,
+                localdatetime: local,
+                date,
+                voucherdate: date,
+                duedate: local,
+                vouchercreatetime,
+            }
+
+           // BackgroundService.updateNotification({taskTitle: 'Order Syncing....'});
+
             apiService({
                 method: METHOD.POST,
                 action: ACTIONS.INVOICE,
@@ -2680,6 +2744,9 @@ export const syncInvoice = async (invoiceData: any) => {
 
                 if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
                     appLog('save success on server')
+
+                   // await BackgroundService.updateNotification({taskTitle: 'Order Synced'});
+
                     deleteTable(TABLE.ORDER, `orderid = '${invoiceData?.orderid}'`).then(async () => {
                         store.dispatch(setOrder({...invoiceData, synced: true}))
                         appLog('delete from local table')
@@ -2687,6 +2754,9 @@ export const syncInvoice = async (invoiceData: any) => {
                         resolve('synced',)
                     });
                 } else {
+
+                  //  await BackgroundService.updateNotification({taskTitle: 'Sync Pending...'});
+
                     appLog('response error')
                     appLog('sync pending', invoiceData?.orderid)
                     await insertOrder({...invoiceData, syncinprogress: false}).then(() => {
@@ -2696,6 +2766,8 @@ export const syncInvoice = async (invoiceData: any) => {
                 }
 
             }).catch(async () => {
+
+               // await BackgroundService.updateNotification({taskTitle: 'response catch error'});
 
                 insertLog({
                     displayno: invoiceData?.invoice_display_number,
@@ -2895,45 +2967,53 @@ export const printDayEndReport = ({date: date, data: data}: any) => {
 }
 
 
-export const intervalInvoice = () => {
-    let interval: any = null;
-    CheckConnectivity().then(()=>{
+export const intervalInvoice = (function () {
+    let done = false;
+    return function () {
 
-    })
+        CheckConnectivity().then(()=>{
+            //syncData().then();
+        })
 
-    retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
-        const {syncinvoiceintervaltime} = data
+        if (!done) {
+            done = true;
+
+            let interval: any = null;
 
 
-            if (!interval) {
-                interval = setInterval(() => {
-                    if (Boolean(db?.name)) {
-                        if(data) {
-                            CheckConnectivity().then((connection)=>{
+            retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
+                const {syncinvoiceintervaltime} = data
 
-                                getOrders().then((orders: any) => {
-                                    if (!isEmpty(orders)) {
-                                        let invoice: any = Object.values(orders)[0]
 
-                                        connection && syncInvoice(invoice).then()
-                                    }
+                if (!interval) {
+                    interval = setInterval(() => {
+                        if (Boolean(db?.name)) {
+                            if(data) {
+                                CheckConnectivity().then((connection)=>{
+                                    getOrders().then((orders: any) => {
+                                        if (!isEmpty(orders)) {
+                                            let invoice: any = Object.values(orders)[0]
+                                            connection && syncInvoice({...invoice,savingmode:'sync',version:'3.7.0'}).then()
+                                        }
+                                    })
                                 })
-                            })
+                            }
                         }
-                    }
-                }, +syncinvoiceintervaltime || 30000);
-            }
-            return () => {
-                clearInterval(interval);
-                interval = null;
-            };
+                    }, +syncinvoiceintervaltime || 10000);
+                }
+                return () => {
+                    clearInterval(interval);
+                    interval = null;
+                };
+
+            })
+
+        }
+
+    };
+})();
 
 
-
-
-    })
-
-}
 
 
 export const captureImages = async (cropheight: any = 500, image: any) => {
@@ -3012,6 +3092,8 @@ export const connectToLocalServer = async (serverip: any, navigation: any) => {
         other: {url: `http://${serverip}:${port}/`},
     }).then((response: any) => {
         const {data} = response;
+
+
         if (Boolean(data) && Boolean(data.data)) {
             try {
                 const {license: {expired_on, status}} = data.data;
@@ -3019,6 +3101,7 @@ export const connectToLocalServer = async (serverip: any, navigation: any) => {
                 if (expired_on >= today && status === 'Active') {
                     localredux.initData = {staff: data.staffs};
                     localredux.licenseData = {data: data.data};
+
                     saveLocalSettings('serverip', serverip).then();
                     getLocalSettings('recentserverips').then((ips: any) => {
                         if (!Boolean(ips)) {
@@ -3270,14 +3353,6 @@ export const prelog = (title:any,data:any) => {
     console.log(JSON.stringify(data,0,1))
     console.log(`==================================================`)
 }
-
-
-
-
-
-
-
-
 
 
 
@@ -3584,4 +3659,48 @@ export const getComboFlagData = (coupon: any, invoiceitems: any) => {
         });
     });
 };
+
+
+
+export const checkPrinterSettings = (navigation:any) => {
+    const PRINTERS: any = store.getState()?.localSettings?.printers || [];
+    const printerset:any = localredux.localSettingsData?.printerset;
+
+    if(isEmpty(PRINTERS) && !Boolean(printerset)){
+
+        Alert.alert('Printer Settings', 'Want to sets up printer?', [
+            {
+                text: 'Later',
+                onPress: () =>{
+                    retrieveData(db.name).then(async (data: any) => {
+                        let localSettingsData = data?.localSettingsData || {};
+
+                        data = {
+                            ...data,
+                            localSettingsData: {
+                                ...localSettingsData,
+                                printerset:true
+                            }
+                        }
+                        storeData(db.name, {
+                            ...data,
+                        }).then(async () => {
+                            localredux.localSettingsData = data.localSettingsData
+                        });
+                    })
+                },
+                style: 'cancel',
+            },
+            {text: 'YES', onPress: () =>{
+                    navigation.navigate('ProfileSettingsNavigator');
+                    setTimeout(()=>{
+                        navigation.navigate('PrinterFor');
+                    },1000)
+                }},
+        ]);
+    }
+}
+function logoutUser() {
+    throw new Error("Function not implemented.");
+}
 

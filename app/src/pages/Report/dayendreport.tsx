@@ -136,6 +136,7 @@ const Index = ({navigation}: any) => {
                                         setDateTime({...datetime, dateto: value});
                                     }}
                                 />
+
                             </View>
 
 
@@ -150,7 +151,7 @@ const Index = ({navigation}: any) => {
                                         return <Paragraph
                                             style={[styles.paragraph, styles.bold]}>{moment(currentdate + ' ' + datetime.starttime).format('hh:mm A')}</Paragraph>
                                     }}
-                                    selectedValue={currentdate + ' ' + datetime.starttime}
+                                    selectedValue={datetime.dateto + ' ' + datetime.starttime}
                                     onChange={(value: any) => {
                                         value = moment(value).format('HH:mm')
                                         setDateTime({...datetime, starttime: value});
@@ -195,7 +196,7 @@ const Index = ({navigation}: any) => {
                                         return <Paragraph
                                             style={[styles.paragraph, styles.bold]}>{moment(currentdate + ' ' + datetime.endtime).format('hh:mm A')}</Paragraph>
                                     }}
-                                    selectedValue={currentdate + ' ' + datetime.endtime}
+                                    selectedValue={datetime.datefrom + ' ' + datetime.endtime}
                                     onChange={(value: any) => {
                                         value = moment(value).format('HH:mm')
                                         setDateTime({...datetime, endtime: value});

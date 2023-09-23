@@ -16,6 +16,7 @@ class Index extends React.Component<any> {
             name,
             color = colors.inputbox,
             onPress,
+            height,
             align = 'center',
             action_type = 'button'
         }: any = this.props;
@@ -23,8 +24,10 @@ class Index extends React.Component<any> {
         return (
             <>
                 {action_type === 'button' ? <TouchableOpacity style={[styles.center, {
-                        height: 30,
-                        width: 35,
+
+                        borderRadius:40,
+                        height:height || 35,
+                        width: 40,
                         alignItems: align === 'left' ? 'flex-start' : align === 'right' ? 'flex-end' : 'center'
                     }]} onPress={onPress}>
                         <Icon name={name} type={type} color={color}   {...this.props}    />

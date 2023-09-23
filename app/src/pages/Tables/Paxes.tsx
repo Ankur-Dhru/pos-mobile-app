@@ -9,11 +9,11 @@ import Button from "../../components/Button";
 import CheckBox from "../../components/CheckBox";
 
 
-const Paxes = () => {
+const Paxes = ({selectedpaxes,orderbypax}:any) => {
 
     const dispatch = useDispatch();
 
-    const [paxes, setPaxes] = useState({pax: '', orderbypax: false,currentpax:1})
+    const [paxes, setPaxes] = useState({pax: selectedpaxes, orderbypax: Boolean(orderbypax),currentpax:1})
 
 
     const noofpaxes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
@@ -25,6 +25,7 @@ const Paxes = () => {
             <View style={[styles.mb_5]}>
                 <CheckBox
                     label={'Order by Pax'}
+                    value={Boolean(orderbypax)}
                     onChange={(value: any) => {
                         setPaxes({...paxes, orderbypax: value})
                     }}
@@ -34,12 +35,8 @@ const Paxes = () => {
 
             <View style={[styles.grid]}>
                 {noofpaxes.map((number: any, index: any) => {
-                    return <>
-                        <TouchableOpacity key={index} style={[styles.m_2, styles.p_6, styles.flexGrow, {
-                            borderRadius: 10,
-                            width: '20%',
-                            backgroundColor: paxes.pax === number ? styles.secondary.color : styles.light.color
-                        }]} onPress={() => {
+                    return <View key={index} style={[styles.m_2, styles.p_6, styles.flexGrow, {width: '20%',borderRadius: 10,backgroundColor: +paxes.pax === +number ? styles.secondary.color : styles.light.color}]}>
+                        <TouchableOpacity    onPress={() => {
                             setPaxes({...paxes, pax: number})
                         }}>
                             <Paragraph style={[styles.bold, {
@@ -47,7 +44,7 @@ const Paxes = () => {
                                 textAlignVertical: 'center'
                             }]}>{number}</Paragraph>
                         </TouchableOpacity>
-                    </>
+                    </View>
                 })}
             </View>
 

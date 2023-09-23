@@ -1,9 +1,13 @@
-import React, {memo} from "react";
-import {toCurrency} from "../../libs/function";
+import React, {memo, useEffect, useState} from "react";
+import {clone, toCurrency} from "../../libs/function";
 import {ActivityIndicator, View} from "react-native";
 import {Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
-import {connect} from "react-redux";
+import {connect, useDispatch} from "react-redux";
+import {contentLoader} from "../../redux-store/reducer/component";
+import store from "../../redux-store/store";
+import {itemTotalCalculation} from "../../libs/item-calculation";
+import {setCartData, setUpdateCart} from "../../redux-store/reducer/cart-data";
 
 
 const Index = ({
@@ -16,8 +20,30 @@ const Index = ({
                    extrachargeboforetaxDisplay,
                    totalwithoutroundoffdisplay,
                    extrachargeafterdisplay,
-                   loading
+                   //loading
                }: any) => {
+
+    const [loading,setLoading] = useState(true)
+
+    const dispatch = useDispatch()
+
+    useEffect(()=>{
+        setTimeout(async () => {
+
+            const cartdata:any = clone(store.getState().cartData);
+            const vouchertotaldisplay:any = clone(store.getState().cartData.vouchertotaldisplay);
+
+            if(Boolean(vouchertotaldisplay)) {
+
+                let data = await itemTotalCalculation(cartdata, undefined, undefined, undefined, undefined, 2, 2, false, false);
+                await dispatch(setCartData(clone(data)));
+                await dispatch(setUpdateCart());
+
+            }
+            setLoading(false)
+
+        })
+    },[])
 
     if (loading) {
         return <View style={{marginTop: 20}}>
@@ -52,15 +78,14 @@ const Index = ({
     return (<View>
 
 
-        {loading && <View style={[styles.absolute, {left: '50%', marginLeft: -22, top: -7}]}><ActivityIndicator
-            style={styles.m_1} color={'#016EFE'} size='large' animating={true}/></View>}
 
-        <View style={{opacity: loading ? 0.3 : 1}}>
+
+        <View>
 
 
             {Boolean(extrachargeboforetaxDisplay) && <View style={[styles.grid, styles.justifyContent]}>
                 <View><Paragraph style={[styles.paragraph]}>Extra Charges On
-                    ({toCurrency(!loading ? vouchersubtotaldisplay - (voucherinlinediscountdisplay + extrachargeboforetaxDisplay) : '0')})</Paragraph></View>
+                    ({toCurrency(vouchersubtotaldisplay - (voucherinlinediscountdisplay + extrachargeboforetaxDisplay))})</Paragraph></View>
                 <View>
                     <Paragraph
                         style={[styles.paragraph, styles.bold]}>{toCurrency(extrachargeboforetaxDisplay)}</Paragraph>
@@ -71,7 +96,7 @@ const Index = ({
                 <View><Paragraph style={[styles.paragraph]}>Subtotal</Paragraph></View>
                 <View>
                     <Paragraph
-                        style={[styles.paragraph, styles.bold]}> {toCurrency(!loading ? vouchersubtotaldisplay - voucherinlinediscountdisplay : '0')}</Paragraph>
+                        style={[styles.paragraph, styles.bold]}> {toCurrency(vouchersubtotaldisplay - voucherinlinediscountdisplay)}</Paragraph>
                 </View>
             </View>
 
@@ -98,7 +123,7 @@ const Index = ({
                         <View style={[styles.grid, styles.justifyContent]} key={key}>
                             <View><Paragraph style={[styles.paragraph]}>{tax.taxname} ({tax.taxpercentage}%)</Paragraph></View>
                             <View><Paragraph
-                                style={[styles.paragraph]}>{toCurrency(!loading ? tax.taxpricedisplay : '0')}</Paragraph></View>
+                                style={[styles.paragraph]}>{toCurrency(tax.taxpricedisplay)}</Paragraph></View>
                         </View>
                     )
                 })
@@ -107,7 +132,7 @@ const Index = ({
 
             {Boolean(extrachargeafterdisplay) && <View style={[styles.grid, styles.justifyContent]}>
                 <View><Paragraph style={[styles.paragraph]}>Extra Charges On
-                    ({toCurrency(!loading ? totalwithoutroundoffdisplay - extrachargeafterdisplay : '0')})</Paragraph></View>
+                    ({toCurrency(totalwithoutroundoffdisplay - extrachargeafterdisplay)})</Paragraph></View>
                 <View>
                     <Paragraph
                         style={[styles.paragraph, styles.bold]}>{toCurrency(extrachargeafterdisplay)}</Paragraph>
@@ -126,7 +151,7 @@ const Index = ({
             {Boolean(voucherroundoffdisplay) && <View style={[styles.grid, styles.justifyContent]}>
                 <View><Paragraph style={[styles.paragraph]}>Roundoff</Paragraph></View>
                 <View><Paragraph
-                    style={[styles.paragraph, styles.bold]}>{toCurrency(!loading ? voucherroundoffdisplay : '0')}</Paragraph></View>
+                    style={[styles.paragraph, styles.bold]}>{toCurrency(voucherroundoffdisplay)}</Paragraph></View>
             </View>}
 
         </View>
@@ -145,7 +170,7 @@ const mapStateToProps = (state: any) => ({
     voucherglobaldiscountdisplay: state.cartData.voucherglobaldiscountdisplay,
     voucherinlinediscountdisplay: state.cartData.voucherinlinediscountdisplay,
     vouchertotaldiscountamountdisplay: state.cartData.vouchertotaldiscountamountdisplay,
-    loading: state.component.loading
+    //loading: state.component.loading
 })
 
 export default connect(mapStateToProps)(withTheme(memo(Index)));

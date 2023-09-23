@@ -1,36 +1,50 @@
 import React, {useState} from "react";
-import {Caption, Paragraph, Text, TextInput as TI, withTheme} from "react-native-paper";
+import {Caption, Text, TextInput as TI, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {clone, getCurrencySign, isRestaurant, setItemRowData, toCurrency} from "../../libs/function";
-import {TouchableHighlight, TouchableOpacity, View} from "react-native";
+import {View} from "react-native";
 import Button from "../../components/Button";
 import KeyboardScroll from "../../components/KeyboardScroll";
 import {setBottomSheet} from "../../redux-store/reducer/component";
 import TagsNotes from "./TagsNotes";
 import Addons from "./Addons";
-import {changeCartItem, setCartData, setCartItems, setUpdateCart} from "../../redux-store/reducer/cart-data";
+import {changeCartItem, setCartItems} from "../../redux-store/reducer/cart-data";
 import Qnt from "./Qnt";
 import InputBox from "../../components/InputBox";
 import ToggleButtons from "../../components/ToggleButton";
-import InputField from "../../components/InputField";
 import store from "../../redux-store/store";
-import {updateCartItem} from "./AddButton";
-import {Field} from "react-final-form";
-import {required} from "../../libs/static";
-import {itemTotalCalculation} from "../../libs/item-calculation";
+import {Container} from "../../components";
+import {useNavigation} from "@react-navigation/native";
+import InputField from "../../components/InputField";
 
 const {v4: uuid} = require('uuid')
 
-const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) => {
+const Index = (props: any) => {
 
-    const dispatch = useDispatch()
+    const {itemDetail, inittags, sheetRef, theme: {colors},orderbypax} = props
+    const edit = props.route?.params?.edit
+
+    const dispatch = useDispatch();
+    let navigation = ''
+    if(edit) {
+        navigation = useNavigation()
+    }
     let product = itemDetail;
 
-    const {pricing, description, productrate,pax, itemname, groupname,productdiscounttype,productdiscountvalue} = itemDetail;
+    const {
+        pricing,
+        description,
+        productrate,
+        pax,
+        itemname,
+        groupname,
+        productdiscounttype,
+        productdiscountvalue
+    } = itemDetail;
 
 
-    let {cartData,cartData:{invoiceitems}} = store.getState()
+    let {cartData, cartData: {invoiceitems}} = store.getState()
     const totaloax = cartData?.pax;
 
     const selectItem = async () => {
@@ -42,7 +56,9 @@ const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) =>
                 itemUpdate: true,
             }
 
-            let index =  invoiceitems.map(function(o:any) { return o.key; }).indexOf(itemDetail.key);
+            let index = invoiceitems.map(function (o: any) {
+                return o.key;
+            }).indexOf(itemDetail.key);
 
             dispatch(changeCartItem({itemIndex: index, item: clone(product)}));
 
@@ -63,7 +79,13 @@ const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) =>
             }
             await dispatch(setCartItems(product))
         }
-        await dispatch(setBottomSheet({visible: false}))
+
+        if(!edit) {
+            await dispatch(setBottomSheet({visible: false}))
+        }
+        else{
+            navigation?.goBack();
+        }
 
     }
 
@@ -75,18 +97,16 @@ const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) =>
     }
 
 
-
     const [discounttype, setDiscounttype]: any = useState(cartData?.discounttype || '%');
     let discount = '0';
     const isInclusive = Boolean(cartData.vouchertaxtype === 'inclusive');
-    let discountType = [{label: 'Percentage', value: '%'}];
+    let discountType = [{label: '%', value: '%'}];
     if (!isInclusive) {
-        discountType.push({label: 'Amount', value: 'amount'})
+        discountType.push({label: getCurrencySign(), value: 'amount'})
     }
     const onButtonToggle = (value: any) => {
         setDiscounttype(value)
     };
-
 
 
     /*    const updateRate = (value:any) => {
@@ -113,16 +133,20 @@ const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) =>
     const pricingtype = pricing?.type;
     const baseprice = pricing?.price?.default[0][pricingtype]?.baseprice || 0;
 
+
+
     return (
 
-        <View style={[styles.p_5, styles.w_100, styles.h_100]}>
+        <View style={[styles.p_5, styles.w_100, styles.h_100,styles.bg_white]}>
+
+
 
             <KeyboardScroll>
 
-                <View style={[styles.px_5]}>
-                    <Caption>{groupname}</Caption>
+                <View>
+                    <Text>{groupname}</Text>
                     <View style={[styles.grid, styles.justifyContent]}>
-                        <Text style={[styles.bold]}>{itemname}</Text>
+                        <Caption style={[styles.caption]}>{itemname}</Caption>
                         <Text style={[styles.bold]}>{toCurrency(baseprice)}</Text>
                     </View>
 
@@ -131,7 +155,7 @@ const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) =>
 
 
                 <View>
-                    <View style={[styles.mt_5, styles.px_5]}>
+                    <View>
                         <InputBox
                             defaultValue={productrate ? productrate + '' : ''}
                             label={'Price'}
@@ -144,10 +168,10 @@ const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) =>
                 </View>
 
 
-                {isRestaurant() && <View>
-                    <View style={[styles.mt_5, styles.px_5]}>
+                {isRestaurant() && orderbypax && <View>
+                    <View style={[styles.mt_5]}>
 
-                        {/*<InputField
+                        <InputField
                             editmode={true}
                             label={'Pax Number'}
                             mode={'flat'}
@@ -159,33 +183,26 @@ const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) =>
                             displaytype={'pagelist'}
                             inputtype={'dropdown'}
                             listtype={'other'}
+
                             onChange={(value: any) => {
                                 updateProduct({pax: ''+value})
                             }}>
-                        </InputField>*/}
+                        </InputField>
 
-                        <InputBox
+                        {/*<InputBox
                             defaultValue={pax ? pax + '' : ''}
                             label={'Pax'}
                             autoFocus={false}
                             keyboardType={'numeric'}
                             onChange={(value: any) => {
-                                updateProduct({pax: ''+value})
+                                updateProduct({pax: '' + value})
                             }}
-                        />
+                        />*/}
                     </View>
                 </View>}
 
 
-                <View style={[styles.mt_5, styles.px_5]}>
-
-                    {!isInclusive && <>
-                        <ToggleButtons
-                        width={'50%'}
-                        default={productdiscounttype}
-                        btns={discountType}
-                        onValueChange={onButtonToggle}
-                    /></> }
+                {edit &&  <View>
 
                     <View style={[styles.mt_3]}>
                         <InputBox
@@ -193,15 +210,24 @@ const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) =>
                             label={'Discount'}
                             autoFocus={false}
                             keyboardType={'numeric'}
-                            right={ <TI.Affix
-                                text={discounttype === '%' ? '%' : getCurrencySign()}   /> }
+                           /* right={<TI.Affix
+                                text={discounttype === '%' ? '%' : getCurrencySign()}/>}*/
                             onChange={(value: any) => {
                                 updateProduct({productdiscounttype: discounttype, productdiscountvalue: value})
                             }}
                         />
+
+                        {!isInclusive && <View style={{width:100,position:'absolute',right:10,top:15}}>
+                            <ToggleButtons
+                                width={'50%'}
+                                default={productdiscounttype}
+                                btns={discountType}
+                                onValueChange={onButtonToggle}
+                            /></View>}
+
                     </View>
 
-                </View>
+                </View>}
 
 
                 <Addons updateProduct={updateProduct}/>
@@ -210,11 +236,11 @@ const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) =>
 
             </KeyboardScroll>
 
-            <View style={{marginTop: 15}}>
+            <View style={{padding: 5}}>
 
                 <View style={[styles.grid, styles.middle, styles.justifyContent]}>
 
-                    <Qnt updateProduct={updateProduct}/>
+                    <Qnt updateProduct={updateProduct} />
 
                     <View>
                         <View>
@@ -238,6 +264,7 @@ const Index = ({itemDetail,  inittags, sheetRef, edit, theme: {colors}}: any) =>
 
 const mapStateToProps = (state: any) => ({
     itemDetail: state.itemDetail,
+    orderbypax: state.cartData.orderbypax,
 })
 
 export default connect(mapStateToProps)(withTheme(Index));

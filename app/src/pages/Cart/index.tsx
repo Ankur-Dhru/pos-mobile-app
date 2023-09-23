@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {
+    checkPrinterSettings,
     getLocalSettings,
     isRestaurant,
     prelog,
@@ -8,7 +9,7 @@ import {
     voucherData
 } from "../../libs/function";
 import Cart from "./Cart";
-import {device, localredux, PRODUCTCATEGORY, VOUCHER} from "../../libs/static";
+import {device, localredux, PRINTER, PRODUCTCATEGORY, VOUCHER} from "../../libs/static";
 import {connect, useDispatch} from "react-redux";
 import {Appbar, Menu} from "react-native-paper";
 import {setSelected} from "../../redux-store/reducer/selected-data";
@@ -23,6 +24,8 @@ import Paxes from "../Tables/Paxes";
 import {setTableOrders} from "../../redux-store/reducer/table-orders-data";
 import HoldOrders from "./HoldOrders";
 import crashlytics from "@react-native-firebase/crashlytics";
+import InvoicesList from "./InvoicesList";
+import OnlineorderList from "./OnlineorderList";
 
 
 const Index = (props: any) => {
@@ -30,7 +33,6 @@ const Index = (props: any) => {
     const tabledetails: any = props?.route?.params;
 
     const {advancecartview, orderbypax, pax} = props;
-
 
     const mainproductgroupid = localredux.localSettingsData?.currentLocation?.mainproductgroupid || PRODUCTCATEGORY.DEFAULT
 
@@ -42,20 +44,22 @@ const Index = (props: any) => {
     const closeMenu = () => setVisible(false);
 
     const [loaded, setLoaded] = useState(false)
-    const [gridView, setGridView] = useState(true)
+    const [gridView, setGridView] = useState(false)
 
     device.tablet = Boolean(advancecartview)
 
-
     useEffect(() => {
+
 
         crashlytics().log('cart useffect');
 
         const voucherDataJson: any = voucherData(tabledetails?.vouchertypeid ? tabledetails.vouchertypeid : VOUCHER.INVOICE, false);
 
+
         const {kots, numOfKOt}: any = tabledetails || {}
+
         if (kots?.length > 0 || numOfKOt > 0) {
-            let {staffid, staffname, ...others}: any = voucherDataJson
+            let {staffid, staffname, ...others}: any = voucherDataJson;
             dispatch(refreshCartData({...tabledetails, ...others}));
         } else {
             dispatch(refreshCartData({...tabledetails, ...voucherDataJson}));
@@ -66,17 +70,16 @@ const Index = (props: any) => {
             navigation.navigate('DetailViewNavigator')
         }
 
-        if (tabledetails?.invoiceitems?.length === 0 && (tabledetails?.ordertype === 'tableorder')) {
 
+        if (tabledetails?.invoiceitems?.length === 0 && (tabledetails?.ordertype === 'tableorder')) {
             if (!props.disabledpax) {
                 dispatch(setDialog({
                     visible: true,
                     title: "Paxes",
                     hidecancel: true,
-                    component: () => <Paxes/>
+                    component: () => <Paxes selectedpaxes = {tabledetails.paxes}/>
                 }))
             }
-
         }
 
         getLocalSettings(`gridview-${localredux.authData.adminid}`).then((data: any) => {
@@ -85,6 +88,7 @@ const Index = (props: any) => {
         dispatch(setSelected({value: [mainproductgroupid], field: 'group'}))
 
     }, [])
+
 
 
     React.useEffect(
@@ -115,75 +119,105 @@ const Index = (props: any) => {
         });
         return unsubscribe;
     }, []);
+
+
+    useEffect(()=>{
+
+        navigation.setOptions({
+            headerTitle: tabledetails?.tablename || 'Retail Order',
+        })
+        if (!isRestaurant()) {
+            navigation.setOptions({
+                headerLeft: () => <Appbar.Action icon="menu"   onPress={() => navigation.navigate('ProfileSettingsNavigator')}/>
+            })
+        }
+
+
+        if (!device.tablet) {
+            navigation.setOptions({
+                headerRight: () => <>
+
+                    <Appbar.Action icon={'magnify'} onPress={() => {
+                        navigation.navigate('SearchItem')
+                    }}/>
+
+
+                    {<Menu
+                        visible={visible}
+                        onDismiss={closeMenu}
+                        anchor={<Appbar.Action icon={'dots-vertical'} onPress={() => {
+                            openMenu()
+                        }}/>}>
+
+                        <Menu.Item onPress={async () => {
+                            closeMenu()
+                            let view = !gridView;
+                            saveLocalSettings(`gridview-${localredux?.authData?.adminid}`, view).then();
+                            setGridView(view)
+                        }} title={!gridView ? 'Grid View' : 'List View'}/>
+
+
+                        {pax > 1 && isRestaurant() && <Menu.Item onPress={async () => {
+                            closeMenu()
+                            dispatch(updateCartField({orderbypax: !orderbypax}))
+                        }} title={`${orderbypax ? 'Disabled' : 'Enable'} by Pax`}/>}
+
+
+                        {!isRestaurant() && <Menu.Item onPress={async () => {
+                            closeMenu()
+                            await dispatch(setBottomSheet({
+                                visible: true,
+                                height: '50%',
+                                component: () => <HoldOrders/>
+                            }))
+                        }} title="Holding Orders"/>}
+
+                        <Menu.Item onPress={async () => {
+                            closeMenu()
+                            await dispatch(setBottomSheet({
+                                visible: true,
+                                height: '90%',
+                                component: () => <InvoicesList/>
+                            }))
+                        }} title="Invoices"/>
+
+
+                        <Menu.Item onPress={async () => {
+                            closeMenu()
+                            await dispatch(setBottomSheet({
+                                visible: true,
+                                height: '90%',
+                                component: () => <OnlineorderList/>
+                            }))
+                        }} title="Online Orders"/>
+
+
+                        {/*{isRestaurant() && <Menu.Item onPress={async () => {
+                        closeMenu();
+                        navigation?.navigate('UpdateOrderInfo')
+                    }} title="Update basic info"/>}*/}
+
+
+                    </Menu>}
+
+                </>
+            })
+        }
+
+    },[visible])
+
+
+
     if (!loaded) {
         return <PageLoader page={'cart'}/>
     }
 
-    navigation.setOptions({
-        headerTitle: tabledetails?.tablename || 'Retail Order',
-    })
-
-    if (!isRestaurant()) {
-        navigation.setOptions({
-            headerLeft: () => <Appbar.Action icon="menu"
-                                             onPress={() => navigation.navigate('ProfileSettingsNavigator')}/>
-        })
-    }
 
 
-    if (!device.tablet) {
-        navigation.setOptions({
-            headerRight: () => <>
-
-                <Appbar.Action icon={'magnify'} onPress={() => {
-                    navigation.navigate('SearchItem')
-                }}/>
 
 
-                {<Menu
-                    visible={visible}
-                    onDismiss={closeMenu}
-                    anchor={<Appbar.Action icon={'dots-vertical'} onPress={() => {
-                        openMenu()
-                    }}/>}>
 
-                    <Menu.Item onPress={async () => {
-                        closeMenu()
-                        let view = !gridView;
-                        saveLocalSettings(`gridview-${localredux?.authData?.adminid}`, view).then();
-                        setGridView(view)
-                    }} title={!gridView ? 'grid View' : 'list View'}/>
-
-
-                    {pax > 1 && isRestaurant() && <Menu.Item onPress={async () => {
-                        closeMenu()
-                        dispatch(updateCartField({orderbypax: !orderbypax}))
-                    }} title={`${orderbypax ? 'Disabled' : 'Enable'} by Pax`}/>}
-
-
-                    {!isRestaurant() && <Menu.Item onPress={async () => {
-                        closeMenu()
-                        await dispatch(setBottomSheet({
-                            visible: true,
-                            height: '50%',
-                            component: () => <HoldOrders/>
-                        }))
-                    }} title="Holding Orders"/>}
-
-                    {isRestaurant() && <Menu.Item onPress={async () => {
-                        closeMenu();
-                        navigation?.navigate('UpdateOrderInfo')
-                    }} title="Update basic info"/>}
-
-
-                </Menu>}
-
-            </>
-        })
-    }
-
-
-    return <Cart tabledetails={tabledetails} gridView={gridView}/>
+    return <Cart tabledetails={tabledetails}   gridView={gridView}/>
 
 }
 

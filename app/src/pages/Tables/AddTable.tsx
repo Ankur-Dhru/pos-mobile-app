@@ -52,7 +52,7 @@ const AddTable = (props: any) => {
         ordertype: 'table',
         area: 'Default',
         tablename: '',
-        paxes: '',
+        pax: '',
     }
 
 

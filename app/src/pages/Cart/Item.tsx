@@ -29,11 +29,14 @@ const Index = memo((props: any) => {
         if (!Boolean(item.kotid)) {
 
             await dispatch(setItemDetail(clone(item)));
-            await dispatch(setBottomSheet({
+            /*await dispatch(setBottomSheet({
                 visible: true,
                 height: '80%',
                 component: () => <ItemDetail edit={true}  />
-            }))
+            }))*/
+
+            device.navigation?.navigate('ItemDetail',{edit:true})
+
         }
         else{
             let {kots}: any = store.getState().cartData;
@@ -52,6 +55,7 @@ const Index = memo((props: any) => {
     if(!Boolean(item)){
         return <></>
     }
+
 
     return (
 
@@ -79,6 +83,9 @@ const Index = memo((props: any) => {
                                     <Paragraph
                                         style={[styles.paragraph,  styles.bold,styles.ml_1,  {textTransform:'capitalize'}]}
                                         numberOfLines={2}>{index + 1}) {item?.itemname || item?.productdisplayname} {(item.pax !== 'all' && orderbypax)?`(#pax ${item.pax})`: ''} </Paragraph>
+
+                                    {Boolean(item.serialno) && <Paragraph style={[styles.paragraph, styles.muted, styles.text_xs]}>Serial No
+                                        : {item.serialno}</Paragraph>}
 
 
                                     <View style={[styles.ml_1]}>
@@ -165,7 +172,7 @@ const Index = memo((props: any) => {
                                                          <Text style={Boolean(+item.productdiscountvalue) && {
                                                               // textDecorationLine: 'line-through',
                                                               // color: styles.red.color
-                                                         }}>{toCurrency((item.productratedisplay * item.productqnt) || '0')}</Text>
+                                                         }}>{toCurrency((item.productratedisplay * item.productqnt) || '0')} </Text>
                                                         {/*{Boolean(+item.productdiscountvalue) &&  <Text
                                                             style={[styles.paragraph, styles.text_xs, styles.textRight]}>
                                                             {toCurrency((item.productratedisplay * item.productqnt) - item.productdiscountvalue)  || '0'}
@@ -206,28 +213,22 @@ const Index = memo((props: any) => {
                                                                     </View>
 
                                                                 </View>
-
-
                                                             </View>
-
                                                         )
                                                     })
                                                 }
                                             </View>
-
                                         </View>
 
                                         {Boolean(+item.productdiscountvalue) && <Paragraph>
-                                            <Text style={[styles.muted, styles.text_xs, {fontStyle: 'italic',color:couponcolors[item.couponindex]}]}>{item.productdiscountvalue}{item.productdiscounttype} Discount </Text>
+                                            <Text style={[styles.muted, styles.text_xs, {fontStyle: 'italic',color:couponcolors[item.couponindex]}]}>Discount {item.productdiscountvalue} {item.productdiscounttype === '%'?'%':getCurrencySign()}  </Text>
                                         </Paragraph>}
-
-
 
                                     </View>
 
                                 </View>
 
-                                <View style={[{paddingRight: 0,minWidth:120}]}>
+                                <View style={[{paddingRight: 0}]}>
 
                                    {
                                        haskot ? <>
@@ -262,8 +263,8 @@ const Index = memo((props: any) => {
     );
 },(r1, r2) => {
         //appLog('r2.item',r2.item)
-        const c1 = {productqnt:r1.item.productqnt,productrate:r1.item.productrate,itemaddon:r1.item.itemaddon,itemtags:r1.item.itemtags,notes:r1.item.notes,kotid:r1.item.kotid,productdiscountvalue:r1.item.productdiscountvalue,pax:r1.item.pax}
-        const c2 = {productqnt:r2.item.productqnt,productrate:r2.item.productrate,itemaddon:r2.item.itemaddon,itemtags:r2.item.itemtags,notes:r2.item.notes,kotid:r2.item.kotid,productdiscountvalue:r2.item.productdiscountvalue,pax:r2.item.pax}
+        const c1 = {productqnt:r1.item.productqnt,productrate:r1.item.productrate,productratedisplay:r1.item.productratedisplay,itemaddon:r1.item.itemaddon,itemtags:r1.item.itemtags,notes:r1.item.notes,kotid:r1.item.kotid,productdiscountvalue:r1.item.productdiscountvalue,pax:r1.item.pax}
+        const c2 = {productqnt:r2.item.productqnt,productrate:r2.item.productrate,productratedisplay:r2.item.productratedisplay,itemaddon:r2.item.itemaddon,itemtags:r2.item.itemtags,notes:r2.item.notes,kotid:r2.item.kotid,productdiscountvalue:r2.item.productdiscountvalue,pax:r2.item.pax}
 
       return (JSON.stringify(c1)===JSON.stringify(c2));
 })

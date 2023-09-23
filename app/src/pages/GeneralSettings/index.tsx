@@ -24,11 +24,12 @@ const Index = () => {
 
 
     let [initdata, setInitdata]: any = useState({
-        disabledDefaultSourceHomeDelivery: false,
-        syncinvoiceintervaltime: 30000,
-        disablesyncinvoicesrealtime: true,
-        disabledDefaultSourceTakeAway: false,
+        disabledDefaultSourceHomeDelivery: true,
+        syncinvoiceintervaltime: '30000',
+        syncinvoicesrealtime: false,
+        disabledDefaultSourceTakeAway: true,
         betamode: false,
+        searchserialno:false,
         disabledpax: true,
         kotongenerateinvoice: 'Enable',
         advancecartview: false,
@@ -65,6 +66,22 @@ const Index = () => {
                     <View style={[styles.middleForm, styles.px_5, {maxWidth: 400}]}>
 
                         <ScrollView>
+
+                            <Field name="betamode">
+                                {props => (<><CheckBox
+                                    value={props.input.value}
+                                    label={'Enable Beta Mode'}
+                                    onChange={(value: any) => {
+                                        initdata = {
+                                            ...initdata, betamode: value
+                                        }
+                                        setAPIUrl(value)
+                                        dispatch(setSettings(initdata));
+                                        saveLocalSettings("betamode", value).then();
+                                    }}
+                                /></>)}
+                            </Field>
+
 
                             {isRestaurant && <>
 
@@ -130,33 +147,33 @@ const Index = () => {
                             </Field>}
 
 
-                            <Field name="betamode">
+                            {!isRestaurant && <Field name="searchserialno">
                                 {props => (<><CheckBox
                                     value={props.input.value}
-                                    label={'Enable Beta Mode'}
+                                    label={'IMEI/Serial No Search'}
                                     onChange={(value: any) => {
                                         initdata = {
-                                            ...initdata, betamode: value
+                                            ...initdata, searchserialno: value
                                         }
-                                        setAPIUrl(value)
                                         dispatch(setSettings(initdata));
-                                        saveLocalSettings("betamode", value).then();
+                                        saveLocalSettings("searchserialno", value).then();
                                     }}
                                 /></>)}
-                            </Field>
+                            </Field>}
 
 
-                            <Field name="disablesyncinvoicesrealtime">
+
+                            <Field name="syncinvoicesrealtime">
                                 {props => (<><CheckBox
                                     value={props.input.value}
-                                    label={'Disable Sync Invoice Real Time'}
+                                    label={'Sync Invoice Real Time'}
                                     onChange={(value: any) => {
                                         initdata = {
-                                            ...initdata, disablesyncinvoicesrealtime: value
+                                            ...initdata, syncinvoicesrealtime: value
                                         }
                                         setAPIUrl(value)
                                         dispatch(setSettings(initdata));
-                                        saveLocalSettings("disablesyncinvoicesrealtime", value).then();
+                                        saveLocalSettings("syncinvoicesrealtime", value).then();
                                     }}
                                 /></>)}
                             </Field>

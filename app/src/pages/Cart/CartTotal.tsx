@@ -11,8 +11,6 @@ const Index = ({vouchertotaldisplay,totalqnt, theme: {colors}}: any) => {
 
     const navigation = useNavigation();
 
-
-
     if (!Boolean(totalqnt)) {
         return <></>
     }
@@ -34,9 +32,6 @@ const Index = ({vouchertotaldisplay,totalqnt, theme: {colors}}: any) => {
                     </View>
                 </View>
             </TouchableOpacity>
-
-
-
         </View>
     )
 }

@@ -67,7 +67,7 @@ import DayEndReport from "../Report/dayendreport";
 import CurrentStock from "../Report/CurrentStock";
 import ScanItem from "../Items/ScanItem";
 import AddEditExpense from "../../pages/Expense/AddEditExpense"
-import AddEditPaymentReceived from "../../pages/PaymentReceived/AddEditPaymentReceived"
+import AddEditPaymentReceived from "../../pages/PaymentReceived/AddEditPaymentReceived";
 import DateTimePicker from "./DateTimePicker";
 import AskPermission from "../Pin/AskPermission";
 import BlueToothList from "../PrinterSettings/BlueToothList";
@@ -91,6 +91,10 @@ import SalesReturnReport from "../Report/SalesReturnReport";
 import StockItemsList from "../Report/StockItemsList";
 import UpdateOrderInfo from "../Cart/UpdateOrderInfo";
 import SwitchItems from "../Cart/SwitchItems";
+import PrinterFor from "../PrinterSettings/PrinterFor";
+import ItemDetail from "../Items/ItemDetail";
+import AddEditPaymentMade from "../PaymentMade/AddEditPaymentMade";
+import ScanSerialno from "../Items/ScanSerialno";
 
 
 const screenOptions = {...screenOptionStyle};
@@ -103,6 +107,8 @@ const Stack = createNativeStackNavigator();
 const MainStackNavigator = () => {
 
     intervalInvoice();
+
+
 
     return (
         <Stack.Navigator
@@ -199,10 +205,10 @@ const PinStackNavigator = () => {
 const ClientAreaStackNavigator = (props: any) => {
     const {route: {params}}: any = props;
     return (
-        <Stack.Navigator initialRouteName={isRestaurant() ? 'ClientAreaStackNavigator' : 'CartStackNavigator'}
+        <Stack.Navigator initialRouteName={isRestaurant() ? 'TableStackNavigator' : 'CartStackNavigator'}
                          screenOptions={screenOptions}>
             {isRestaurant() &&
-                <Stack.Screen name={'ClientAreaStackNavigator'} component={Tables} options={{headerTitle: 'Tables'}}/>}
+                <Stack.Screen name={'TableStackNavigator'} component={Tables} options={{headerTitle: 'Tables'}}/>}
             <Stack.Screen name={'CartStackNavigator'} {...params} component={Cart}
                           options={({route}: any) => ({headerShown: !device.tablet, title: route?.params?.tablename})}/>
 
@@ -211,6 +217,10 @@ const ClientAreaStackNavigator = (props: any) => {
                           options={{headerShown: false, headerTitle: 'Search Item'}}/>
             <Stack.Screen name={'ScanItem'} component={ScanItem}
                           options={{headerShown: true, headerTitle: 'Scan Item'}}/>
+
+            <Stack.Screen name={'ScanSerialno'} component={ScanSerialno}
+                          options={{headerShown: true, headerTitle: 'Scan IMEI/Serial'}}/>
+
             <Stack.Screen name={'DetailViewNavigator'} component={DetailView} options={{headerTitle: 'Detail view'}}/>
 
 
@@ -224,6 +234,7 @@ const ClientAreaStackNavigator = (props: any) => {
             <Stack.Screen name={'AddEditCategory'} component={AddEditCategory} options={{headerTitle: 'Add Category'}}/>
             <Stack.Screen name={'AddEditExpense'} component={AddEditExpense} options={{headerTitle: 'Add Expense'}}/>
             <Stack.Screen name={'AddEditPaymentReceived'} component={AddEditPaymentReceived} options={{headerTitle: 'Add Payment Received'}}/>
+            <Stack.Screen name={'AddEditPaymentMade'} component={AddEditPaymentMade} options={{headerTitle: 'Add Payment Made'}}/>
             <Stack.Screen name={'AddEditSalesReturn'} component={AddEditSalesReturn} options={{headerTitle: 'Add Sales Return'}}/>
             <Stack.Screen name={'AddEditAccount'} component={AddEditAccount} options={{headerTitle: 'Add Account'}}/>
             <Stack.Screen name={'AddEditClient'} component={AddEditClient} options={{headerTitle: 'Add Client'}}/>
@@ -237,6 +248,9 @@ const ClientAreaStackNavigator = (props: any) => {
                           options={{headerTitle: 'Order Source'}}/>
 
             <Stack.Screen name={'KotNote'} component={KotNote} options={{headerTitle: 'Notes'}}/>
+
+            <Stack.Screen name={'ItemDetail'} component={ItemDetail} options={{headerTitle: 'Item Detail'}}/>
+
 
             <Stack.Screen name={'KOTDetail'} component={KOTDetail} options={{headerTitle: 'KOT Detail'}}/>
 
@@ -277,6 +291,8 @@ const ClientAreaStackNavigator = (props: any) => {
             <Stack.Screen name="AskPermission" component={AskPermission} options={{title: 'Ask Permission'}}/>
 
 
+
+
         </Stack.Navigator>
     );
 };
@@ -309,6 +325,7 @@ const ProfileSettingsNavigator = (props: any) => {
             <Stack.Screen name={'AddEditExpense'} component={AddEditExpense} options={{headerTitle: 'Add Expense'}}/>
             <Stack.Screen name={'AddEditPaymentReceived'} component={AddEditPaymentReceived} options={{headerTitle: 'Add Payment Received'}}/>
 
+            <Stack.Screen name={'PrinterFor'} component={PrinterFor} options={{headerTitle: 'Printer For'}}/>
 
             <Stack.Screen name={'KOTPrinter'} component={KOTPrinter} options={{title: 'KOT Printer'}}/>
             <Stack.Screen name={'InputOpenSetting'} component={InputOpenSetting}

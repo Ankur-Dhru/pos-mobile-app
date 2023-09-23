@@ -9,7 +9,7 @@ import {
     saveTempLocalOrder, storeData
 } from "../../libs/function";
 import {Alert, TouchableOpacity, View} from "react-native";
-import {Card, Paragraph, withTheme} from "react-native-paper";
+import {Caption, Card, Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {useNavigation} from "@react-navigation/native";
@@ -32,11 +32,13 @@ const Index = ({
                    printcounter,
                    vouchertotaldisplay,
                    kotongenerateinvoice,
+                   clientid,
                    theme: {colors}
                }: any) => {
 
     const navigation = useNavigation()
     const hasRestaurant = isRestaurant()
+
     const dispatch = useDispatch()
 
     let cartData = store.getState().cartData;
@@ -149,7 +151,7 @@ const Index = ({
 
 
 
-        {<View style={[{backgroundColor:'white',marginTop:0,marginBottom:0,paddingVertical:5, paddingHorizontal: 5}]}>
+        {<View style={[{backgroundColor:'white',marginTop:5,marginBottom:0,paddingHorizontal: device.tablet? 5 :0  }]}>
             <View>
                 <View style={[styles.grid, styles.justifyContent, styles.noWrap]}>
 
@@ -187,15 +189,14 @@ const Index = ({
                                             dispatch(hideLoader())
                                         })
                                     })}}
-                                    style={{backgroundColor: styles.yellow.color, borderRadius: 7,height:50}}>
-                                <View style={[styles.grid,styles.noWrap,styles.middle,styles.center,styles.w_100,styles.h_100]}>
-                                    <ProIcon name={'print'} size={15} />
-                                    <View>
-                                        <Paragraph style={[styles.paragraph,styles.bold,{width:80}]}>Send To Kitchen</Paragraph>
-                                    </View>
+                                    style={{backgroundColor: styles.yellow.color, borderRadius: 5,height:55}}>
+                                <View style={[styles.noWrap,styles.middle,styles.center,styles.w_100,styles.h_100]}>
+                                    <ProIcon name={'print'}  height={20}  size={13}/>
+                                    <Paragraph style={[styles.paragraph]}>Send To Kitchen</Paragraph>
                                 </View>
                             </TouchableOpacity>
                         </View>
+
                         {ordertype !== 'qsr' && <View style={[styles.w_auto, styles.ml_1]}>
                             <TouchableOpacity
                                     onPress={async () => {
@@ -220,11 +221,11 @@ const Index = ({
                                         }
                                     }
                                  }
-                                    style={{backgroundColor: styles.accent.color, height:50,borderRadius:7}}
+                                    style={{backgroundColor: styles.accent.color, height:55,borderRadius:5}}
                             >
-                               <View style={[styles.grid,styles.noWrap,styles.middle,styles.center,styles.w_100,styles.h_100]}>
-                                   <ProIcon name={'print'} color={'white'} size={15}/>
-                                   <Paragraph  style={[styles.paragraph,styles.bold,{color:'white'}]}> Print Bill {`${printcounter ? '(' + printcounter + ')' : ''}`}</Paragraph>
+                               <View style={[styles.noWrap,styles.middle,styles.center,styles.w_100,styles.h_100]}>
+                                   <ProIcon name={'print'} color={'white'} height={20} size={13}/>
+                                   <Caption  style={[styles.paragraph,{color:'white'}]}> Print Bill {`${printcounter ? '(' + printcounter + ')' : ''}`}</Caption>
                                </View>
                             </TouchableOpacity>
                         </View>}
@@ -244,7 +245,7 @@ const Index = ({
                                         component: () => <HoldOrders/>
                                     }))
                                 }}
-                                more={{backgroundColor: styles.yellow.color, color: 'black',height:50}}
+                                more={{backgroundColor: styles.yellow.color, color: 'black',height:55}}
                             > Recall </Button>
                         </View>}
                         <View style={[styles.w_auto]}>
@@ -266,7 +267,7 @@ const Index = ({
                                         }
                                     }
                                     }
-                                    more={{backgroundColor: styles.yellow.color, color: 'black',height:50}}
+                                    more={{backgroundColor: styles.yellow.color, color: 'black',height:55}}
                             > On Hold </Button>
                         </View></>}
 
@@ -276,15 +277,21 @@ const Index = ({
 
                             secondbutton={!Boolean(vouchertotaldisplay)}
                             onPress={() => {
-                                if (Boolean(vouchertotaldisplay)) {
-                                    dispatch(showLoader())
-                                    saveTempLocalOrder().then((data:any) => {
-                                        dispatch(hideLoader());
-                                        navigation.navigate('Payment');
-                                    })
+
+                                if(localredux.localSettingsData?.currentLocation?.clientrequired && clientid === 1){
+                                    errorAlert('Please Select Client')
+                                }
+                                else{
+                                    if (Boolean(vouchertotaldisplay)) {
+                                        dispatch(showLoader())
+                                        saveTempLocalOrder().then((data:any) => {
+                                            dispatch(hideLoader());
+                                            navigation.navigate('Payment');
+                                        })
+                                    }
                                 }
                             }}
-                            more={{backgroundColor: styles.green.color, color: 'white',height:50}}
+                            more={{backgroundColor: styles.green.color, color: 'white',height:55}}
                         > Payment Received
                         </Button>
                     </View>}
@@ -301,6 +308,7 @@ const mapStateToProps = (state: any) => {
         vouchertotaldisplay: state.cartData.vouchertotaldisplay,
         printcounter: state.cartData?.printcounter,
         ordertype: state.cartData.ordertype,
+        clientid: state.cartData.clientid,
         kotongenerateinvoice: state.localSettings?.kotongenerateinvoice,
     }
 }

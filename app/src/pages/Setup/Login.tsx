@@ -34,7 +34,7 @@ import KAccessoryView from "../../components/KAccessoryView";
 import InputField from "../../components/InputField";
 
 
-export const onLoginDetailCheck = (response:any,values:any,navigation:any) => {
+export const onLoginDetailCheck = async (response:any,values:any,navigation:any) => {
 
 
     if(response.code === 200) {
@@ -48,21 +48,21 @@ export const onLoginDetailCheck = (response:any,values:any,navigation:any) => {
             device.token = response.token;
             device.global_token = response.global_token;
             urls.localserver = '';
-            saveLocalSettings('serverip', urls.localserver).then();
+           await saveLocalSettings('serverip', urls.localserver).then();
         }
 
         if (response.status === STATUS.SUCCESS) {
             if (!email_verified) {
-                navigation.replace('EmailVerification', {userdetail: response.data});
+               await navigation.replace('EmailVerification', {userdetail: response.data});
             } else if (!whatsapp_verified && Boolean(whatsapp_number)) {
-                navigation.replace('WhatsappVerification', {userdetail: response.data});
+                await navigation.replace('WhatsappVerification', {userdetail: response.data});
             } else {
-                navigation.navigate('Workspaces')
+                await navigation.navigate('Workspaces')
             }
         }
     }
     else if(response.code === 201){
-        navigation.navigate('VerifyOTP',{userdetail: response.data,logindetails:values})
+        await navigation.navigate('VerifyOTP',{userdetail: response.data,logindetails:values})
     }
 }
 
@@ -73,7 +73,7 @@ const Index = (props: any) => {
     const [passwordVisible, setPasswordVisible]: any = useState(true)
     const [loaded, setLoaded] = useState<boolean>(false)
 
-    let passwordRef:any = useRef()
+
 
     const initdata: any = isDevelopment ? {
         //email: 'akash@dhrusoft.com',
@@ -81,12 +81,12 @@ const Index = (props: any) => {
         //email: 'obodogabriel29@gmail.com',
         //password: 'Podoski@12',
         email: 'ankur@dhrusoft.com',
-        password: 'Dhrunet1@',
+        password: 'Dhrunet1#',
     } : {
         email: '',
         password: ''
     };
-
+    let passwordRef:any = useRef()
 
     useEffect(()=>{
         getLocalSettings('serverip').then(async (serverip: any) => {
@@ -101,6 +101,7 @@ const Index = (props: any) => {
     if(!loaded){
         return <></>
     }
+
 
 
     const handleSubmit = async (values: any) => {
@@ -160,8 +161,10 @@ const Index = (props: any) => {
                                                         {...props}
                                                         value={props.input.value}
                                                         returnKeyType={'next'}
-                                                        onSubmitEditing={()=> nextFocus(passwordRef)}
+                                                        /*onSubmitEditing={()=> nextFocus(passwordRef)}*/
                                                         label={'Email Address'}
+                                                        autoFocus={true}
+                                                        autoCapitalize={'none'}
                                                         inputtype={'textbox'}
                                                         keyboardType='email-address'
                                                         onChange={props.input.onChange}
@@ -180,7 +183,7 @@ const Index = (props: any) => {
 
                                                         <InputField
                                                             {...props}
-                                                            ref={passwordRef}
+                                                            /*ref={passwordRef}*/
                                                             value={props.input.value}
                                                             label={'Password'}
                                                             inputtype={'textbox'}
@@ -251,12 +254,6 @@ const Index = (props: any) => {
 
 
 
-
-
-                            <KAccessoryView>
-
-
-                            </KAccessoryView>
 
                         </View>
 

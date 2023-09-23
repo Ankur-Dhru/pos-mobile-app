@@ -45,6 +45,7 @@ const CurrentStock = (props: any) => {
     const {info, title, tabledata}: any = data?.reportheader || {}
     const stocks = tabledata?.data;
     const columns = tabledata?.columns;
+
     const summary = tabledata?.summary;
 
     return <Container style={styles.bg_white}>
@@ -72,6 +73,8 @@ const CurrentStock = (props: any) => {
                                     <Paragraph>{columns['committedqty'].title}</Paragraph>
                                     <Paragraph> {stock.committedqty} </Paragraph>
                                 </View>
+
+
 
                                 <View style={[styles.grid, styles.justifyContent]}>
                                     <Paragraph>{columns['avgvalue'].title}</Paragraph>
@@ -107,6 +110,11 @@ const CurrentStock = (props: any) => {
                             <View style={[styles.grid, styles.justifyContent]}>
                                 <Paragraph>{columns['stockvalue'].title}</Paragraph>
                                 <Paragraph style={[styles.bold]}> {toCurrency(summary.stockvalue || '0')} </Paragraph>
+                            </View>
+
+                            <View style={[styles.grid, styles.justifyContent]}>
+                                <Paragraph>{columns['lastpurchase'].title}</Paragraph>
+                                <Paragraph  style={[styles.bold]}> {toCurrency(summary.lastpurchase || '0')} </Paragraph>
                             </View>
 
                         </View>

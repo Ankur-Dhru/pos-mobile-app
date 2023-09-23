@@ -5,7 +5,7 @@ import {styles} from "../../theme";
 import ProIcon from "../../components/ProIcon";
 import {useNavigation} from "@react-navigation/native";
 
-const Index = ({data,setTableOrderDetail}:any) => {
+const Index = ({data,setTableOrderDetail,shiftFrom}:any) => {
     const [visible, setVisible] = React.useState(false);
     const navigation = useNavigation()
 
@@ -19,16 +19,17 @@ const Index = ({data,setTableOrderDetail}:any) => {
         closeMenu()
     }
 
+
+
     return (
         <View style={[styles.absolute,styles.p_3,{right:0}]}>
             <Menu
                 visible={visible}
                 onDismiss={closeMenu}
-                anchor={<TouchableOpacity style={[styles.p_3]} onPress={openMenu}><ProIcon name={'ellipsis-vertical'} type={"solid"}  size={'18'}  action_type={'text'}/></TouchableOpacity>}>
+                anchor={<TouchableOpacity style={[styles.p_3]} onPress={openMenu}><ProIcon name={'ellipsis-vertical'} type={"solid"}  size={18}  action_type={'text'}/></TouchableOpacity>}>
                 <Menu.Item onPress={() => splitTable()} title="Split Table" />
+                <Menu.Item onPress={() => shiftFrom(data.tableoderidforswitch,data.tableid)} title="Shift Table" />
                 <Menu.Item onPress={() => navigation?.navigate('SwitchItems',{tableorderid:data.tableoderidforswitch})} title="Move Items" />
-
-
             </Menu>
         </View>
     );

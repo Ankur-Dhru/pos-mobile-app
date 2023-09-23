@@ -32,12 +32,14 @@ import {createTables, deleteDB} from "../../libs/Sqlite";
 import {Icon} from "react-native-paper/lib/typescript/components/List/List";
 import ProIcon from "../../components/ProIcon";
 import Avatar from "../../components/Avatar";
+import {setSelected} from "../../redux-store/reducer/selected-data";
+import {useDispatch} from "react-redux";
 
 
 const ProfileSettings = () => {
 
     const {avatar_url, companyname, email: aemail, firstname, lastname} = localredux.authData;
-    const {password, email, data: {terminal_name}} = localredux.licenseData;
+    const {password, email, data: {terminal_name,legalname,locationname}} = localredux.licenseData;
 
     const {role}: any = localredux.authData
 
@@ -45,21 +47,18 @@ const ProfileSettings = () => {
     const itemaccess = getRoleAccess('Items')
     const itemcategoryaccess = getRoleAccess('Item Category')
     const expenseaccess = getRoleAccess('Expenses')
+    const invoiceaccess = getRoleAccess('Invoice')
     const paymentreceive = getRoleAccess('Receive Payment')
+    const paymentmade = getRoleAccess('Payments Made')
     const creditnotes = getRoleAccess('Credit Notes')
 
 
-    const {
-        currentLocation: {
-            locationname,
-        }
-    }: any = localredux.localSettingsData;
-    const {workspace} = localredux.initData;
+    const workspace = localredux.initData?.workspace || localredux.licenseData.data?.workspace;
 
 
     const windowHeight = Dimensions.get('window').height;
     const navigation = useNavigation()
-
+    const dispatch = useDispatch()
 
 
     const {token}: any = localredux.authData;
@@ -193,9 +192,10 @@ const ProfileSettings = () => {
                                                 backgroundColor: styles.accent.color,
                                                 color: 'white',
                                                 height: 40
-                                            }} onPress={() => {
-                                        navigation.goBack();
-                                        syncData().then()
+                                            }} onPress={async () => {
+                                        logoutUser();
+                                        await syncData().then();
+
                                     }}>Sync</Button> }
                                     <Button style={[ styles.w_auto, styles.noshadow]}
                                             more={{
@@ -219,8 +219,6 @@ const ProfileSettings = () => {
                                     <Card.Content style={[styles.cardContent]}>
                                         <List.Subheader>General</List.Subheader>
 
-
-
                                         {(!Boolean(paymentreceive) || paymentreceive?.add) && <><List.Item
                                             style={[styles.listitem]}
                                             title={'Payment Received'}
@@ -235,6 +233,20 @@ const ProfileSettings = () => {
                                         </>}
 
 
+                                        {(!Boolean(paymentmade) || paymentmade?.add) && <><List.Item
+                                            style={[styles.listitem]}
+                                            title={'Payment Made'}
+                                            onPress={async () => {
+                                                navigation.navigate("AddEditPaymentMade");
+                                            }}
+                                            left={() => <List.Icon icon="currency-inr"/>}
+                                            right={()=><List.Icon icon="plus"/>}
+                                        />
+
+                                            <ItemDivider/>
+                                        </>}
+
+
                                         {(!Boolean(creditnotes) || creditnotes?.add) && <><List.Item
                                             style={[styles.listitem]}
                                             title={'Sales Return'}
@@ -246,6 +258,9 @@ const ProfileSettings = () => {
                                         />
                                             <ItemDivider/>
                                         </>}
+
+
+
 
 
                                         {(!Boolean(expenseaccess) || expenseaccess?.add) && <><List.Item
@@ -407,16 +422,12 @@ const ProfileSettings = () => {
 
                                         <ItemDivider/>
 
+
                                         <List.Item
                                             style={[styles.listitem]}
-                                            title="Invoice / Receipt Printer"
+                                            title="Printer"
                                             onPress={() => {
-                                                navigation.navigate('PrinterSettings', {
-                                                    type: {
-                                                        name: 'Invoice',
-                                                        departmentid: PRINTER.INVOICE
-                                                    }
-                                                })
+                                                navigation.navigate('PrinterFor')
                                             }}
                                             left={() => <List.Icon icon="printer-outline"/>}
                                             right={() => <List.Icon icon="chevron-right"/>}
@@ -425,53 +436,7 @@ const ProfileSettings = () => {
                                         <ItemDivider/>
 
 
-                                        <List.Item
-                                            style={[styles.listitem]}
-                                            title="Sales Return Printer"
-                                            onPress={() => {
-                                                navigation.navigate('PrinterSettings', {
-                                                    type: {
-                                                        name: 'Sales Return',
-                                                        departmentid: PRINTER.SALESRETURN
-                                                    }
-                                                })
-                                            }}
-                                            left={() => <List.Icon icon="printer-outline"/>}
-                                            right={() => <List.Icon icon="chevron-right"/>}
-                                        />
 
-                                        <ItemDivider/>
-
-
-                                        <List.Item
-                                            style={[styles.listitem]}
-                                            title="Day End Report Printer"
-                                            onPress={() => {
-                                                navigation.navigate('PrinterSettings', {
-                                                    type: {
-                                                        name: 'Day End Report',
-                                                        departmentid: PRINTER.DAYENDREPORT
-                                                    }
-                                                })
-                                            }}
-                                            left={() => <List.Icon icon="printer-outline"/>}
-                                            right={() => <List.Icon icon="chevron-right"/>}
-                                        />
-
-                                        <ItemDivider/>
-
-
-                                        {isRestaurant() && <List.Item
-                                            style={[styles.listitem]}
-                                            title="Kitchen / KOT Printer"
-                                            onPress={() => {
-                                                navigation.navigate("KOTPrinter");
-                                            }}
-                                            left={() => <List.Icon icon="printer-outline"/>}
-                                            right={() => <List.Icon icon="chevron-right"/>}
-                                        />}
-
-                                        <ItemDivider/>
 
 
 

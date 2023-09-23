@@ -43,13 +43,13 @@ const Index = (props: any) => {
         return <></>
     }
 
-
     return <View>
 
 
-        <SkuSearch/>
+        <SkuSearch />
 
-        <View style={[styles.bg_light,styles.p_4,styles.mb_2,{borderRadius:5}]}>
+        <View style={[styles.mb_2,{borderRadius:5,paddingHorizontal:5}]}>
+
         <ScrollView>
             <View style={[styles.grid,styles.middle]}>
                 {
@@ -57,15 +57,18 @@ const Index = (props: any) => {
                         return <>
                             <TouchableOpacity onPress={()=>{
                                 setCurrentGroup(gid)
-                            }} style={[styles.caption]}><Paragraph>{itemgroup[gid]?.itemgroupname}</Paragraph></TouchableOpacity>
-                            <View><ProIcon name={'chevron-right'} size={10}/></View>
+                            }} style={[styles.caption]}><Paragraph style={{color:styles.primary.color}}>{itemgroup[gid]?.itemgroupname}</Paragraph></TouchableOpacity>
+                            <View><ProIcon name={'chevron-right'} color={styles.primary.color} size={10}/></View>
                         </>
                     })
                 }
             </View>
         </ScrollView>
+
     </View>
-    <View style={[styles.grid,styles.mb_2]}>
+
+
+    <View style={[styles.grid]}>
             {
                 subgroup?.map((group:any)=>{
                     return (

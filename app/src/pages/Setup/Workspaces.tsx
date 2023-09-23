@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 
 
 import {FlatList, TouchableOpacity, View} from "react-native";
@@ -8,14 +8,33 @@ import {ItemDivider, localredux} from "../../libs/static";
 import Container from "../../components/Container";
 import {appLog, chevronRight, selectWorkspace} from "../../libs/function";
 import AddWorkspace from "../SetupWorkspace/AddWorkspace";
+import {useDispatch} from "react-redux";
 
 
 const Workspaces = (props: any) => {
 
+
     const {navigation}: any = props;
     const {authData: {workspaces}}: any = localredux;
 
-    console.log('workspaces',workspaces)
+    if (workspaces?.length === 0) {
+         return <AddWorkspace/>
+    }
+
+
+    useEffect(()=>{
+
+        if(localredux.authData.staff) {
+            navigation.setOptions({
+                headerRight: () => <Appbar.Action icon="plus"
+                                                  onPress={() => navigation.navigate('AddWorkspace', {staffaccess: true})}/>
+            })
+        }
+
+    },[])
+
+
+
 
 
     const renderitems = ({item}: any) => {
@@ -34,17 +53,6 @@ const Workspaces = (props: any) => {
         );
     };
 
-
-    if (workspaces?.length === 0) {
-        return <AddWorkspace/>
-    }
-
-    if(localredux.authData.staff) {
-        navigation.setOptions({
-            headerRight: () => <Appbar.Action icon="plus"
-                                              onPress={() => navigation.navigate('AddWorkspace', {staffaccess: true})}/>
-        })
-    }
 
     return <Container>
 

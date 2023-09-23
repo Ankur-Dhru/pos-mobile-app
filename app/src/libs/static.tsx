@@ -48,6 +48,7 @@ export enum ACTIONS {
     INVOICE = "invoice",
     EXPENSE = "expense",
     RECEIPT = "receipt",
+    PAYMENT = "payment",
     SEARCH = "search",
     VOUCHER = "voucher",
     ITEM = "item",
@@ -93,7 +94,8 @@ export enum ACTIONS {
     REPORTCURRENTSTOCK = "reportcurrentstock",
     REPORTITEMWISE = "reportitemwise",
     PRINTINVOICE = "printinvoice",
-    SALESRETURN = "salesreturn"
+    SALESRETURN = "salesreturn",
+    ONLINEORDER="onlineorder"
 }
 
 
@@ -102,6 +104,7 @@ export enum VOUCHER {
     EXPENSE = "ba7f0f54-60da-4f07-b07b-8645632616ac",
     TAX_INVOICE = "372278d3-c3c9-4c5e-9890-f66cfa2cb1e4",
     RECEIPT = "be0e9672-a46e-4e91-a2bf-815530b22b43",
+    PAYMENTMADE = "c86a5524-30a4-4954-9303-1cf028f546a7",
     SALESRETURN = "8a2c1b35-1781-409c-820e-73e90821735f"
 }
 
@@ -134,6 +137,10 @@ export enum ORDERSOURCES {
     ubereats = "Uber Eats",
 }
 
+export enum GET_ITEM_TYPE {
+    LOWER  = 'lower',
+    HIGHER = 'higher',
+}
 
 export enum PAYMENTGATEWAY {
     CASH = "c02fc4ca-8d89-4c91-bd66-2dd29bc34e43",

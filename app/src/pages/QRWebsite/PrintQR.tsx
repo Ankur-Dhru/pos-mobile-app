@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useState} from 'react';
+import {useRef, useState} from 'react';
 
 import {Container} from "../../components";
 import WebView from "react-native-webview";
@@ -9,12 +9,13 @@ import {View} from "react-native";
 import {styles} from "../../theme";
 import Button from "../../components/Button";
 
-import QRCode from 'react-native-qrcode-generator';
+import QRCode from 'react-native-qrcode-svg';
 import {useNavigation} from "@react-navigation/native";
 
 const Index = (props: any) => {
 
     const params = props?.route?.params;
+    const refQrCode = useRef();
 
     let {tableid, tablename, qrcodeid, index,locationname} = params?.table || {tableid: '', tablename: '',locationname:''}
     const {workspace}: any = localredux.initData;
@@ -42,15 +43,21 @@ const Index = (props: any) => {
     }
 
 
+
     if (!Boolean(base64)) {
+
         return <QRCode
             value={qrcode}
-            size={200}
-            getImageOnLoad={(base64: any) => {
-                setBase64(base64)
+            size={50}
+
+            getRef={c => {
+                if (!c?.toDataURL) return;
+                c?.toDataURL((base64Image:any) => {
+                    setBase64(base64Image)
+                    refQrCode.current = base64Image;
+                })
             }}
-            bgColor='black'
-            fgColor='white'/>
+             />
     }
 
 
@@ -73,13 +80,17 @@ const Index = (props: any) => {
                      <h2 style="padding: 0;margin: 0">${locationname}</h2>      
                                                        
                         <h3>Scan for menu</h3>                    
-                        <img src="${base64}" />
+                        <img src="data:image/jpeg;base64, ${base64}" />
                          <h4>${tablename}</h4> 
                          <div>${url}</div>   
                                                              
                      </div>
                   </body>
                 </html>`;
+
+
+
+
 
 
     return (

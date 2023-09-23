@@ -2,13 +2,15 @@ import * as React from 'react';
 import {Card, Paragraph} from 'react-native-paper';
 import {styles} from "../../theme";
 import {Image, View} from "react-native";
-import {base64Decode, log, shortName} from "../../libs/function";
+import {base64Decode, clone, log, printInvoice, shortName, voucherData} from "../../libs/function";
 import WebView from "react-native-webview";
 import Container from "../../components/Container";
+
 
 const Index = ({route}: any) => {
 
     const {data} = route.params;
+
 
     const html: any = `<!DOCTYPE html>
                 <html>
@@ -37,6 +39,9 @@ const Index = ({route}: any) => {
                     />
                 </View>
             </Card.Content>
+            <View>
+
+            </View>
         </Card>
     </Container>);
 

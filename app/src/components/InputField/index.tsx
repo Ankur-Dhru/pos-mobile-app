@@ -1,21 +1,20 @@
 import * as React from 'react';
-import {Divider, Paragraph, Text, withTheme} from 'react-native-paper';
+import {Paragraph, Text, withTheme} from 'react-native-paper';
 import {styles} from "../../theme";
 import {Platform, TextInput as TextInputReact, TouchableOpacity, TouchableWithoutFeedback, View} from "react-native";
 
 
 import List from "./List";
-import {setBottomSheet, setDialog} from "../../redux-store/reducer/component";
+import {setBottomSheet} from "../../redux-store/reducer/component";
 import {connect} from "react-redux";
 import {InputBox, ProIcon} from "../index";
 import DateTimePicker from './DateTimePicker';
 import moment from "moment";
-import {chevronRight, findObject, getType, isEmpty} from "../../libs/function";
+import {findObject, getType, isEmpty} from "../../libs/function";
 
 //import {PERMISSIONS, requestMultiple} from "react-native-permissions";
 import ToggleSwitch from "./Switch";
 import {device, ItemDivider, localredux} from "../../libs/static";
-import {format} from "util";
 
 
 class Index extends React.Component<any, any> {
@@ -39,6 +38,7 @@ class Index extends React.Component<any, any> {
         }
 
     }
+
 
     _getDays = () => {
 
@@ -239,27 +239,36 @@ class Index extends React.Component<any, any> {
                                     gridviewicon,
                                     displaytype,
                                 }
-                                if(Boolean(modal)){
+                                if (Boolean(modal)) {
                                     config = {
                                         ...config,
-                                        presentation:'modal'
+                                        presentation: 'modal'
                                     }
                                 }
                                 navigation.push('DropDownList', config)
 
                             }}><View>
                             {Boolean(render) ?
-                                <Render/> : <View style={[styles.border,styles.px_5,styles.py_4,styles.grid,styles.justifyContent,styles.noWrap,{borderRadius:5,paddingBottom: 10}]}>
+                                <Render/> : <View
+                                    style={[styles.border, styles.px_5, styles.py_4, styles.grid, styles.justifyContent, styles.noWrap, {
+                                        borderRadius: 5,
+                                        paddingBottom: 10
+                                    }]}>
                                     <View>
-                                        <Paragraph style={[styles.paragraph,labelstyle,!Boolean(selectedLabel) && {fontSize:15,paddingVertical:7}]}>{label}</Paragraph>
-                                        {selectedLabel && <View style={[styles.grid,styles.middle, styles.justifyContent,]}>
-                                            {!multiselect && <Paragraph>{selectedLabel}</Paragraph>}
-                                            {(multiselect && getType(selectedValue) === 'array') &&
-                                                <Paragraph>{selectedValue?.join(", ")}</Paragraph>}
-                                        </View>}
+                                        <Paragraph style={[styles.paragraph, labelstyle, !Boolean(selectedLabel) && {
+                                            fontSize: 15,
+                                            paddingVertical: 7
+                                        }]}>{label}</Paragraph>
+                                        {selectedLabel &&
+                                            <View style={[styles.grid, styles.middle, styles.justifyContent,]}>
+                                                {!multiselect && <Paragraph>{selectedLabel}</Paragraph>}
+                                                {(multiselect && getType(selectedValue) === 'array') &&
+                                                    <Paragraph>{selectedValue?.join(", ")}</Paragraph>}
+                                            </View>}
                                     </View>
                                     <View>
-                                        {editmode ? <ProIcon name={'chevron-right'} align={'right'}  size={15}/> : <Paragraph style={[{height: 26}]}>{}</Paragraph>}
+                                        {editmode ? <ProIcon name={'chevron-right'} align={'right'} size={15}/> :
+                                            <Paragraph style={[{height: 26}]}>{}</Paragraph>}
                                     </View>
                                     {/*{divider &&
                                         <ItemDivider/>}*/}
@@ -385,32 +394,31 @@ class Index extends React.Component<any, any> {
                             onPress={() => editmode && (Platform.OS === "ios" ?
 
                                 navigation.navigate('DateTimePicker', {
-                                    defaultValue:moment(selectedValue).format('YYYY-MM-DD'),
-                                    label:label,
-                                    dueterm:dueterm,
-                                    mode:mode,
+                                    defaultValue: moment(selectedValue).format('YYYY-MM-DD'),
+                                    label: label,
+                                    dueterm: dueterm,
+                                    mode: mode,
                                     onSelect: this.onSelect,
                                 })
-                                  : this.setState({showDatePicker: true}))}>
+                                : this.setState({showDatePicker: true}))}>
                             {Boolean(render) ?
-                                <Render/> : <View style={[styles.border,styles.px_5,styles.py_4,styles.grid,styles.justifyContent,{borderRadius:5,}]}>
+                                <Render/> : <View
+                                    style={[styles.border, styles.px_5, styles.py_4, styles.grid, styles.justifyContent, {borderRadius: 5,}]}>
 
                                     <View>
-                                        <Paragraph style={[styles.paragraph,labelstyle]}>{label}</Paragraph>
+                                        <Paragraph style={[styles.paragraph, labelstyle]}>{label}</Paragraph>
                                         <View style={[styles.grid, styles.middle, styles.justifyContent]}>
                                             <Text>{moment(selectedValue).format(mode === "time" ? "HH:mm:ss" : dateformat)} {this._getDays()} </Text>
                                         </View>
                                     </View>
                                     <View>
-                                        {editmode ? <ProIcon name={'chevron-down'} align={'right'}  size={15}/> : <Paragraph style={[{height: 26}]}>{}</Paragraph>}
+                                        {editmode ? <ProIcon name={'chevron-down'} align={'right'} size={15}/> :
+                                            <Paragraph style={[{height: 26}]}>{}</Paragraph>}
                                     </View>
-
                                     {/*{divider && <ItemDivider/>}*/}
-
                                 </View>
                             }
                         </TouchableOpacity>
-
 
                         {showDatePicker && <DateTimePicker
                             label={label}

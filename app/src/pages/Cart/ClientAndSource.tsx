@@ -30,7 +30,7 @@ const AllTable = memo(({tabledetails,jumpTo}:any) => {
 
     const [table, setTable] = useState<any>({
         tableid: '',
-        paxes: '',
+        pax: '',
         date: moment().format('YYYY-MM-DD'),
         time: moment().format('YYYY-MM-DD HH:mm'), ...tabledetails?.reservetable
     })
@@ -61,12 +61,12 @@ const AllTable = memo(({tabledetails,jumpTo}:any) => {
 
                         <View>
                             <InputField
-                                value={table.paxes}
+                                value={table.pax}
                                 label={'Paxes'}
                                 inputtype={'textbox'}
                                 keyboardType='numeric'
                                 onChange={(value: any) => {
-                                    setTableData('paxes', value)
+                                    setTableData('pax', value)
                                 }}
                             />
 
@@ -522,7 +522,7 @@ const ClientAndSource = (props: any) => {
 
 
                             let selectedTable = !isEmpty(table) && Boolean(table?.tableid);
-                            let isPaxes = !isEmpty(table) && Boolean(table?.paxes);
+                            let isPaxes = !isEmpty(table) && Boolean(table?.pax);
 
                             if (Boolean(clientDisplayName) && (isSource ? Boolean(ordersource) : true) && (isReserveTable ? selectedTable && isPaxes : true)) {
 

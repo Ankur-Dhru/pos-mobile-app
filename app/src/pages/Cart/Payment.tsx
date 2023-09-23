@@ -7,7 +7,7 @@ import {
     getFloatValue,
     getTicketStatus,
     groupBy,
-    isEmpty, printInvoice,
+    isEmpty, isRestaurant, prelog, printInvoice,
     saveLocalOrder,
     toCurrency
 } from "../../libs/function";
@@ -91,6 +91,21 @@ const Index = ({
     let {cartData, cartData: {invoiceitems}} = store.getState()
 
 
+    let checkrate = true;
+    let itemdetail:any = {};
+    if(!isRestaurant()) {
+        invoiceitems.map((item: any) => {
+            if ((+item.productrate) * item.productqnt !== (+item.item_total_amount_display)) {
+                checkrate = false;
+                itemdetail = item;
+            }
+        })
+    }
+
+
+
+
+
     const [vouchertotaldisplay,setVouchertotaldisplay] = useState(cartData?.vouchertotaldisplay - cartData?.paidamount)
     const [paxwise, setPaxwise]:any = useState({})
 
@@ -98,15 +113,12 @@ const Index = ({
     const {defaultpaymentgateway}: any = localredux.localSettingsData.currentLocation || {};
     const {taxInvoice} = localredux.localSettingsData;
 
-
-
     useEffect(() => {
         crashlytics().log('change tax Invoice');
         if (taxInvoice) {
             dispatch(setCartData({payment: [{paymentby: "Pay Later"}]}));
         }
     }, [taxInvoice]);
-
 
     useEffect(() => {
         splitPaxwise().then((data: any) => {
@@ -120,9 +132,8 @@ const Index = ({
         })
     }, [])
 
-
     const [remainingAmount, setRemainingAmount] = useState<any>(0);
-    const [billremainingAmount,setBillremainingAmount] = useState(cartData.vouchertotaldisplay)
+    const [billremainingAmount,setBillremainingAmount] = useState(cartData?.vouchertotaldisplay || 0)
     const [activePayLater, setActivePayLater] = useState<boolean>(false);
 
     const getGatewayDetailByKey = (key: any, value: any) => {
@@ -159,7 +170,6 @@ const Index = ({
 
     const [paymentMethods, setPaymentMethods] = useState<any>(clone(isEmpty(paymentgateway) ? [] : getPaymentgateways()));
 
-
     useEffect(() => {
 
         crashlytics().log('change payment method');
@@ -185,7 +195,7 @@ const Index = ({
                 }
 
             })
-            setBillremainingAmount(cartData.vouchertotaldisplay -  totalpaxpay);
+            setBillremainingAmount(cartData?.vouchertotaldisplay -  totalpaxpay);
         }
 
 
@@ -193,27 +203,17 @@ const Index = ({
 
     }, [paymentMethods])
 
-
     useEffect(()=>{
-        let total = cartData.vouchertotaldisplay - paidamount
+        let total = cartData?.vouchertotaldisplay - paidamount
         if(currentpax !=='all') {
             total = paxwise[currentpax]?.vouchertotaldisplay
         }
         setVouchertotaldisplay(total)
     },[currentpax])
 
-
-    /*useEffect(()=>{
-        Object.keys(paxwise).map((key:any)=>{
-
-        })
-    },[paxwise])*/
-
-
     useEffect(()=>{
         setPaymentMethods(getPaymentgateways())
     },[vouchertotaldisplay])
-
 
     const setPaymentbypax = (cartData:any) => {
 
@@ -303,7 +303,7 @@ const Index = ({
                     ...cartData,
                     payments: [{
                         "remainingamount": 0,
-                        "totalamount": cartData.vouchertotaldisplay,
+                        "totalamount": cartData?.vouchertotaldisplay,
                         "paymentgateways": payments
                     }]
                 }
@@ -331,27 +331,28 @@ const Index = ({
 
             dispatch(showLoader())
 
-            saveLocalOrder(clone(cartData)).then(async (order:any) => {
+
+
+
+
+
+            saveLocalOrder(clone(cartData)).then(async (order: any) => {
                 if (config?.print) {
-                    printInvoice({...order}).then(() => {});
+                    printInvoice({...order}).then(() => {
+                    });
                 }
-                redirectTo(cartData,navigation)
+                redirectTo(cartData, navigation)
                 dispatch(setAlert({visible: true, message: 'Order Save Successfully'}))
                 dispatch(hideLoader())
             })
 
-
             ////////// SAVE FINAL DATA //////////
-
-
-
 
         } catch (e) {
             appLog('e', e)
         }
 
     }
-
 
     const paymentSelection = (key: any, pm: any) => {
         crashlytics().log('paymentSelection');
@@ -370,7 +371,6 @@ const Index = ({
             setPaymentMethods(clone(newData));
         }
     }
-
 
     return <Container style={{padding: 0}}>
 
@@ -401,7 +401,7 @@ const Index = ({
                     <View style={[styles.grid, styles.justifyContent, styles.p_5, styles.mt_5]}>
                         <Paragraph style={[styles.paragraph, styles.bold, styles.text_lg]}>{"Total"} </Paragraph>
                         <Paragraph
-                            style={[styles.paragraph, styles.bold, styles.text_lg]}> {toCurrency(cartData.vouchertotaldisplay)}</Paragraph>
+                            style={[styles.paragraph, styles.bold, styles.text_lg]}> {toCurrency(cartData?.vouchertotaldisplay)}</Paragraph>
                     </View>
 
 
@@ -422,11 +422,10 @@ const Index = ({
 
                         {paymentMethods?.map((pm: any, key: any) => {
 
+
                             return (<View key={key}>
 
-
                                 <View style={[styles.grid, styles.justifyContent]}>
-
 
                                     <View style={{width: 30}}>
                                         {<TouchableOpacity onPress={() => {
@@ -567,7 +566,7 @@ const Index = ({
 
 
 
-        {currentpax !== 'all' && Boolean(billremainingAmount !== 0) && Boolean(remainingAmount === 0) && <View  style={[styles.p_4]}>
+        {currentpax !== 'all' && isRestaurant() && Boolean(billremainingAmount !== 0) && Boolean(remainingAmount === 0) && <View  style={[styles.p_4]}>
             <Button
                 more={{color: 'black', backgroundColor: styles.secondary.color, height: 55}}
                 onPress={() => {
@@ -577,24 +576,28 @@ const Index = ({
 
 
 
-        {(currentpax === 'all'   || Boolean(billremainingAmount === 0)) && <View>
+        {((currentpax === 'all' || currentpax === '')  || Boolean(billremainingAmount === 0)) && <View>
 
 
-            {<View style={[styles.grid, styles.justifyContent, styles.p_4]}>
+            {<View style={[styles.grid, styles.justifyContent, styles.p_3]}>
 
                 <View style={[styles.w_auto]}>
-                    <Button more={{backgroundColor: styles.secondary.color, color: 'black', height: 55}}
+                    <Button more={{backgroundColor: styles.secondary.color, color: 'black', height: 55,opacity:checkrate?1:0.5}}
                             onPress={() => {
-                                validatePayment().then()
+                                if(checkrate) {
+                                    validatePayment().then()
+                                }
                             }}> Generate Invoice </Button>
                 </View>
 
                 <View style={[styles.w_auto, styles.ml_1]}>
                     <Button
-                        more={{color: 'white', backgroundColor: styles.primary.color, height: 55}}
+                        more={{color: 'white', backgroundColor: styles.primary.color, height: 55,opacity:checkrate?1:0.5}}
                         onPress={() => {
-                            validatePayment({print: true}).then()
-                        }}>Print & Generate Invoice</Button>
+                            if(checkrate) {
+                                validatePayment({print: true}).then()
+                            }
+                        }}> Print & Generate Invoice</Button>
 
                 </View>
 

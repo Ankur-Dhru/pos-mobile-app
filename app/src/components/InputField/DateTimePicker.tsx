@@ -19,13 +19,10 @@ class Index extends React.Component<any> {
     constructor(props: any) {
         super(props);
 
-        const {defaultValue}: any = props;
 
         const {paymentterms}: any = localredux.initData;
 
 
-
-        this.tempdate = clone(defaultValue);
 
         this.paymentterms = Object.keys(paymentterms).map((key: any) => {
             if (Boolean(paymentterms[key])) {
@@ -121,7 +118,6 @@ class Index extends React.Component<any> {
                         value={new Date(year, month, date)}
                         mode={mode}
                         is24Hour={true}
-
                         minimumDate={minimumDate}
                         display={Platform.OS === "ios" ? "inline" : "default"}
                         onChange={this.setDate}/>

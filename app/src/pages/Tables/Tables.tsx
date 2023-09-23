@@ -8,7 +8,7 @@ import {
     getTempOrders,
     groupBy,
     isEmpty,
-    isRestaurant,
+    isRestaurant, prelog,
     saveTempLocalOrder,
     toCurrency,
     voucherData
@@ -82,6 +82,7 @@ export const getOrderFromTable = (tables: any) => {
 
             Object.values(tableorders).map((table: any) => {
 
+
                 let findTableIndex = tables?.findIndex((t: any) => t.tableid == table.tableid);
 
                 if (findTableIndex !== -1 && table.ordertype === 'tableorder') {
@@ -116,7 +117,9 @@ export const getOrderFromTable = (tables: any) => {
 
             });
             newtables = newtables.concat(newothertables);
-            resolve(newtables)
+
+            resolve(newtables);
+
         })
     })
 
@@ -130,6 +133,7 @@ const Index = ({tableorders}: any) => {
     const navigation = useNavigation()
 
     const {currentLocation} = localredux.localSettingsData;
+    const locationname = localredux.licenseData.data.locationname;
 
     const dispatch = useDispatch();
     const [refreshing, setRefreshing] = React.useState(false);
@@ -148,10 +152,15 @@ const Index = ({tableorders}: any) => {
 
     const [tables, setTables] = useState((isEmpty(currentLocation?.tables) ? [] : getOriginalTablesData()) || []);
 
-    let areas = Object.keys(groupBy(tables.filter((table: any) => {
-        return Boolean(table.area) && table.ordertype === 'tableorder'
-    }), 'area'))
-    areas.push('All');
+    let areas:any = []
+    if(!isEmpty(tables)) {
+        Object.keys(groupBy(tables?.filter((table: any) => {
+            return Boolean(table.area) && table.ordertype === 'tableorder'
+        }), 'area'))
+        areas.push('All');
+    }
+
+
     const [floor, setFloor] = useState(areas[0]);
 
     const isFocused = useIsFocused();
@@ -168,14 +177,13 @@ const Index = ({tableorders}: any) => {
                     })
                 }, 15000);
             }
-            getOrder().then(() => {
-            })
+            getOrder().then(() => {});
             return () => {
                 clearInterval(interval);
                 interval = null;
             };
         }
-    }, [tableorders, currentLocation.tables, isFocused, refreshing])
+    }, [tableorders, currentLocation?.tables, isFocused, refreshing])
 
     const resetTables = () => {
         shiftStart(false);
@@ -266,6 +274,10 @@ const Index = ({tableorders}: any) => {
         crashlytics().log('setTableOrderDetail');
         const sameStaff = ((Boolean(tabledetails?.staffid) && (tabledetails?.staffid === adminid)) || (!Boolean(tabledetails?.staffid)))
 
+        tabledetails = {
+            ...tabledetails, pax:+tabledetails?.paxes
+        }
+
         if ((accessMultipleDevice && sameStaff) || !accessMultipleDevice) {
 
 
@@ -317,7 +329,7 @@ const Index = ({tableorders}: any) => {
             if (Boolean(selected)) {
                 selectedorders.push(key);
                 totalpax += +pax || 0;
-                invoiceitems.map((item: any) => {
+                invoiceitems?.map((item: any) => {
                     mergeitems.push(item)
                 })
                 kots.map((item: any) => {
@@ -413,6 +425,113 @@ const Index = ({tableorders}: any) => {
         }))
     }
 
+    useEffect(()=>{
+        navigation.setOptions({
+            headerTitle: currentLocation?.locationname || locationname,
+            headerLeft: () => <Appbar.Action icon="menu" onPress={() => navigation.navigate('ProfileSettingsNavigator')}/>,
+            headerRight: () => {
+                return <>
+
+                    <View style={[styles.grid, styles.justifyContent, styles.middle]}>
+
+                        <Menu
+                            visible={visible}
+                            onDismiss={closeMenu}
+                            anchor={<Appbar.Action icon={'dots-vertical'} onPress={() => {
+                                openMenu()
+                            }}/>}>
+
+                            {/*<Menu.Item onPress={onClickAddTable} title="Add Table"/>*/}
+
+                            {/*{!shifttable && <Menu.Item onPress={() => {
+                            closeMenu()
+                            setShifttable(true)
+                        }} title="Shift Table"/>}
+
+                        {shifttable && <Menu.Item onPress={() => {
+                            closeMenu()
+                            setShifttable(false)
+                        }} title="Disable Shift"/>}*/}
+
+                            {/*{!splittable && <Menu.Item onPress={() => {
+                             closeMenu()
+                             setSplittable(true)
+                         }} title="Split Table"/>}
+
+
+                         {splittable && <Menu.Item onPress={() => {
+                             closeMenu()
+                             setSplittable(false)
+                         }} title="Disable Split"/>}*/}
+
+                            {!Boolean(urls.localserver) &&
+                                <Menu.Item onPress={onClickReserveTable} title="Reserved Tables"/>}
+
+                            {/*{isRestaurant() && <Menu.Item onPress={async () => {
+                            closeMenu();
+                            navigation?.navigate('SwitchItems')
+                        }} title="Switch Items"/>}*/}
+
+                            <Menu.Item onPress={() => {
+                                getOrder().then();
+                                closeMenu()
+                            }} title="Refresh"/>
+                            {/*{!isRestaurant() && <Menu.Item onPress={async () => {
+                        await dispatch(setBottomSheet({
+                            visible: true,
+                            height: '50%',
+                            component: () => <HoldOrders/>
+                        }))
+                    }} title="Holding Orders"/>}*/}
+                        </Menu>
+
+
+                        {/*<Appbar.Action icon={'refresh'} onPress={() => {
+                        getOrder().then()
+                    }}/>*/}
+
+                    </View>
+
+                </>
+            }
+        })
+    },[visible])
+
+    const isPortrait = () => {
+        const dim = Dimensions.get('screen');
+        return (dim.height >= dim.width) ? 'portrait' : 'landscape';
+    };
+
+    const [oriantation, setOrientation] = useState(isPortrait())
+
+    useEffect(() => {
+        Dimensions.addEventListener('change', () => {
+            setOrientation(isPortrait())
+        });
+    }, [])
+
+    const Floors = () => {
+        return <View style={[styles.w_100]}>
+            <View>
+                <Caption style={[styles.caption, styles.px_6]}>Areas</Caption>
+            </View>
+            {areas.map((area: any, index: any) => {
+                return (<List.Item
+                    style={[styles.listitem]}
+                    title={area}
+                    onPress={() => {
+                        setFloor(area);
+                        dispatch(setBottomSheet({visible: false}))
+                    }}
+                    key={index}
+                    left={() => <List.Icon icon="layers"/>}
+                    right={() => <List.Icon icon="chevron-right"/>}
+                />)
+            })}
+        </View>
+    }
+
+
     const Item = memo((props: any) => {
 
         let {
@@ -423,6 +542,7 @@ const Index = ({tableorders}: any) => {
 
         const shiftFrom = (tableorderid: any, tableid: any) => {
             crashlytics().log('shiftFrom');
+            setShifttable(true);
             setShiftingFromtable(tableorderid);
             setShiftingFromtableid(tableid)
             dispatch(setDialog({visible: false}))
@@ -475,10 +595,10 @@ const Index = ({tableorders}: any) => {
 
         const sameStaff = ((Boolean(item?.staffid) && (item?.staffid === adminid)) || (!Boolean(item?.staffid)))
 
-        return (<Card style={[styles.card, styles.m_1, styles.mb_2, {
+        return (<Card style={[styles.card, styles.m_1, styles.mb_2, shifting && styles.shifting, {
             marginTop: 0,
-            width: oriantation === 'portrait' ? '45%' : '24%',
-            backgroundColor: item.split ? styles.vegan.color : splittable ? styles.secondary.color : Boolean(item?.printcounter) ? styles.yellow.color : Boolean(item.clientname) ? styles.secondary.color : styles.light.color,
+
+            backgroundColor: item.split ? styles.vegan.color : splittable ? styles.secondary.color : Boolean(item?.printcounter) ? styles.yellow.color : Boolean(item.clientname) ? styles.secondary.color :  styles.light.color,
             borderRadius: 5,
         }, styles.flexGrow,]} key={item.tableid}>
             {<TouchableOpacity
@@ -543,123 +663,18 @@ const Index = ({tableorders}: any) => {
                             kots: [],
                             tableorderid:'',
                             tableoderidforswitch:item.tableorderid
-                        }} setTableOrderDetail={setTableOrderDetail}/>}
+                        }}
+                        setTableOrderDetail={setTableOrderDetail}
+                        shiftFrom={shiftFrom}
+                    />}
 
 
             </TouchableOpacity>}
-
-
         </Card>);
     }, (r1, r2) => {
         return r1.item === r2.item;
     });
 
-    navigation.setOptions({
-        headerTitle: currentLocation?.locationname,
-        headerLeft: () => <Appbar.Action icon="menu" onPress={() => navigation.navigate('ProfileSettingsNavigator')}/>,
-        headerRight: () => {
-            return <>
-
-                <View style={[styles.grid, styles.justifyContent, styles.middle]}>
-
-                    <Menu
-                        visible={visible}
-                        onDismiss={closeMenu}
-                        anchor={<Appbar.Action icon={'dots-vertical'} onPress={() => {
-                            openMenu()
-                        }}/>}>
-                        {/*<Menu.Item onPress={onClickAddTable} title="Add Table"/>*/}
-
-
-                        {!shifttable && <Menu.Item onPress={() => {
-                            closeMenu()
-                            setShifttable(true)
-                        }} title="Shift Table"/>}
-
-
-                        {shifttable && <Menu.Item onPress={() => {
-                            closeMenu()
-                            setShifttable(false)
-                        }} title="Disable Shift"/>}
-
-
-                        {/*{!splittable && <Menu.Item onPress={() => {
-                             closeMenu()
-                             setSplittable(true)
-                         }} title="Split Table"/>}
-
-
-                         {splittable && <Menu.Item onPress={() => {
-                             closeMenu()
-                             setSplittable(false)
-                         }} title="Disable Split"/>}*/}
-
-
-                        {!Boolean(urls.localserver) &&
-                            <Menu.Item onPress={onClickReserveTable} title="Reserved Tables"/>}
-
-                        {/*{isRestaurant() && <Menu.Item onPress={async () => {
-                            closeMenu();
-                            navigation?.navigate('SwitchItems')
-                        }} title="Switch Items"/>}*/}
-
-
-                        <Menu.Item onPress={() => {
-                            getOrder().then();
-                            closeMenu()
-                        }} title="Refresh"/>
-                        {/*{!isRestaurant() && <Menu.Item onPress={async () => {
-                        await dispatch(setBottomSheet({
-                            visible: true,
-                            height: '50%',
-                            component: () => <HoldOrders/>
-                        }))
-                    }} title="Holding Orders"/>}*/}
-                    </Menu>
-
-
-                    {/*<Appbar.Action icon={'refresh'} onPress={() => {
-                        getOrder().then()
-                    }}/>*/}
-
-                </View>
-
-            </>
-        }
-    })
-
-    const isPortrait = () => {
-        const dim = Dimensions.get('screen');
-        return (dim.height >= dim.width) ? 'portrait' : 'landscape';
-    };
-
-    const [oriantation, setOrientation] = useState(isPortrait())
-    useEffect(() => {
-        Dimensions.addEventListener('change', () => {
-            setOrientation(isPortrait())
-        });
-    }, [])
-
-    const Floors = () => {
-        return <View style={[styles.w_100]}>
-            <View>
-                <Caption style={[styles.caption, styles.px_6]}>Areas</Caption>
-            </View>
-            {areas.map((area: any, index: any) => {
-                return (<List.Item
-                    style={[styles.listitem]}
-                    title={area}
-                    onPress={() => {
-                        setFloor(area);
-                        dispatch(setBottomSheet({visible: false}))
-                    }}
-                    key={index}
-                    left={() => <List.Icon icon="layers"/>}
-                    right={() => <List.Icon icon="chevron-right"/>}
-                />)
-            })}
-        </View>
-    }
 
     const renderItem = useCallback(({item, index}: any) => <Item shifttable={shifttable}
                                                                  shiftingFromtable={shiftingFromtable}
@@ -668,42 +683,8 @@ const Index = ({tableorders}: any) => {
                                                                  setShiftingTotable={setShiftingTotable}
                                                                  getOrder={getOrder}
                                                                  resetTables={resetTables} item={item}
-                                                                 key={index}/>, [shifttable, shiftingFromtable, shiftingTotable]);
+                                                                  />, [shifttable, shiftingFromtable, shiftingTotable]);
 
-    const AllTable = memo(() => (<View style={[styles.flex]}>
-        <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
-            <TableSectionlist type={'all'} area={'All'}/>
-        </ScrollView>
-    </View>));
-
-    const OnlyTable = memo(() => (<View style={[styles.flex]}>
-        <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}>
-            <TableSectionlist type={'tableorder'} area={floor}/>
-        </ScrollView>
-        {areas.length > 1 && <View style={[styles.mt_auto]}>
-
-            <TouchableOpacity onPress={() => {
-                dispatch(setBottomSheet({
-                    visible: true, height: '80%', component: () => <Floors/>
-                }))
-            }} style={[styles.p_3, styles.mb_3, styles.grid, styles.center, styles.middle]}>
-
-                <View style={[styles.grid, styles.center, styles.mb_3]}>
-                    <View
-                        style={[styles.badge, styles.px_5, styles.py_5, styles.grid, styles.noWrap, styles.middle, {
-                            backgroundColor: '#000', borderRadius: 30, paddingLeft: 20, paddingRight: 20
-                        }]}>
-                        <Paragraph><ProIcon name={'layer-group'} type={"solid"} color={'white'} size={'18'}
-                                            action_type={'text'}/> </Paragraph>
-                        <Paragraph style={[styles.paragraph, styles.bold, {color: 'white'}]}> {floor}</Paragraph>
-                    </View>
-                </View>
-
-            </TouchableOpacity>
-
-        </View>}
-
-    </View>));
 
     const HomeDelivery = memo(() => (<View style={[styles.flex]}>
         <TableFlatlist type={'homedelivery'}/>
@@ -754,55 +735,97 @@ const Index = ({tableorders}: any) => {
         </View>)
     }
 
+    const AllTable = memo(() => (<View style={[styles.flex]}>
+        <ScrollView>
+            <TableSectionlist type={'all'} area={'All'}/>
+        </ScrollView>
+    </View>));
+
+    const OnlyTable = memo(() => (<View style={[styles.flex]}>
+        <ScrollView>
+            <TableSectionlist type={'tableorder'} area={floor}/>
+        </ScrollView>
+        {areas.length > 1 && <View style={[styles.mt_auto]}>
+
+            <TouchableOpacity onPress={() => {
+                dispatch(setBottomSheet({
+                    visible: true, height: '80%', component: () => <Floors/>
+                }))
+            }} style={[styles.p_3, styles.mb_3, styles.grid, styles.center, styles.middle]}>
+
+                <View style={[styles.grid, styles.center, styles.mb_3]}>
+                    <View
+                        style={[styles.badge, styles.px_5, styles.py_5, styles.grid, styles.noWrap, styles.middle, {
+                            backgroundColor: '#000', borderRadius: 30, paddingLeft: 20, paddingRight: 20
+                        }]}>
+                        <Paragraph><ProIcon name={'layer-group'} type={"solid"} color={'white'} size={18}
+                                            action_type={'text'}/> </Paragraph>
+                        <Paragraph style={[styles.paragraph, styles.bold, {color: 'white'}]}> {floor}</Paragraph>
+                    </View>
+                </View>
+
+            </TouchableOpacity>
+
+        </View>}
+
+    </View>));
+
+
     const TableSectionlist = memo(({type, area}: any) => {
 
-        let floors = groupBy(tables.filter((table: any) => {
-            if (type === 'tableorder') {
-                return table.ordertype === type
-            }
-            return true
-        }), 'area');
+        let floors:any = {}
+        if(!isEmpty(tables)) {
+             floors = groupBy(tables?.filter((table: any) => {
+                if (type === 'tableorder') {
+                    return table.ordertype === type
+                }
+                return true
+            }), 'area');
+        }
 
 
         let data: any = []
-        Object.keys(floors).map((key: any) => {
-            if (key === 'Advance Order') {
-                const todaysorder = floors[key].filter((data3: any) => {
-                    return data3.advanceorder.date === today
-                })
-                todaysorder?.length && data.push({title: "Today's Advance Order", data: todaysorder})
+        if(!isEmpty(floors)) {
+            Object.keys(floors).map((key: any) => {
+                if (key === 'Advance Order') {
+                    const todaysorder = floors[key].filter((data3: any) => {
+                        return data3.advanceorder.date === today
+                    })
+                    todaysorder?.length && data.push({title: "Today's Advance Order", data: todaysorder})
 
-                const tomorrowsorder = floors[key].filter((data3: any) => {
-                    return data3.advanceorder.date === tomorrow
-                })
-                tomorrowsorder?.length && data.push({title: "Tomorrow's Advance Order", data: tomorrowsorder})
+                    const tomorrowsorder = floors[key].filter((data3: any) => {
+                        return data3.advanceorder.date === tomorrow
+                    })
+                    tomorrowsorder?.length && data.push({title: "Tomorrow's Advance Order", data: tomorrowsorder})
 
-                const othersorder = floors[key].filter((data3: any) => {
-                    return data3.advanceorder.date !== tomorrow && data3.advanceorder.date !== today
-                })
-                othersorder?.length && data.push({title: "After Tomorrow's Advance Order", data: othersorder})
+                    const othersorder = floors[key].filter((data3: any) => {
+                        return data3.advanceorder.date !== tomorrow && data3.advanceorder.date !== today
+                    })
+                    othersorder?.length && data.push({title: "After Tomorrow's Advance Order", data: othersorder})
 
-            } else {
-                data.push({title: key, data: floors[key]})
-            }
-        })
+                } else if (Boolean(key !== 'undefined')) {
+                    data.push({title: key, data: floors[key]})
+                }
+            })
+        }
 
 
         return (<View style={[styles.px_2, styles.flex, styles.h_100]}>
-            <>
+
                 {data.filter((floor: any) => {
                     if (area !== 'All') {
                         return floor.title === area
                     }
                     return true
-                }).map((floor: any, index: any) => {
-                    return <View key={index}>
+                }).map((floor: any, key: any) => {
+                    return <View key={key}>
                         {Boolean(data.length > 1) && (Boolean(floor?.title !== 'undefined') ?
                             <Paragraph style={[styles.bold]}> {floor?.title}</Paragraph> :
                             <View style={{height: 20}}></View>)}
                         <View style={[styles.grid]}>
-                            {floor.data.map((item: any, index: any) => {
-                                return <Item shifttable={shifttable}
+                            {floor?.data?.map((item: any, index: any) => {
+                                return <View key={'a'+index} style={[styles.flexGrow,{width: oriantation === 'portrait' ? '45%' : '24%'}]}>
+                                        <Item shifttable={shifttable}
                                              shiftingFromtable={shiftingFromtable}
                                              setShiftingFromtable={setShiftingFromtable}
                                              shiftingTotable={shiftingTotable}
@@ -810,40 +833,12 @@ const Index = ({tableorders}: any) => {
                                              splittable={splittable}
                                              getOrder={getOrder}
                                              resetTables={resetTables} item={item}
-                                             key={index}/>
+                                         />
+                                </View>
                             })}
                         </View>
                     </View>
                 })}
-            </>
-
-
-            {/*  <SectionList
-                    sections={data}
-                    keyExtractor={(item, index) => item + index}
-                    renderSectionHeader={({section: {title}}) => (
-                        <Paragraph style={styles.bold}> {title}</Paragraph>
-                    )}
-                    renderItem={renderItem}
-                    keyboardDismissMode={'on-drag'}
-                    keyboardShouldPersistTaps={'always'}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={() => getOrder()}
-                        />
-                    }
-                    numColumns={oriantation === 'landscape' ? 4 : 2}
-                    getItemLayout={(data, index) => {
-                        return {length: 100, offset: 100 * index, index};
-                    }}
-                    ListFooterComponent={() => {
-                        return <View style={{height: 80}}></View>
-                    }}
-
-                    ListEmptyComponent={<EmptyCompoennt type={type}/>}
-                />*/}
-
 
         </View>)
     })
@@ -877,7 +872,6 @@ const Index = ({tableorders}: any) => {
             />
         </View>)
     })
-
 
     const renderScene = ({route, jumpTo}: any) => {
 
@@ -956,6 +950,11 @@ const Index = ({tableorders}: any) => {
             style={styles.bg_white}
         />
 
+        {shifttable &&  <View  style={[styles.center,{}]}>
+            <TouchableOpacity  onPress={()=>setShifttable(false)}>
+                <Paragraph style={[styles.center,styles.p_5,{textAlign:'center'}]}>Disable Shifting</Paragraph>
+            </TouchableOpacity>
+        </View>}
 
         {/*<Tabs
                 scenes={{

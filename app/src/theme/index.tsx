@@ -409,7 +409,8 @@ export const styles: any = StyleSheet.create({
     yellow: {color: '#F6DF8AFF'},
     primary: {color: '#0E4194'},
     accent: {color: '#2d71d2'},
-    secondary:{color:'#c4dcff'},
+    secondary:{color:'#bad5fc'},
+    secondary2:{color:'#c4dcff50'},
 
     veg: {color: '#28a745'},
     nonveg: {color: '#980202'},
@@ -720,6 +721,11 @@ export const styles: any = StyleSheet.create({
         backgroundColor:'#eee'
     },
 
+    shifting : {
+        borderWidth: 1,
+        borderColor: "black",
+        borderStyle:'dashed'
+    }
 
 
 });

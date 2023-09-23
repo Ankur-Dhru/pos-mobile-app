@@ -4,7 +4,7 @@ import {FlatList, RefreshControl, Text, TouchableOpacity, View} from "react-nati
 import {Card, List, Paragraph} from "react-native-paper";
 import {styles} from "../../theme";
 import {Container, ProIcon, SearchBox} from "../../components";
-import {gePhonebook, setItemRowData} from "../../libs/function";
+import {gePhonebook, prelog, setItemRowData} from "../../libs/function";
 
 
 import {getClientsByWhere} from "../../libs/Sqlite/selectData";
@@ -67,6 +67,7 @@ const Item = memo(({client}: any) => {
 
                 invoiceitems.map((item: any,index:any) => {
                     const itemRowData: any = setItemRowData(item,clientdetail.pricingtemplate);
+
                     store.dispatch(changeCartItem({itemIndex: index, item: itemRowData,itemUpdate:true}));
                 })
 

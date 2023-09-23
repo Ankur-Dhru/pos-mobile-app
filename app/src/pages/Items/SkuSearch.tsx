@@ -3,7 +3,7 @@ import {TouchableOpacity, View,} from "react-native";
 
 import {connect} from "react-redux";
 
-import {appLog, selectItem} from "../../libs/function";
+import {appLog, isRestaurant, selectItem, totalOrderQnt} from "../../libs/function";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 import store from "../../redux-store/store";
 import {setAlert} from "../../redux-store/reducer/component";
@@ -11,13 +11,20 @@ import {styles} from "../../theme";
 import {Paragraph, Searchbar} from "react-native-paper";
 import {ProIcon, SearchBox} from "../../components";
 import {useNavigation} from "@react-navigation/native";
+import {ACTIONS, localredux, METHOD, STATUS, urls, VOUCHER} from "../../libs/static";
+import apiService from "../../libs/api-service";
+import {v4 as uuidv4} from "uuid";
+import {setCartData} from "../../redux-store/reducer/cart-data";
 
 
 const Index = (props: any) => {
 
-    let searchRf:any = useRef()
-    let touchableRef:any = useRef()
+    let searchRf: any = useRef()
+    let touchableRef: any = useRef()
     const navigation = useNavigation()
+
+    const {searchserialno} = props
+
 
     const handleSearch = async (search: any) => {
         if (search) {
@@ -40,20 +47,18 @@ const Index = (props: any) => {
         setSearchQuery(query)
     };
 
-    useEffect(()=>{
-        setTimeout(()=>{
-            touchableRef.setNativeProps?.({ hasTVPreferredFocus: true })
-        },1000)
+    useEffect(() => {
+        setTimeout(() => {
+            touchableRef.setNativeProps?.({hasTVPreferredFocus: true})
+        }, 1000)
+    }, [])
 
+    return <View  style={[styles.grid, styles.middle, styles.justifyContent]}>
 
-    },[])
-
-    return <View>
-
-        <View style={[styles.grid, styles.middle, styles.justifyContent,styles.mb_3]}>
+        <View style={[styles.grid, styles.middle, styles.justifyContent, styles.mb_3, styles.relative,styles.w_auto]}>
             <View style={[styles.w_auto]}>
                 <Searchbar
-                    ref={(ref)=> {
+                    ref={(ref) => {
                         searchRf = ref
                     }}
                     placeholder={`Enter SKU`}
@@ -61,23 +66,37 @@ const Index = (props: any) => {
                     autoFocus={false}
                     value={searchQuery}
 
-                    onSubmitEditing={() => handleSearch(searchQuery.trim(),'submit')}
-                    style={[styles.noshadow,{elevation: 0,  borderRadius: 5,backgroundColor:styles.light.color}]}
+                    onSubmitEditing={() => handleSearch(searchQuery.trim(), 'submit')}
+                    style={[styles.noshadow, {elevation: 0, borderRadius: 5, backgroundColor: styles.light.color}]}
+                    clearIcon={{}}
 
                 />
             </View>
-            <View>
-                <TouchableOpacity  ref={e=> touchableRef = e}     onPress={async () => {
+            <View style={[styles.absolute, {right: 10}]}>
+                <TouchableOpacity ref={e => touchableRef = e} onPress={async () => {
                     navigation.navigate('ScanItem');
                 }}>
                     <Paragraph style={[styles.paragraph, {marginTop: 10}]}><ProIcon
                         name={'scanner-gun'}/></Paragraph></TouchableOpacity>
             </View>
+
+
+
         </View>
+
+        {searchserialno && !isRestaurant() && <View>
+            <TouchableOpacity ref={e => touchableRef = e} onPress={async () => {
+                navigation.navigate('ScanSerialno');
+            }}>
+                <Paragraph style={[styles.paragraph, {marginTop: 10}]}><ProIcon
+                    name={'barcode-read'}/></Paragraph></TouchableOpacity>
+        </View>}
 
     </View>
 }
 
-const mapStateToProps = (state: any) => ({})
+const mapStateToProps = (state: any) => ({
+    searchserialno: state.localSettings?.searchserialno,
+})
 
 export default connect(mapStateToProps)(Index);

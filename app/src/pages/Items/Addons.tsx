@@ -85,11 +85,11 @@ const Index = ({addtags, itemaddon,updateProduct}: any) => {
         updateProduct({itemaddon:selectedAddons})
     }
 
-    return (<View style={[styles.mt_5]}>
+    return (<View>
 
-            {Boolean(addonid?.length) && <>
+            {Boolean(addonid?.length) && <View>
 
-                <Caption style={[styles.ml_2]}>Addons</Caption>
+                <Caption style={[styles.caption,styles.mt_5]}>Addons</Caption>
 
                 {
                     addonid.map((addon: any, key: any) => {
@@ -102,18 +102,23 @@ const Index = ({addtags, itemaddon,updateProduct}: any) => {
 
                         return (
                             <View
-                                style={[styles.grid, styles.justifyContent, styles.w_100, styles.mb_3, styles.p_3, styles.px_5, productqnt > 0 && styles.bg_light_blue, {borderRadius: 5}]}
+                                style={[styles.grid, styles.justifyContent, styles.w_100, styles.mb_3, styles.p_3,  productqnt > 0 && styles.bg_light_blue, {borderRadius: 5,paddingLeft:10}]}
                                 key={key}>
 
                                 <View style={[styles.grid, styles.justifyContent]}>
-                                    <View style={{width: 150}}><Text>{`${itemname}`}</Text></View>
+                                    <View style={[styles.w_auto]}>
+                                        <View><Text>{`${itemname}`}</Text></View>
+                                        <View>
+                                            <Text>{toCurrency(baseprice * (productqnt || 1))}</Text>
+                                        </View>
+                                    </View>
                                     <View>
                                         <View style={[styles.grid, styles.middle, {
                                             borderRadius: 5,
-                                            backgroundColor: styles.light.color,
-                                            width: 120
+                                            backgroundColor: styles.white.color,
+                                            width: 130
                                         }]}>
-                                            {<TouchableOpacity style={[styles.p_4]} onPress={() => {
+                                            {<TouchableOpacity style={[styles.p_2]} onPress={() => {
                                                 productqnt > 0 && updateQnt(addon, 'remove')
                                             }}>
                                                 <ProIcon name={'minus'} size={20}/>
@@ -122,7 +127,7 @@ const Index = ({addtags, itemaddon,updateProduct}: any) => {
                                                 style={[styles.paragraph, styles.caption, styles.flexGrow, styles.textCenter]}>{
                                                 parseInt(productqnt || 0)
                                             }</Paragraph>
-                                            {<TouchableOpacity style={[styles.p_4]} onPress={() => {
+                                            {<TouchableOpacity style={[styles.p_2]} onPress={() => {
                                                 updateQnt(addon, 'add')
                                             }}>
                                                 <ProIcon name={'plus'} size={20}/>
@@ -132,14 +137,12 @@ const Index = ({addtags, itemaddon,updateProduct}: any) => {
                                 </View>
 
 
-                                <View>
-                                    <Text style={[styles.bold]}>{toCurrency(baseprice * (productqnt || 1))}</Text>
-                                </View>
+
                             </View>
                         )
                     })
                 }
-            </>}
+            </View>}
         </View>
     )
 }

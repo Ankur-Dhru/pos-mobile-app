@@ -68,7 +68,6 @@ const Index = (props: any) => {
                                 </TouchableOpacity>
                             </Card>
                         }
-
                         <ClientDetail/>
 
                         <Card style={[styles.card, styles.w_auto,styles.center,styles.middle, {minWidth:110,marginLeft:5, padding:0}]}>

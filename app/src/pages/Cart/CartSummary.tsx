@@ -1,65 +1,66 @@
 import React, {memo, useEffect, useState} from "react";
-import {
-    appLog,
-    chevronRight,
-    clone,
-    dateFormat, generateKOT,
-    groupBy,
-    isRestaurant, saveTempLocalOrder,
-    toCurrency,
-    updateComponent
-} from "../../libs/function";
+import {chevronRight, dateFormat, isRestaurant, saveTempLocalOrder, toCurrency} from "../../libs/function";
 import {TouchableOpacity, View} from "react-native";
-import {Caption, Card, Paragraph, withTheme} from "react-native-paper";
+import {Card, Paragraph, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
-import {itemTotalCalculation} from "../../libs/item-calculation";
-import {setCartData, setUpdateCart, updateCartField} from "../../redux-store/reducer/cart-data";
+import {updateCartField} from "../../redux-store/reducer/cart-data";
 import {ProIcon} from "../../components";
 import CartSummaryMore from "./CartSummaryMore";
-import {contentLoader, hideLoader} from "../../redux-store/reducer/component";
 import store from "../../redux-store/store";
 import moment from "moment";
 import ClientAndSource from "./ClientAndSource";
 import {splitPaxwise} from "./Payment";
-import {useNavigation} from "@react-navigation/native";
-import {setTableOrders} from "../../redux-store/reducer/table-orders-data";
 
 
-
-const Index = ({advanceorder,commonkotnote,orderbypax,currentpax,vouchertotaldisplay,clientid,advance, navigation}: any) => {
+const Index = ({
+                   advanceorder,
+                   commonkotnote,
+                   orderbypax,
+                   currentpax,
+                   vouchertotaldisplay,
+                   clientid,
+                   advance,
+                   navigation
+               }: any) => {
 
     const dispatch = useDispatch()
     const moreSummaryRef: any = React.useRef();
     let summary: any = false
-    const [paxwise, setPaxwise]:any = useState({})
+    const [paxwise, setPaxwise]: any = useState({})
+    const [moreSummary, setMoreSummary] = useState(false)
 
-    const [vouchertotal,setVouchertotal] = useState(parseInt(vouchertotaldisplay))
-
-
-    useEffect(()=>{
-        let total = parseInt(vouchertotaldisplay)
-        if(currentpax !== 'all' &&  orderbypax){
-            total = parseInt(paxwise[+currentpax]?.vouchertotaldisplay)
-            updateComponent(moreSummaryRef, 'display', 'none');
-        }
-        setVouchertotal(total)
-    },[currentpax,paxwise,vouchertotaldisplay])
+    const [vouchertotal, setVouchertotal] = useState(parseInt(vouchertotaldisplay))
 
 
     useEffect(() => {
-        if(orderbypax) {
+        let total = parseInt(vouchertotaldisplay)
+        if (currentpax !== 'all' && orderbypax) {
+            total = parseInt(paxwise[+currentpax]?.vouchertotaldisplay)
+            setMoreSummary(false)
+            //updateComponent(moreSummaryRef, 'display', 'none');
+        }
+        setVouchertotal(total)
+    }, [currentpax, paxwise, vouchertotaldisplay])
+
+
+    useEffect(() => {
+        if (orderbypax) {
             splitPaxwise().then((data: any) => {
                 setPaxwise(data);
+                setMoreSummary(false)
             })
         }
-        updateComponent(moreSummaryRef, 'display', 'none');
+        //setMoreSummary(false)
+        //updateComponent(moreSummaryRef, 'display', 'none');
     }, [vouchertotaldisplay])
 
-
-    const viewSummary = async () => {
+    /*    const viewSummary = async () => {
 
         summary = !summary;
+
+        setMoreSummary(true)
+
         updateComponent(moreSummaryRef, 'display', summary ? 'flex' : 'none');
 
         if (summary) {
@@ -81,38 +82,38 @@ const Index = ({advanceorder,commonkotnote,orderbypax,currentpax,vouchertotaldis
 
             })
         }
-    }
+    }*/
 
-    const receiptCreated = (response:any) => {
+    const receiptCreated = (response: any) => {
 
 
         let cartData = store.getState().cartData;
 
         cartData = {
             ...cartData,
-            advance:{...cartData.advance,...response}
+            advance: {...cartData.advance, ...response}
         }
 
         saveTempLocalOrder(cartData).then((order: any) => {
             const paidamount = order?.advance?.vouchertotaldisplay || 0;
-            dispatch(updateCartField({advance:order.advance,paidamount:paidamount,credits: [{'pay': paidamount}]}))
+            dispatch(updateCartField({advance: order.advance, paidamount: paidamount, credits: [{'pay': paidamount}]}))
         })
 
     }
 
     const advancePayment = () => {
-        navigation.navigate("AddEditPaymentReceived",{receiptCreated:receiptCreated,clientid:clientid});
+        navigation.navigate("AddEditPaymentReceived", {receiptCreated: receiptCreated, clientid: clientid});
     }
 
     return (<>
 
         {isRestaurant() && Boolean(commonkotnote) &&
-            <Card  style={[styles.card,styles.borderTop]}>
+            <Card style={[styles.card, styles.borderTop]}>
                 <Card.Content style={[styles.cardContent]}>
                     <TouchableOpacity onPress={() => {
-                        navigation.navigate('KotNote',{commonkotnote:commonkotnote})
+                        navigation.navigate('KotNote', {commonkotnote: commonkotnote})
                     }}>
-                        <View style={[styles.grid, styles.justifyContent, styles.middle,styles.noWrap]}>
+                        <View style={[styles.grid, styles.justifyContent, styles.middle, styles.noWrap]}>
                             <Paragraph
                                 style={[styles.paragraph, styles.head]}>{commonkotnote}</Paragraph>
                             <View>
@@ -124,19 +125,20 @@ const Index = ({advanceorder,commonkotnote,orderbypax,currentpax,vouchertotaldis
             </Card>}
 
 
-
         {Boolean(advanceorder?.date) &&
-            <Card style={[styles.card,styles.border,styles.mb_3,styles.m_3]}>
+            <Card style={[styles.card, styles.border, styles.mb_3, styles.m_3]}>
                 <Card.Content style={[styles.cardContent]}>
                     <TouchableOpacity
-                          onPress={() => {
-                              navigation.navigate('ClientAndSource', {title: 'Advance Order', edit: true,});
-                          }}>
+                        onPress={() => {
+                            navigation.navigate('ClientAndSource', {title: 'Advance Order', edit: true,});
+                        }}>
 
-                        <View style={[styles.grid, styles.justifyContent, styles.middle,styles.noWrap]}>
+                        <View style={[styles.grid, styles.justifyContent, styles.middle, styles.noWrap]}>
                             <View>
-                                <Paragraph style={[{color:styles.red.color}]}>Delivery on : {moment(advanceorder.date).format(dateFormat())} {moment(advanceorder.time).format('HH:mm A')}</Paragraph>
-                                {Boolean(advanceorder.notes) && <Paragraph style={{fontStyle:'italic'}}>{advanceorder.notes}</Paragraph>}
+                                <Paragraph style={[{color: styles.red.color}]}>Delivery on
+                                    : {moment(advanceorder.date).format(dateFormat())} {moment(advanceorder.time).format('HH:mm A')}</Paragraph>
+                                {Boolean(advanceorder.notes) &&
+                                    <Paragraph style={{fontStyle: 'italic'}}>{advanceorder.notes}</Paragraph>}
                             </View>
                             <View>
                                 {chevronRight}
@@ -147,12 +149,17 @@ const Index = ({advanceorder,commonkotnote,orderbypax,currentpax,vouchertotaldis
 
                     <View style={[styles.mt_4]}>
                         {!Boolean(advance?.vouchertotaldisplay) ? <TouchableOpacity
-                            onPress={() => { Boolean(vouchertotaldisplay) && advancePayment() }}
-                            style={[styles.p_5,{backgroundColor: styles.green.color, borderRadius: 5}]}>
-                            <View>
-                                <Paragraph style={[styles.paragraph,styles.bold,{color:'white',textAlign:'center'}]}>Advance Payment</Paragraph>
-                            </View>
-                        </TouchableOpacity> : <Paragraph>Advance Payment : {toCurrency(advance.vouchertotaldisplay)}</Paragraph>}
+                                onPress={() => {
+                                    Boolean(vouchertotaldisplay) && advancePayment()
+                                }}
+                                style={[styles.p_5, {backgroundColor: styles.green.color, borderRadius: 5}]}>
+                                <View>
+                                    <Paragraph
+                                        style={[styles.paragraph, styles.bold, {color: 'white', textAlign: 'center'}]}>Advance
+                                        Payment</Paragraph>
+                                </View>
+                            </TouchableOpacity> :
+                            <Paragraph>Advance Payment : {toCurrency(advance.vouchertotaldisplay)}</Paragraph>}
                     </View>
 
                 </Card.Content>
@@ -160,21 +167,26 @@ const Index = ({advanceorder,commonkotnote,orderbypax,currentpax,vouchertotaldis
         }
 
 
-
         <View>
-            <TouchableOpacity style={[styles.p_5,styles.radiusBottom,{backgroundColor:styles.yellow.color}]} onPress={() => {
-                if(currentpax === 'all' || !orderbypax) {
-                    viewSummary().then()
-                }
-            }}>
+            <TouchableOpacity style={[styles.radiusBottom, styles.radiusTop, {backgroundColor: styles.secondary.color,padding:10}]}
+                              onPress={() => {
+                                  if(currentpax === 'all' || !orderbypax) {
+                                      setMoreSummary(!moreSummary)
+                                      //viewSummary().then()
+                                  }
+                              }}>
 
-                <View ref={moreSummaryRef}><CartSummaryMore/></View>
+                {moreSummary && <View><CartSummaryMore/></View>}
 
-                <View style={[styles.grid, styles.justifyContent,styles.middle]}>
+                <View style={[styles.grid, styles.justifyContent, styles.middle]}>
                     <View><Paragraph
-                        style={[styles.paragraph, styles.bold]}>Total  </Paragraph></View>
+                        style={[styles.paragraph, styles.bold]}>Total </Paragraph></View>
+                    <View>
+                        <ProIcon name={`chevron-${!moreSummary?'up':'down'}`} size={15}/>
+                    </View>
                     <View><Paragraph
-                        style={[styles.paragraph, styles.bold, styles.text_lg]}> <ProIcon name={'chevron-up'} size={15}/>  {toCurrency(vouchertotal || '0')}</Paragraph></View>
+                        style={[styles.paragraph, styles.bold, styles.text_lg]}>{toCurrency(vouchertotal || '0')}
+                    </Paragraph></View>
                 </View>
             </TouchableOpacity>
         </View></>)
@@ -182,12 +194,12 @@ const Index = ({advanceorder,commonkotnote,orderbypax,currentpax,vouchertotaldis
 
 const mapStateToProps = (state: any) => ({
     advanceorder: state.cartData?.advanceorder,
-    commonkotnote:state.cartData?.commonkotnote,
-    orderbypax:state.cartData?.orderbypax,
-    currentpax:state.cartData?.currentpax,
-    clientid:state.cartData?.clientid,
-    advance:state.cartData?.advance,
-    vouchertotaldisplay:state.cartData?.vouchertotaldisplay,
+    commonkotnote: state.cartData?.commonkotnote,
+    orderbypax: state.cartData?.orderbypax,
+    currentpax: state.cartData?.currentpax,
+    clientid: state.cartData?.clientid,
+    advance: state.cartData?.advance,
+    vouchertotaldisplay: state.cartData?.vouchertotaldisplay,
 })
 
 export default connect(mapStateToProps)(withTheme(memo(Index)));

@@ -58,6 +58,7 @@ const Index = (props: any) => {
     const [hasImage, setHasImage]: any = useState(false);
 
 
+
     const updateItems = (items: any) => {
         return items?.map((i: any) => {
             const find = invoiceitems.filter((item:any)=>{
@@ -71,6 +72,8 @@ const Index = (props: any) => {
             return i;
         })
     }
+
+
 
     useEffect(() => {
         updateItems(itemslist);
@@ -88,7 +91,8 @@ const Index = (props: any) => {
         const combogroup = getCombos(lastgroup)
 
         if (Boolean(newitems?.length > 0)) {
-            let items = updateItems(newitems)
+
+            let items = updateItems(newitems);
 
             setDataSource([...items, ...combogroup]);
 
@@ -97,6 +101,7 @@ const Index = (props: any) => {
             })
             setHasImage(Boolean(checkimage.length));
         } else {
+
             setDataSource([...combogroup]);
         }
         setLoading(true)
@@ -144,8 +149,7 @@ const Index = (props: any) => {
 
                     <GroupHeading/>
 
-                    <PaxesSelection/>
-
+                    <PaxesSelection canchange={true}/>
 
                     <View style={[styles.h_100]} key={gridView}>
                         <FlatList
@@ -158,6 +162,7 @@ const Index = (props: any) => {
                             getItemLayout={(data, index) => {
                                 return {length: 100, offset: 100 * index, index};
                             }}
+                            keyExtractor={(item:any)=>item.itemid}
                             numColumns={gridView ? 3 : 1}
                             ItemSeparatorComponent={ItemDivider}
                             /*onMomentumScrollEnd={onEndReached}

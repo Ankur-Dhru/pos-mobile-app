@@ -8,7 +8,7 @@ import {
     appLog,
     connectToLocalServer,
     getDatabaseName,
-    getLocalSettings, intervalInvoice,
+    getLocalSettings,
     retrieveData,
 } from "../../libs/function";
 import moment from "moment/moment";

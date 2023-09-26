@@ -6,6 +6,8 @@ import PageLoader from "../../components/PageLoader";
 import {Alert, BackHandler} from "react-native";
 import {createNavigationContainerRef} from "@react-navigation/native";
 import {checkPrinterSettings} from "../../libs/function";
+import * as url from "url";
+import {urls} from "../../libs/static";
 
 const Index = (props: any) => {
 
@@ -53,7 +55,9 @@ const Index = (props: any) => {
 
 
     useEffect(() => {
-        checkPrinterSettings(navigation)
+        if(!Boolean(urls.localserver)) {
+            checkPrinterSettings(navigation)
+        }
     }, [])
 
 

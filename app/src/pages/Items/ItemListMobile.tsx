@@ -147,10 +147,6 @@ const Index = (props: any) => {
 
                 <Card.Content style={[styles.cardContent]}>
 
-                    <GroupHeading/>
-
-                    <PaxesSelection canchange={true}/>
-
                     <View style={[styles.h_100]} key={gridView}>
                         <FlatList
                             data={dataSource.filter((item: any) => {

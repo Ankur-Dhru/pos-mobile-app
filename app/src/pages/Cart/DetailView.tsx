@@ -117,7 +117,7 @@ const Index = (props: any) => {
         })
 
 
-    }, [])
+    }, [visible])
 
     const {cancelorder, canapplydiscount}: any = localredux?.authData?.settings;
 

@@ -38,7 +38,7 @@ import {
 } from "./static";
 
 import {setSettings} from "../redux-store/reducer/local-settings-data";
-import React from "react";
+import React, { version } from "react";
 import {Alert, Keyboard, PermissionsAndroid, Platform, Text} from "react-native";
 import {v4 as uuid} from "uuid";
 import SyncingInfo from "../pages/Pin/SyncingInfo";
@@ -1149,7 +1149,6 @@ export const saveLocalOrder = (order?: any) => {
                 })
             }
 
-            prelog('order',order)
 
 
             ///////// CREATE LOCALORDER ID //////////
@@ -1176,7 +1175,7 @@ export const saveLocalOrder = (order?: any) => {
 
                 const syncinvoicesrealtime: any = store.getState().localSettings?.syncinvoicesrealtime;
 
-                syncinvoicesrealtime && await syncInvoice({...order,savingmode:'realtime',version:'3.7.0'}).then();
+                syncinvoicesrealtime && await syncInvoice({...order,savingmode:'realtime',version:version}).then();
                    // await BackgroundService.start(backgroundSync, options).then(r => {});
             })
         }
@@ -1521,8 +1520,10 @@ export const selectItem = async (item: any) => {
         store.dispatch(setBottomSheet({visible: false}))
 
         onPressNumber(item, 'amount', (price: any) => {
+
             const pricingtype = item?.pricing?.type || 'onetime';
             item.pricing = {...pricing, type: pricingtype, price: {default: [{[pricingtype]: {baseprice: price}}]}};
+            item.selling = price;
 
             selectItem(item).then(() => {
                 store.dispatch(setDialog({visible: false}))
@@ -2762,6 +2763,7 @@ export const syncInvoice = async (invoiceData: any) => {
                     await insertOrder({...invoiceData, syncinprogress: false}).then(() => {
 
                     });
+
                     resolve({status: "ERROR"})
                 }
 
@@ -2969,13 +2971,18 @@ export const printDayEndReport = ({date: date, data: data}: any) => {
 
 export const intervalInvoice = (function () {
     let done = false;
+
+
     return function () {
 
         CheckConnectivity().then(()=>{
+
             //syncData().then();
         })
 
         if (!done) {
+
+
             done = true;
 
             let interval: any = null;
@@ -2984,22 +2991,27 @@ export const intervalInvoice = (function () {
             retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
                 const {syncinvoiceintervaltime} = data
 
-
                 if (!interval) {
+
                     interval = setInterval(() => {
+
                         if (Boolean(db?.name)) {
                             if(data) {
-                                CheckConnectivity().then((connection)=>{
+                                syncNow()
+                                /*CheckConnectivity().then((connection)=>{
+
                                     getOrders().then((orders: any) => {
+
                                         if (!isEmpty(orders)) {
+
                                             let invoice: any = Object.values(orders)[0]
-                                            connection && syncInvoice({...invoice,savingmode:'sync',version:'3.7.0'}).then()
+                                            connection && syncInvoice({...invoice,savingmode:'sync',version:version}).then()
                                         }
                                     })
-                                })
+                                })*/
                             }
                         }
-                    }, +syncinvoiceintervaltime || 10000);
+                    }, 60000); //+syncinvoiceintervaltime ||
                 }
                 return () => {
                     clearInterval(interval);
@@ -3012,6 +3024,20 @@ export const intervalInvoice = (function () {
 
     };
 })();
+
+
+export const syncNow = () =>{
+    CheckConnectivity().then((connection)=>{
+        getOrders().then((orders: any) => {
+            if (!isEmpty(orders)) {
+                let invoice: any = Object.values(orders)[0]
+                connection && syncInvoice({...invoice,savingmode:'syncnow',version:version}).then(()=>{
+                    syncNow();
+                })
+            }
+        })
+    })
+}
 
 
 
@@ -3675,18 +3701,22 @@ export const checkPrinterSettings = (navigation:any) => {
                     retrieveData(db.name).then(async (data: any) => {
                         let localSettingsData = data?.localSettingsData || {};
 
-                        data = {
-                            ...data,
-                            localSettingsData: {
-                                ...localSettingsData,
-                                printerset:true
+                        if(!isEmpty(localSettingsData)) {
+                            data = {
+                                ...data,
+                                localSettingsData: {
+                                    ...localSettingsData,
+                                    printerset: true
+                                }
                             }
+                            storeData(db.name, {
+                                ...data,
+                            }).then(async () => {
+                                localredux.localSettingsData = data.localSettingsData
+                            });
                         }
-                        storeData(db.name, {
-                            ...data,
-                        }).then(async () => {
-                            localredux.localSettingsData = data.localSettingsData
-                        });
+
+
                     })
                 },
                 style: 'cancel',

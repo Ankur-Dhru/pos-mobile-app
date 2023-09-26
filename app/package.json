@@ -89,7 +89,7 @@
     "react-native-modal": "^13.0.1",
     "react-native-pager-view": "^6.1.0",
     "react-native-paper": "^4.12.4",
-    "react-native-permissions": "3.8.0",
+    "react-native-permissions": "^3.9.2",
     "react-native-pin-view": "^3.0.2",
     "react-native-ping": "^1.2.7",
     "react-native-print": "^0.10.0",

@@ -26,7 +26,7 @@ const Index = () => {
     let [initdata, setInitdata]: any = useState({
         disabledDefaultSourceHomeDelivery: true,
         syncinvoiceintervaltime: '30000',
-        syncinvoicesrealtime: false,
+        syncinvoicesrealtime: true,
         disabledDefaultSourceTakeAway: true,
         betamode: false,
         searchserialno:false,
@@ -179,7 +179,7 @@ const Index = () => {
                             </Field>
 
 
-                            <View style={[styles.mt_5]}>
+                            {/*<View style={[styles.mt_5]}>
                                 <Field name="syncinvoiceintervaltime">
                                     {props => {
                                         return (<>
@@ -209,7 +209,7 @@ const Index = () => {
                                         </>)
                                     }}
                                 </Field>
-                            </View>
+                            </View>*/}
 
 
                             {isRestaurant && <View style={[styles.mt_5]}>

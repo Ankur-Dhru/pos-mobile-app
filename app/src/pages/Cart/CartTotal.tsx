@@ -11,7 +11,7 @@ const Index = ({vouchertotaldisplay,totalqnt, theme: {colors}}: any) => {
 
     const navigation = useNavigation();
 
-    if (!Boolean(totalqnt)) {
+    if (!Boolean(totalqnt) || !Boolean(vouchertotaldisplay)) {
         return <></>
     }
 

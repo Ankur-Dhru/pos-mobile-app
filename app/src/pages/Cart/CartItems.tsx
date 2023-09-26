@@ -127,6 +127,7 @@ const Index = (props: any) => {
                             </View>
                         )
                     }}
+                    keyExtractor={(item)=>item.key}
 
                 />
             </>

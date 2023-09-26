@@ -1,7 +1,15 @@
 import React, {useEffect, useRef, useState} from "react";
 import {FlatList, Text, TouchableOpacity, View} from "react-native";
 import {Card, Paragraph} from "react-native-paper"
-import {CheckConnectivity, dateFormat, getOrders, printInvoice, toCurrency, updateComponent} from "../../libs/function";
+import {
+    CheckConnectivity,
+    dateFormat,
+    getOrders,
+    printDayEndReport,
+    printInvoice, syncNow,
+    toCurrency,
+    updateComponent
+} from "../../libs/function";
 import Container from "../../components/Container";
 import {styles} from "../../theme";
 import {connect} from "react-redux";
@@ -11,6 +19,9 @@ import apiService from "../../libs/api-service";
 import moment from "moment";
 import ProIcon from "../../components/ProIcon";
 import PageLoader from "../../components/PageLoader";
+import Button from "../../components/Button";
+import KAccessoryView from "../../components/KAccessoryView";
+import KeyboardScroll from "../../components/KeyboardScroll";
 
 const offset = 20;
 
@@ -243,29 +254,44 @@ const SalesReport = ({ordersData, navigation}: any) => {
 
 
     return <Container>
-        <Card style={[styles.card]}>
-            <Card.Content style={[styles.cardContent]}>
 
-                {<FlatList
-                    style={[styles.listitem]}
-                    data={(unsynced ? localorder : data)}
-                    keyboardDismissMode={'on-drag'}
-                    keyboardShouldPersistTaps={'always'}
-                    renderItem={renderItem}
-                    ListEmptyComponent={<View>
-                        <View style={[styles.p_6]}>
-                            <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>No
-                                any {unsynced ? 'unsynced' : 'synced'} items found</Text>
+        <KeyboardScroll>
+            <Card style={[styles.card]}>
+                <Card.Content style={[styles.cardContent]}>
 
-                        </View>
-                    </View>}
+                    {<FlatList
+                        style={[styles.listitem]}
+                        data={(unsynced ? localorder : data)}
+                        keyboardDismissMode={'on-drag'}
+                        keyboardShouldPersistTaps={'always'}
+                        renderItem={renderItem}
+                        ListEmptyComponent={<View>
+                            <View style={[styles.p_6]}>
+                                <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>No
+                                    any {unsynced ? 'unsynced' : 'synced'} items found</Text>
 
-                    ItemSeparatorComponent={ItemDivider}
-                    ListFooterComponent={!unsynced ? renderFooter : <></>}
-                />}
+                            </View>
+                        </View>}
 
-            </Card.Content>
-        </Card>
+                        ItemSeparatorComponent={ItemDivider}
+                        ListFooterComponent={!unsynced ? renderFooter : <></>}
+                    />}
+
+                </Card.Content>
+            </Card>
+        </KeyboardScroll>
+
+
+        {unsynced && (localorder.length > 0) && <KAccessoryView>
+            <View style={[styles.submitbutton]}>
+                <Button more={{color: 'white'}}
+                        onPress={() => {
+                            syncNow()
+                        }}> Sync Now
+                </Button>
+            </View>
+        </KAccessoryView>}
+
     </Container>
 
 }

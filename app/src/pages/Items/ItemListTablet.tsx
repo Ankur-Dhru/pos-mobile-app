@@ -107,8 +107,10 @@ export const ItemView = memo(({item,displayType,search,currentpax}:any)=>{
                     else if((!Boolean(item?.productqnt) && !hasKot) || (currentpax !== item?.pax)) {
                         selectItem(item).then();
                     }
-                    if(search) {
-                        navigation.goBack()
+                    else {
+                        if (search) {
+                            navigation.goBack()
+                        }
                     }
                 }}
                 /*left={() => <View style={{marginTop:5}}><Avatar label={item.itemname} value={item.itemid || item.comboid} fontsize={14} size={40}/></View>}*/

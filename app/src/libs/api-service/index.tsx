@@ -43,7 +43,7 @@ const apiService = async (config: configData) => {
         method: config.method,
         redirect: 'follow',
         headers: new Headers(headers),
-        timeout: 10000,
+        timeout: 60000,
         signal
     };
 

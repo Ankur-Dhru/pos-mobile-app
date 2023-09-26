@@ -62,6 +62,7 @@ const datePeriod = [{label: 'Today', from: today, to: today}, {label: 'Tomorrow'
 
 
 export const getOriginalTablesData = () => {
+    console.log('localredux.localSettingsData',localredux.localSettingsData)
     const {currentLocation} = localredux.localSettingsData;
     let tables;
     tables = currentLocation?.tables?.map((t: any) => ({
@@ -79,6 +80,7 @@ export const getOrderFromTable = (tables: any) => {
         let newothertables: any = [];
 
         await getTempOrders().then(async (tableorders: any) => {
+
 
             Object.values(tableorders).map((table: any) => {
 

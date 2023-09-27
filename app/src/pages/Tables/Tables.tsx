@@ -62,7 +62,6 @@ const datePeriod = [{label: 'Today', from: today, to: today}, {label: 'Tomorrow'
 
 
 export const getOriginalTablesData = () => {
-    console.log('localredux.localSettingsData',localredux.localSettingsData)
     const {currentLocation} = localredux.localSettingsData;
     let tables;
     tables = currentLocation?.tables?.map((t: any) => ({
@@ -297,11 +296,11 @@ const Index = ({tableorders}: any) => {
                     if (kots?.length > 0 || numOfKOt > 0) {
                         let {staffid, staffname, ...others}: any = response.data;
                         tabledetails = {
-                            ...tabledetails, ...others,
+                            ...tabledetails, ...others
                         }
                     } else {
                         tabledetails = {
-                            ...tabledetails, ...response.data,
+                            ...tabledetails, ...response.data
                         }
                     }
                 })
@@ -568,7 +567,7 @@ const Index = ({tableorders}: any) => {
 
                     response.data = clone({
                         ...response.data, tableid: tableid, tablename: tablename, area: area
-                    })
+                    });
 
                     await saveTempLocalOrder(response.data).then(async () => {
                         await resetTables()

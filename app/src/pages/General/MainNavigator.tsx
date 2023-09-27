@@ -291,8 +291,6 @@ const ClientAreaStackNavigator = (props: any) => {
             <Stack.Screen name="AskPermission" component={AskPermission} options={{title: 'Ask Permission'}}/>
 
 
-
-
         </Stack.Navigator>
     );
 };

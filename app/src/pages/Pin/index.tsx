@@ -217,7 +217,6 @@ const Index = (props: any) => {
                                     isRestaurant: (locations[locationid]?.industrytype === "foodservices"),
                                 }
 
-                                console.log('localSettingsData',localSettingsData)
 
                                 setData({
                                     initData: initdata,

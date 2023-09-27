@@ -2454,8 +2454,6 @@ export const refreshToken = () => {
 
 
 export const updateToken = async (token: any) => {
-
-
     crashlytics().log('updateToken');
 
     localredux.authData.token = token;
@@ -2692,7 +2690,7 @@ export const syncInvoice = async (invoiceData: any) => {
 
         if (syncstatus) {
             appLog('sync in progress')
-            resolve('sync in progress')
+            resolve({status: "IN PROGRESS"})
         } else {
 
             saveLocalSettings({sync_in_process: true})
@@ -2752,13 +2750,13 @@ export const syncInvoice = async (invoiceData: any) => {
                         store.dispatch(setOrder({...invoiceData, synced: true}))
                         appLog('delete from local table')
                         appLog('order synced', invoiceData?.orderid)
-                        resolve('synced',)
+                        resolve({status: "SUCCESS"})
                     });
                 } else {
 
                   //  await BackgroundService.updateNotification({taskTitle: 'Sync Pending...'});
 
-                    appLog('response error')
+
                     appLog('sync pending', invoiceData?.orderid)
                     await insertOrder({...invoiceData, syncinprogress: false}).then(() => {
 
@@ -3031,14 +3029,47 @@ export const syncNow = () =>{
         getOrders().then((orders: any) => {
             if (!isEmpty(orders)) {
                 let invoice: any = Object.values(orders)[0]
-                connection && syncInvoice({...invoice,savingmode:'syncnow',version:version}).then(()=>{
-                    syncNow();
+                connection && syncInvoice({...invoice,savingmode:'syncnow',version:version}).then((data:any)=>{
+                    if(data.status === 'SUCCESS') {
+                        syncNow();
+                    }
+                    //store.dispatch(setAlert({visible:true,message:`SYNC ${data.status}`}))
                 })
             }
         })
     })
 }
 
+
+export const expireToken = () => {
+
+    const {workspace}: any = localredux.initData;
+    const {token}: any = '12345';
+
+    return new Promise((resolve) => {
+
+        apiService({
+            method: METHOD.GET,
+            action: ACTIONS.INVOICE,
+            workspace: workspace,
+            token: token,
+            hideLoader: true,
+            hidealert: true,
+            other: {url: urls.posUrl},
+        }).then(async (response: any) => {
+
+            if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
+                resolve({status: "SUCCESS"})
+            } else {
+                resolve({status: "ERROR"})
+            }
+
+        }).catch(async () => {
+            resolve({status: "TRY CATCH ERROR"})
+        })
+
+    })
+}
 
 
 

@@ -62,7 +62,7 @@ const Index = (props: any) => {
             let {staffid, staffname, ...others}: any = voucherDataJson;
             dispatch(refreshCartData({...tabledetails, ...others}));
         } else {
-            dispatch(refreshCartData({...tabledetails, ...voucherDataJson}));
+            dispatch(refreshCartData({...voucherDataJson,...tabledetails}));
         }
 
 

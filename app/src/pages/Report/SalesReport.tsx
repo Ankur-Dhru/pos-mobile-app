@@ -3,7 +3,7 @@ import {FlatList, Text, TouchableOpacity, View} from "react-native";
 import {Card, Paragraph} from "react-native-paper"
 import {
     CheckConnectivity,
-    dateFormat,
+    dateFormat, expireToken,
     getOrders,
     printDayEndReport,
     printInvoice, syncNow,
@@ -230,7 +230,7 @@ const SalesReport = ({ordersData, navigation}: any) => {
                         <ProIcon name={'print'} type={'solid'} size={15}/>
                     </TouchableOpacity>}
                 </View>
-                {<View style={{width: 80}}>
+                {<View style={{width: 100}}>
                     <Paragraph
                         style={[styles.paragraph, styles.bold, {textAlign: 'right'}]}>{toCurrency(item?.vouchertotaldisplay)}</Paragraph>
                     {Boolean(item?.voucherdisplayid) ?
@@ -282,8 +282,17 @@ const SalesReport = ({ordersData, navigation}: any) => {
         </KeyboardScroll>
 
 
-        {unsynced && (localorder.length > 0) && <KAccessoryView>
+        {(unsynced && (localorder.length > 0)) && <KAccessoryView>
             <View style={[styles.submitbutton]}>
+
+                {/*<Button more={{color: 'white'}}
+                        onPress={() => {
+                            expireToken().then(r => {
+                                console.log('r',r)
+                            })
+                        }}> Expire Token
+                </Button>*/}
+
                 <Button more={{color: 'white'}}
                         onPress={() => {
                             syncNow()

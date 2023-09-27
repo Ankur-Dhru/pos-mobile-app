@@ -16,7 +16,7 @@ const ToggleButtons = (props:any) => {
         <ToggleButton.Row  onValueChange={value => value && setSelectedValue(value)} value={selectedValue}>
             {
                 props?.btns?.map(({label,value}:any)=>{
-                    return <ToggleButton   style={{height:40,width:props.width,borderColor:'transparent',backgroundColor:selectedValue === value?styles.secondary.color:styles.secondary2.color}} disabled={props.disabled} icon={()=> <Paragraph style={{fontWeight:selectedValue === value?'bold':'normal',color:selectedValue === value?'black':'black'}}>{label}</Paragraph>} value={value} />
+                    return <ToggleButton key={value}  style={{height:40,width:props.width,borderColor:'transparent',backgroundColor:selectedValue === value?styles.secondary.color:styles.secondary2.color}} disabled={props.disabled} icon={()=> <Paragraph style={{fontWeight:selectedValue === value?'bold':'normal',color:selectedValue === value?'black':'black'}}>{label}</Paragraph>} value={value} />
                 })
             }
         </ToggleButton.Row>

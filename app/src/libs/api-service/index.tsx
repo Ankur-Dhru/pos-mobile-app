@@ -3,6 +3,7 @@ import {ACTIONS, device, METHOD, STATUS} from "../static";
 import store from "../../redux-store/store";
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
 import crashlytics from "@react-native-firebase/crashlytics";
+import {CommonActions} from "@react-navigation/native";
 
 
 interface configData {
@@ -76,8 +77,6 @@ const apiService = async (config: configData) => {
         store.dispatch(showLoader())
     }
 
-    appLog('apiPath', apiPath)
-
 
     wait(requestOptions.timeout, signal)
         .then(() => {
@@ -114,7 +113,16 @@ const apiService = async (config: configData) => {
                         apiService(config)
                     }
                     else{
-                        store.dispatch(setAlert({visible: true, message: 'Something went wrong, Please login again!'}))
+                        store.dispatch(setAlert({visible: true, message: 'Something went wrong, Please login again!'}));
+                        device.navigation.dispatch(
+                            CommonActions.reset({
+                                index: 0,
+                                routes: [
+                                    {name: 'SetupStackNavigator'},
+                                ],
+                            })
+                        );
+                        //device.navigation.navigate('SetupStackNavigator')
                     }
                 });
 
@@ -127,7 +135,18 @@ const apiService = async (config: configData) => {
 
             store.dispatch(hideLoader());
             saveLocalSettings('serverip', '').then();
-            store.dispatch(setAlert({visible: true, message: 'Something went wrong'}))
+            store.dispatch(setAlert({visible: true, message: 'Something went wrong'+error}));
+
+            device.navigation.dispatch(
+                CommonActions.reset({
+                    index: 0,
+                    routes: [
+                        {name: 'SetupStackNavigator'},
+                    ],
+                })
+            );
+
+
             //appLog("API_CATCH_ERROR", error,navigator.onLine);
 
             /*if(!navigator.onLine){

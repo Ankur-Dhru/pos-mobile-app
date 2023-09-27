@@ -17,7 +17,7 @@ import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {Button, Container} from "../../components";
 import {CommonActions, useNavigation} from "@react-navigation/native";
-import {device, ItemDivider, localredux, TICKET_STATUS} from "../../libs/static";
+import {device, ItemDivider, localredux, TICKET_STATUS, urls} from "../../libs/static";
 import store from "../../redux-store/store";
 import {setCartData, updateCartField} from "../../redux-store/reducer/cart-data";
 import ProIcon from "../../components/ProIcon";
@@ -84,6 +84,7 @@ const Index = ({
     const dispatch = useDispatch();
     const navigation: any = useNavigation()
 
+
     if (!Boolean(paidamount)) {
         paidamount = 0
     }
@@ -103,10 +104,8 @@ const Index = ({
     }
 
 
+    const [vouchertotaldisplay,setVouchertotaldisplay] = useState(+cartData?.vouchertotaldisplay - +cartData?.paidamount)
 
-
-
-    const [vouchertotaldisplay,setVouchertotaldisplay] = useState(cartData?.vouchertotaldisplay - cartData?.paidamount)
     const [paxwise, setPaxwise]:any = useState({})
 
     const {paymentgateway}: any = localredux.initData;
@@ -125,7 +124,7 @@ const Index = ({
             cartData = {
                 ...cartData,
                 payment: payment,
-                currentpax:'all'
+                currentpax: 'all'
             }
             setPaxwise(data);
             dispatch(setCartData(cartData));
@@ -204,7 +203,8 @@ const Index = ({
     }, [paymentMethods])
 
     useEffect(()=>{
-        let total = cartData?.vouchertotaldisplay - paidamount
+        let total = cartData?.vouchertotaldisplay - paidamount;
+        console.log('currentpax',currentpax)
         if(currentpax !=='all') {
             total = paxwise[currentpax]?.vouchertotaldisplay
         }
@@ -214,6 +214,7 @@ const Index = ({
     useEffect(()=>{
         setPaymentMethods(getPaymentgateways())
     },[vouchertotaldisplay])
+
 
     const setPaymentbypax = (cartData:any) => {
 

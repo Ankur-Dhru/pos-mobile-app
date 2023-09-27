@@ -229,7 +229,6 @@ export const insertTempOrder =  (data?: any) => {
                 other: {url: urls.localserver},
             }).then((response: any) => {
 
-                prelog('response',response)
 
                 const {status}:any = response;
                 if (status === STATUS.SUCCESS) {

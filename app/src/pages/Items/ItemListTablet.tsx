@@ -80,7 +80,7 @@ export const ItemView = memo(({item,displayType,search,currentpax}:any)=>{
         return <View key={item.itemid || item.comboid}>
             <List.Item
                 style={[styles.listitem,{paddingTop:5}]}
-                title={item.itemname }
+                title={item.itemname}
                 titleStyle={[styles.bold,{textTransform: 'capitalize'}]}
                 titleNumberOfLines={2}
                 description={()=>{

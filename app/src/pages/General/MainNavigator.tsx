@@ -299,8 +299,8 @@ const ClientAreaStackNavigator = (props: any) => {
 const ProfileSettingsNavigator = (props: any) => {
 
     return (
-        <Stack.Navigator initialRouteName={'ProfileSettingsNavigator'} screenOptions={screenOptions}>
-            <Stack.Screen name={'ProfileSettingsNavigator'} component={General} options={{headerShown: false}}/>
+        <Stack.Navigator initialRouteName={'SettingsNavigator'} screenOptions={screenOptions}>
+            <Stack.Screen name={'SettingsNavigator'} component={General} options={{headerShown: false}}/>
 
             <Stack.Screen name={'SalesReport'} component={SalesReport} options={{headerTitle: 'Sales Report'}}/>
             <Stack.Screen name={'SalesReturnReport'} component={SalesReturnReport} options={{headerTitle: 'Sales Return Report'}}/>

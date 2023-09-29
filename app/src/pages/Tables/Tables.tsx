@@ -291,23 +291,32 @@ const Index = ({tableorders}: any) => {
                     other: {url: urls.localserver},
                 }).then((response: any) => {
 
-                    const {kots, numOfKOt}: any = tabledetails
+                    const {kots, numOfKOt}: any = tabledetails;
+
 
                     if (kots?.length > 0 || numOfKOt > 0) {
                         let {staffid, staffname, ...others}: any = response.data;
                         tabledetails = {
-                            ...tabledetails, ...others
+                            ...tabledetails, ...others,currentpax:'all'
                         }
                     } else {
                         tabledetails = {
-                            ...tabledetails, ...response.data
+                            ...tabledetails, ...response.data,currentpax:'all'
                         }
                     }
+
+                    tabledetails.invoiceitems.map((item:any,index:any)=>{
+                        item = {
+                            ...item,...item.itemdetail
+                        }
+                        tabledetails.invoiceitems[index] = item
+                    })
                 })
             }
 
-            navigation.navigate('CartStackNavigator', tabledetails)
-            dispatch(setDialog({visible: false}))
+            navigation.navigate('CartStackNavigator', tabledetails);
+            dispatch(setDialog({visible: false}));
+
 
         } else {
             errorAlert(`Table only access by ${tabledetails?.staffname}`)
@@ -957,24 +966,6 @@ const Index = ({tableorders}: any) => {
             </TouchableOpacity>
         </View>}
 
-        {/*<Tabs
-                scenes={{
-                    all: AllTable,
-                    tableorder: OnlyTable,
-                    homedelivery: HomeDelivery,
-                    takeaway: TakeAway,
-                    advanceorder: AdvanceOrder
-                }}
-                routes={[
-                    {key: 'all', title: 'All'},
-                    {key: 'tableorder', title: 'Tables'},
-                    {key: 'homedelivery', title: 'HomeDelivery'},
-                    {key: 'takeaway', title: 'TakeAway'},
-                    {key: 'advanceorder', title: 'AdvanceOrder'},
-                ]}
-
-                scrollable={true}
-            />*/}
 
 
         <FAB.Group

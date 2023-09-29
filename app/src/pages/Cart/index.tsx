@@ -213,10 +213,6 @@ const Index = (props: any) => {
     }
 
 
-
-
-
-
     return <Cart tabledetails={tabledetails}   gridView={gridView}/>
 
 }

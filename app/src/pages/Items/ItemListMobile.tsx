@@ -54,9 +54,7 @@ const Index = (props: any) => {
 
     const [dataSource, setDataSource]: any = useState([]);
 
-
     const [hasImage, setHasImage]: any = useState(false);
-
 
 
     const updateItems = (items: any) => {
@@ -72,8 +70,6 @@ const Index = (props: any) => {
             return i;
         })
     }
-
-
 
     useEffect(() => {
         updateItems(itemslist);
@@ -101,7 +97,6 @@ const Index = (props: any) => {
             })
             setHasImage(Boolean(checkimage.length));
         } else {
-
             setDataSource([...combogroup]);
         }
         setLoading(true)
@@ -147,6 +142,10 @@ const Index = (props: any) => {
 
                 <Card.Content style={[styles.cardContent]}>
 
+                    <GroupHeading/>
+
+                    <PaxesSelection canchange={true}/>
+
                     <View style={[styles.h_100]} key={gridView}>
                         <FlatList
                             data={dataSource.filter((item: any) => {
@@ -158,12 +157,11 @@ const Index = (props: any) => {
                             getItemLayout={(data, index) => {
                                 return {length: 100, offset: 100 * index, index};
                             }}
-                            keyExtractor={(item:any)=>item.itemid}
+                            keyExtractor={(item:any)=>item.itemid || item.productid}
                             numColumns={gridView ? 3 : 1}
                             ItemSeparatorComponent={ItemDivider}
                             /*onMomentumScrollEnd={onEndReached}
                             onEndReachedThreshold={0.5}*/
-
                             ListFooterComponent={() => {
                                 return <View style={{height: 200}}></View>
                             }}
@@ -172,7 +170,6 @@ const Index = (props: any) => {
                                     <Text
                                         style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}> Start
                                         building your item library.</Text>
-
                                 </View>
                                 <AddItem navigation={navigation} search={true}/>
                             </View>}

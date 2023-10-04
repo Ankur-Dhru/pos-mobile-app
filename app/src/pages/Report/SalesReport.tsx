@@ -54,6 +54,15 @@ const SalesReport = ({ordersData, navigation}: any) => {
     }, [ordersData?.length]) //ordersData
 
 
+    useEffect(()=>{
+        navigation.setOptions({
+            headerRight: () => {
+                return <TouchableOpacity
+                    onPress={() => setUnsynced(!unsynced)}><Paragraph>{unsynced ? 'Synced' : 'Unsynced'}</Paragraph></TouchableOpacity>
+            }
+        })
+    },[unsynced])
+
     const getData = () => {
         CheckConnectivity().then((connection) => {
             if (connection) {
@@ -173,12 +182,7 @@ const SalesReport = ({ordersData, navigation}: any) => {
         return <PageLoader/>
     }
 
-    navigation.setOptions({
-        headerRight: () => {
-            return <TouchableOpacity
-                onPress={() => setUnsynced(!unsynced)}><Paragraph>{unsynced ? 'Synced' : 'Unsynced'}</Paragraph></TouchableOpacity>
-        }
-    })
+
 
 
     const renderItem = ({item, index}: any) => {
@@ -195,7 +199,7 @@ const SalesReport = ({ordersData, navigation}: any) => {
             item.localdatetime = item.date
         }
 
-        return <TouchableOpacity style={[styles.py_5]} key={index}>
+        return <TouchableOpacity style={[styles.py_5]} >
             <View
                 style={[styles.grid, styles.noWrap, styles.middle, styles.justifyContentSpaceBetween]}>
 
@@ -255,7 +259,7 @@ const SalesReport = ({ordersData, navigation}: any) => {
 
     return <Container>
 
-        <KeyboardScroll>
+
             <Card style={[styles.card]}>
                 <Card.Content style={[styles.cardContent]}>
 
@@ -265,6 +269,7 @@ const SalesReport = ({ordersData, navigation}: any) => {
                         keyboardDismissMode={'on-drag'}
                         keyboardShouldPersistTaps={'always'}
                         renderItem={renderItem}
+                        keyExtractor={(item)=> item.voucherdisplayid}
                         ListEmptyComponent={<View>
                             <View style={[styles.p_6]}>
                                 <Text style={[styles.paragraph, styles.mb_2, styles.muted, {textAlign: 'center'}]}>No
@@ -279,7 +284,6 @@ const SalesReport = ({ordersData, navigation}: any) => {
 
                 </Card.Content>
             </Card>
-        </KeyboardScroll>
 
 
         {(unsynced && (localorder.length > 0)) && <KAccessoryView>

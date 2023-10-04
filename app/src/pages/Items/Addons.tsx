@@ -46,7 +46,9 @@ const Index = ({addtags, itemaddon,updateProduct}: any) => {
 
         setTimeout(()=>{
             autoaddon?.map((addon:any)=>{
-                updateQnt(addon,'add')
+                if(!Boolean(moreaddon[addon].productqnt)){
+                    updateQnt(addon, 'autoadd')
+                }
             })
         })
 
@@ -54,12 +56,15 @@ const Index = ({addtags, itemaddon,updateProduct}: any) => {
 
 
     const updateQnt = (key: any, action: any) => {
+
         let productqnt = moreaddon[key].productqnt || 0;
 
         const {unit}: any = localredux.initData;
 
 
-        if (action === 'add') {
+        if (action === 'autoadd') {
+            productqnt =   1
+        }else if (action === 'add') {
             productqnt = productqnt + 1
         } else if (action === 'remove') {
             productqnt = productqnt - 1
@@ -96,14 +101,19 @@ const Index = ({addtags, itemaddon,updateProduct}: any) => {
 
                         let {itemname, pricing, productqnt} = moreaddon[addon];
 
+                        console.log('productqnt',productqnt)
+
+
                         const pricingtype = pricing?.type;
 
                         const baseprice = pricing?.price?.default[0][pricingtype]?.baseprice || 0;
 
                         return (
-                            <View
+                            <TouchableOpacity
                                 style={[styles.grid, styles.justifyContent, styles.w_100, styles.mb_3, styles.p_3,  productqnt > 0 && styles.bg_light_blue, {borderRadius: 5,paddingLeft:10}]}
-                                key={key}>
+                                key={key} onPress={()=>{
+                                updateQnt(addon, 'add')
+                            }}>
 
                                 <View style={[styles.grid, styles.justifyContent]}>
                                     <View style={[styles.w_auto]}>
@@ -138,7 +148,7 @@ const Index = ({addtags, itemaddon,updateProduct}: any) => {
 
 
 
-                            </View>
+                            </TouchableOpacity>
                         )
                     })
                 }

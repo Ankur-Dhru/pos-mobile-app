@@ -127,9 +127,7 @@ const MainStackNavigator = () => {
             <Stack.Screen name={'ProfileSettingsNavigator'} component={ProfileSettingsNavigator}
                           options={{headerShown: false, presentation: 'modal', headerTitle: 'Settings'}}/>
 
-
             <Stack.Screen name="Sample" component={Sample}/>
-
 
         </Stack.Navigator>
     );

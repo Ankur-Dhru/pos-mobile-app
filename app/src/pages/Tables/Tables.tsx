@@ -34,6 +34,8 @@ import Splittable from "./Splittable";
 import TableMenu from "./TableMenu";
 import {itemTotalCalculation} from "../../libs/item-calculation";
 import {deleteOrder, setTableOrders} from "../../redux-store/reducer/table-orders-data";
+import InvoicesList from "../Cart/InvoicesList";
+import OnlineorderList from "../Cart/OnlineorderList";
 
 let interval: any = ''
 
@@ -259,6 +261,7 @@ const Index = ({tableorders}: any) => {
             } else {
                 navigation.navigate('CartStackNavigator', tabledetail);
             }
+
         }
 
         if (ordertype.value === 'qsr') {
@@ -482,10 +485,33 @@ const Index = ({tableorders}: any) => {
                             navigation?.navigate('SwitchItems')
                         }} title="Switch Items"/>}*/}
 
+
+                           {/* <Menu.Item onPress={async () => {
+                                closeMenu()
+                                await dispatch(setBottomSheet({
+                                    visible: true,
+                                    height: '90%',
+                                    component: () => <InvoicesList/>
+                                }))
+                            }} title="Invoices"/>
+
+
+                            <Menu.Item onPress={async () => {
+                                closeMenu()
+                                await dispatch(setBottomSheet({
+                                    visible: true,
+                                    height: '90%',
+                                    component: () => <OnlineorderList/>
+                                }))
+                            }} title="Online Orders"/>
+
+
                             <Menu.Item onPress={() => {
                                 getOrder().then();
                                 closeMenu()
-                            }} title="Refresh"/>
+                            }} title="Refresh"/>*/}
+
+
                             {/*{!isRestaurant() && <Menu.Item onPress={async () => {
                         await dispatch(setBottomSheet({
                             visible: true,

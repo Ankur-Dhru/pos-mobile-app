@@ -3,7 +3,7 @@ import {FlatList, Text, View} from "react-native";
 import {Caption, List, Paragraph, withTheme} from "react-native-paper";
 import {connect, useDispatch} from "react-redux";
 import {setBottomSheet} from "../../redux-store/reducer/component";
-import {ACTIONS, current, ItemDivider, localredux, METHOD, STATUS, urls, VOUCHER} from "../../libs/static";
+import {ACTIONS, current, device, ItemDivider, localredux, METHOD, STATUS, urls, VOUCHER} from "../../libs/static";
 import {styles} from "../../theme";
 import {setCartData, setCartItems} from "../../redux-store/reducer/cart-data";
 import {dateFormat, isEmpty, printInvoice, selectItem, toCurrency, totalOrderQnt} from "../../libs/function";
@@ -91,7 +91,8 @@ const Index = (props: any) => {
 
                 }
 
-                dispatch(setCartData({...invoiceData,currentpax:'all', totalqnt: totalOrderQnt(invoiceData.invoiceitems)}))
+                dispatch(setCartData({...invoiceData,currentpax:'all', totalqnt: totalOrderQnt(invoiceData.invoiceitems)}));
+
             }
         });
     }

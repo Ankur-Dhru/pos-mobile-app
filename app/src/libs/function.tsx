@@ -34,11 +34,12 @@ import {
     TICKET_STATUS,
     TICKETS_TYPE,
     urls,
-    VOUCHER
+    VOUCHER,
+    version
 } from "./static";
 
 import {setSettings} from "../redux-store/reducer/local-settings-data";
-import React, { version } from "react";
+import React  from "react";
 import {Alert, Keyboard, PermissionsAndroid, Platform, Text} from "react-native";
 import {v4 as uuid} from "uuid";
 import SyncingInfo from "../pages/Pin/SyncingInfo";
@@ -1091,6 +1092,8 @@ export const saveLocalOrder = (order?: any) => {
             order = clone(store.getState().cartData)
         }
 
+        console.log('order?.voucherid',order?.voucherid)
+
         if(order?.voucherid){
             const {workspace}: any = localredux.initData;
             const {token}: any = localredux.authData;
@@ -1173,10 +1176,13 @@ export const saveLocalOrder = (order?: any) => {
                     resolve(order)
                 });
 
-                const syncinvoicesrealtime: any = store.getState().localSettings?.syncinvoicesrealtime;
 
-                syncinvoicesrealtime && await syncInvoice({...order,savingmode:'realtime',version:version}).then();
-                   // await BackgroundService.start(backgroundSync, options).then(r => {});
+                /*ENABLE SAVE REALTIME*/
+                /*const syncinvoicesrealtime: any = store.getState().localSettings?.syncinvoicesrealtime;
+                syncinvoicesrealtime && await syncInvoice({...order,savingmode:'realtime',version:version}).then();*/
+                /*ENABLE SAVE REALTIME*/
+
+                // await BackgroundService.start(backgroundSync, options).then(r => {});
             })
         }
     })
@@ -2987,7 +2993,7 @@ export const intervalInvoice = (function () {
 
 
             retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
-                const {syncinvoiceintervaltime} = data
+               // const {syncinvoiceintervaltime} = data
 
                 if (!interval) {
 
@@ -3025,10 +3031,12 @@ export const intervalInvoice = (function () {
 
 
 export const syncNow = () =>{
+
     CheckConnectivity().then((connection)=>{
         getOrders().then((orders: any) => {
             if (!isEmpty(orders)) {
                 let invoice: any = Object.values(orders)[0]
+
                 connection && syncInvoice({...invoice,savingmode:'syncnow',version:version}).then((data:any)=>{
                     if(data.status === 'SUCCESS') {
                         syncNow();

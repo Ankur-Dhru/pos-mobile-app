@@ -1,8 +1,7 @@
 import {getType} from "@reduxjs/toolkit";
-import {appLog, assignOption, getDatabaseName, getLocalSettings, setAPIUrl, setDB} from "./function";
+import {appLog, assignOption, getDatabaseName, getLocalSettings, setAPIUrl} from "./function";
 import React from "react";
 import {View} from "react-native";
-import {styles} from "../theme";
 
 
 export const isDevelopment = process.env.NODE_ENV === "development";
@@ -24,8 +23,7 @@ getLocalSettings('generalsettings').then((r:any) => {
 });
 
 
-
-export const version = '3.7.3'
+export const version = '3.7.5'
 
 const mainUrl = "https://api.dhru.com";
 export const loginUrl: any = `${mainUrl}/client/api/v1/`;

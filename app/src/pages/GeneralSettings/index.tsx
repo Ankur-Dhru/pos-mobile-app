@@ -26,7 +26,7 @@ const Index = () => {
     let [initdata, setInitdata]: any = useState({
         disabledDefaultSourceHomeDelivery: true,
         syncinvoiceintervaltime: '30000',
-        syncinvoicesrealtime: true,
+        syncinvoicesrealtime: false,
         disabledDefaultSourceTakeAway: true,
         betamode: false,
         searchserialno:false,
@@ -163,7 +163,7 @@ const Index = () => {
 
 
 
-                            <Field name="syncinvoicesrealtime">
+                            {/*<Field name="syncinvoicesrealtime">
                                 {props => (<><CheckBox
                                     value={props.input.value}
                                     label={'Sync Invoice Real Time'}
@@ -176,7 +176,7 @@ const Index = () => {
                                         saveLocalSettings("syncinvoicesrealtime", value).then();
                                     }}
                                 /></>)}
-                            </Field>
+                            </Field>*/}
 
 
                             {/*<View style={[styles.mt_5]}>

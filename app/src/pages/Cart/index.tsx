@@ -163,33 +163,33 @@ const Index = (props: any) => {
                         }} title={`${orderbypax ? 'Disabled' : 'Enable'} by Pax`}/>}
 
 
-                        {!isRestaurant() && <Menu.Item onPress={async () => {
+                        {!isRestaurant() && <><Menu.Item onPress={async () => {
                             closeMenu()
                             await dispatch(setBottomSheet({
                                 visible: true,
-                                height: '50%',
+                                height: '90%',
                                 component: () => <HoldOrders/>
                             }))
-                        }} title="Holding Orders"/>}
-
-                        <Menu.Item onPress={async () => {
+                        }} title="Holding Orders"/><Menu.Item onPress={async () => {
                             closeMenu()
                             await dispatch(setBottomSheet({
                                 visible: true,
                                 height: '90%',
                                 component: () => <InvoicesList/>
                             }))
-                        }} title="Invoices"/>
+                        }} title="Invoices"/></>}
 
 
-                        <Menu.Item onPress={async () => {
+
+
+                        {isRestaurant() && <Menu.Item onPress={async () => {
                             closeMenu()
                             await dispatch(setBottomSheet({
                                 visible: true,
                                 height: '90%',
                                 component: () => <OnlineorderList/>
                             }))
-                        }} title="Online Orders"/>
+                        }} title="Online Orders"/> }
 
 
                         {/*{isRestaurant() && <Menu.Item onPress={async () => {

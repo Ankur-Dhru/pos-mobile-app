@@ -57,6 +57,8 @@ class ScanScreen extends Component<any> {
                     markerStyle={{borderColor:'white'}}
                     cameraTimeout={10000}
                     vibrate={true}
+                    permissionDialogTitle={'Camera Permission'}
+                    permissionDialogMessage={'Scanning  IMEI / Serial No / MFD'}
                     onRead={this.onSuccess}
                 />
 

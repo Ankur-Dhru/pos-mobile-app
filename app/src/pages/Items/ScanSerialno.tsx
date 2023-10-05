@@ -66,7 +66,7 @@ const Index = (props: any) => {
             <View style={[styles.p_5,styles.absolute,{backgroundColor:'white',zIndex:999,width:'100%'}]}>
                 <InputBox
                     defaultValue={value}
-                    label={'Serial No.'}
+                    label={'Serial No. / MFD No. / IMEI'}
                     autoFocus={false}
                     keyboardType={'numeric'}
                     onSubmitEditing={()=> {

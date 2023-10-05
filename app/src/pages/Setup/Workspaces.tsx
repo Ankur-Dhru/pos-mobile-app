@@ -17,7 +17,7 @@ const Workspaces = (props: any) => {
     const {navigation}: any = props;
     const {authData: {workspaces}}: any = localredux;
 
-    if (workspaces?.length === 0) {
+    if (workspaces?.length === 0 || !Boolean(workspaces)) {
          return <AddWorkspace/>
     }
 

@@ -1438,7 +1438,7 @@ export const selectItem = async (item: any) => {
 
     const currentpax = store.getState().cartData.currentpax;
 
-    const baseprice = item?.selling || (item?.pricing?.price[pricingtemplate] && item?.pricing?.price[pricingtemplate][0][pricingtype]?.baseprice) || item?.pricing?.price['default'][0][pricingtype]?.baseprice || 0;
+    const baseprice =  item?.selling || (item?.pricing?.price[pricingtemplate] && item?.pricing?.price[pricingtemplate][0][pricingtype]?.baseprice) || item?.pricing?.price['default'][0][pricingtype]?.baseprice || 0;
 
     const setItemQnt = async (item: any) => {
 
@@ -2480,7 +2480,6 @@ export const createDatabaseName = ({workspace, locationid}: any) => {
 
 
 export const selectWorkspace = async (workspace: any, navigation: any) => {
-
 
     store.dispatch(showLoader())
     const {token}: any = localredux.authData;

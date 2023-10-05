@@ -43,6 +43,8 @@ class Index extends Component<any> {
                 <>
                     <QRCodeScanner
                         onRead={this.onRead}
+                        permissionDialogTitle={'Camera Permission'}
+                        permissionDialogMessage={'Scanning SKU'}
                     />
                 </>
 

@@ -10,7 +10,7 @@ import {Field, Form} from 'react-final-form';
 
 import {composeValidators, localredux, loginUrl, METHOD, required, startWithString, STATUS} from "../../libs/static";
 import apiService from "../../libs/api-service";
-import {appLog, findObject, selectWorkspace} from "../../libs/function";
+import {appLog, findObject, prelog, selectWorkspace} from "../../libs/function";
 import KAccessoryView from "../../components/KAccessoryView";
 import {authData} from "../../redux-store/reducer/auth-data";
 
@@ -26,8 +26,10 @@ class AddWorkspace extends Component<any> {
         const {navigation}: any = this.props;
 
         let workspacelogin = data?.workspace_login;
+
         const params = queryStringToJSON(workspacelogin);
         localredux.authData.token = params['t'];
+
         selectWorkspace({name: workspace}, navigation).then(r => {})
 
     }
@@ -43,6 +45,7 @@ class AddWorkspace extends Component<any> {
         const workspacename = values.companyname;
 
 
+
         if(staffaccess){
             apiService({
                 method: METHOD.GET,
@@ -50,10 +53,10 @@ class AddWorkspace extends Component<any> {
                 queryString:{workspace:workspacename},
                 other: {url: loginUrl},
             }).then((result) => {
+
                 try {
                     if (result.status === STATUS.SUCCESS) {
                         const find = findObject(result?.data,'name',workspacename,true)
-                        appLog('find',find)
                         this.workspaceAdded(find,workspacename)
                     }
                 } catch (e) {
@@ -62,12 +65,15 @@ class AddWorkspace extends Component<any> {
             });
         }
         else {
+
             apiService({
                 method: METHOD.POST,
                 action: 'order',
                 other: {url: loginUrl},
-                body: {itemid: '3d44bcb5-afbc-4153-af6a-aa3457ebe119', domain: workspacename},
+                queryString:{registerfrommobile:true},
+                body: {itemid: '3d44bcb5-afbc-4153-af6a-aa3457ebe119', domain: workspacename,registerfrommobile:true},
             }).then((result) => {
+
                 try {
                     if (result.status === STATUS.SUCCESS) {
                         this.workspaceAdded(result?.data[0],workspacename)

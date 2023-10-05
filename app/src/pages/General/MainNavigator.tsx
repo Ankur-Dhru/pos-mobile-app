@@ -214,10 +214,10 @@ const ClientAreaStackNavigator = (props: any) => {
             <Stack.Screen name={'SearchItem'} component={SearchItem}
                           options={{headerShown: false, headerTitle: 'Search Item'}}/>
             <Stack.Screen name={'ScanItem'} component={ScanItem}
-                          options={{headerShown: true, headerTitle: 'Scan Item'}}/>
+                          options={{headerShown: true, headerTitle: 'Scan Item SKU'}}/>
 
             <Stack.Screen name={'ScanSerialno'} component={ScanSerialno}
-                          options={{headerShown: true, headerTitle: 'Scan IMEI/Serial'}}/>
+                          options={{headerShown: true, headerTitle: 'Scan Serial/MFD/IMEI'}}/>
 
             <Stack.Screen name={'DetailViewNavigator'} component={DetailView} options={{headerTitle: 'Detail view'}}/>
 

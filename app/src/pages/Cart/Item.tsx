@@ -84,8 +84,7 @@ const Index = memo((props: any) => {
                                         style={[styles.paragraph,  styles.bold,styles.ml_1,  {textTransform:'capitalize'}]}
                                         numberOfLines={2}>{index + 1}) {item?.itemname || item?.productdisplayname} {(item.pax !== 'all' && orderbypax)?`(#pax ${item.pax})`: ''} </Paragraph>
 
-                                    {Boolean(item.serialno) && <Paragraph style={[styles.paragraph, styles.muted, styles.text_xs]}>Serial No
-                                        : {item.serialno}</Paragraph>}
+                                    {Boolean(item.serialno) && <Paragraph style={[styles.paragraph, styles.muted, styles.text_xs]}>{item.serialno}</Paragraph>}
 
 
                                     <View style={[styles.ml_1]}>

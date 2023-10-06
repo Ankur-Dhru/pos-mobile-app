@@ -18,11 +18,7 @@
     "patch-package": "yarn patch-package react-native-camera",
     "gradle clean": "cd android && ./gradlew clean"
   },
-  "reactNativePermissionsIOS": [
-    "Camera",
-    "Contacts",
-    "PhotoLibrary"
-  ],
+
   "dependencies": {
     "@datahex/escpos-xml": "^1.1.9",
     "@fortawesome/free-brands-svg-icons": "^6.1.2",
@@ -89,7 +85,7 @@
     "react-native-modal": "^13.0.1",
     "react-native-pager-view": "^6.1.0",
     "react-native-paper": "^4.12.4",
-    "react-native-permissions": "^3.9.2",
+    "react-native-permissions": "^3.9.3",
     "react-native-pin-view": "^3.0.2",
     "react-native-ping": "^1.2.7",
     "react-native-print": "^0.10.0",
@@ -106,7 +102,6 @@
     "react-native-svg": "^13.3.0",
     "react-native-tab-view": "^3.3.0",
     "react-native-tcp-socket": "^6.0.2",
-    "react-native-thermal-receipt-printer-image-qr": "^0.1.11",
     "react-native-vector-icons": "^9.2.0",
     "react-native-view-shot": "^3.5.0",
     "react-native-webview": "^11.26.0",
@@ -118,7 +113,8 @@
     "utf8": "^3.0.0",
     "util": "^0.12.4",
     "uuidv4": "^6.2.13",
-    "xml-escpos": "^1.0.1"
+    "xml-escpos": "^1.0.1",
+    "react-native-thermal-receipt-printer-image-qr": "^0.1.10"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

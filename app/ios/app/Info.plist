@@ -36,22 +36,21 @@
 		</dict>
 	</dict>
 	<key>LSApplicationQueriesSchemes</key>
-    <array>
-        <string>itms-apps</string>
-    </array>
-
-
-<key>NSCameraUsageDescription</key>
-        <string>Our app uses camera to capture, item and item category photos</string>
-<key>NSContactsUsageDescription</key>
-    	<string>Contact Permission</string>
-
-<key>NSPhotoLibraryAddUsageDescription</key>
-        	<string>Photo Permission</string>
-        	<key>NSPhotoLibraryUsageDescription</key>
-        	<string>Our app uses Photos to select item and item category image</string>
-
-
+	<array>
+		<string>itms-apps</string>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Our app uses camera to capture, item and item category photos</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Contact Permission</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Photo Permission</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Our app uses Photos to select item and item category image</string>
+	 <key>NSBluetoothPeripheralUsageDescription</key>
+      <string>Our app uses bluetooth to print Invoice using bluetooth printer</string>
+     <key>NSBluetoothAlwaysUsageDescription</key>
+      <string>Our app uses bluetooth to print Invoice using bluetooth printer</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>

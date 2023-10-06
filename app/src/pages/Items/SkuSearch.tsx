@@ -1,9 +1,9 @@
 import React, {useEffect, useRef, useState} from "react";
-import {TouchableOpacity, View,} from "react-native";
+import {Platform, TouchableOpacity, View,} from "react-native";
 
 import {connect} from "react-redux";
 
-import {appLog, isRestaurant, selectItem, totalOrderQnt} from "../../libs/function";
+import {appLog, isRestaurant, loadContacts, selectItem, totalOrderQnt} from "../../libs/function";
 import {getItemsByWhere} from "../../libs/Sqlite/selectData";
 import store from "../../redux-store/store";
 import {setAlert} from "../../redux-store/reducer/component";
@@ -15,6 +15,7 @@ import {ACTIONS, localredux, METHOD, STATUS, urls, VOUCHER} from "../../libs/sta
 import apiService from "../../libs/api-service";
 import {v4 as uuidv4} from "uuid";
 import {setCartData} from "../../redux-store/reducer/cart-data";
+import {PERMISSIONS, requestMultiple} from "react-native-permissions";
 
 
 const Index = (props: any) => {
@@ -74,7 +75,16 @@ const Index = (props: any) => {
             </View>
             <View style={[styles.absolute, {right: 10}]}>
                 <TouchableOpacity ref={e => touchableRef = e} onPress={async () => {
-                    navigation.navigate('ScanItem');
+                    if (Platform.OS === "ios") {
+                        requestMultiple([PERMISSIONS.IOS.CAMERA]).then(async (statuses: any) => {
+                            if (statuses[PERMISSIONS.IOS.CAMERA]) {
+                                navigation.navigate('ScanItem');
+                            }
+                        });
+                    }
+                    else{
+                        navigation.navigate('ScanItem');
+                    }
                 }}>
                     <Paragraph style={[styles.paragraph, {marginTop: 10}]}><ProIcon
                         name={'scanner-gun'}/></Paragraph></TouchableOpacity>
@@ -86,7 +96,16 @@ const Index = (props: any) => {
 
         {searchserialno && !isRestaurant() && <View>
             <TouchableOpacity ref={e => touchableRef = e} onPress={async () => {
-                navigation.navigate('ScanSerialno');
+                if (Platform.OS === "ios") {
+                    requestMultiple([PERMISSIONS.IOS.CAMERA]).then(async (statuses: any) => {
+                        if (statuses[PERMISSIONS.IOS.CAMERA]) {
+                            navigation.navigate('ScanSerialno');
+                        }
+                    });
+                }
+                else{
+                    navigation.navigate('ScanSerialno');
+                }
             }}>
                 <Paragraph style={[styles.paragraph, {marginTop: 10}]}><ProIcon
                     name={'barcode-read'}/></Paragraph></TouchableOpacity>

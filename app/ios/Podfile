@@ -1,5 +1,6 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+require_relative '../node_modules/react-native-permissions/scripts/setup'
 
 platform :ios, '12.4'
 install! 'cocoapods', :deterministic_uuids => false
@@ -28,11 +29,30 @@ $RNFirebaseAsStaticFramework = true
 $FirebaseSDKVersion = '10.15.0'
 
 
-        pod 'react-native-sqlite-storage', :path => '../node_modules/react-native-sqlite-storage'
-
-pod 'RNPermissions', :path => '../node_modules/react-native-permissions'
+    pod 'react-native-sqlite-storage', :path => '../node_modules/react-native-sqlite-storage'
 
 
+ setup_permissions([
+   # 'AppTrackingTransparency',
+    'BluetoothPeripheral',
+   # 'Calendars',
+    'Camera',
+    'Contacts',
+   # 'FaceID',
+   # 'LocationAccuracy',
+   # 'LocationAlways',
+   # 'LocationWhenInUse',
+   # 'MediaLibrary',
+   # 'Microphone',
+   # 'Motion',
+   # 'Notifications',
+    'PhotoLibrary',
+   # 'PhotoLibraryAddOnly',
+   # 'Reminders',
+   # 'Siri',
+   # 'SpeechRecognition',
+   # 'StoreKit',
+ ])
 
   target 'appTests' do
     inherit! :complete

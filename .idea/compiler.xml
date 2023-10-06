@@ -3,16 +3,59 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
       <module name="android-native.app.react-native-sqlite-storage" target="17" />
+      <module name="app.app" target="17" />
       <module name="app.brooons_react-native-bluetooth-escpos-printer" target="17" />
+      <module name="app.heasy_react-native-sunmi-printer" target="17" />
+      <module name="app.react-native-async-storage_async-storage" target="17" />
+      <module name="app.react-native-ble-manager" target="17" />
+      <module name="app.react-native-camera" target="17" />
+      <module name="app.react-native-community_datetimepicker" target="17" />
+      <module name="app.react-native-community_image-editor" target="17" />
+      <module name="app.react-native-community_netinfo" target="17" />
+      <module name="app.react-native-contacts" target="17" />
+      <module name="app.react-native-device-info" target="17" />
+      <module name="app.react-native-document-picker" target="17" />
+      <module name="app.react-native-esc-pos-printer" target="17" />
+      <module name="app.react-native-extra-dimensions-android" target="17" />
       <module name="app.react-native-fetch-blob" target="17" />
+      <module name="app.react-native-firebase_analytics" target="17" />
+      <module name="app.react-native-firebase_app" target="17" />
+      <module name="app.react-native-firebase_crashlytics" target="17" />
+      <module name="app.react-native-fs" target="17" />
+      <module name="app.react-native-gesture-handler" target="17" />
+      <module name="app.react-native-get-random-values" target="17" />
       <module name="app.react-native-haptic-feedback" target="17" />
+      <module name="app.react-native-html-to-pdf" target="17" />
+      <module name="app.react-native-image-crop-picker" target="17" />
+      <module name="app.react-native-image-resizer" target="17" />
+      <module name="app.react-native-image-size" target="17" />
+      <module name="app.react-native-linear-gradient" target="17" />
+      <module name="app.react-native-pager-view" target="17" />
+      <module name="app.react-native-permissions" target="17" />
+      <module name="app.react-native-picker_picker" target="17" />
+      <module name="app.react-native-ping" target="17" />
+      <module name="app.react-native-print" target="17" />
+      <module name="app.react-native-safe-area-context" target="17" />
+      <module name="app.react-native-screens" target="17" />
+      <module name="app.react-native-share" target="17" />
       <module name="app.react-native-slice-image" target="17" />
+      <module name="app.react-native-sound" target="17" />
+      <module name="app.react-native-sqlite-storage" target="17" />
       <module name="app.react-native-sunmi-inner-printer" target="17" />
+      <module name="app.react-native-svg" target="17" />
+      <module name="app.react-native-tcp-socket" target="17" />
       <module name="app.react-native-thermal-receipt-printer" target="17" />
+      <module name="app.react-native-thermal-receipt-printer-image-qr" target="17" />
+      <module name="app.react-native-vector-icons" target="17" />
+      <module name="app.react-native-view-shot" target="17" />
+      <module name="app.react-native-webview" target="17" />
       <module name="app.ReactAndroid" target="17" />
       <module name="app.ReactAndroid.hermes-engine" target="17" />
       <module name="app.rn-fetch-blob" target="17" />
       <module name="app.rn-qr-generator" target="17" />
+      <module name="react-native-gradle-plugin" target="1.8" />
+      <module name="react-native-gradle-plugin.main" target="1.8" />
+      <module name="react-native-gradle-plugin.test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

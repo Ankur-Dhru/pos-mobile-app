@@ -3,7 +3,7 @@ import {Caption, Paragraph, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect} from "react-redux";
 import {TouchableOpacity, View} from "react-native";
-import {appLog, clone, findObject, setItemRowData, toCurrency} from "../../libs/function";
+import {appLog, clone, findObject, prelog, setItemRowData, toCurrency} from "../../libs/function";
 import {ProIcon} from "../../components";
 import {localredux} from "../../libs/static";
 import {v4 as uuid} from "uuid";
@@ -86,73 +86,95 @@ const Index = ({addtags, itemaddon,updateProduct}: any) => {
 
         itemaddon = selectedAddons;
 
+
         setMoreAddon(clone(moreaddon));
         updateProduct({itemaddon:selectedAddons})
     }
 
-    return (<View>
 
-            {Boolean(addonid?.length) && <View>
+    return (<View style={[styles.p_5]}>
 
-                <Caption style={[styles.caption,styles.mt_5]}>Addons</Caption>
-
-                {
-                    addonid.map((addon: any, key: any) => {
-
-                        let {itemname, pricing, productqnt} = moreaddon[addon];
-
-                        console.log('productqnt',productqnt)
+            {
+                Object.keys(addtags?.addongroupiddata).map((key:any)=>{
 
 
-                        const pricingtype = pricing?.type;
+                    const {addonselectiontype,anynumber,minrequired,selecteditems} = addtags.addongroupiddata[key];
 
-                        const baseprice = pricing?.price?.default[0][pricingtype]?.baseprice || 0;
+                   const addeditems = Object.keys(moreaddon).map((key)=>{
+                        return moreaddon[key]
+                    }).filter((item:any)=>{
+                        return Boolean(item.productqnt);
+                    }).length + 1;
 
-                        return (
-                            <TouchableOpacity
-                                style={[styles.grid, styles.justifyContent, styles.w_100, styles.mb_3, styles.p_3,  productqnt > 0 && styles.bg_light_blue, {borderRadius: 5,paddingLeft:10}]}
-                                key={key} onPress={()=>{
-                                updateQnt(addon, 'add')
-                            }}>
 
-                                <View style={[styles.grid, styles.justifyContent]}>
-                                    <View style={[styles.w_auto]}>
-                                        <View><Text>{`${itemname}`}</Text></View>
-                                        <View>
-                                            <Text>{toCurrency(baseprice * (productqnt || 1))}</Text>
+                    return <View key={key}>
+
+                        <Caption style={[styles.caption,styles.mt_5]}>Addons </Caption>
+
+                        {
+                            selecteditems?.map((item: any, key: any) => {
+
+                                let {itemname, pricing, productqnt} = moreaddon[item.itemid];
+
+                                const pricingtype = pricing?.type;
+
+                                const baseprice = pricing?.price?.default[0][pricingtype]?.baseprice || 0;
+
+                                return (
+                                    <TouchableOpacity
+                                        style={[styles.grid, styles.justifyContent, styles.w_100, styles.mb_3, styles.p_3,  productqnt > 0 && styles.bg_light_blue, {borderRadius: 5,paddingLeft:5}]}
+                                        key={key} onPress={()=>{
+
+                                       // console.log('anynumber',anynumber,addeditems)
+
+                                            if(anynumber >= addeditems) {
+                                                item.selected = Boolean(productqnt)
+                                                updateQnt(item.itemid, 'add')
+                                            }
+                                    }}>
+
+                                        <View style={[styles.grid, styles.justifyContent]}>
+                                            <View style={[styles.w_auto]}>
+                                                <View><Text>{`${itemname}`}</Text></View>
+                                                <View>
+                                                    <Text>{toCurrency(baseprice * (productqnt || 1))}</Text>
+                                                </View>
+                                            </View>
+                                            <View>
+                                                <View style={[styles.grid, styles.middle, {
+                                                    borderRadius: 5,
+                                                    backgroundColor: styles.white.color,
+                                                    width: 130
+                                                }]}>
+                                                    {<TouchableOpacity style={[styles.p_2]} onPress={() => {
+                                                        productqnt > 0 && updateQnt(item.itemid, 'remove')
+                                                    }}>
+                                                        <ProIcon name={'minus'} size={20}/>
+                                                    </TouchableOpacity>}
+                                                    <Paragraph
+                                                        style={[styles.paragraph, styles.caption, styles.flexGrow, styles.textCenter]}>{
+                                                        parseInt(productqnt || 0)
+                                                    }</Paragraph>
+                                                    {<TouchableOpacity style={[styles.p_2]} onPress={() => {
+                                                        updateQnt(item.itemid, 'add')
+                                                    }}>
+                                                        <ProIcon name={'plus'} size={20}/>
+                                                    </TouchableOpacity>}
+                                                </View>
+                                            </View>
                                         </View>
-                                    </View>
-                                    <View>
-                                        <View style={[styles.grid, styles.middle, {
-                                            borderRadius: 5,
-                                            backgroundColor: styles.white.color,
-                                            width: 130
-                                        }]}>
-                                            {<TouchableOpacity style={[styles.p_2]} onPress={() => {
-                                                productqnt > 0 && updateQnt(addon, 'remove')
-                                            }}>
-                                                <ProIcon name={'minus'} size={20}/>
-                                            </TouchableOpacity>}
-                                            <Paragraph
-                                                style={[styles.paragraph, styles.caption, styles.flexGrow, styles.textCenter]}>{
-                                                parseInt(productqnt || 0)
-                                            }</Paragraph>
-                                            {<TouchableOpacity style={[styles.p_2]} onPress={() => {
-                                                updateQnt(addon, 'add')
-                                            }}>
-                                                <ProIcon name={'plus'} size={20}/>
-                                            </TouchableOpacity>}
-                                        </View>
-                                    </View>
-                                </View>
 
 
 
-                            </TouchableOpacity>
-                        )
-                    })
-                }
-            </View>}
+                                    </TouchableOpacity>
+                                )
+                            })
+                        }
+                    </View>
+
+                })
+            }
+
         </View>
     )
 }

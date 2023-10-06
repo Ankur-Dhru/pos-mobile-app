@@ -4,7 +4,7 @@ import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
 import {TouchableOpacity, View} from "react-native";
 import InputBox from "../../components/InputBox";
-import {appLog, clone, findObject, isEmpty} from "../../libs/function";
+import {appLog, clone, findObject, isEmpty, prelog} from "../../libs/function";
 import {localredux} from "../../libs/static";
 
 
@@ -12,7 +12,7 @@ import {localredux} from "../../libs/static";
 
 const Index = ({tags,notes,itemtags,updateProduct}: any) => {
 
-    const {tags:inittags}:any = localredux.initData
+    const {tags:inittags}:any = localredux.initData;
 
     const [selectedTag,setSelectedTag] = useState(0);
     let [temptags,setTempTags]:any = useState(clone(itemtags));
@@ -34,12 +34,11 @@ const Index = ({tags,notes,itemtags,updateProduct}: any) => {
     },[temptags])
 
 
-
     return (
 
         <>
 
-            <View style={[styles.mt_3]}>
+            <View style={[styles.p_5]}>
                 <InputBox
                     defaultValue={notes}
                     label={'Notes'}
@@ -52,7 +51,7 @@ const Index = ({tags,notes,itemtags,updateProduct}: any) => {
 
 
 
-            {!isEmpty(temptags) && <View style={[styles.mt_3]}>
+            {!isEmpty(temptags) && <View style={[styles.p_5]}>
 
                 <View style={[styles.flex,styles.justifyContent]}>
 
@@ -65,7 +64,7 @@ const Index = ({tags,notes,itemtags,updateProduct}: any) => {
                             const selected = (selectedTag === key);
                             {
                                 return (
-                                    <TouchableOpacity  key={key} style={[styles.p_3]}  onPress={() =>  setSelectedTag(key) }><Text style={[!selected?styles.muted:styles.primary,styles.bold]}>{taggroupname}</Text></TouchableOpacity>
+                                    <TouchableOpacity  key={key} style={[styles.p_3,styles.ml_2]}  onPress={() =>  setSelectedTag(key) }><Text style={[!selected?styles.muted:styles.primary,styles.bold]}>{taggroupname}</Text></TouchableOpacity>
                                 )
                             }
                         })
@@ -77,14 +76,29 @@ const Index = ({tags,notes,itemtags,updateProduct}: any) => {
                 {
                     temptags?.map((tags: any, tagid: any) => {
                         {
+
+                            const {tagselectiontype} = tags;
+
+                           const selecteditem = tags?.taglist?.filter((tag:any)=>{
+                                return tag.selected
+                            }).length
+
+
                             return (
                                 <View key={tagid}>
                                     {<View style={[styles.grid,{display:(selectedTag === tagid)?'flex':'none'}]}>
                                         {
                                            tags?.taglist?.map((tag: any, key: any) => {
                                                 return (<Chip key={key} style={[tag.selected?styles.bg_light_blue:styles.light.color,styles.m_1,styles.p_2]}     icon={tag.selected?'check':'stop'} onPress={() => {
-                                                    tag.selected = !Boolean(tag?.selected)
-                                                    setTempTags(clone(temptags))
+
+                                                    if(tagselectiontype === 'selectanyone' && selecteditem === 1 && !Boolean(tag?.selected)){
+
+                                                    }
+                                                    else {
+                                                        tag.selected = !Boolean(tag?.selected)
+                                                        setTempTags(clone(temptags))
+                                                    }
+
                                                 }}><Paragraph style={[styles.p_5]}>{tag.name+''}</Paragraph></Chip>)
                                             })
                                         }

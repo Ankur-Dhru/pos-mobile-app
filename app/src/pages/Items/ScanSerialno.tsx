@@ -68,7 +68,7 @@ const Index = (props: any) => {
                     defaultValue={value}
                     label={'Serial No. / MFD No. / IMEI'}
                     autoFocus={false}
-                    keyboardType={'numeric'}
+                    keyboardType={'numbers-and-punctuation'}
                     onSubmitEditing={()=> {
                         onRead(value)
                     }}

@@ -1471,7 +1471,7 @@ export const selectItem = async (item: any) => {
                 if (!Boolean(item.productqnt)) {
                     await store.dispatch(setBottomSheet({
                         visible: true,
-                        height: '80%',
+                        height: '85%',
                         component: () => <ItemDetail/>
                     }))
                 } else {

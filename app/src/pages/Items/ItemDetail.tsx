@@ -137,13 +137,13 @@ const Index = (props: any) => {
 
     return (
 
-        <View style={[styles.p_5, styles.w_100, styles.h_100,styles.bg_white]}>
+        <View style={[ styles.w_100, styles.h_100,styles.bg_white]}>
 
 
 
             <KeyboardScroll>
 
-                <View>
+                <View style={[styles.p_5]}>
                     <Text>{groupname}</Text>
                     <View style={[styles.grid, styles.justifyContent]}>
                         <Caption style={[styles.caption]}>{itemname}</Caption>
@@ -154,7 +154,7 @@ const Index = (props: any) => {
                 </View>
 
 
-                <View>
+                <View style={[styles.p_5]}>
                     <View>
                         <InputBox
                             defaultValue={productrate ? productrate + '' : ''}
@@ -168,8 +168,8 @@ const Index = (props: any) => {
                 </View>
 
 
-                {isRestaurant() && orderbypax && <View>
-                    <View style={[styles.mt_5]}>
+                {isRestaurant() && orderbypax && <View style={[styles.p_5]}>
+                    <View >
 
                         <InputField
                             editmode={true}
@@ -202,9 +202,9 @@ const Index = (props: any) => {
                 </View>}
 
 
-                {edit &&  <View>
+                {edit &&  <View style={[styles.p_5]}>
 
-                    <View style={[styles.mt_3]}>
+                    <View >
                         <InputBox
                             defaultValue={productdiscountvalue ? productdiscountvalue + '' : ''}
                             label={'Discount'}
@@ -233,10 +233,11 @@ const Index = (props: any) => {
                 <Addons updateProduct={updateProduct}/>
                 <TagsNotes updateProduct={updateProduct}/>
 
+                <View style={{height:50}}></View>
 
             </KeyboardScroll>
 
-            <View style={{padding: 5}}>
+            <View style={[styles.p_5]}>
 
                 <View style={[styles.grid, styles.middle, styles.justifyContent]}>
 

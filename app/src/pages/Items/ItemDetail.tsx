@@ -30,6 +30,9 @@ const Index = (props: any) => {
     if(edit) {
         navigation = useNavigation()
     }
+
+    const [validate,setValidate] = useState(false)
+
     let product = itemDetail;
 
     const {
@@ -97,6 +100,8 @@ const Index = (props: any) => {
     }
 
 
+
+
     const [discounttype, setDiscounttype]: any = useState(cartData?.discounttype || '%');
     let discount = '0';
     const isInclusive = Boolean(cartData.vouchertaxtype === 'inclusive');
@@ -133,6 +138,7 @@ const Index = (props: any) => {
     const pricingtype = pricing?.type;
     const baseprice = pricing?.price?.default[0][pricingtype]?.baseprice || 0;
 
+    console.log('validate',validate)
 
 
     return (
@@ -143,7 +149,7 @@ const Index = (props: any) => {
 
             <KeyboardScroll>
 
-                <View style={[styles.p_5]}>
+                <View style={[styles.px_5]}>
                     <Text>{groupname}</Text>
                     <View style={[styles.grid, styles.justifyContent]}>
                         <Caption style={[styles.caption]}>{itemname}</Caption>
@@ -154,7 +160,7 @@ const Index = (props: any) => {
                 </View>
 
 
-                <View style={[styles.p_5]}>
+                <View style={[styles.px_5]}>
                     <View>
                         <InputBox
                             defaultValue={productrate ? productrate + '' : ''}
@@ -168,7 +174,7 @@ const Index = (props: any) => {
                 </View>
 
 
-                {isRestaurant() && orderbypax && <View style={[styles.p_5]}>
+                {isRestaurant() && orderbypax && <View style={[styles.px_5]}>
                     <View >
 
                         <InputField
@@ -202,7 +208,7 @@ const Index = (props: any) => {
                 </View>}
 
 
-                {edit &&  <View style={[styles.p_5]}>
+                {edit &&  <View style={[styles.px_5]}>
 
                     <View >
                         <InputBox
@@ -230,7 +236,7 @@ const Index = (props: any) => {
                 </View>}
 
 
-                <Addons updateProduct={updateProduct}/>
+                <Addons updateProduct={updateProduct} setValidate={setValidate}/>
                 <TagsNotes updateProduct={updateProduct}/>
 
                 <View style={{height:50}}></View>
@@ -247,7 +253,9 @@ const Index = (props: any) => {
                         <View>
                             <Button
                                 onPress={() => {
-                                    selectItem().then()
+                                    if(validate) {
+                                        selectItem().then()
+                                    }
                                 }}>{!edit ? '+ Add Item' : 'Update'}
                             </Button>
                         </View>

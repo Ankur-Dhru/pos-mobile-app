@@ -3,34 +3,55 @@ import {Caption, Paragraph, Text, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect} from "react-redux";
 import {TouchableOpacity, View} from "react-native";
-import {appLog, clone, findObject, prelog, setItemRowData, toCurrency} from "../../libs/function";
+import {appLog, clone, findObject, isEmpty, prelog, setItemRowData, toCurrency} from "../../libs/function";
 import {ProIcon} from "../../components";
 import {localredux} from "../../libs/static";
 import {v4 as uuid} from "uuid";
 
 
-const Index = ({addtags, itemaddon,updateProduct}: any) => {
+let validate = true;
+
+const Index = ({addtags, itemaddon,updateProduct,setValidate}: any) => {
 
 
-    const {addonsData} = localredux;
+    const {addonsData,initData:{addongroups}} = localredux;
+
 
     let {addongroupid, addonid,autoaddon} = addtags || {addongroupid: [], addonid: [],autoaddon:[]}
 
-    const [moreaddon, setMoreAddon]: any = useState(clone(addonsData))
 
-    addongroupid?.map((ag: any) => {
-        const findaddons = Object.values(moreaddon)?.filter((addon: any) => {
-            return ag === addon.itemgroupid
-        }).map((item: any) => {
-            return item.itemid
-        })
+    const [moreaddon, setMoreAddon]: any = useState(clone(addonsData));
+    const [addons,setAddons] = useState(addtags);
 
-        if (Boolean(findaddons.length)) {
-            addonid = addonid.concat(findaddons)
-        }
-    })
 
     useEffect(() => {
+
+        if(isEmpty(addtags.addongroupiddata)){
+            addtags = {
+                ...addtags,
+                addongroupiddata:{
+                    '0000':{
+                        ...addtags.addoniddata,
+                        selecteditems:addtags.addonid.map((item:any)=>{
+                            return {"itemid": item}
+                        }),
+                    }
+                }
+            }
+            setAddons(addtags)
+        }
+
+        addongroupid?.map((ag: any) => {
+            const findaddons = Object.values(moreaddon)?.filter((addon: any) => {
+                return ag === addon.itemgroupid
+            }).map((item: any) => {
+                return item.itemid
+            })
+
+            if (Boolean(findaddons.length)) {
+                addonid = addonid.concat(findaddons)
+            }
+        })
 
         addonid.map((addon: any, key: any) => {
             const find = findObject(itemaddon, 'itemid', addon, true);
@@ -45,17 +66,31 @@ const Index = ({addtags, itemaddon,updateProduct}: any) => {
         setMoreAddon(clone(moreaddon));
 
         setTimeout(()=>{
-            autoaddon?.map((addon:any)=>{
-                if(!Boolean(moreaddon[addon].productqnt)){
-                    updateQnt(addon, 'autoadd')
-                }
-            })
+
+            if(!isEmpty(autoaddon)) {
+                autoaddon?.map((addon: any) => {
+                    if (!Boolean(moreaddon[addon].productqnt)) {
+                        updateQnt(addon, 'autoadd')
+                    }
+                })
+            }
+            else {
+                Object.keys(addtags?.addongroupiddata).map((key: any) => {
+                    const adddongroup = addtags?.addongroupiddata[key];
+                    adddongroup?.autoadditems?.map((addon: any) => {
+                        if (!Boolean(moreaddon[addon].productqnt)) {
+                            updateQnt(addon, 'autoadd',key)
+                        }
+                    })
+                })
+            }
+
         })
 
     }, [])
 
 
-    const updateQnt = (key: any, action: any) => {
+    const updateQnt = (key: any, action: any,addonid?:any) => {
 
         let productqnt = moreaddon[key].productqnt || 0;
 
@@ -72,65 +107,95 @@ const Index = ({addtags, itemaddon,updateProduct}: any) => {
 
         let unittype = unit[moreaddon[key]?.itemunit]
         let uuidn = uuid();
+
         moreaddon[key] = {
             ...moreaddon[key],
             displayunitcode:unittype?.unitcode || '',
             productqnt: productqnt,
             key: uuidn,
-            ref_id:uuidn
+            ref_id:uuidn,
         }
+
+
+        //////// CHANGE ADDON PRICE IF CHANGED //////////
+        if(Boolean(addonid)) {
+            const find = addons?.addongroupiddata[addonid]?.selecteditems?.filter((item: any) => {
+                return item.itemid === key
+            })
+            if (Boolean(find[0]?.productrate)) {
+                moreaddon[key].pricing.price.default[0]['onetime'].baseprice = find[0]?.productrate;
+            }
+        }
+        //////// CHANGE ADDON PRICE IF CHANGED //////////
+
+
 
         const selectedAddons = Object.values(moreaddon).filter((addon: any) => {
             return addon.productqnt > 0
         })
 
         itemaddon = selectedAddons;
-
-
         setMoreAddon(clone(moreaddon));
-        updateProduct({itemaddon:selectedAddons})
+        updateProduct({itemaddon:selectedAddons});
+
+
+        //////// VALIDATE ADD BUTTON //////////
+            let totalmin = addtags?.addoniddata?.minrequired || 0;
+            Object.values(addtags?.addongroupiddata).map((addon:any)=>{
+                totalmin += addon.minrequired;
+           });
+           if(selectedAddons?.length >= totalmin){
+               setValidate(true)
+           }
+           else{
+               setValidate(false)
+           }
+       //////// VALIDATE ADD BUTTON //////////
+
     }
 
 
     return (<View style={[styles.p_5]}>
 
             {
-                Object.keys(addtags?.addongroupiddata).map((key:any)=>{
+                Object.keys(addons?.addongroupiddata).map((addonid:any)=>{
 
 
-                    const {addonselectiontype,anynumber,minrequired,selecteditems} = addtags.addongroupiddata[key];
-
-                   const addeditems = Object.keys(moreaddon).map((key)=>{
-                        return moreaddon[key]
-                    }).filter((item:any)=>{
-                        return Boolean(item.productqnt);
-                    }).length + 1;
+                    const {addonselectiontype,anynumber,minrequired,selecteditems} = addons.addongroupiddata[addonid];
 
 
-                    return <View key={key}>
+                    return <View key={addonid}>
 
-                        <Caption style={[styles.caption,styles.mt_5]}>Addons </Caption>
+                        <Caption style={[styles.caption,styles.mt_5]}>Addon {addongroups[addonid]?.addongroupname} (Any{addonselectiontype === 'selectanyone' && ` ${anynumber}`}{Boolean(minrequired) && `, Required ${minrequired}`})  </Caption>
 
                         {
+
                             selecteditems?.map((item: any, key: any) => {
 
                                 let {itemname, pricing, productqnt} = moreaddon[item.itemid];
 
                                 const pricingtype = pricing?.type;
 
-                                const baseprice = pricing?.price?.default[0][pricingtype]?.baseprice || 0;
+                                const baseprice = item.productrate || pricing?.price?.default[0][pricingtype]?.baseprice || 0;
 
                                 return (
                                     <TouchableOpacity
                                         style={[styles.grid, styles.justifyContent, styles.w_100, styles.mb_3, styles.p_3,  productqnt > 0 && styles.bg_light_blue, {borderRadius: 5,paddingLeft:5}]}
                                         key={key} onPress={()=>{
 
-                                       // console.log('anynumber',anynumber,addeditems)
+                                        const addeditems = moreaddon && Object.values(moreaddon).filter((addon:any)=>{
 
-                                            if(anynumber >= addeditems) {
-                                                item.selected = Boolean(productqnt)
-                                                updateQnt(item.itemid, 'add')
-                                            }
+                                             const find = Object.values(selecteditems).filter((item:any)=>{
+                                                return item.itemid === addon.itemid && Boolean(addon?.productqnt)
+                                            })
+                                            return Boolean(find?.length);
+                                        }).length + 1;
+
+
+                                        if((anynumber >= addeditems && addonselectiontype === 'selectanyone') || addonselectiontype === 'selectany') {
+                                            item.selected = Boolean(productqnt)
+                                            updateQnt(item.itemid, 'add',addonid)
+                                        }
                                     }}>
 
                                         <View style={[styles.grid, styles.justifyContent]}>
@@ -140,14 +205,14 @@ const Index = ({addtags, itemaddon,updateProduct}: any) => {
                                                     <Text>{toCurrency(baseprice * (productqnt || 1))}</Text>
                                                 </View>
                                             </View>
-                                            <View>
+                                            {productqnt > 0 &&  <View>
                                                 <View style={[styles.grid, styles.middle, {
                                                     borderRadius: 5,
                                                     backgroundColor: styles.white.color,
                                                     width: 130
                                                 }]}>
                                                     {<TouchableOpacity style={[styles.p_2]} onPress={() => {
-                                                        productqnt > 0 && updateQnt(item.itemid, 'remove')
+                                                        productqnt > 0 && updateQnt(item.itemid, 'remove',addonid)
                                                     }}>
                                                         <ProIcon name={'minus'} size={20}/>
                                                     </TouchableOpacity>}
@@ -156,12 +221,12 @@ const Index = ({addtags, itemaddon,updateProduct}: any) => {
                                                         parseInt(productqnt || 0)
                                                     }</Paragraph>
                                                     {<TouchableOpacity style={[styles.p_2]} onPress={() => {
-                                                        updateQnt(item.itemid, 'add')
+                                                        updateQnt(item.itemid, 'add',addonid)
                                                     }}>
                                                         <ProIcon name={'plus'} size={20}/>
                                                     </TouchableOpacity>}
                                                 </View>
-                                            </View>
+                                            </View>}
                                         </View>
 
 

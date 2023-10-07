@@ -1413,8 +1413,6 @@ export const getPricingTemplate = (pricingTemplate?: any) => {
                 pricingTemplate = findArea?.pricingtemplate;
             }
         }
-
-
     }
     if (!pricingTemplate) {
         pricingTemplate = 'default';

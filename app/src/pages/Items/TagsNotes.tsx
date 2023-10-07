@@ -38,7 +38,7 @@ const Index = ({tags,notes,itemtags,updateProduct}: any) => {
 
         <>
 
-            <View style={[styles.p_5]}>
+            <View style={[styles.px_5,styles.mb_3]}>
                 <InputBox
                     defaultValue={notes}
                     label={'Notes'}
@@ -53,9 +53,9 @@ const Index = ({tags,notes,itemtags,updateProduct}: any) => {
 
             {!isEmpty(temptags) && <View style={[styles.p_5]}>
 
-                <View style={[styles.flex,styles.justifyContent]}>
+                <View style={[styles.mb_4]}>
 
-                    <Caption style={[styles.caption,styles.mt_5]}>Tags</Caption>
+                    <Caption style={[styles.caption]}>Tags</Caption>
 
                     <View style={[styles.grid]}>
                     {
@@ -64,7 +64,7 @@ const Index = ({tags,notes,itemtags,updateProduct}: any) => {
                             const selected = (selectedTag === key);
                             {
                                 return (
-                                    <TouchableOpacity  key={key} style={[styles.p_3,styles.ml_2]}  onPress={() =>  setSelectedTag(key) }><Text style={[!selected?styles.muted:styles.primary,styles.bold]}>{taggroupname}</Text></TouchableOpacity>
+                                    <TouchableOpacity  key={key} style={[styles.p_3,{marginRight:10}]}  onPress={() =>  setSelectedTag(key) }><Text style={[!selected?styles.muted:styles.primary,styles.bold]}>{taggroupname}</Text></TouchableOpacity>
                                 )
                             }
                         })

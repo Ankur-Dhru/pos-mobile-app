@@ -8,7 +8,6 @@ import {ItemDivider, localredux} from "../../libs/static";
 import Container from "../../components/Container";
 import {appLog, chevronRight, selectWorkspace} from "../../libs/function";
 import AddWorkspace from "../SetupWorkspace/AddWorkspace";
-import {useDispatch} from "react-redux";
 
 
 const Workspaces = (props: any) => {
@@ -23,14 +22,12 @@ const Workspaces = (props: any) => {
 
 
     useEffect(()=>{
-
         if(localredux.authData.staff) {
             navigation.setOptions({
                 headerRight: () => <Appbar.Action icon="plus"
                                                   onPress={() => navigation.navigate('AddWorkspace', {staffaccess: true})}/>
             })
         }
-
     },[])
 
 

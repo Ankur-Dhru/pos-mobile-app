@@ -6,7 +6,7 @@ import {styles} from "../../theme";
 import {appLog, base64Decode, captureImages, errorAlert,} from "../../libs/function";
 import ViewShot from "react-native-view-shot";
 import PageLoader from "../../components/PageLoader";
-import SunmiPrinter from "@heasy/react-native-sunmi-printer";
+//import SunmiPrinter from "@heasy/react-native-sunmi-printer";
 import {device} from "../../libs/static";
 import WebView from "react-native-webview";
 import Button from "../../components/Button";
@@ -112,7 +112,7 @@ const Index = (props:any) => {
                     //setImages(images)
 
                     if (isSunmi) {
-                        await SunmiPrinter.printerInit();
+                        /*await SunmiPrinter.printerInit();
                         for (let key in images) {
                             const {base64result, width}: any = images[key];
                             await SunmiPrinter.printBitmap(base64result, width)
@@ -121,7 +121,7 @@ const Index = (props:any) => {
                         await SunmiPrinter.lineWrap(2)
                         if(!Boolean(printer?.papercutmanual)) {
                             await SunmiPrinter.cutPaper()
-                        }
+                        }*/
                         dispatch(setAlert({visible: true, message: 'Print Successful'}))
                     } else {
 

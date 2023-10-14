@@ -10,9 +10,8 @@ import {Field, Form} from 'react-final-form';
 
 import {composeValidators, localredux, loginUrl, METHOD, required, startWithString, STATUS} from "../../libs/static";
 import apiService from "../../libs/api-service";
-import {appLog, findObject, prelog, selectWorkspace} from "../../libs/function";
+import {appLog, errorAlert, findObject, isEmpty, prelog, selectWorkspace} from "../../libs/function";
 import KAccessoryView from "../../components/KAccessoryView";
-import {authData} from "../../redux-store/reducer/auth-data";
 
 class AddWorkspace extends Component<any> {
 
@@ -28,6 +27,7 @@ class AddWorkspace extends Component<any> {
         let workspacelogin = data?.workspace_login;
 
         const params = queryStringToJSON(workspacelogin);
+
         localredux.authData.token = params['t'];
 
         selectWorkspace({name: workspace}, navigation).then(r => {})
@@ -35,29 +35,50 @@ class AddWorkspace extends Component<any> {
     }
 
 
+    createNewWorkspace = (workspacename:any) => {
+        apiService({
+            method: METHOD.POST,
+            action: 'order',
+            other: {url: loginUrl},
+            queryString:{registerfrommobile:true},
+            body: {itemid: '3d44bcb5-afbc-4153-af6a-aa3457ebe119', domain: workspacename,registerfrommobile:true},
+        }).then((result) => {
+            console.log('result',result)
+            try {
+                if (result.status === STATUS.SUCCESS) {
+                    this.workspaceAdded(result?.data[0],workspacename)
+                }
+            } catch (e) {
+                appLog('e', e)
+            }
+        });
+    }
+
+
     handleSubmit = (values: any) => {
 
         Keyboard.dismiss();
-
         const staffaccess = this.props?.route?.params?.staffaccess;
-
         values.companyname = values?.companyname?.toLowerCase().replace(/[^a-zA-Z0-9]/g, "");
         const workspacename = values.companyname;
 
-
-
         if(staffaccess){
+            console.log('staff')
             apiService({
                 method: METHOD.GET,
                 action: 'workspace',
                 queryString:{workspace:workspacename},
                 other: {url: loginUrl},
             }).then((result) => {
-
                 try {
                     if (result.status === STATUS.SUCCESS) {
-                        const find = findObject(result?.data,'name',workspacename,true)
-                        this.workspaceAdded(find,workspacename)
+                        const find = findObject(result?.data,'name',workspacename,true);
+                        if(isEmpty(find)){
+                             this.createNewWorkspace(workspacename)
+                        }
+                        else {
+                            this.workspaceAdded(find, workspacename)
+                        }
                     }
                 } catch (e) {
                     appLog('e', e)
@@ -65,23 +86,8 @@ class AddWorkspace extends Component<any> {
             });
         }
         else {
-
-            apiService({
-                method: METHOD.POST,
-                action: 'order',
-                other: {url: loginUrl},
-                queryString:{registerfrommobile:true},
-                body: {itemid: '3d44bcb5-afbc-4153-af6a-aa3457ebe119', domain: workspacename,registerfrommobile:true},
-            }).then((result) => {
-
-                try {
-                    if (result.status === STATUS.SUCCESS) {
-                        this.workspaceAdded(result?.data[0],workspacename)
-                    }
-                } catch (e) {
-                    appLog('e', e)
-                }
-            });
+            console.log('else')
+            this.createNewWorkspace(workspacename)
         }
     }
 

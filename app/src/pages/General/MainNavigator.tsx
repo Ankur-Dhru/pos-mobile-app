@@ -164,6 +164,12 @@ const SetupStackNavigator = () => {
 
             <Stack.Screen name="AddWorkspace" component={AddWorkspace} options={{headerTitle: 'Add Workspace'}}/>
 
+
+
+            <Stack.Screen name="Workspaces" component={Workspaces} options={{headerTitle: 'Workspaces'}}/>
+
+            <Stack.Screen name="VerifyOTP" component={VerifyOTP} options={{headerTitle: 'Verify OTP'}}/>
+
             <Stack.Screen name="OrganizationProfile" component={OrganizationProfile}
                           options={{headerTitle: 'Organization Profile'}}/>
 
@@ -172,10 +178,6 @@ const SetupStackNavigator = () => {
 
             <Stack.Screen name="CurrencyPreferences" component={CurrencyPreferences}
                           options={{headerTitle: 'Currency Preferences'}}/>
-
-            <Stack.Screen name="Workspaces" component={Workspaces} options={{headerTitle: 'Workspaces'}}/>
-
-            <Stack.Screen name="VerifyOTP" component={VerifyOTP} options={{headerTitle: 'Verify OTP'}}/>
 
             <Stack.Screen name="Terminal" component={Terminal} options={{headerTitle: 'Terminal'}}/>
 

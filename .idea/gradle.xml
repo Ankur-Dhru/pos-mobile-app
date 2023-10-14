@@ -15,7 +15,6 @@
             </builds>
           </compositeBuild>
         </compositeConfiguration>
-        <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/app/android" />
         <option name="modules">
           <set>
@@ -50,7 +49,6 @@
             <option value="$PROJECT_DIR$/app/node_modules/react-native-permissions/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-ping/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-print/android" />
-            <option value="$PROJECT_DIR$/app/node_modules/react-native-reanimated/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-safe-area-context/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-screens/android" />
             <option value="$PROJECT_DIR$/app/node_modules/react-native-share/android" />

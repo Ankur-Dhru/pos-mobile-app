@@ -87,6 +87,12 @@ const Index = ({addtags, itemaddon,updateProduct,setValidate}: any) => {
 
         })
 
+        let totalmin = addtags?.addoniddata?.minrequired || 0;
+        Object.values(addtags?.addongroupiddata).map((addon:any)=>{
+            totalmin += addon?.minrequired;
+        });
+        setValidate(!Boolean(totalmin))
+
     }, [])
 
 
@@ -141,10 +147,24 @@ const Index = ({addtags, itemaddon,updateProduct,setValidate}: any) => {
 
         //////// VALIDATE ADD BUTTON //////////
             let totalmin = addtags?.addoniddata?.minrequired || 0;
-            Object.values(addtags?.addongroupiddata).map((addon:any)=>{
+
+            let allval = 0
+            Object.keys(addtags?.addongroupiddata).map((key:any)=>{
+
+                let addon = addtags?.addongroupiddata[key]
+                let totalgroupselected = selectedAddons?.filter((s:any)=>{
+                    return s.itemgroupid == key && Boolean(addon.minrequired)
+                })
+
+                if(totalgroupselected.length >= addon.minrequired){
+                    allval += totalgroupselected.length
+                }
+
                 totalmin += addon.minrequired;
            });
-           if(selectedAddons?.length >= totalmin){
+
+
+           if(allval >= totalmin){
                setValidate(true)
            }
            else{
@@ -158,10 +178,14 @@ const Index = ({addtags, itemaddon,updateProduct,setValidate}: any) => {
     return (<View style={[styles.p_5]}>
 
             {
-                Object.keys(addons?.addongroupiddata).map((addonid:any)=>{
+               Boolean(addons) && Boolean(addons?.addongroupiddata) &&  Object.keys(addons?.addongroupiddata).map((addonid:any)=>{
 
 
                     const {addonselectiontype,anynumber,minrequired,selecteditems} = addons.addongroupiddata[addonid];
+
+                    if(isEmpty(selecteditems)){
+                        return <></>
+                    }
 
 
                     return <View key={addonid}>

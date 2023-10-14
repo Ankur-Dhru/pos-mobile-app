@@ -29,7 +29,7 @@ import Button from "../../components/Button";
 import ReserveList from "./ReserveList";
 import {TabBar, TabView} from "react-native-tab-view";
 import apiService from "../../libs/api-service";
-import crashlytics from "@react-native-firebase/crashlytics";
+//import crashlytics from "@react-native-firebase/crashlytics";
 import Splittable from "./Splittable";
 import TableMenu from "./TableMenu";
 import {itemTotalCalculation} from "../../libs/item-calculation";
@@ -275,7 +275,7 @@ const Index = ({tableorders}: any) => {
     }
 
     const setTableOrderDetail = async (tabledetails: any) => {
-        crashlytics().log('setTableOrderDetail');
+        //crashlytics().log('setTableOrderDetail');
         const sameStaff = ((Boolean(tabledetails?.staffid) && (tabledetails?.staffid === adminid)) || (!Boolean(tabledetails?.staffid)))
 
         tabledetails = {
@@ -577,7 +577,7 @@ const Index = ({tableorders}: any) => {
         item = Boolean(item?.orders) ? {...item?.orders[item.lasttableorderid], ...item} : item
 
         const shiftFrom = (tableorderid: any, tableid: any) => {
-            crashlytics().log('shiftFrom');
+            //crashlytics().log('shiftFrom');
             setShifttable(true);
             setShiftingFromtable(tableorderid);
             setShiftingFromtableid(tableid)
@@ -585,7 +585,7 @@ const Index = ({tableorders}: any) => {
         }
         const shiftTo = async (tabledetail: any) => {
             dispatch(showLoader())
-            crashlytics().log('shiftTo');
+            //crashlytics().log('shiftTo');
             const {tableid, tablename, area}: any = tabledetail.item;
 
             let clone_tableorders = clone(tableorders)

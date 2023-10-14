@@ -29,7 +29,7 @@ import {
     Colors,
 } from 'react-native/Libraries/NewAppScreen';
 import BleManager from "react-native-ble-manager";
-import crashlytics from "@react-native-firebase/crashlytics";
+//import crashlytics from "@react-native-firebase/crashlytics";
 
 
 const BleManagerModule = NativeModules.BleManager;
@@ -47,7 +47,7 @@ const App = () => {
                 console.log('Scanning...');
                 setIsScanning(true);
             }).catch(err => {
-                crashlytics().log('Start Scan  '+err);
+                //crashlytics().log('Start Scan  '+err);
                 console.error(err);
             });
         }

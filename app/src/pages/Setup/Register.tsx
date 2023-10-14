@@ -69,6 +69,8 @@ const Register = (props: any) => {
             body: values,
             other: {url: loginUrl},
         }).then(async (response: any) => {
+
+
             if (response.status === STATUS.SUCCESS && !isEmpty(response.data)) {
 
                 device.token = response.token;

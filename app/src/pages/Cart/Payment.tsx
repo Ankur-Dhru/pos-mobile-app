@@ -21,7 +21,7 @@ import {device, ItemDivider, localredux, TICKET_STATUS, urls} from "../../libs/s
 import store from "../../redux-store/store";
 import {setCartData, updateCartField} from "../../redux-store/reducer/cart-data";
 import ProIcon from "../../components/ProIcon";
-import crashlytics from "@react-native-firebase/crashlytics";
+//import crashlytics from "@react-native-firebase/crashlytics";
 import ToggleButtons from "../../components/ToggleButton";
 import PaxesSelection from "../Items/PaxesSelection";
 import {itemTotalCalculation} from "../../libs/item-calculation";
@@ -118,7 +118,7 @@ const Index = ({
     const {taxInvoice} = localredux.localSettingsData;
 
     useEffect(() => {
-        crashlytics().log('change tax Invoice');
+        //crashlytics().log('change tax Invoice');
         if (taxInvoice) {
             dispatch(setCartData({payment: [{paymentby: "Pay Later"}]}));
         }
@@ -143,7 +143,7 @@ const Index = ({
     const [activePayLater, setActivePayLater] = useState<boolean>(false);
 
     const getGatewayDetailByKey = (key: any, value: any) => {
-        crashlytics().log('getGatewayDetailByKey');
+        //crashlytics().log('getGatewayDetailByKey');
         const gatewayname: any = Object.keys(paymentgateway[key]).filter((key) => key !== "settings");
         let returnData = paymentgateway[key] && paymentgateway[key][gatewayname] && paymentgateway[key][gatewayname].find((a: any) => a.input === value)
         return {...returnData, type: gatewayname[0]}
@@ -178,7 +178,7 @@ const Index = ({
 
     useEffect(() => {
 
-        crashlytics().log('change payment method');
+        //crashlytics().log('change payment method');
         const sum = paymentMethods.reduce((accumulator: any, object: any) => {
             return accumulator + +(object?.paymentAmount || 0);
         }, 0);
@@ -291,7 +291,7 @@ const Index = ({
 
     const validatePayment = async (config?: any) => {
 
-        crashlytics().log('validatePayment');
+        //crashlytics().log('validatePayment');
 
         try {
 
@@ -362,7 +362,7 @@ const Index = ({
     }
 
     const paymentSelection = (key: any, pm: any) => {
-        crashlytics().log('paymentSelection');
+        //crashlytics().log('paymentSelection');
         if (remainingAmount > 0) {
             paymentMethods[key] = {
                 ...pm, paymentAmount: remainingAmount

@@ -6,6 +6,7 @@
       <module name="app.brooons_react-native-bluetooth-escpos-printer" target="17" />
       <module name="app.react-native-fetch-blob" target="17" />
       <module name="app.react-native-haptic-feedback" target="17" />
+      <module name="app.react-native-reanimated" target="11" />
       <module name="app.react-native-slice-image" target="17" />
       <module name="app.react-native-sunmi-inner-printer" target="17" />
       <module name="app.react-native-thermal-receipt-printer" target="17" />

@@ -35,7 +35,7 @@ import {
 import Avatar from "../../components/Avatar";
 import Button from "../../components/Button";
 import {getUniqueId} from "react-native-device-info";
-import crashlytics from "@react-native-firebase/crashlytics";
+//import crashlytics from "@react-native-firebase/crashlytics";
 
 
 const md5 = require('md5');
@@ -103,7 +103,7 @@ const Index = (props: any) => {
 
                 const {othersettings} = localredux.initData;
 
-                crashlytics().log(`workspace : ${localredux.initData.workspace}`);
+                //crashlytics().log(`workspace : ${localredux.initData.workspace}`);
 
                 isRestaurant = (localredux.localSettingsData?.currentLocation?.industrytype === 'foodservices');
 

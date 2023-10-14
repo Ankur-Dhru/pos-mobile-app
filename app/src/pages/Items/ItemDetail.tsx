@@ -22,7 +22,7 @@ const {v4: uuid} = require('uuid')
 
 const Index = (props: any) => {
 
-    const {itemDetail, inittags, sheetRef, theme: {colors},orderbypax} = props
+    const {itemDetail, inittags, sheetRef, theme: {colors},orderbypax,addtags} = props
     const edit = props.route?.params?.edit
 
     const dispatch = useDispatch();
@@ -31,7 +31,8 @@ const Index = (props: any) => {
         navigation = useNavigation()
     }
 
-    const [validate,setValidate] = useState(false)
+
+    const [validate,setValidate] = useState(Boolean(addtags))
 
     let product = itemDetail;
 
@@ -87,6 +88,7 @@ const Index = (props: any) => {
             await dispatch(setBottomSheet({visible: false}))
         }
         else{
+
             navigation?.goBack();
         }
 
@@ -137,8 +139,6 @@ const Index = (props: any) => {
 
     const pricingtype = pricing?.type;
     const baseprice = pricing?.price?.default[0][pricingtype]?.baseprice || 0;
-
-    console.log('validate',validate)
 
 
     return (
@@ -253,6 +253,7 @@ const Index = (props: any) => {
                         <View>
                             <Button
                                 onPress={() => {
+                                    console.log('validate',validate)
                                     if(validate) {
                                         selectItem().then()
                                     }
@@ -273,6 +274,7 @@ const Index = (props: any) => {
 
 const mapStateToProps = (state: any) => ({
     itemDetail: state.itemDetail,
+    addtags: state.itemDetail.addtags,
     orderbypax: state.cartData.orderbypax,
 })
 

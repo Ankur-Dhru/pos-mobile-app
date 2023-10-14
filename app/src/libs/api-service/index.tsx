@@ -2,7 +2,7 @@ import {appLog, refreshToken, saveLocalSettings, wait} from "../function";
 import {ACTIONS, device, METHOD, STATUS} from "../static";
 import store from "../../redux-store/store";
 import {hideLoader, setAlert, showLoader} from "../../redux-store/reducer/component";
-import crashlytics from "@react-native-firebase/crashlytics";
+//import crashlytics from "@react-native-firebase/crashlytics";
 import {CommonActions} from "@react-navigation/native";
 
 
@@ -92,6 +92,7 @@ const apiService = async (config: configData) => {
         .then(response => response.json())
         .then((response: any) => {
 
+
             apiresponse = true
             store.dispatch(hideLoader());
 
@@ -153,7 +154,7 @@ const apiService = async (config: configData) => {
               AppToaster({message: 'Internet connection not available', intent: "danger"});
             }*/
 
-            crashlytics().log('APi  '+error);
+            //crashlytics().log('APi  '+error);
 
             return {
                 status: STATUS.ERROR,

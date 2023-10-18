@@ -485,6 +485,14 @@ const Index = ({tableorders}: any) => {
                             navigation?.navigate('SwitchItems')
                         }} title="Switch Items"/>}*/}
 
+                            <Menu.Item onPress={async () => {
+                                closeMenu()
+                                await dispatch(setBottomSheet({
+                                    visible: true,
+                                    height: '90%',
+                                    component: () => <OnlineorderList/>
+                                }))
+                            }} title="Online Orders"/>
 
                            {/* <Menu.Item onPress={async () => {
                                 closeMenu()
@@ -496,14 +504,7 @@ const Index = ({tableorders}: any) => {
                             }} title="Invoices"/>
 
 
-                            <Menu.Item onPress={async () => {
-                                closeMenu()
-                                await dispatch(setBottomSheet({
-                                    visible: true,
-                                    height: '90%',
-                                    component: () => <OnlineorderList/>
-                                }))
-                            }} title="Online Orders"/>
+
 
 
                             <Menu.Item onPress={() => {

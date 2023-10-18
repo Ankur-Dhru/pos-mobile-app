@@ -1895,7 +1895,7 @@ export const generateKOT = async (cancelkotprint?: any) => {
                                         ticketstatus: openTicketStatus?.statusid,
                                         ticketstatusname: openTicketStatus?.ticketstatusname,
                                         ticketitems: kotitems,
-                                        ticketdate: moment().format(dateFormat()),
+                                        ticketdate: moment().format('YYYY-MM-DD'),
                                         tickettime: moment().format("hh:mm A"),
                                         datetime: moment().unix(),
                                         kotid,
@@ -1918,7 +1918,6 @@ export const generateKOT = async (cancelkotprint?: any) => {
                                     };
 
                                     kots = [...kots, newkot];
-
 
                                     printkot.push(newkot);
 
@@ -2478,7 +2477,7 @@ export const createDatabaseName = ({workspace, locationid}: any) => {
 
 
 export const selectWorkspace = async (workspace: any, navigation: any) => {
- 
+
     store.dispatch(showLoader())
     const {token}: any = localredux.authData;
 

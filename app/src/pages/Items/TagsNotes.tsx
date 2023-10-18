@@ -77,7 +77,7 @@ const Index = ({tags,notes,itemtags,updateProduct}: any) => {
                     temptags?.map((tags: any, tagid: any) => {
                         {
 
-                            const {tagselectiontype} = tags;
+                            const {tagselectiontype,anynumber} = tags;
 
                            const selecteditem = tags?.taglist?.filter((tag:any)=>{
                                 return tag.selected
@@ -91,7 +91,7 @@ const Index = ({tags,notes,itemtags,updateProduct}: any) => {
                                            tags?.taglist?.map((tag: any, key: any) => {
                                                 return (<Chip key={key} style={[tag.selected?styles.bg_light_blue:styles.light.color,styles.m_1,styles.p_2]}     icon={tag.selected?'check':'stop'} onPress={() => {
 
-                                                    if(tagselectiontype === 'selectanyone' && selecteditem === 1 && !Boolean(tag?.selected)){
+                                                    if((tagselectiontype === 'selectanyone' && selecteditem > anynumber-1) && !Boolean(tag?.selected)){
 
                                                     }
                                                     else {

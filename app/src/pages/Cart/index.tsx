@@ -182,14 +182,14 @@ const Index = (props: any) => {
 
 
 
-                        {isRestaurant() && <Menu.Item onPress={async () => {
+                        {/*{isRestaurant() && <Menu.Item onPress={async () => {
                             closeMenu()
                             await dispatch(setBottomSheet({
                                 visible: true,
                                 height: '90%',
                                 component: () => <OnlineorderList/>
                             }))
-                        }} title="Online Orders"/> }
+                        }} title="Online Orders"/> }*/}
 
 
                         {/*{isRestaurant() && <Menu.Item onPress={async () => {

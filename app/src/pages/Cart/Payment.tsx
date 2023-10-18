@@ -66,9 +66,9 @@ export const splitPaxwise = async () => {
                    invoiceitems: paxwiseitems[key]
                }, undefined, undefined, undefined, undefined, 2, 2, false, false);
                vouchertotal += data[key]?.vouchertotaldisplay
-           let paxarray = Object.keys(data);
-           let difference = cartData?.vouchertotaldisplay - vouchertotal
-           data[paxarray.length].vouchertotaldisplay = data[paxarray.length]?.vouchertotaldisplay + difference
+               let paxarray = Object.keys(data);
+               let difference = cartData?.vouchertotaldisplay - vouchertotal
+               //data[paxarray.length].vouchertotaldisplay = data[paxarray.length]?.vouchertotaldisplay + difference
 
            }
        }
@@ -109,7 +109,7 @@ const Index = ({
 
 
 
-    const [vouchertotaldisplay,setVouchertotaldisplay] = useState(+cartData?.vouchertotaldisplay - +cartData?.paidamount)
+    const [vouchertotaldisplay,setVouchertotaldisplay] = useState(+cartData?.vouchertotaldisplay - (Boolean(cartData?.paidamount) ? +cartData?.paidamount : 0))
 
     const [paxwise, setPaxwise]:any = useState({})
 
@@ -210,8 +210,9 @@ const Index = ({
     }, [paymentMethods])
 
     useEffect(()=>{
-        let total = cartData?.vouchertotaldisplay - paidamount;
-        if(currentpax !=='all') {
+        let total = cartData?.vouchertotaldisplay - (Boolean(paidamount) ? paidamount : 0);
+
+        if(currentpax !=='all' && Boolean(paxwise[currentpax]?.vouchertotaldisplay)) {
             total = paxwise[currentpax]?.vouchertotaldisplay
         }
         setVouchertotaldisplay(total)
@@ -339,10 +340,6 @@ const Index = ({
             dispatch(showLoader())
 
 
-
-
-
-
             saveLocalOrder(clone(cartData)).then(async (order: any) => {
                 if (config?.print) {
                     printInvoice({...order}).then(() => {
@@ -369,9 +366,11 @@ const Index = ({
             }
             setPaymentMethods(clone(paymentMethods));
         } else {
+
             let newData = [...paymentMethods.map((data: any) => ({
                 ...data, paymentAmount: 0
             }))];
+            console.log('newData',vouchertotaldisplay)
             newData[key] = {
                 ...pm, paymentAmount: vouchertotaldisplay
             }
@@ -573,7 +572,7 @@ const Index = ({
 
 
 
-        {currentpax !== 'all' && isRestaurant() && Boolean(billremainingAmount !== 0) && Boolean(remainingAmount === 0) && <View  style={[styles.p_4]}>
+        {currentpax !== 'all' &&     isRestaurant() && Boolean(billremainingAmount !== 0) && Boolean(remainingAmount === 0) && <View  style={[styles.p_4]}>
             <Button
                 more={{color: 'black', backgroundColor: styles.secondary.color, height: 55}}
                 onPress={() => {
@@ -583,7 +582,7 @@ const Index = ({
 
 
 
-        {((currentpax === 'all' || currentpax === '')  || Boolean(billremainingAmount === 0)) && <View>
+        {((currentpax === 'all' || currentpax === '')  || Boolean(billremainingAmount === 0) ) && <View>
 
 
             {<View style={[styles.grid, styles.justifyContent, styles.p_3]}>

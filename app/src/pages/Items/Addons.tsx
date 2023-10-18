@@ -26,13 +26,13 @@ const Index = ({addtags, itemaddon,updateProduct,setValidate}: any) => {
 
     useEffect(() => {
 
-        if(isEmpty(addtags.addongroupiddata)){
+        if(isEmpty(addtags?.addongroupiddata)){
             addtags = {
                 ...addtags,
                 addongroupiddata:{
                     '0000':{
-                        ...addtags.addoniddata,
-                        selecteditems:addtags.addonid.map((item:any)=>{
+                        ...addtags?.addoniddata,
+                        selecteditems:addtags?.addonid.map((item:any)=>{
                             return {"itemid": item}
                         }),
                     }

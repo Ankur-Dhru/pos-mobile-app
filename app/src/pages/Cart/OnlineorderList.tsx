@@ -71,6 +71,7 @@ const Index = (props: any) => {
 
             if(status === 'accept'){
                 current.table = order;
+
                 let invoiceitems:any = [];
 
                 for (const data of order.invoiceitems) {
@@ -88,7 +89,9 @@ const Index = (props: any) => {
                         ]
                     })
                 }
-                dispatch(setCartData({...order,invoiceitems:invoiceitems,currentpax:'all', totalqnt: totalOrderQnt(invoiceitems)}))
+                let cartdata = {...order,invoiceitems:invoiceitems,currentpax:'all', totalqnt: totalOrderQnt(invoiceitems)}
+                dispatch(setCartData(cartdata))
+                device.navigation.navigate('DetailViewNavigator');
             }
             dispatch(setBottomSheet({visible:false}))
             dispatch(setAlert({visible: true, message: response.message}))

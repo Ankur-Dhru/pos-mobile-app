@@ -97,7 +97,7 @@ const Index = (props: any) => {
                         {Boolean(commonkotnote) && <View><Text>{commonkotnote}</Text></View>}
 
                         <View style={[styles.mt_2,styles.grid,styles.justifyContent]}><Paragraph style={[styles.paragraph,styles.text_xs,styles.muted]}>Kitchen : {departmentname}</Paragraph>
-                        {Boolean(staffname) && <Paragraph  style={[styles.paragraph,styles.text_xs,styles.muted]}>{staffname}</Paragraph>}
+                            {Boolean(staffname) && <Paragraph  style={[styles.paragraph,styles.text_xs,styles.muted]}>{staffname}</Paragraph>}
                         </View>
                     </View>
 

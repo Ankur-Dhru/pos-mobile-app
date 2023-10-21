@@ -5,7 +5,7 @@ module.exports = {
             plugins: ['react-native-paper/babel'],
         },
     },
-/*  plugins: [
+  /*plugins: [
       '@babel/plugin-proposal-export-namespace-from',
         'react-native-reanimated/plugin',
   ],*/

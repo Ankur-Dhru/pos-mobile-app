@@ -130,12 +130,16 @@ export const insertAddons = async (  itemsdata?: any,type:any = 'all') => {
 
 export const insertClients = async (  clientsdata?: any,type:any = 'all') => {
     const db:any = await getDBConnection();
-
+    const regx = /[^a-zA-Z0-9_. -]/g;
     let insertQuery:any = [];
 
     if(clientsdata?.length > 0) {
 
         for (const data of clientsdata) {
+
+            data.displayname = data?.displayname?.replace(regx," ");
+            data.fullname = data?.fullname?.replace(regx," ");
+            data.firstname = data?.firstname?.replace(regx," ");
 
             let values = `(${data?.clientid}, "${data?.displayname}", "${data?.phone}", "${data?.taxregtype}", '${JSON.stringify(data)}', "${data?.clienttype}", "${Boolean(data?.phonebook)?1:0}")`;
 

@@ -212,7 +212,7 @@ export const getClientsByWhere = async ({displayname,phone,search,clienttype,sta
             let items: any = [];
             await db.transaction(function (txn: any) {
 
-                let where = ' 1 = 1 ';
+                let where = ' 1 = 1  and clienttype = 0 ';
 
                 if (Boolean(phone)) {
                     where += ` and (phone LIKE '%${phone}%') `;

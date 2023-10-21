@@ -3,6 +3,44 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
       <module name="android-native.app.react-native-sqlite-storage" target="17" />
+      <module name="android.app.app" target="11" />
+      <module name="android.app.heasy_react-native-sunmi-printer" target="11" />
+      <module name="android.app.react-native-async-storage_async-storage" target="11" />
+      <module name="android.app.react-native-ble-manager" target="11" />
+      <module name="android.app.react-native-camera" target="11" />
+      <module name="android.app.react-native-community_datetimepicker" target="11" />
+      <module name="android.app.react-native-community_image-editor" target="11" />
+      <module name="android.app.react-native-community_netinfo" target="11" />
+      <module name="android.app.react-native-contacts" target="11" />
+      <module name="android.app.react-native-device-info" target="11" />
+      <module name="android.app.react-native-document-picker" target="11" />
+      <module name="android.app.react-native-esc-pos-printer" target="11" />
+      <module name="android.app.react-native-extra-dimensions-android" target="11" />
+      <module name="android.app.react-native-fs" target="11" />
+      <module name="android.app.react-native-gesture-handler" target="11" />
+      <module name="android.app.react-native-get-random-values" target="11" />
+      <module name="android.app.react-native-html-to-pdf" target="11" />
+      <module name="android.app.react-native-image-crop-picker" target="11" />
+      <module name="android.app.react-native-image-resizer" target="11" />
+      <module name="android.app.react-native-image-size" target="11" />
+      <module name="android.app.react-native-linear-gradient" target="11" />
+      <module name="android.app.react-native-pager-view" target="11" />
+      <module name="android.app.react-native-permissions" target="11" />
+      <module name="android.app.react-native-picker_picker" target="11" />
+      <module name="android.app.react-native-ping" target="11" />
+      <module name="android.app.react-native-print" target="11" />
+      <module name="android.app.react-native-safe-area-context" target="11" />
+      <module name="android.app.react-native-screens" target="11" />
+      <module name="android.app.react-native-share" target="11" />
+      <module name="android.app.react-native-sound" target="11" />
+      <module name="android.app.react-native-sqlite-storage" target="11" />
+      <module name="android.app.react-native-svg" target="11" />
+      <module name="android.app.react-native-tcp-socket" target="11" />
+      <module name="android.app.react-native-thermal-receipt-printer-image-qr" target="11" />
+      <module name="android.app.react-native-vector-icons" target="11" />
+      <module name="android.app.react-native-view-shot" target="11" />
+      <module name="android.app.react-native-webview" target="11" />
+      <module name="app-app" target="11" />
       <module name="app.brooons_react-native-bluetooth-escpos-printer" target="17" />
       <module name="app.react-native-fetch-blob" target="17" />
       <module name="app.react-native-haptic-feedback" target="17" />
@@ -14,6 +52,50 @@
       <module name="app.ReactAndroid.hermes-engine" target="17" />
       <module name="app.rn-fetch-blob" target="17" />
       <module name="app.rn-qr-generator" target="17" />
+      <module name="com.facebook.react.react-native-gradle-plugin" target="1.8" />
+      <module name="com.facebook.react.react-native-gradle-plugin.main" target="1.8" />
+      <module name="com.facebook.react.react-native-gradle-plugin.test" target="1.8" />
+      <module name="heasy_react-native-sunmi-printer" target="11" />
+      <module name="react-native-async-storage_async-storage" target="11" />
+      <module name="react-native-ble-manager" target="11" />
+      <module name="react-native-camera" target="11" />
+      <module name="react-native-community_datetimepicker" target="11" />
+      <module name="react-native-community_image-editor" target="11" />
+      <module name="react-native-community_netinfo" target="11" />
+      <module name="react-native-contacts" target="11" />
+      <module name="react-native-device-info" target="11" />
+      <module name="react-native-document-picker" target="11" />
+      <module name="react-native-esc-pos-printer" target="11" />
+      <module name="react-native-extra-dimensions-android" target="11" />
+      <module name="react-native-firebase_analytics" target="11" />
+      <module name="react-native-firebase_app" target="11" />
+      <module name="react-native-firebase_crashlytics" target="11" />
+      <module name="react-native-fs" target="11" />
+      <module name="react-native-gesture-handler" target="11" />
+      <module name="react-native-get-random-values" target="11" />
+      <module name="react-native-gradle-plugin_main" target="11" />
+      <module name="react-native-gradle-plugin_test" target="11" />
+      <module name="react-native-html-to-pdf" target="11" />
+      <module name="react-native-image-crop-picker" target="11" />
+      <module name="react-native-image-resizer" target="11" />
+      <module name="react-native-image-size" target="11" />
+      <module name="react-native-linear-gradient" target="11" />
+      <module name="react-native-pager-view" target="11" />
+      <module name="react-native-permissions" target="11" />
+      <module name="react-native-picker_picker" target="11" />
+      <module name="react-native-ping" target="11" />
+      <module name="react-native-print" target="11" />
+      <module name="react-native-safe-area-context" target="11" />
+      <module name="react-native-screens" target="11" />
+      <module name="react-native-share" target="11" />
+      <module name="react-native-sound" target="11" />
+      <module name="react-native-sqlite-storage" target="11" />
+      <module name="react-native-svg" target="11" />
+      <module name="react-native-tcp-socket" target="11" />
+      <module name="react-native-thermal-receipt-printer-image-qr" target="11" />
+      <module name="react-native-vector-icons" target="11" />
+      <module name="react-native-view-shot" target="11" />
+      <module name="react-native-webview" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

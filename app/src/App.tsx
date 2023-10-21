@@ -33,7 +33,7 @@ import Page from "./components/Page";
 import NetworkStatus from "./components/NetworkStatus";
 import {styles} from "./theme";
 import {MainStackNavigator} from "./pages/General/MainNavigator";
-import {firebase} from "@react-native-firebase/analytics";
+//import {firebase} from "@react-native-firebase/analytics";
 
 import {
     SafeAreaView,
@@ -65,7 +65,7 @@ if (width < 960) {
 }
 
 
-firebase.analytics().setAnalyticsCollectionEnabled(true).then(r => {});
+//firebase.analytics().setAnalyticsCollectionEnabled(true).then(r => {});
 
 
 const sleep = (time: any) => new Promise<void>((resolve) => setTimeout(() => resolve(), time));
@@ -205,18 +205,21 @@ const App = () => {
 
                     <StatusBar backgroundColor={styles.primary.color} />
 
-                        <NavigationContainer>
-                            <MainStackNavigator/>
+                      <NavigationContainer>
+                           <MainStackNavigator/>
                         </NavigationContainer>
 
-                    <Page/>
+
+                     <Page/>
                     <Modal/>
                     <BottomSheet/>
                     <Dialog/>
                     <SnackBar/>
                     <ActivityIndicator/>
-
                     <NetworkStatus/>
+
+
+
 
                 </PaperProvider>
             </SafeAreaView>

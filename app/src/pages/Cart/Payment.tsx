@@ -370,13 +370,13 @@ const Index = ({
             let newData = [...paymentMethods.map((data: any) => ({
                 ...data, paymentAmount: 0
             }))];
-            console.log('newData',vouchertotaldisplay)
             newData[key] = {
                 ...pm, paymentAmount: vouchertotaldisplay
             }
             setPaymentMethods(clone(newData));
         }
     }
+
 
     return <Container style={{padding: 0}}>
 

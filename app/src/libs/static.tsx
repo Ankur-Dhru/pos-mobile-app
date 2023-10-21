@@ -23,7 +23,7 @@ getLocalSettings('generalsettings').then((r:any) => {
 });
 
 
-export const version = '3.7.9'
+export const version = '3.8.0'
 
 const mainUrl = "https://api.dhru.com";
 export const loginUrl: any = `${mainUrl}/client/api/v1/`;

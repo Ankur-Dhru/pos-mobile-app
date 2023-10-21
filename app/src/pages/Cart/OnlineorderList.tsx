@@ -14,7 +14,7 @@ import {
     printInvoice,
     selectItem,
     toCurrency,
-    totalOrderQnt
+    totalOrderQnt, voucherData
 } from "../../libs/function";
 import moment from "moment";
 import apiService from "../../libs/api-service";
@@ -89,7 +89,11 @@ const Index = (props: any) => {
                         ]
                     })
                 }
-                let cartdata = {...order,invoiceitems:invoiceitems,currentpax:'all', totalqnt: totalOrderQnt(invoiceitems)}
+
+                const voucherDataJson: any = voucherData(VOUCHER.INVOICE, false);
+
+
+                let cartdata = {...voucherDataJson,...order,currency:voucherDataJson.currency,invoiceitems:invoiceitems,currentpax:'all', totalqnt: totalOrderQnt(invoiceitems)}
                 dispatch(setCartData(cartdata))
                 device.navigation.navigate('DetailViewNavigator');
             }

@@ -609,7 +609,7 @@ export const syncData = async (loader = true, synctype = '') => {
 
                         } else if (result === 'customer' || result === 'vendor') {
                             if (Boolean(data.result)) {
-                                await insertClients(data.result, 'all').then(() => {
+                                await insertClients(data.result, 'onebyone').then(() => {
                                 });
                             }
                         }

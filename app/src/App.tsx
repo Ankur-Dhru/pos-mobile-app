@@ -86,7 +86,7 @@ export let options = {
     },
 };
 
-retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
+/*retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
     const {syncinvoiceintervaltime} = data;
     options = {
         ...options,
@@ -94,7 +94,7 @@ retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
             delay: +syncinvoiceintervaltime,
         },
     }
-})
+})*/
 
 /*BackgroundService.on('expiration', () => {
     console.log('I am being closed :(');

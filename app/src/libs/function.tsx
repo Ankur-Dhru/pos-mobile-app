@@ -2990,29 +2990,12 @@ export const intervalInvoice = (function () {
 
 
             retrieveData(`fusion-dhru-pos-settings`).then(async (data: any) => {
-               // const {syncinvoiceintervaltime} = data
 
                 if (!interval) {
 
                     interval = setInterval(() => {
-
-                        if (Boolean(db?.name)) {
-                            if(data) {
-                                syncNow()
-                                /*CheckConnectivity().then((connection)=>{
-
-                                    getOrders().then((orders: any) => {
-
-                                        if (!isEmpty(orders)) {
-
-                                            let invoice: any = Object.values(orders)[0]
-                                            connection && syncInvoice({...invoice,savingmode:'sync',version:version}).then()
-                                        }
-                                    })
-                                })*/
-                            }
-                        }
-                    }, 60000); //+syncinvoiceintervaltime ||
+                        syncNow()
+                    }, 60000);
                 }
                 return () => {
                     clearInterval(interval);

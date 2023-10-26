@@ -157,8 +157,8 @@ export const onPressNumber = (item: any,defaultselected:any, onPressOK: any) => 
     if (!isRes){
 
     }
-    directQnt = arraySome(store.getState()?.localSettings?.defaultAmountOpen, item?.salesunit || item?.productqntunitid)
-
+    //directQnt = arraySome(store.getState()?.localSettings?.defaultAmountOpen, item?.salesunit || item?.productqntunitid)
+    directQnt = true
 
     store.dispatch(setDialog({
         visible: true,

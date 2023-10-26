@@ -36,6 +36,7 @@ import {itemTotalCalculation} from "../../libs/item-calculation";
 import {deleteOrder, setTableOrders} from "../../redux-store/reducer/table-orders-data";
 import InvoicesList from "../Cart/InvoicesList";
 import OnlineorderList from "../Cart/OnlineorderList";
+import ScanItem from "../Items/ScanItem";
 
 let interval: any = ''
 
@@ -275,6 +276,7 @@ const Index = ({tableorders}: any) => {
     }
 
     const setTableOrderDetail = async (tabledetails: any) => {
+
         //crashlytics().log('setTableOrderDetail');
         const sameStaff = ((Boolean(tabledetails?.staffid) && (tabledetails?.staffid === adminid)) || (!Boolean(tabledetails?.staffid)))
 
@@ -293,10 +295,7 @@ const Index = ({tableorders}: any) => {
                     queryString: {key: 'tableid', value: tabledetails?.tableid},
                     other: {url: urls.localserver},
                 }).then((response: any) => {
-
                     const {kots, numOfKOt}: any = tabledetails;
-
-
                     if (kots?.length > 0 || numOfKOt > 0) {
                         let {staffid, staffname, ...others}: any = response.data;
                         tabledetails = {
@@ -307,7 +306,6 @@ const Index = ({tableorders}: any) => {
                             ...tabledetails, ...response.data,currentpax:'all'
                         }
                     }
-
                     tabledetails.invoiceitems.map((item:any,index:any)=>{
                         item = {
                             ...item,...item.itemdetail
@@ -493,6 +491,11 @@ const Index = ({tableorders}: any) => {
                                     component: () => <OnlineorderList/>
                                 }))
                             }} title="Online Orders"/>
+
+                            {Boolean(urls.localserver) &&  <Menu.Item onPress={async () => {
+                                closeMenu()
+                                navigation.navigate('ScanTable')
+                            }} title="Scan QR"/>}
 
                            {/* <Menu.Item onPress={async () => {
                                 closeMenu()
@@ -735,6 +738,7 @@ const Index = ({tableorders}: any) => {
         <TableFlatlist type={'advanceorder'}/>
     </View>));
 
+
     const EmptyCompoennt = ({type}: any) => {
         return (<View>
             <View style={[styles.p_6]}>
@@ -923,6 +927,7 @@ const Index = ({tableorders}: any) => {
                 return <TakeAway/>;
             case 'advanceorder':
                 return <AdvanceOrder/>;
+
         }
     };
 
@@ -1010,6 +1015,9 @@ const Index = ({tableorders}: any) => {
                 }
             }}
         />
+
+
+
     </>);
 
 

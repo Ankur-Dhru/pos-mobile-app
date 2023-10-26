@@ -95,6 +95,7 @@ import PrinterFor from "../PrinterSettings/PrinterFor";
 import ItemDetail from "../Items/ItemDetail";
 import AddEditPaymentMade from "../PaymentMade/AddEditPaymentMade";
 import ScanSerialno from "../Items/ScanSerialno";
+import ScanTable from "../Tables/ScanTable";
 
 
 const screenOptions = {...screenOptionStyle};
@@ -212,7 +213,8 @@ const ClientAreaStackNavigator = (props: any) => {
             <Stack.Screen name={'CartStackNavigator'} {...params} component={Cart}
                           options={({route}: any) => ({headerShown: !device.tablet, title: route?.params?.tablename})}/>
 
-
+            <Stack.Screen name={'ScanTable'} component={ScanTable}
+                          options={{headerShown: true, headerTitle: 'Scan Table'}}/>
             <Stack.Screen name={'SearchItem'} component={SearchItem}
                           options={{headerShown: false, headerTitle: 'Search Item'}}/>
             <Stack.Screen name={'ScanItem'} component={ScanItem}

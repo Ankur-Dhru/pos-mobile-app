@@ -253,7 +253,6 @@ const Index = (props: any) => {
                         <View>
                             <Button
                                 onPress={() => {
-                                    console.log('validate',validate)
                                     if(validate) {
                                         selectItem().then()
                                     }

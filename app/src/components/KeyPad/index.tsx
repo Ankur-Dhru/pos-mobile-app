@@ -29,6 +29,8 @@ function checkIntNumber(x:any) {
 
 const index = (props: any) => {
 
+    console.log('customNumber',props)
+
     const {defaultValue, onPressCancel, onPressOK, defaultInputValues,defaultInputAmount, customNumber, rate,defaultTab,unitname,canchangeamount,defaultOpenUnitType,defaultAmountOpen} = props;
 
     const [numPadValue, setNumPadValue] = useState<any>(+defaultValue || "");

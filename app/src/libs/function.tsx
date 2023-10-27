@@ -1048,6 +1048,8 @@ export const saveTempLocalOrder = (order?: any, config?: any) => {
                 terminalid: localredux?.licenseData?.data?.terminal_id,
             }
 
+
+
             /*if(!Boolean(order?.payment[0]?.paymentAmount)){
                 order.payment[0].paymentAmount = order.vouchertotaldisplay
             }*/
@@ -1091,8 +1093,6 @@ export const saveLocalOrder = (order?: any) => {
         if (!Boolean(order)) {
             order = clone(store.getState().cartData)
         }
-
-        console.log('order?.voucherid',order?.voucherid)
 
         if(order?.voucherid){
             const {workspace}: any = localredux.initData;

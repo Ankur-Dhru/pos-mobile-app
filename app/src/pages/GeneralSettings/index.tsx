@@ -10,7 +10,7 @@ import {retrieveData, saveLocalSettings, setAPIUrl} from "../../libs/function";
 import {setSettings} from "../../redux-store/reducer/local-settings-data";
 import InputField from "../../components/InputField";
 
-import {localredux} from "../../libs/static";
+import {localredux, urls} from "../../libs/static";
 
 
 const Index = () => {
@@ -33,6 +33,7 @@ const Index = () => {
         disabledpax: true,
         kotongenerateinvoice: 'Enable',
         advancecartview: false,
+        scantable:false,
         terminalname: terminal_name
     })
 
@@ -157,6 +158,21 @@ const Index = () => {
                                         }
                                         dispatch(setSettings(initdata));
                                         saveLocalSettings("searchserialno", value).then();
+                                    }}
+                                /></>)}
+                            </Field>}
+
+
+                            {(isRestaurant) && <Field name="scantable">
+                                {props => (<><CheckBox
+                                    value={props.input.value}
+                                    label={'Scan Table to Take Order'}
+                                    onChange={(value: any) => {
+                                        initdata = {
+                                            ...initdata, scantable: value
+                                        }
+                                        dispatch(setSettings(initdata));
+                                        saveLocalSettings("scantable", value).then();
                                     }}
                                 /></>)}
                             </Field>}

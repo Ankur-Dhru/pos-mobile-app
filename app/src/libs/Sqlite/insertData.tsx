@@ -222,8 +222,6 @@ export const insertTempOrder =  (data?: any) => {
 
         let order = data;
 
-
-
         if(Boolean(urls.localserver)) {
 
             await apiService({
@@ -247,9 +245,9 @@ export const insertTempOrder =  (data?: any) => {
 
             const db: any = await getDBConnection();
 
-            let values = `('${data?.tableorderid}', '${JSON.stringify(data)}')`;
+            let values = `('${data?.tableorderid}','${data?.tableid}', '${JSON.stringify(data)}')`;
             let insertQuery = `INSERT
-            OR REPLACE INTO tblTempOrder("tableorderid","data") values
+            OR REPLACE INTO tblTempOrder("tableorderid","tableid","data") values
             ${values}`;
 
             try {

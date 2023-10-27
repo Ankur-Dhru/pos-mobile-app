@@ -2,7 +2,6 @@
 
 import React, {useState} from 'react';
 
-import {Linking,} from 'react-native';
 
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
@@ -10,6 +9,7 @@ import {withTheme} from "react-native-paper";
 import {useNavigation} from "@react-navigation/native";
 import {METHOD, urls} from "../../libs/static";
 import apiService from "../../libs/api-service";
+import {getTempOrdersByWhere} from "../../libs/Sqlite/selectData";
 
 const Index = () => {
 
@@ -18,7 +18,17 @@ const Index = () => {
 
     const onSuccess = async (e?: any) => {
 
-        let tabledetails:any = {"area": "AC", "invoiceitems": [], "kots": [], "ordertype": "tableorder", "paxes": "2", "qrcodeid": "111111", "tableid": e.data, "tablename": "Regular / T1"}
+        let tabledetails: any = {
+            "area": "Default",
+            "invoiceitems": [],
+            "kots": [],
+            "ordertype": "tableorder",
+            "pax": 1,
+            "paxes": "1",
+            "qrcodeid": e.data,
+            "tableid": e.data,
+            "tablename": `QR : ${e.data}`
+        }
 
         if ((Boolean(urls.localserver))) {
 
@@ -28,23 +38,31 @@ const Index = () => {
                 queryString: {key: 'tableid', value: e.data},
                 other: {url: urls.localserver},
             }).then((response: any) => {
+
                 const {kots, numOfKOt}: any = tabledetails;
                 if (kots?.length > 0 || numOfKOt > 0) {
                     let {staffid, staffname, ...others}: any = response.data;
                     tabledetails = {
-                        ...tabledetails, ...others,currentpax:'all'
+                        ...tabledetails, ...others, currentpax: 'all'
                     }
                 } else {
                     tabledetails = {
-                        ...tabledetails, ...response.data,currentpax:'all'
+                        ...tabledetails, ...response.data
                     }
                 }
-                tabledetails.invoiceitems.map((item:any,index:any)=>{
+                tabledetails.invoiceitems.map((item: any, index: any) => {
                     item = {
-                        ...item,...item.itemdetail
+                        ...item, ...item.itemdetail
                     }
                     tabledetails.invoiceitems[index] = item
                 })
+            })
+        } else {
+            await getTempOrdersByWhere({tableid: e.data}).then((data) => {
+                const tabledata: any = Object.values(data)[0];
+                tabledetails = {
+                    ...tabledetails, ...tabledata, currentpax: 'all'
+                }
             })
         }
 
@@ -54,26 +72,26 @@ const Index = () => {
             scanner?.reactivate()
         }, 3000)
 
-        Linking.openURL(e?.data).catch(err => {
+        /*Linking.openURL(e?.data).catch(err => {
             console.error('An error occured', err)
-        });
+        });*/
     };
 
     return (<>
-            <QRCodeScanner
-                ref={(node) => {
-                    scanner = node
-                }}
-                showMarker={true}
-                markerStyle={{borderColor: 'white'}}
-                cameraTimeout={10000}
-                vibrate={true}
-                permissionDialogTitle={'Camera Permission'}
-                permissionDialogMessage={'Scanning  Table'}
-                onRead={onSuccess}
-            />
+        <QRCodeScanner
+            ref={(node) => {
+                scanner = node
+            }}
+            showMarker={true}
+            markerStyle={{borderColor: 'white'}}
+            cameraTimeout={10000}
+            vibrate={true}
+            permissionDialogTitle={'Camera Permission'}
+            permissionDialogMessage={'Scanning  Table'}
+            onRead={onSuccess}
+        />
 
-        </>);
+    </>);
 }
 
 export default withTheme(Index);

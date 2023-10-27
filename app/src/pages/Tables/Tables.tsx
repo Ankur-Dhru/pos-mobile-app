@@ -37,6 +37,7 @@ import {deleteOrder, setTableOrders} from "../../redux-store/reducer/table-order
 import InvoicesList from "../Cart/InvoicesList";
 import OnlineorderList from "../Cart/OnlineorderList";
 import ScanItem from "../Items/ScanItem";
+import ScanTable from "./ScanTable";
 
 let interval: any = ''
 
@@ -131,7 +132,7 @@ export const getOrderFromTable = (tables: any) => {
 }
 
 
-const Index = ({tableorders}: any) => {
+const Index = ({tableorders,scantable}: any) => {
 
 
     const navigation = useNavigation()
@@ -315,6 +316,8 @@ const Index = ({tableorders}: any) => {
                 })
             }
 
+
+
             navigation.navigate('CartStackNavigator', tabledetails);
             dispatch(setDialog({visible: false}));
 
@@ -492,7 +495,7 @@ const Index = ({tableorders}: any) => {
                                 }))
                             }} title="Online Orders"/>
 
-                            {Boolean(urls.localserver) &&  <Menu.Item onPress={async () => {
+                            {<Menu.Item onPress={async () => {
                                 closeMenu()
                                 navigation.navigate('ScanTable')
                             }} title="Scan QR"/>}
@@ -992,6 +995,8 @@ const Index = ({tableorders}: any) => {
             style={styles.bg_white}
         />
 
+        {scantable &&  <ScanTable/>}
+
         {shifttable &&  <View  style={[styles.center,{}]}>
             <TouchableOpacity  onPress={()=>setShifttable(false)}>
                 <Paragraph style={[styles.center,styles.p_5,{textAlign:'center'}]}>Disable Shifting</Paragraph>
@@ -1024,7 +1029,9 @@ const Index = ({tableorders}: any) => {
 }
 
 const mapStateToProps = (state: any) => ({
-    ordertype: state.selectedData.ordertype, tableorders: state.tableOrdersData
+    ordertype: state.selectedData.ordertype,
+    tableorders: state.tableOrdersData,
+    scantable: state.localSettings?.scantable,
 })
 
 export default connect(mapStateToProps)(withTheme(Index));

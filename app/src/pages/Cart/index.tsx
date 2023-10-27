@@ -25,7 +25,6 @@ import {setTableOrders} from "../../redux-store/reducer/table-orders-data";
 import HoldOrders from "./HoldOrders";
 //import crashlytics from "@react-native-firebase/crashlytics";
 import InvoicesList from "./InvoicesList";
-import OnlineorderList from "./OnlineorderList";
 
 
 const Index = (props: any) => {

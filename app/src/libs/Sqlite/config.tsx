@@ -64,6 +64,7 @@ export const CREATE_SKU_TABLE = `create table if not exists ${TABLE.SKU}
 export const ADD_COLUMN_ITEM_GROUPID = `ALTER TABLE ${TABLE.ITEM} ADD COLUMN groupid TEXT`;
 export const ADD_COLUMN_ITEM_SKU = `ALTER TABLE ${TABLE.ITEM} ADD COLUMN sku TEXT`;
 export const ADD_COLUMN_ITEM_TREATBY = `ALTER TABLE ${TABLE.ITEM} ADD COLUMN treatby TEXT`;
+export const ADD_COLUMN_TEMPORDER_TABLEID = `ALTER TABLE ${TABLE.TEMPORDER} ADD COLUMN tableid TEXT`;
 
 export const CREATE_ITEM_INDEX_ITEMGROUPID = `create index index_itemgroupid on ${TABLE.ITEM} (itemgroupid);`;
 export const CREATE_ITEM_INDEX_ITEMNAME = `create index index_itemname on ${TABLE.ITEM} (itemname);`;
@@ -93,7 +94,8 @@ export const CREATE_LOG_TABLE = `create table if not exists ${TABLE.LOG}
 
 export const CREATE_TEMPORDER_TABLE = `create table if not exists ${TABLE.TEMPORDER}
 (
-  tableorderid           varchar primary key,   
+  tableorderid           varchar primary key,
+  tableid   TEXT,
   data                   TEXT  
 );`;
 

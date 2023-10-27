@@ -249,11 +249,12 @@ export const getClientsByWhere = async ({displayname,phone,search,clienttype,sta
     }
 }
 
-export const getTempOrdersByWhere = async ({tableorderid,all}:any) => {
+export const getTempOrdersByWhere = async ({tableorderid,all,tableid}:any) => {
 
     return new Promise<any>(async (resolve, reject)=>{
 
         let items: any = {};
+
 
         if(Boolean(urls.localserver)) {
 
@@ -282,6 +283,9 @@ export const getTempOrdersByWhere = async ({tableorderid,all}:any) => {
                     let where = ' 1 = 1 ';
                     if (Boolean(tableorderid)) {
                         where += ` and (tableorderid = '${tableorderid}') `;
+                    }
+                    if (Boolean(tableid)) {
+                        where += ` and (tableid = '${tableid}') `;
                     }
                     const query = `SELECT *
                                    FROM ${TABLE.TEMPORDER}

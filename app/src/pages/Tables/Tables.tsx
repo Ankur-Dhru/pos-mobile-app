@@ -455,36 +455,10 @@ const Index = ({tableorders,scantable}: any) => {
                                 openMenu()
                             }}/>}>
 
-                            {/*<Menu.Item onPress={onClickAddTable} title="Add Table"/>*/}
-
-                            {/*{!shifttable && <Menu.Item onPress={() => {
-                            closeMenu()
-                            setShifttable(true)
-                        }} title="Shift Table"/>}
-
-                        {shifttable && <Menu.Item onPress={() => {
-                            closeMenu()
-                            setShifttable(false)
-                        }} title="Disable Shift"/>}*/}
-
-                            {/*{!splittable && <Menu.Item onPress={() => {
-                             closeMenu()
-                             setSplittable(true)
-                         }} title="Split Table"/>}
-
-
-                         {splittable && <Menu.Item onPress={() => {
-                             closeMenu()
-                             setSplittable(false)
-                         }} title="Disable Split"/>}*/}
 
                             {!Boolean(urls.localserver) &&
                                 <Menu.Item onPress={onClickReserveTable} title="Reserved Tables"/>}
 
-                            {/*{isRestaurant() && <Menu.Item onPress={async () => {
-                            closeMenu();
-                            navigation?.navigate('SwitchItems')
-                        }} title="Switch Items"/>}*/}
 
                             <Menu.Item onPress={async () => {
                                 closeMenu()
@@ -500,38 +474,9 @@ const Index = ({tableorders,scantable}: any) => {
                                 navigation.navigate('ScanTable')
                             }} title="Scan QR"/>}
 
-                           {/* <Menu.Item onPress={async () => {
-                                closeMenu()
-                                await dispatch(setBottomSheet({
-                                    visible: true,
-                                    height: '90%',
-                                    component: () => <InvoicesList/>
-                                }))
-                            }} title="Invoices"/>
 
-
-
-
-
-                            <Menu.Item onPress={() => {
-                                getOrder().then();
-                                closeMenu()
-                            }} title="Refresh"/>*/}
-
-
-                            {/*{!isRestaurant() && <Menu.Item onPress={async () => {
-                        await dispatch(setBottomSheet({
-                            visible: true,
-                            height: '50%',
-                            component: () => <HoldOrders/>
-                        }))
-                    }} title="Holding Orders"/>}*/}
                         </Menu>
 
-
-                        {/*<Appbar.Action icon={'refresh'} onPress={() => {
-                        getOrder().then()
-                    }}/>*/}
 
                     </View>
 

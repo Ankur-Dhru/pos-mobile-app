@@ -2,6 +2,7 @@ import {appLog, prelog} from "../function";
 import {closeDB, getDBConnection} from "./index";
 import apiService from "../api-service";
 import {device, METHOD, STATUS, urls} from "../static";
+import crashlytics from "@react-native-firebase/crashlytics";
 
 
 export const insertInit = async (  initdata?: any) => {
@@ -29,7 +30,7 @@ export const insertInit = async (  initdata?: any) => {
 
 
     }
-    await closeDB(db);
+    //await closeDB(db);
 };
 
 
@@ -81,7 +82,7 @@ export const insertItems = async (  itemsdata?: any,type:any = 'all') => {
 
       }
   }
-    await closeDB(db);
+    //await closeDB(db);
 };
 
 
@@ -124,7 +125,7 @@ export const insertAddons = async (  itemsdata?: any,type:any = 'all') => {
 
         }
     }
-    await closeDB(db);
+    //await closeDB(db);
 };
 
 
@@ -170,7 +171,7 @@ export const insertClients = async (  clientsdata?: any,type:any = 'all') => {
 
         }
     }
-    await closeDB(db);
+    //await closeDB(db);
 };
 
 
@@ -212,7 +213,7 @@ export const insertSkus = async (  skusdata?: any,type:any = 'all') => {
 
         }
     }
-    await closeDB(db);
+    //await closeDB(db);
 };
 
 
@@ -252,11 +253,12 @@ export const insertTempOrder =  (data?: any) => {
 
             try {
                 await db.executeSql(insertQuery);
-
             } catch (e) {
-                appLog('ERROR', insertQuery)
+
+                console.log('ERROR', insertQuery)
+                crashlytics().log('insertQuery : '+ e);
             }
-            await closeDB(db);
+            //await closeDB(db);
 
         }
         resolve(order)
@@ -274,7 +276,7 @@ export const insertOrder =  (data?: any) => {
         catch (e) {
             appLog('ERROR',insertQuery)
         }
-        await closeDB(db);
+        //await closeDB(db);
         resolve('Inset Order')
     })
 
@@ -293,7 +295,7 @@ export const insertLog =  (data?: any) => {
         catch (e) {
             appLog('ERROR',insertQuery)
         }
-        await closeDB(db);
+        //await closeDB(db);
         resolve('Inset Log')
     })
 

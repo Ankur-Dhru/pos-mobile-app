@@ -32,7 +32,7 @@ export const deleteTable = (tablename:any,condition?:any) => {
             appLog('e', e)
         }
         setTimeout(()=>{
-            closeDB(db);
+            //closeDB(db);
             resolve('Delete Data');
         },100)
     });

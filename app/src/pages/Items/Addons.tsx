@@ -9,99 +9,169 @@ import {localredux} from "../../libs/static";
 import {v4 as uuid} from "uuid";
 
 
-let validate = true;
 
-const Index = ({addtags, itemaddon,updateProduct,setValidate}: any) => {
-
+const Index = ({addtags, itemaddon,selectedaddon,updateProduct,setValidate}: any) => {
 
     const {addonsData,initData:{addongroups}} = localredux;
+    let copyaddonList = clone(addonsData)
+    let {addongroupid,addon, addonid,autoaddon} = addtags || {addongroupid: [], addonid: [],autoaddon:[]};
 
 
-    let {addongroupid, addonid,autoaddon} = addtags || {addongroupid: [], addonid: [],autoaddon:[]}
 
+    if(!isEmpty(selectedaddon)){
+        selectedaddon?.map((addon:any)=>{
+            if(!isEmpty(copyaddonList[addon.productid])) {
+                copyaddonList[addon.productid] = {
+                    ...copyaddonList[addon.productid],
+                    ...addon
+                }
+            }
+        })
+    }
 
-    const [moreaddon, setMoreAddon]: any = useState(clone(addonsData));
+    const [moreaddon, setMoreAddon] = useState(clone(copyaddonList));
+
     const [addons,setAddons] = useState(addtags);
 
 
     useEffect(() => {
 
-        if(isEmpty(addtags?.addongroupiddata)){
-            addtags = {
-                ...addtags,
-                addongroupiddata:{
-                    '0000':{
-                        ...addtags?.addoniddata,
-                        selecteditems:addtags?.addonid.map((item:any)=>{
-                            return {"itemid": item}
-                        }),
-                    }
+        try {
+            if (isEmpty(addtags?.addongroupiddata)) {
+
+                addtags = {
+                    ...addtags,
+                    addongroupiddata: {
+                        '0000': {
+                            ...addtags?.addoniddata,
+                            selecteditems: addtags?.addonid?.map((item:any) => {
+                                return {
+                                    "itemid": item,
+                                    productrate: copyaddonList[item].price,
+                                    productratedisplay: copyaddonList[item].price,
+                                    maxsell:copyaddonList[item].maxsell
+                                }
+                            }),
+                        }
+                    },
                 }
             }
-            setAddons(addtags)
-        }
 
-        addongroupid?.map((ag: any) => {
-            const findaddons = Object.values(moreaddon)?.filter((addon: any) => {
-                return ag === addon.itemgroupid
-            }).map((item: any) => {
-                return item.itemid
+
+            Object.keys(addtags.addongroupiddata).map((key)=>{
+                if (isEmpty(addtags?.addongroupiddata[key]?.selecteditems)) {
+                    addtags = {
+                        ...addtags,
+                        addongroupiddata:{
+                            ...addtags.addongroupiddata,
+                            [key]:{
+                                ...addtags.addongroupiddata[key],
+                                selecteditems: Object.values(addon).map((item:any)=>{
+                                    return {
+                                        "itemid": item.itemid,
+                                        productrate:  item.price,
+                                        productratedisplay: item.price
+                                    }
+                                })
+                            }
+                        }
+                    }
+                }
             })
 
-            if (Boolean(findaddons.length)) {
-                addonid = addonid.concat(findaddons)
-            }
-        })
 
-        addonid.map((addon: any, key: any) => {
-            const find = findObject(itemaddon, 'itemid', addon, true);
-            if (Boolean(find)) {
-                moreaddon[addon] = {
-                    ...moreaddon[addon],
-                    ...find,
+            setAddons(addtags)
+
+
+
+            addongroupid?.map((ag:any) => {
+                const findaddons = Object.values(moreaddon)?.filter((addon:any) => {
+                    return ag === addon.itemgroupid
+                }).map((item:any) => {
+                    return item.itemid
+                })
+
+                if (Boolean(findaddons?.length)) {
+                    addonid = addonid.concat(findaddons)
                 }
-            }
-        })
+            })
 
-        setMoreAddon(clone(moreaddon));
+            addonid?.map((addon:any, key:any) => {
+                const find = findObject(itemaddon, 'itemid', addon, true);
+                if (Boolean(find)) {
+                    moreaddon[addon] = {
+                        ...moreaddon[addon],
+                        ...find
+                    }
+                }
+            })
 
-        setTimeout(()=>{
 
-            if(!isEmpty(autoaddon)) {
-                autoaddon?.map((addon: any) => {
-                    if (!Boolean(moreaddon[addon].productqnt)) {
-                        updateQnt(addon, 'autoadd')
+            if(Boolean(itemaddon)) {
+
+                addonid?.map((addon:any, key:any) => {
+                    const find = findObject(itemaddon, 'productid', addon, true);
+
+                    if (Boolean(find)) {
+                        moreaddon[addon] = {
+                            ...moreaddon[addon],
+                            ...find,
+                        }
                     }
                 })
             }
-            else {
-                Object.keys(addtags?.addongroupiddata).map((key: any) => {
-                    const adddongroup = addtags?.addongroupiddata[key];
-                    adddongroup?.autoadditems?.map((addon: any) => {
-                        if (!Boolean(moreaddon[addon].productqnt)) {
-                            updateQnt(addon, 'autoadd',key)
-                        }
-                    })
-                })
-            }
 
-        })
+            setMoreAddon(clone(moreaddon));
+        }
+        catch (e){
+            console.log('e',e)
+        }
 
-        let totalmin = addtags?.addoniddata?.minrequired || 0;
-        Object.values(addtags?.addongroupiddata).map((addon:any)=>{
-            totalmin += addon?.minrequired;
-        });
-        setValidate(!Boolean(totalmin))
 
     }, [])
 
 
-    const updateQnt = (key: any, action: any,addonid?:any) => {
 
-        let productqnt = moreaddon[key].productqnt || 0;
 
+    useEffect(() => {
+
+        if(!isEmpty(autoaddon)) {
+            autoaddon?.map((addon:any) => {
+                if (!Boolean(moreaddon[addon].productqnt)) {
+                    updateQnt(addon, 'autoadd')
+                }
+            })
+        }
+        else if(Boolean(addons) && Boolean(addons?.addongroupiddata)){
+            let minr = 0;
+            Object.keys(addons?.addongroupiddata).map((key) => {
+                const {minrequired} = addons.addongroupiddata[key];
+                const adddongroup = addons?.addongroupiddata[key];
+                adddongroup?.autoadditems?.map((addon:any) => {
+                    if (!Boolean(moreaddon[addon]?.productqnt)) {
+                        updateQnt(addon, 'autoadd',key)
+                    }
+                })
+                minr +=minrequired
+            })
+            setValidate(!Boolean(minr))
+        }
+        else{
+            setValidate(true)
+        }
+
+        if(!isEmpty(selectedaddon)){
+            setValidate(true)
+        }
+
+    }, [addons]);
+
+
+
+    const updateQnt = (key:any, action:any,addonid?:any) => {
+
+        let productqnt = moreaddon[key]?.productqnt || 0;
         const {unit}: any = localredux.initData;
-
 
         if (action === 'autoadd') {
             productqnt =   1
@@ -114,8 +184,21 @@ const Index = ({addtags, itemaddon,updateProduct,setValidate}: any) => {
         let unittype = unit[moreaddon[key]?.itemunit]
         let uuidn = uuid();
 
+        if(addonid) {
+            const {addonselectiontype,anynumber,selecteditems} = addons?.addongroupiddata[addonid]
+
+            if (addonselectiontype === 'selectanyone' && anynumber === 1) {
+                Object.keys(moreaddon).map((key) => {
+                    if (addonid === moreaddon[key].itemgroupid || addonid === '0000') {
+                        moreaddon[key].productqnt = 0
+                    }
+                })
+            }
+        }
+
         moreaddon[key] = {
             ...moreaddon[key],
+            itemid:key,
             displayunitcode:unittype?.unitcode || '',
             productqnt: productqnt,
             key: uuidn,
@@ -125,7 +208,7 @@ const Index = ({addtags, itemaddon,updateProduct,setValidate}: any) => {
 
         //////// CHANGE ADDON PRICE IF CHANGED //////////
         if(Boolean(addonid)) {
-            const find = addons?.addongroupiddata[addonid]?.selecteditems?.filter((item: any) => {
+            const find = addons?.addongroupiddata[addonid]?.selecteditems?.filter((item:any) => {
                 return item.itemid === key
             })
             if (Boolean(find[0]?.productrate)) {
@@ -135,44 +218,57 @@ const Index = ({addtags, itemaddon,updateProduct,setValidate}: any) => {
         //////// CHANGE ADDON PRICE IF CHANGED //////////
 
 
-
-        const selectedAddons = Object.values(moreaddon).filter((addon: any) => {
+        let selectedAddons = Object.values(moreaddon).filter((addon:any) => {
             return addon.productqnt > 0
         })
+
+        /*selectedAddons = selectedAddons.map((addon)=>{
+            return setItemRowData(addon)
+        })*/
 
         itemaddon = selectedAddons;
         setMoreAddon(clone(moreaddon));
         updateProduct({itemaddon:selectedAddons});
 
 
+
         //////// VALIDATE ADD BUTTON //////////
-            let totalmin = addtags?.addoniddata?.minrequired || 0;
-
-            let allval = 0
-            Object.keys(addtags?.addongroupiddata).map((key:any)=>{
-
-                let addon = addtags?.addongroupiddata[key]
-                let totalgroupselected = selectedAddons?.filter((s:any)=>{
-                    return s.itemgroupid == key && Boolean(addon.minrequired)
-                })
-
-                if(totalgroupselected.length >= addon.minrequired){
-                    allval += totalgroupselected.length
-                }
-
-                totalmin += addon.minrequired;
-           });
+        // let totalmin = addons?.addoniddata?.minrequired || 0;
+        let totalmin =  0;
+        let allval = 0;
 
 
-           if(allval >= totalmin){
-               setValidate(true)
-           }
-           else{
-               setValidate(false)
-           }
-       //////// VALIDATE ADD BUTTON //////////
+        Object.keys(addons?.addongroupiddata).map((key)=>{
+
+            let addon = addons?.addongroupiddata[key];
+
+            let totalgroupselected = selectedAddons?.filter((s:any)=>{
+                return (s.itemgroupid == key && Boolean(addon.minrequired)) || key === '0000'
+            })
+
+            if(totalgroupselected.length >= addon.minrequired){
+                allval += totalgroupselected.length
+            }
+
+            totalmin += addon.minrequired || 0;
+        });
+
+        if(+allval >= +totalmin && ((totalmin === addons?.addoniddata?.minrequired) || !Boolean(addons?.addoniddata?.minrequired))){
+            setValidate(true)
+        }
+        else{
+            setValidate(false)
+        }
+        //////// VALIDATE ADD BUTTON //////////
 
     }
+
+
+    if(!Boolean(moreaddon)){
+        return <></>
+    }
+
+
 
 
     return (<View style={[styles.p_5]}>
@@ -196,7 +292,7 @@ const Index = ({addtags, itemaddon,updateProduct,setValidate}: any) => {
 
                             selecteditems?.map((item: any, key: any) => {
 
-                                let {itemname, pricing, productqnt} = moreaddon[item.itemid];
+                                let {itemname, pricing, productqnt,maxsell} = moreaddon[item.itemid];
 
                                 const pricingtype = pricing?.type;
 
@@ -216,8 +312,11 @@ const Index = ({addtags, itemaddon,updateProduct,setValidate}: any) => {
                                         }).length + 1;
 
 
-                                        if((anynumber >= addeditems && addonselectiontype === 'selectanyone') || addonselectiontype === 'selectany') {
+                                        if((anynumber >= addeditems && addonselectiontype === 'selectanyone' ) || addonselectiontype === 'selectany') {
                                             item.selected = Boolean(productqnt)
+                                            updateQnt(item.itemid, 'add',addonid)
+                                        }
+                                        else if(addonselectiontype === 'selectanyone' && anynumber === 1){
                                             updateQnt(item.itemid, 'add',addonid)
                                         }
                                     }}>
@@ -245,7 +344,7 @@ const Index = ({addtags, itemaddon,updateProduct,setValidate}: any) => {
                                                         parseInt(productqnt || 0)
                                                     }</Paragraph>
                                                     {<TouchableOpacity style={[styles.p_2]} onPress={() => {
-                                                        updateQnt(item.itemid, 'add',addonid)
+                                                        ((productqnt < maxsell) || maxsell === 0 || !Boolean(maxsell)) && updateQnt(item.itemid, 'add',addonid)
                                                     }}>
                                                         <ProIcon name={'plus'} size={20}/>
                                                     </TouchableOpacity>}

@@ -41,11 +41,11 @@ class ScanScreen extends Component<any> {
         setTimeout(()=>{
             this?.scanner?.reactivate()
         },3000)
-        Linking.openURL(e?.data).catch(err => {
+        /*Linking.openURL(e?.data).catch(err => {
                 //crashlytics().log('Scan  '+err);
                 console.error('An error occured', err)
             }
-        );
+        );*/
     };
 
     render() {

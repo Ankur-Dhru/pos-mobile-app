@@ -107,7 +107,7 @@ export const getItemsByWhere = async ({itemgroupid,itemname,itemid,groupid,start
         } catch (e) {
             appLog('e', e)
         }
-        await closeDB(db);
+        // await closeDB(db)
 
     }
 
@@ -166,7 +166,7 @@ export const getAddonByWhere = async ({itemgroupid,itemname,start}:any) => {
         } catch (e) {
             appLog('e', e)
         }
-        await closeDB(db);
+        // await closeDB(db)
     }
 }
 
@@ -245,7 +245,7 @@ export const getClientsByWhere = async ({displayname,phone,search,clienttype,sta
         } catch (e) {
             appLog('get clients', e)
         }
-        await closeDB(db);
+        // await closeDB(db)
     }
 }
 
@@ -307,7 +307,7 @@ export const getTempOrdersByWhere = async ({tableorderid,all,tableid}:any) => {
                 appLog('get temp orders', e)
             }
 
-            await closeDB(db);
+            // await closeDB(db)
 
         }
 
@@ -345,7 +345,7 @@ export const getOrdersByWhere = async () => {
     } catch (e) {
         appLog('get orders', e)
     }
-    await closeDB(db);
+    // await closeDB(db)
 }
 
 
@@ -371,5 +371,5 @@ export const readTable = async (tablename:any,{start}:any) => {
     } catch (e) {
         appLog('e', e)
     }
-    await closeDB(db);
+    // await closeDB(db)
 }

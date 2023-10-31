@@ -11,10 +11,7 @@ import {styles} from "../../theme";
 import {Paragraph, Searchbar} from "react-native-paper";
 import {ProIcon, SearchBox} from "../../components";
 import {useNavigation} from "@react-navigation/native";
-import {ACTIONS, localredux, METHOD, STATUS, urls, VOUCHER} from "../../libs/static";
-import apiService from "../../libs/api-service";
-import {v4 as uuidv4} from "uuid";
-import {setCartData} from "../../redux-store/reducer/cart-data";
+
 import {PERMISSIONS, requestMultiple} from "react-native-permissions";
 
 

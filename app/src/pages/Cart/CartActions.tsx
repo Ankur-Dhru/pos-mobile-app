@@ -276,7 +276,7 @@ const Index = ({
                         <Button
 
                             secondbutton={!Boolean(vouchertotaldisplay)}
-                            onPress={() => {
+                            onPress={async () => {
 
                                 if(localredux.localSettingsData?.currentLocation?.clientrequired && clientid === 1){
                                     errorAlert('Please Select Client')
@@ -284,10 +284,22 @@ const Index = ({
                                 else{
                                     if (Boolean(vouchertotaldisplay)) {
                                         dispatch(showLoader())
-                                        saveTempLocalOrder().then((data:any) => {
+
+                                        /*setTimeout(()=>{
                                             dispatch(hideLoader());
+                                        },3000)*/
+
+                                        await saveTempLocalOrder().then((data:any) => {
+                                            console.log('step 13')
+                                            dispatch(hideLoader());
+                                            console.log('step 14')
                                             navigation.navigate('Payment');
                                         })
+
+
+
+                                        console.log('step 15')
+
                                     }
                                 }
                             }}

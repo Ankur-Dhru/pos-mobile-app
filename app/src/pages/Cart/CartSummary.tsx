@@ -37,7 +37,6 @@ const Index = ({
         let total = parseInt(vouchertotaldisplay)
         if (currentpax !== 'all' && orderbypax) {
             total = parseInt(paxwise[+currentpax]?.vouchertotaldisplay)
-            setMoreSummary(false)
             //updateComponent(moreSummaryRef, 'display', 'none');
         }
         setVouchertotal(total)
@@ -48,8 +47,11 @@ const Index = ({
         if (orderbypax) {
             splitPaxwise().then((data: any) => {
                 setPaxwise(data);
-                setMoreSummary(false)
+
             })
+        }
+        if(moreSummary){
+            setMoreSummary(false)
         }
         //setMoreSummary(false)
         //updateComponent(moreSummaryRef, 'display', 'none');
@@ -170,8 +172,8 @@ const Index = ({
         <View>
             <TouchableOpacity style={[styles.radiusBottom, styles.radiusTop, {backgroundColor: styles.secondary.color,padding:10}]}
                               onPress={() => {
-                                  if(currentpax === 'all' || !orderbypax) {
-                                      setMoreSummary(!moreSummary)
+                                  if((currentpax === 'all' || !orderbypax) && Boolean(vouchertotal)) {
+                                      setMoreSummary(true)
                                       //viewSummary().then()
                                   }
                               }}>
@@ -180,10 +182,10 @@ const Index = ({
 
                 <View style={[styles.grid, styles.justifyContent, styles.middle]}>
                     <View><Paragraph
-                        style={[styles.paragraph, styles.bold]}>Total </Paragraph></View>
-                    <View>
+                        style={[styles.paragraph, styles.bold]}>Total  </Paragraph></View>
+                    {Boolean(vouchertotal) && !moreSummary &&  <View>
                         <ProIcon name={`chevron-${!moreSummary?'up':'down'}`} size={15}/>
-                    </View>
+                    </View>}
                     <View><Paragraph
                         style={[styles.paragraph, styles.bold, styles.text_lg]}>{toCurrency(vouchertotal || '0')}
                     </Paragraph></View>

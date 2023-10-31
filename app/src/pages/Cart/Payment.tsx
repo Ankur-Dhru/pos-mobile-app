@@ -19,7 +19,7 @@ import {Button, Container} from "../../components";
 import {CommonActions, useNavigation} from "@react-navigation/native";
 import {device, ItemDivider, localredux, TICKET_STATUS, urls} from "../../libs/static";
 import store from "../../redux-store/store";
-import {setCartData, updateCartField} from "../../redux-store/reducer/cart-data";
+import {setCartData, setUpdateCart, updateCartField} from "../../redux-store/reducer/cart-data";
 import ProIcon from "../../components/ProIcon";
 //import crashlytics from "@react-native-firebase/crashlytics";
 import ToggleButtons from "../../components/ToggleButton";
@@ -105,7 +105,10 @@ const Index = ({
                 itemdetail = item;
             }
         })
+
+
     }
+
 
 
 
@@ -135,6 +138,15 @@ const Index = ({
             setPaxwise(data);
             dispatch(setCartData(cartData));
         })
+
+
+        if(!checkrate){
+
+            let data =  itemTotalCalculation(cartData, undefined, undefined, undefined, undefined, 2, 2, false, false);
+            dispatch(setCartData(clone(data)));
+            dispatch(setUpdateCart());
+        }
+
     }, [])
 
 

@@ -75,7 +75,7 @@ import ImageSize from "react-native-image-size";
 import ImageEditor from "@react-native-community/image-editor";
 import ItemListCombo from "../pages/Items/ItemListCombo";
 import {createTables} from "./Sqlite";
-//import crashlytics from "@react-native-firebase/crashlytics";
+import crashlytics from "@react-native-firebase/crashlytics";
 import ScanItem from "../pages/Items/ScanItem";
 import ScanSerialno, {onRead} from "../pages/Items/ScanSerialno";
 import QRCodeScanner from "../components/QRCodeScanner";
@@ -1048,25 +1048,26 @@ export const saveTempLocalOrder = (order?: any, config?: any) => {
                 terminalid: localredux?.licenseData?.data?.terminal_id,
             }
 
-
-
             /*if(!Boolean(order?.payment[0]?.paymentAmount)){
                 order.payment[0].paymentAmount = order.vouchertotaldisplay
             }*/
 
-
-            insertTempOrder(order).then((data: any) => {
+            //let resolveapi = false;
+            await insertTempOrder(order).then((data: any) => {
                 if (Boolean(data)) {
                     store.dispatch(setCartData(data));
-
-                } else {
-                    //store.dispatch(resetCart())
+                    //resolveapi = true
                 }
                 resolve(data)
             })
 
+            /*if(!resolveapi){
+                resolve(true)
+            }*/
+
         } catch (e) {
-            appLog('e', e)
+            crashlytics().log('saveTempLocalOrder : '+ e);
+            resolve(true)
         }
     });
 }

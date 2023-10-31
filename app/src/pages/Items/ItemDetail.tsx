@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import {Caption, Text, TextInput as TI, withTheme} from "react-native-paper";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
-import {clone, getCurrencySign, isRestaurant, setItemRowData, toCurrency} from "../../libs/function";
+import {clone, getCurrencySign, isRestaurant, prelog, setItemRowData, toCurrency} from "../../libs/function";
 import {View} from "react-native";
 import Button from "../../components/Button";
 import KeyboardScroll from "../../components/KeyboardScroll";
@@ -32,9 +32,9 @@ const Index = (props: any) => {
     }
 
 
-    const [validate,setValidate] = useState(Boolean(addtags))
+    const [validate,setValidate]:any = useState(Boolean(addtags));
+    let [product,setProduct]:any = useState(itemDetail);
 
-    let product = itemDetail;
 
     const {
         pricing,
@@ -73,6 +73,8 @@ const Index = (props: any) => {
                 ...product,
                 ...itemRowData,
             }
+
+
             if (product?.itemaddon) {
                 product.itemaddon = product?.itemaddon.map((addon: any) => {
                     return {
@@ -88,7 +90,6 @@ const Index = (props: any) => {
             await dispatch(setBottomSheet({visible: false}))
         }
         else{
-
             navigation?.goBack();
         }
 
@@ -99,9 +100,8 @@ const Index = (props: any) => {
             ...product,
             ...field
         }
+        setProduct(product)
     }
-
-
 
 
     const [discounttype, setDiscounttype]: any = useState(cartData?.discounttype || '%');
@@ -236,7 +236,7 @@ const Index = (props: any) => {
                 </View>}
 
 
-                <Addons updateProduct={updateProduct} setValidate={setValidate}/>
+                <Addons updateProduct={updateProduct} selectedaddon={clone(itemDetail.itemaddon)}  setValidate={setValidate}/>
                 <TagsNotes updateProduct={updateProduct}/>
 
                 <View style={{height:50}}></View>

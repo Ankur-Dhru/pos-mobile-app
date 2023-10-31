@@ -29,13 +29,13 @@ const Index = memo((props: any) => {
         if (!Boolean(item.kotid)) {
 
             await dispatch(setItemDetail(clone(item)));
-            /*await dispatch(setBottomSheet({
+            dispatch(setBottomSheet({
                 visible: true,
                 height: '80%',
-                component: () => <ItemDetail edit={true}  />
-            }))*/
+                component: () => <ItemDetail   edit={true}  />
+            }))
 
-            device.navigation?.navigate('ItemDetail',{edit:true})
+            //device.navigation?.navigate('ItemDetail',{edit:true})
 
         }
         else{
@@ -75,7 +75,13 @@ const Index = memo((props: any) => {
                             editCartitem().then()
                         }}>
 
-                            <View style={[styles.grid,styles.top,styles.justifyContent]}>
+                            <View style={[styles.grid,styles.top,styles.justifyContent]}
+
+                                  /*onStartShouldSetResponder={(event) => true}
+                                  onTouchEnd={(e) => {
+                                      e.stopPropagation();
+                                  }}*/
+                            >
 
                                 <View style={[styles.flexGrow,styles.w_auto,{paddingLeft: 0,paddingRight:10,minWidth:200}]}>
 

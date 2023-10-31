@@ -934,7 +934,8 @@ export const setItemRowData = (data: any, pricingtemplate?: any) => {
             hasAddon,
             mrp,
             selling,
-            key
+            key,
+            productrate
         } = data;
 
 
@@ -1471,7 +1472,7 @@ export const selectItem = async (item: any) => {
                     await store.dispatch(setBottomSheet({
                         visible: true,
                         height: '85%',
-                        component: () => <ItemDetail/>
+                        component: () => <ItemDetail  />
                     }))
                 } else {
                     await store.dispatch(setBottomSheet({

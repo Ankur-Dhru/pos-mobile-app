@@ -17,22 +17,23 @@ import store from "../../redux-store/store";
 import {Container} from "../../components";
 import {useNavigation} from "@react-navigation/native";
 import InputField from "../../components/InputField";
+import {device} from "../../libs/static";
 
 const {v4: uuid} = require('uuid')
 
 const Index = (props: any) => {
 
-    const {itemDetail, inittags, sheetRef, theme: {colors},orderbypax,addtags} = props
-    const edit = props.route?.params?.edit
+    const {itemDetail, inittags, sheetRef,edit, theme: {colors},orderbypax} = props
+
+
+    //const edit = props.route?.params?.edit
 
     const dispatch = useDispatch();
-    let navigation = ''
+   /* let navigation = ''
     if(edit) {
         navigation = useNavigation()
-    }
+    }*/
 
-
-    const [validate,setValidate]:any = useState(Boolean(addtags));
     let [product,setProduct]:any = useState(itemDetail);
 
 
@@ -41,12 +42,15 @@ const Index = (props: any) => {
         description,
         productrate,
         pax,
+        addtags,
+        itemaddon,
         itemname,
         groupname,
         productdiscounttype,
         productdiscountvalue
-    } = itemDetail;
+    } = product;
 
+    const [validate,setValidate]:any = useState(Boolean(addtags));
 
     let {cartData, cartData: {invoiceitems}} = store.getState()
     const totaloax = cartData?.pax;
@@ -62,7 +66,7 @@ const Index = (props: any) => {
 
             let index = invoiceitems.map(function (o: any) {
                 return o.key;
-            }).indexOf(itemDetail.key);
+            }).indexOf(product.key);
 
             dispatch(changeCartItem({itemIndex: index, item: clone(product)}));
 
@@ -90,7 +94,8 @@ const Index = (props: any) => {
             await dispatch(setBottomSheet({visible: false}))
         }
         else{
-            navigation?.goBack();
+            await dispatch(setBottomSheet({visible: false}))
+            //device.navigation?.goBack();
         }
 
     }
@@ -160,18 +165,49 @@ const Index = (props: any) => {
                 </View>
 
 
-                <View style={[styles.px_5]}>
+                {edit &&  <View style={[styles.px_5]}>
                     <View>
                         <InputBox
                             defaultValue={productrate ? productrate + '' : ''}
                             label={'Price'}
+                            keyboardType={'numeric'}
                             autoFocus={false}
-                            onChange={(value: any) => {
+                            onChangeText={(value: any) => {
                                 updateProduct({productrate: value, productratedisplay: value})
                             }}
                         />
                     </View>
-                </View>
+                </View>}
+
+
+
+
+                {edit &&  <View style={[styles.px_5,styles.mt_3]}>
+
+                    <View >
+                        <InputBox
+                            defaultValue={productdiscountvalue ? productdiscountvalue + '' : ''}
+                            label={'Discount'}
+                            autoFocus={false}
+                            keyboardType={'numeric'}
+                           /* right={<TI.Affix
+                                text={discounttype === '%' ? '%' : getCurrencySign()}/>}*/
+                            onChangeText={(value: any) => {
+                                updateProduct({productdiscounttype: discounttype, productdiscountvalue: value})
+                            }}
+                        />
+
+                        {!isInclusive && <View style={{width:100,position:'absolute',right:10,top:15}}>
+                            <ToggleButtons
+                                width={'50%'}
+                                default={productdiscounttype}
+                                btns={discountType}
+                                onValueChange={onButtonToggle}
+                            /></View>}
+
+                    </View>
+
+                </View>}
 
 
                 {isRestaurant() && orderbypax && <View style={[styles.px_5]}>
@@ -190,7 +226,7 @@ const Index = (props: any) => {
                             inputtype={'dropdown'}
                             listtype={'other'}
 
-                            onChange={(value: any) => {
+                            onChangeText={(value: any) => {
                                 updateProduct({pax: ''+value})
                             }}>
                         </InputField>
@@ -208,38 +244,10 @@ const Index = (props: any) => {
                 </View>}
 
 
-                {edit &&  <View style={[styles.px_5]}>
-
-                    <View >
-                        <InputBox
-                            defaultValue={productdiscountvalue ? productdiscountvalue + '' : ''}
-                            label={'Discount'}
-                            autoFocus={false}
-                            keyboardType={'numeric'}
-                           /* right={<TI.Affix
-                                text={discounttype === '%' ? '%' : getCurrencySign()}/>}*/
-                            onChange={(value: any) => {
-                                updateProduct({productdiscounttype: discounttype, productdiscountvalue: value})
-                            }}
-                        />
-
-                        {!isInclusive && <View style={{width:100,position:'absolute',right:10,top:15}}>
-                            <ToggleButtons
-                                width={'50%'}
-                                default={productdiscounttype}
-                                btns={discountType}
-                                onValueChange={onButtonToggle}
-                            /></View>}
-
-                    </View>
-
-                </View>}
-
-
-                <Addons updateProduct={updateProduct} selectedaddon={clone(itemDetail.itemaddon)}  setValidate={setValidate}/>
+                <Addons updateProduct={updateProduct} selectedaddon={clone(itemaddon)} itemDetail={product} setValidate={setValidate}/>
                 <TagsNotes updateProduct={updateProduct}/>
 
-                <View style={{height:50}}></View>
+                <View style={{height:220}}></View>
 
             </KeyboardScroll>
 

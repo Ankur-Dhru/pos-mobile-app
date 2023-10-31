@@ -62,7 +62,7 @@ const Index = ({product}: any) => {
                                     await dispatch(setBottomSheet({
                                         visible: true,
                                         height: '80%',
-                                        component: () => <ItemDetail/>
+                                        component: () => <ItemDetail  />
                                     }))
 
                                 }}> + Add New

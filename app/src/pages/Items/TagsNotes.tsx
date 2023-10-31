@@ -43,7 +43,7 @@ const Index = ({tags,notes,itemtags,updateProduct}: any) => {
                     defaultValue={notes}
                     label={'Notes'}
                     autoFocus={false}
-                    onChange={(value:any) => {
+                    onChangeText={(value:any) => {
                         updateProduct({notes:value})
                     }}
                 />

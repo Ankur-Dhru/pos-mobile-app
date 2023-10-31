@@ -290,15 +290,10 @@ const Index = ({
                                         },3000)*/
 
                                         await saveTempLocalOrder().then((data:any) => {
-                                            console.log('step 13')
                                             dispatch(hideLoader());
-                                            console.log('step 14')
                                             navigation.navigate('Payment');
                                         })
 
-
-
-                                        console.log('step 15')
 
                                     }
                                 }

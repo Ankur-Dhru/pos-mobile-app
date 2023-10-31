@@ -221,6 +221,7 @@ export const insertTempOrder =  (data?: any) => {
 
     return new Promise<any>(async (resolve)=> {
 
+        data.orders = '';
         let order = data;
 
         if(Boolean(urls.localserver)) {
@@ -254,8 +255,6 @@ export const insertTempOrder =  (data?: any) => {
             try {
                 await db.executeSql(insertQuery);
             } catch (e) {
-
-                console.log('ERROR', insertQuery)
                 crashlytics().log('insertQuery : '+ e);
             }
             //await closeDB(db);

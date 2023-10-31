@@ -88,7 +88,6 @@ const Index = ({
 
     const receiptCreated = (response: any) => {
 
-
         let cartData = store.getState().cartData;
 
         cartData = {

@@ -318,7 +318,7 @@ const Index = ({tableorders,scantable}: any) => {
 
 
 
-            navigation.navigate('CartStackNavigator', tabledetails);
+            navigation.navigate('CartStackNavigator', {...tabledetails});
             dispatch(setDialog({visible: false}));
 
 
@@ -600,7 +600,7 @@ const Index = ({tableorders,scantable}: any) => {
                         <View
                             style={[styles.badge, styles.px_5, {backgroundColor: 'black'}]}>
                             <Text
-                                style={[styles.paragraph, styles.text_xs, {color: 'white'}]}>{`${item.tablename} ${item?.split ? '- split' : (splitdetailtables && !item.splitnumber) ? ' - 1' : ''}` || 'Retail'} </Text></View></View>
+                                style={[styles.paragraph, styles.text_xs, {color: 'white'}]}>{`${item.tablename}   ${item?.split ? '- split' : (splitdetailtables && !item.splitnumber) ? ' - 1' : ''}` || 'Retail'} </Text></View></View>
                     {Boolean(item.vouchertotaldisplay) && <>
                         <Paragraph><ProIcon align={'left'} name={'user'} action_type={'text'}
                                             size={13}/>{` ${item?.paxtotal || item?.pax || 1} ${!Boolean(item.paxtotal) ? `x ${item.clientname}` : ''}`}
@@ -764,6 +764,7 @@ const Index = ({tableorders,scantable}: any) => {
 
         let floors:any = {}
         if(!isEmpty(tables)) {
+
              floors = groupBy(tables?.filter((table: any) => {
                 if (type === 'tableorder') {
                     return table.ordertype === type

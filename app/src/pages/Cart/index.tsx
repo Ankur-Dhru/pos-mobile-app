@@ -57,6 +57,7 @@ const Index = (props: any) => {
 
         const {kots, numOfKOt}: any = tabledetails || {}
 
+
         if (kots?.length > 0 || numOfKOt > 0) {
             let {staffid, staffname, ...others}: any = voucherDataJson;
             dispatch(refreshCartData({...tabledetails, ...others}));

@@ -19,15 +19,15 @@ const Index = () => {
     const onSuccess = async (e?: any) => {
 
         let tabledetails: any = {
-            "area": "Default",
+            "area": "Table Token",
             "invoiceitems": [],
             "kots": [],
-            "ordertype": "tableorder",
+            "ordertype": "tabletoken",
             "pax": 1,
             "paxes": "1",
             "qrcodeid": e.data,
             "tableid": e.data,
-            "tablename": `QR : ${e.data}`
+            "tablename": `Table Token ${e.data}`
         }
 
         if ((Boolean(urls.localserver))) {

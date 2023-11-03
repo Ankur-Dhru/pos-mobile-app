@@ -889,12 +889,17 @@ export const setItemRowData = (data: any, pricingtemplate?: any) => {
     //crashlytics().log('setItemRowData');
     try {
 
+        let {cartData, localSettings}: any = store.getState();
+        const {invoiceitems} = cartData;
+
+        const getlastposition = invoiceitems[invoiceitems.length - 1]?.position || 0;
+
         let isInward: boolean = false;
         let companyCurrency = getDefaultCurrency();
         const {unit}: any = localredux.initData;
         let unittype = unit[data?.itemunit]
 
-        let {cartData, localSettings}: any = store.getState();
+
         let {localSettingsData}: any = localredux;
 
         let client = cartData?.client;
@@ -982,6 +987,7 @@ export const setItemRowData = (data: any, pricingtemplate?: any) => {
             displayunitcode: unittype?.unitcode || '',
             "accountid": 2,
             clientid: cartData?.clientid,
+            position:getlastposition + 1,
             productdiscounttype: "%",
             stockonhand,
             hsn: itemhsncode,

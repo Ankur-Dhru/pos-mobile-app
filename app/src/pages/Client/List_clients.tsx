@@ -70,7 +70,7 @@ const Index = (props: any) => {
 
                 <View style={[styles.grid, styles.middle, styles.justifyContent, {padding: 10}]}>
                     <View style={[styles.w_auto]}>
-                        <SearchBox handleSearch={handleSearch}  autoFocus={false}    placeholder="Search Client..."/>
+                        <SearchBox handleSearch={handleSearch}  autoFocus={false}    placeholder="Search 123 Client..."/>
                     </View>
 
                 </View>

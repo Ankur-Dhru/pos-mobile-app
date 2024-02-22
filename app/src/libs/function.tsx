@@ -312,7 +312,6 @@ export const dateFormat = (withTime?: boolean, standardformat?: boolean) => {
     if (withTime) {
         dateFormat += ' hh:mm A'
     }
-
     return dateFormat
 }
 
@@ -1692,6 +1691,8 @@ export const generateKOT = async (cancelkotprint?: any) => {
                 if (status === STATUS.SUCCESS) {
 
                     let cartData = response?.data;
+
+
                     if (Boolean(cartData)) {
                         cartData.invoiceitems = cartData.invoiceitems.map((item: any) => {
                             return {...item, added: false}
@@ -1702,6 +1703,8 @@ export const generateKOT = async (cancelkotprint?: any) => {
             })
             resolve('broadcast generate KOT')
         } else {
+
+
             const {currentLocation: {departments}} = localredux.localSettingsData;
 
             const currentTicketType = localredux.initData?.tickets[TICKETS_TYPE.KOT];
@@ -1755,7 +1758,6 @@ export const generateKOT = async (cancelkotprint?: any) => {
                             }
                         }
 
-
                         if (invoiceitems) {
 
                             itemForKot = invoiceitems.filter((itemL1: any) => {
@@ -1781,7 +1783,7 @@ export const generateKOT = async (cancelkotprint?: any) => {
 
                                 const openTicketStatus = getTicketStatus(TICKET_STATUS.OPEN);
 
-                                let length = kitchens.length;
+                                let length = kitchens?.length;
 
 
                                 const recursive = async (i: any) => {
@@ -1884,7 +1886,7 @@ export const generateKOT = async (cancelkotprint?: any) => {
                                                 });
 
                                                 kot.predefinenotes = kot.predefinenotes + ' ' + tags.filter((tag: any) => {
-                                                    return Boolean(tag.length)
+                                                    return Boolean(tag?.length)
                                                 }).join(' , ');
                                             }
 
@@ -2486,6 +2488,7 @@ export const createDatabaseName = ({workspace, locationid}: any) => {
 
 export const selectWorkspace = async (workspace: any, navigation: any) => {
 
+
     store.dispatch(showLoader())
     const {token}: any = localredux.authData;
 
@@ -2507,6 +2510,7 @@ export const selectWorkspace = async (workspace: any, navigation: any) => {
                 ...response.data,
                 deviceName: response?.deviceName,
                 workspace: workspace.name,
+                alias:workspace.alias,
                 license_token: response.license_token
             }
 

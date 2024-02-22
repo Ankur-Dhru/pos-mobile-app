@@ -53,7 +53,7 @@ const ProfileSettings = () => {
     const creditnotes = getRoleAccess('Credit Notes')
 
 
-    const workspace = localredux.initData?.workspace || localredux.licenseData.data?.workspace;
+    const workspace = localredux.initData?.alias || localredux.initData?.workspace || localredux.licenseData.data?.workspace;
 
 
     const windowHeight = Dimensions.get('window').height;

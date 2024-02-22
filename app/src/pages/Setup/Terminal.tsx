@@ -21,7 +21,7 @@ import Button from "../../components/Button";
 import {useDispatch} from "react-redux";
 import apiService from "../../libs/api-service";
 import {
-    appLog,
+    appLog, appLog2,
     createDatabaseName,
     findObject,
     getStateAndTaxType,
@@ -208,7 +208,7 @@ const Terminal = (props: any) => {
                                 <Card style={[styles.card]}>
                                     <Card.Content style={[styles.cardContent]}>
                                         <View>
-                                            <Caption style={[styles.caption]}>Workspace : {initData.workspace}  </Caption>
+                                            <Caption style={[styles.caption]}>Workspace : {initData.alias || initData.workspace}  </Caption>
 
                                             <View style={[styles.mt_3]}>
                                                 <View>

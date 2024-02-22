@@ -4,12 +4,8 @@ import {Caption, Card, List, Paragraph} from "react-native-paper"
 import Container from "../../components/Container";
 import {styles} from "../../theme";
 import {connect, useDispatch} from "react-redux";
-import CheckBox from "../../components/CheckBox";
 import {Field, Form} from "react-final-form";
 
-import {getLocalSettings, retrieveData, saveLocalSettings, setAPIUrl} from "../../libs/function";
-import {setSettings} from "../../redux-store/reducer/local-settings-data";
-import InputField from "../../components/InputField";
 import {localredux} from "../../libs/static";
 
 

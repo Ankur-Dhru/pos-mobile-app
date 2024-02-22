@@ -50,6 +50,7 @@ const apiService = async (config: configData) => {
 
 
 
+
     let apiPath: any = "http://localhost:8081/";
 
 
@@ -77,6 +78,7 @@ const apiService = async (config: configData) => {
         store.dispatch(showLoader())
     }
 
+    console.log('apiPath',apiPath)
 
     wait(requestOptions.timeout, signal)
         .then(() => {

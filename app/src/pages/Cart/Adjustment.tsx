@@ -28,9 +28,7 @@ const Index = ({cartData}: any) => {
 
     const handleSubmit = async (values: any) => {
 
-
         // cartData = await itemTotalCalculation(clone(cartData), undefined, undefined, undefined, undefined, 2, 2, false, false);
-
         const {adjustmentamount}: any = values;
 
         cartData = {
@@ -111,24 +109,16 @@ const Index = ({cartData}: any) => {
                                                 </View>
                                             </View>
                                         </TouchableOpacity>
-
                                     </View>
                                 </View>
-
                             </KAccessoryView>
-
                         </View>
-
                     </View>
                 )}
             >
-
             </Form>
-
         </View>
     )
-
-
 }
 
 

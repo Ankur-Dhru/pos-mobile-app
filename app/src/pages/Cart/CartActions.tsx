@@ -142,14 +142,11 @@ const Index = ({
 
                 </View>
             </View>
-
         </View>
     }
 
 
     return <View>
-
-
 
         {<View style={[{backgroundColor:'white',marginTop:5,marginBottom:0,paddingHorizontal: device.tablet? 5 :0  }]}>
             <View>
@@ -217,7 +214,6 @@ const Index = ({
                                             } else {
                                                 KOTActions(kotongenerateinvoice === 'Disable')
                                             }
-
                                         }
                                     }
                                  }
@@ -293,8 +289,6 @@ const Index = ({
                                             dispatch(hideLoader());
                                             navigation.navigate('Payment');
                                         })
-
-
                                     }
                                 }
                             }}

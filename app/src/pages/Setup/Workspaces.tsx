@@ -35,17 +35,14 @@ const Workspaces = (props: any) => {
 
 
     const renderitems = ({item}: any) => {
-
         return (
             <TouchableOpacity onPress={() => selectWorkspace(item, navigation)} style={[{paddingHorizontal: 5}]}>
-
                 <View style={[styles.grid, styles.justifyContent, styles.py_5]}>
-                    <View><Paragraph style={[styles.paragraph, styles.text_md]}>{item.name}</Paragraph></View>
+                    <View><Paragraph style={[styles.paragraph, styles.text_md]}>{item.alias || item.name}</Paragraph></View>
                     <View>
                         {chevronRight}
                     </View>
                 </View>
-
             </TouchableOpacity>
         );
     };
